@@ -1,9 +1,10 @@
 from range_analysis import iso_cities
-import trips_file_creation as fc
+import ShapeFileHandler as fc
 import numpy as np
 import geopandas as gpd
 import matplotlib.pyplot as plt
 import matplotlib
+import seaborn as sns
 from cartopy import crs as ccrs
 from random import sample
 import pandas as pd
@@ -17,7 +18,8 @@ import os
 world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
 europe = world[world.continent == 'Europe']
 europe = europe.to_crs(epsg=3395) # make the plot of Europe a conformal projection
-plt_data = pd.read_csv(os.path.join(os.path.dirname(__file__), "plotting_df.csv"))
+plt_data = pd.read_csv(os.path.join(os.path.dirname(__file__), "input_data/plotting_df.csv"))
+
 
 
 #=========================================================================
@@ -48,7 +50,7 @@ plt.ylim([3.7e6, 1.07e7])
 plt.title("58.8 > GDP ")
 
 lim = 300
-a = 0.38
+a = 0.48
 iso = iso_cities(lim)
 
 #-----------------------------------------------------------------------------------
@@ -58,12 +60,18 @@ iso = iso_cities(lim)
 # the function .tissot from cartopy is used for the circles
 #---------------------------------------------------------------------------------
 
-for row in np.delete(plt_data.to_numpy(), 0 , 1):
+col_count1 = 0
+col_count2 = 0
+col_count3 = 0
+col_count4 = 0
+
+for idx, row in enumerate(np.delete(plt_data.to_numpy(), 0 , 1)):
    if row[0] in iso:
       print(f"{row[0]} isolated city")
       col = "black"
    else:
-      col = sample(["b", "g", "r", "gold","peru", "purple"],1)[0]
+      # col = sample(["b", "g", "r", "gold","peru", "purple"],1)[0]
+      col = sample(sns.color_palette("hls", 8 ), 1)[0]
    
    if row[3] >= 159.2:
       ax1.tissot(rad_km=lim, lons= row[2], lats=row[1], n_samples=36 , ec= "black",  zorder=10, alpha= a, color= col)
