@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Mon May  8 15:01:28 2023
+import numpy as np
 
-@author: Wesse
-"""
+def TW_to_PW(TW,V,eff_prop):
+    return TW*V/eff_prop
+
+WS_stall = 0.5*V_stall*rho0*CLMax
 
