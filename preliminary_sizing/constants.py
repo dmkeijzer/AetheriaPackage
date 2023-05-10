@@ -18,15 +18,19 @@ R = 287                 #[J/kg*K]   O
 
 
 eff_prop = 0.8          #[-]        ?
+eff_openprop = eff_prop #[-]        ?
+eff_ductedfans = 0.7    #[-]        ?
+diskloading = 100       #[-]        ?
 ROC = 10                #[m/s]      ?
 
 CL = 1.5                #[-]        ?
-CD = 0.3                #[-]        ?
+CLmax = 1.8             #[-]        ?
+CD = 0.001                #[-]        ?
 A = 6                   #[-]        ?
 e = 0.9                 #[-]        ?
-
-V_cruise = 300/3.6      #[m/s]      O
-V_max = V_cruise*1.25   #[m/s]      O
+StotS = 0.8             #[-]        ?
+V_cruise = 65*0.8      #[m/s]      O
+V_max = 65   #[m/s]      O
 V_stall = 40            #[m/s]      ?
 
 loadfactor = 2          #[-]        ?
