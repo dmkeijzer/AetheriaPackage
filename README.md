@@ -16,9 +16,25 @@ Then use this environment when running your code. Please consult documentation o
 When you add a new function to the codebase, please include a docstring using the Google format, as shown in the example below:
 
 ```python
+def find_mac(S, b, taper):
+    """ Computes the mean aerodynamic chord
 
+    :param S: Wing surface area [m^2]
+    :type S: float
+    :param b: Wingspan [m]
+    :type b: float
+    :param taper: Wing taper
+    :type taper: float
+    :return: Mean Aerodynamic chord
+    :rtype: float
+    """    
+    cavg = S / b
+    cr = 2 / (1 + taper) * cavg
+    mac = 2/3 * cr * (1 + taper + taper ** 2) / (1 + taper)
+    return mac
 
 ```
+When doing this we can automatically create documentation using the `spinx` library
 
 ## Note
 
