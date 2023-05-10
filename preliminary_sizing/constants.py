@@ -1,0 +1,13 @@
+g0 = 9.80665            #[m/s^2]    O
+rho0 = 1.225            #[kg/m^3]   O
+T0 = 288.15             #[K]        O
+p0 = 101325             #[N/m^@]    O
+R = 287                 #[J/kg*K]   O
+eff_prop = 0.8          #[-]        ?
+ROC = 10                #[m/s]      ?
+CL = 1.5                #[-]        ?
+CD = 0.3                #[-]        ?
+V_cruise = 300/3.6      #[m/s]      O
+V_max = V_cruise*1.23   #[m/s]      O
+h_hover = 30.5          #[m]        ~
+no_engines = 6          #[m]        ?
