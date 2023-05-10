@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+
+    <title>Structures Figure Repository</title>
+</head>
+
+<body style="background-color: rgb(17, 17, 17);">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="/structures.html">&nbsp;&nbsp; Structural Design Figures</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <!-- <li class="nav-item active" onclick="showGraph(this.innerText);">
+                    <a class="nav-link" href="#">Sample</a>
+                </li> -->
+            </ul>
+        </div>
+    </nav>
+
+    <div class="figure" style="text-align: center; width: 100%; margin-top: 4rem;">
+        <img src="materials.jpg" style="width: 90%; height: 80%;" />
+        
+        <iframe src="/loads.html" frameborder="0"
+            style="display: block; width: 100%; height: 100%; position: absolute; display: hidden;">
+            Your Browser Does Not Support iFrames
+        </iframe>
+    </div>
+
+    <script>
+        const graphs = [["loads", "Load Diagrams"], ["Lift", "Lift Distribution"]];
+
+        const showGraph = (event) => {
+            const frame = document.querySelector("iframe");
+            const name = graphs.filter(g => g[1] === event.target.innerText)[0][0];
+            frame.src = `/${name}.html`;
+            frame.style.display = "block";
+            // document.querySelector("div.figure").appendChild(frame);
+        }
+
+        for (var [graphFile, graphName] of graphs) {
+            const link = document.createElement("a");
+            link.className = "nav-link";
+            link.href = "#" + graphFile;
+            link.innerText = graphName;
+            link.id = graphFile;
+            const item = document.createElement("li");
+            item.className = "nav-item";
+            item.id = graphFile;
+            item.addEventListener("click", showGraph);
+            item.appendChild(link);
+            document.querySelector("ul.navbar-nav").appendChild(item);
+        }
+
+    </script>
+
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+
+
+</body>
+
+</html>
