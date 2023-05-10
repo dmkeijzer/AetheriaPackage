@@ -11,6 +11,15 @@ To able to execute the code, a requirements file has been uploaded called `requi
 
 Then use this environment when running your code. Please consult documentation on your IDE on how to do this.
 
+# Adding new functions
+
+When you add a new function to the codebase, please include a docstring using the Google format, as shown in the example below:
+
+```python
+
+
+```
+
 ## Note
 
 If you're manually installing the packages, note that the `import pdffit` has to be installed as `pip install pyprobabilitydistributionfit`
