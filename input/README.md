@@ -41,9 +41,22 @@
 - `cd` [-]: Drag coefficient
 - `cd0` [-]: Parasitic drag coefficient
 - `e` [-]: Oswald efficiency factor
+- `b1` [m]: Span of the front wing
+- `b2` [m]: Span of the rear wing
 - `A` [-]: Wing aspect ratio
-- `S`[m^2]: Wing surface area
+- `S1` [m^2]: Wing area of the front wing
+- `S2` [m^2]: Wing area of the rear wing
+- `S` [m^2]: Total wing area
+- `c_root1` [m]: Root chord of the front wing
+- `c_root2` [m]: Root chord of the rear wing
+- `c_tip1` [m]: Tip chord of the front wing
+- `c_tip2` [m]: Tip chord of the rear wing
+- `sweep_le1` [deg]: Sweep angle of the leading edge of the front wing
+- `sweep_le2` [deg]: Sweep angle of the leading edge of the rear wing
+- `taper1` [-]: Taper ratio of the front wing
+- `taper2` [-]: Taper ratio of the rear wing
 - `StotS` [-]: Total wing area to wing reference area ratio
+
 
 ## W1
 - `mtom` [kg]: Maximum takeoff weight
@@ -62,6 +75,18 @@
 - `cd` [-]: Drag coefficient
 - `cd0` [-]: Parasitic drag coefficient
 - `e` [-]: Oswald efficiency factor
+- `b1` [m]: Span of the front wing
+- `b2` [m]: Span of the rear wing
 - `A` [-]: Wing aspect ratio
-- `S`[m^2]: Wing surface area
+- `S1` [m^2]: Wing area of the front wing
+- `S2` [m^2]: Wing area of the rear wing
+- `S` [m^2]: Total wing area
+- `c_root1` [m]: Root chord of the front wing
+- `c_root2` [m]: Root chord of the rear wing
+- `c_tip1` [m]: Tip chord of the front wing
+- `c_tip2` [m]: Tip chord of the rear wing
+- `sweep_le1` [deg]: Sweep angle of the leading edge of the front wing
+- `sweep_le2` [deg]: Sweep angle of the leading edge of the rear wing
+- `taper1` [-]: Taper ratio of the front wing
+- `taper2` [-]: Taper ratio of the rear wing
 - `StotS` [-]: Total wing area to wing reference area ratio

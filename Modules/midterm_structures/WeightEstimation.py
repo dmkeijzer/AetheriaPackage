@@ -10,9 +10,15 @@ class VtolWeightEstimation:
     def add_component(self, CompObject):
         self.components.append(CompObject)  
 
+    def compute_mass(self):
+        mass_lst = [i.mass for i in self.components]
+        return np.sum(mass_lst)
+
+
 class Wing:
     # Roskam method (not accurate because does not take into account density of material but good enough for comparison
     def __init__(self, mtom, S1, S2, n_ult, A_1, A_2, pos=[], wmac = 0.8, toc = 0.17):
+        self.id = "wing"
         self.S1_ft, self.S2_ft, self.S1, self.S2 = S1 * 3.28084 ** 2, S2 * 3.28084 ** 2, S1, S2
         self.n_ult = n_ult
         self.A_1, self.A_2 = A_1, A_2
@@ -26,6 +32,7 @@ class Wing:
 class Fuselage:
     # Roskam method (not accurate because does not take into account density of material but good enough for comparison
     def __init__(self, mtom, Pmax, lf, npax, pos, wf=1.55):
+        self.id = "fueselage"
         self.mtow_lbs = 2.20462 * mtom
         self.lf_ft, self.lf = lf*3.28084, lf
         self.Pmax_ft = Pmax*3.28084
@@ -40,6 +47,7 @@ class Fuselage:
 
 class LandingGear:
     def __init__(self, mtom, pos):
+        self.id = "landing gear"
         self.mass = 0.04*mtom
         self.pos = pos
         self.moment = self.mass * self.pos
