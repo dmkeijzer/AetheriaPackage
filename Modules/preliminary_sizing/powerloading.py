@@ -14,7 +14,7 @@ def powerloading_turningloadfactor(rho,V,WS,eff,A,e,loadfactor,CD0):
 
     return WP
 
-def powerloading_thrustloading(no_engines,WS,rho,ROC,StotS):
+def powerloading_thrustloading(WS,rho,ROC,StotS):
     return 1.2*(1+(1/WS)*rho*ROC**2*StotS)
 
 def powerloading_verticalflight(TW,diskloading,rho,eff,ducted_bool):

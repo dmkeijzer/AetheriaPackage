@@ -3,8 +3,7 @@
 ## J1
 - `mtom` [kg]: Maximum takeoff weight
 - `oem` [kg]: Operational empty weight
-- `eff_prop` [-]: Propeller efficiency
-- `eff_ductedfans` [-]: Efficiency of ducted fans
+- `eff` [-]: Uses propellor efficiency so is assumed to be 0.9
 - `diskloading` [-]: Disk loading
 - `v_cruise` [m/s]: Cruise speed
 - `v_max` [m/s]: Maximum speed
@@ -26,8 +25,7 @@
 ## L1
 - `mtom` [kg]: Maximum takeoff weight
 - `oem` [kg]: Operational empty weight
-- `eff_prop` [-]: Propeller efficiency
-- `eff_ductedfans` [-]: Efficiency of ducted fans
+- `eff` [-]: Uses ducted fans efficiency so is assumed to be 0.8
 - `diskloading` [-]: Disk loading
 - `v_cruise` [m/s]: Cruise speed
 - `v_max` [m/s]: Maximum speed
@@ -60,8 +58,7 @@
 ## W1
 - `mtom` [kg]: Maximum takeoff weight
 - `oem` [kg]: Operational empty weight
-- `eff_prop` [-]: Propeller efficiency
-- `eff_ductedfans` [-]: Efficiency of ducted fans
+- `eff` [-]: Uses propellor efficiency so is assumed to be 0.9
 - `diskloading` [-]: Disk loading
 - `v_cruise` [m/s]: Cruise speed
 - `v_max` [m/s]: Maximum speed

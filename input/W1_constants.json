@@ -1,9 +1,9 @@
 {
+  "name": "W1",
   "mtom": 2510,
   "oem": 2000,
-  "eff_prop": 0.8,
-  "eff_ductedfans": 0.7,
-  "diskloading": 100,
+  "eff": 0.9,
+  "diskloading": 300,
   "v_cruise": 83.33,
   "v_max": 104.17,
   "v_stall": 40,
@@ -30,5 +30,9 @@
   "sweep_le2": 1.08,
   "taper1": 0.4,
   "taper2": 0.4,
-  "StotS": 1.2
+  "StotS": 1.2,
+  "WP_hover": 0.06639400022069858,
+  "WP_cruise": 0.06822382182812936,
+  "TW": 1.2249999999999999,
+  "WS": 1764.0
 }

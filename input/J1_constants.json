@@ -1,9 +1,8 @@
 {
+  "name": "J1",
   "mtom": 2510,
   "oem": 2000,
-  "eff_prop": 0.8,
-  "eff_ductedfans": 0.7,
-  "diskloading": 100,
+  "eff": 0.9,
   "v_cruise": 83.33,
   "v_max": 104.17,
   "v_stall": 40,
@@ -22,5 +21,11 @@
   "sweep_le": 1.47,
   "b":10.8,
   "taper":0.4,
-  "StotS": 1.2
+  "StotS": 1.2,
+  "diskloading": 50,
+  "wp_hover": 0.06822382182812936,
+  "wp_cruise": 0.06822382182812936,
+  "tw": 1.2333333333333332,
+  "ws": 1764.0
 }
+
