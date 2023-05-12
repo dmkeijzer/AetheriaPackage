@@ -19,10 +19,9 @@ R = 287                 #[J/kg*K]   O
 
 
 class Propeller:
-    eff_prop = 0.8          #[-]        ?
-    eff_ductedfans = 0.7    #[-]        ?
+    eff_prop = 0.9          #[-]        ?
+    eff_ductedfans = 0.8    #[-]        ?
     diskloading = 100       #[-]        ?
-
 
 class Performance:
     V_cruise = 300/3.6     #[m/s]       O
@@ -31,6 +30,7 @@ class Performance:
     loadfactor = 2          #[-]        ?
     h_hover = 30.5          #[m]        ~ EASE Requirements say that eVTOLs should hover to 30.5 meters before taking off
     ROC = 5                #[m/s]      ?
+    G = 0.045               #[-]        ~ EASE Requirements say that eVTOLs should have a climb gradient of at least 4.5%
 
 
 class Aero:
