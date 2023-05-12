@@ -26,11 +26,11 @@ def plot_wing_power_loading_graphs(eff, StotS, diskloading, name,WS_range,i):
     plt.figure(i)#make sure each plot has its own value
     
     #CALCULATE ALL THE VALUES FOR THE GRAPHS
-    TW_range = powerloading_thrustloading(WS_range,rho0,Performance.ROC,StotS)
-    CLIMBRATE = powerloading_climbrate(eff, Performance.ROC, WS_range,rho_cruise,Aero.CD0,Aero.e,Wing.A)
-    TURN_VCRUISE = powerloading_turningloadfactor(rho_cruise,Performance.V_cruise,WS_range,eff,Wing.A,Aero.e,Performance.loadfactor,Aero.CD0)
-    TURN_VMAX = powerloading_turningloadfactor(rho_cruise,Performance.V_max,WS_range,eff,Wing.A,Aero.e,Performance.loadfactor,Aero.CD0)
-    VERTICALFLIGHT = powerloading_verticalflight(TW_range,diskloading,rho0,eff,ducted_bool)
+    TW_range = powerloading_thrustloading(WS_range,rho0,data['roc'],data['stots'])
+    CLIMBRATE = powerloading_climbrate(data['eff'], data['roc'], WS_range,rho_cruise,data['cd0'],data['e'],data['A'])
+    TURN_VCRUISE = powerloading_turningloadfactor(rho_cruise,data['v_cruise'],WS_range,data['eff'],datap['A'],data['e'],data['loadfactor'],data['cd0'])
+    TURN_VMAX = powerloading_turningloadfactor(rho_cruise,data['v_max'],WS_range,data['eff'],data['A'],data['e'],data['loadfactor'],data['cd0'])
+    VERTICALFLIGHT = powerloading_verticalflight(TW_range,data['diskloading'],rho0,data['eff'],data['ducted_bool'])
     STALLSPEED = wingloading_stall(Aero.CLmax,Performance.V_stall, rho0)
     CLIMBGRADIENT = powerloading_climbgradient(Aero.e,Wing.A,Aero.CD0,WS_range,rho0,eff,Performance.G)
     

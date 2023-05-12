@@ -20,6 +20,7 @@
 - `sweep_le` [deg]: Leading edge wing sweep 
 - `S`[m^2]: Wing surface area
 - `StotS` [-]: Total area including fuselage over wing surface area
+- `ducted_bool`: Does this concept use ducted fans or open propellers (1=ducted, 0=openprop)
 
 
 ## L1
@@ -53,6 +54,7 @@
 - `taper1` [-]: Taper ratio of the front wing
 - `taper2` [-]: Taper ratio of the rear wing
 - `StotS` [-]: Total area including fuselage over wing surface area
+- `ducted_bool`: Does this concept use ducted fans or open propellers (1=ducted, 0=openprop)
 
 
 ## W1
@@ -86,3 +88,4 @@
 - `taper1` [-]: Taper ratio of the front wing
 - `taper2` [-]: Taper ratio of the rear wing
 - `StotS` [-]: Total area including fuselage over wing surface area
+- `ducted_bool`: Does this concept use ducted fans or open propellers (1=ducted, 0=openprop)
