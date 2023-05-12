@@ -1,8 +1,13 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 import matplotlib.pyplot as plt
+import sys
+import os
+import pathlib as pl
 
-from preliminary_sizing import *
+sys.path.append(str(list(pl.Path(__file__).parents)[1]))
+
+from modules.preliminary_sizing import *
 
 
 WS_range = np.arange(500,4000,1)
