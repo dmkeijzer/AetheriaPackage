@@ -1,4 +1,3 @@
-import numpy as np
 
 
 
@@ -61,5 +60,6 @@ class Propulsion:
         self.moment_prop = self.wprop*self.pos_prop
         self.mass = np.sum(self.wprop)
         self.moment = np.sum(self.wprop*self.pos_prop)
+
 
         
