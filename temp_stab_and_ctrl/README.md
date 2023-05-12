@@ -20,14 +20,11 @@
 - `sweep_le` [deg]: Leading edge wing sweep 
 - `S`[m^2]: Wing surface area
 - `StotS` [-]: Total area including fuselage over wing surface area
-- `ducted_bool`: Does this concept use ducted fans or open propellers (1=ducted, 0=openprop)
 
 
 ## L1
 - `mtom` [kg]: Maximum takeoff weight
 - `oem` [kg]: Operational empty weight
-- `l_fuse` [m]: Length of fuselage
-- `w_fuse` [m]: Width of fuselage
 - `eff` [-]: Uses ducted fans efficiency so is assumed to be 0.8
 - `diskloading` [-]: Disk loading
 - `v_cruise` [m/s]: Cruise speed
@@ -56,7 +53,6 @@
 - `taper1` [-]: Taper ratio of the front wing
 - `taper2` [-]: Taper ratio of the rear wing
 - `StotS` [-]: Total area including fuselage over wing surface area
-- `ducted_bool`: Does this concept use ducted fans or open propellers (1=ducted, 0=openprop)
 
 
 ## W1
@@ -90,4 +86,3 @@
 - `taper1` [-]: Taper ratio of the front wing
 - `taper2` [-]: Taper ratio of the rear wing
 - `StotS` [-]: Total area including fuselage over wing surface area
-- `ducted_bool`: Does this concept use ducted fans or open propellers (1=ducted, 0=openprop)
