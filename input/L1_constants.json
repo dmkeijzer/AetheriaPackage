@@ -1,0 +1,21 @@
+
+{
+  "mtom": 2510,
+  "oem": 2000,
+  "eff_prop": 0.8,
+  "eff_ductedfans": 0.7,
+  "diskloading": 100,
+  "V_cruise": 83.33,
+  "V_max": 104.17,
+  "V_stall": 40,
+  "loadfactor": 2,
+  "h_hover": 30.5,
+  "ROC": 5,
+  "CL_cruise": 0.5,
+  "CLmax": 1.8,
+  "CD": 0.07,
+  "CD0": 0.017,
+  "e": 0.9,
+  "A": 6,
+  "StotS": 1.2
+}

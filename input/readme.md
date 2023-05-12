@@ -1,1 +1,0 @@
-# Description of JSON files with comments
