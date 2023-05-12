@@ -20,8 +20,7 @@
 - `A` [-]: Wing aspect ratio
 - `sweep_le` [deg]: Leading edge wing sweep 
 - `S`[m^2]: Wing surface area
-- `StotS` [-]: Total wing area to wing reference area ratio
- `StotS` [-]: Total wing area to wing reference area ratio
+- `StotS` [-]: Total area including fuselage over wing surface area
 
 
 ## L1
@@ -55,7 +54,7 @@
 - `sweep_le2` [deg]: Sweep angle of the leading edge of the rear wing
 - `taper1` [-]: Taper ratio of the front wing
 - `taper2` [-]: Taper ratio of the rear wing
-- `StotS` [-]: Total wing area to wing reference area ratio
+- `StotS` [-]: Total area including fuselage over wing surface area
 
 
 ## W1
@@ -89,4 +88,4 @@
 - `sweep_le2` [deg]: Sweep angle of the leading edge of the rear wing
 - `taper1` [-]: Taper ratio of the front wing
 - `taper2` [-]: Taper ratio of the rear wing
-- `StotS` [-]: Total wing area to wing reference area ratio
+- `StotS` [-]: Total area including fuselage over wing surface area

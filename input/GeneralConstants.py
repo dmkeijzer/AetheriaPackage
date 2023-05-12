@@ -16,6 +16,7 @@ rho_cruise = 1.19011    #[kg/m^3]   O
 T0 = 288.15             #[K]        O
 p0 = 101325             #[N/m^@]    O
 R = 287                 #[J/kg*K]   O
+n_ult = 2.5*1.5        # [-]       O   Ultimate load factor
 
 
 class Propeller:
