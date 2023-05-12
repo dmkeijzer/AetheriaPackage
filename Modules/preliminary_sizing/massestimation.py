@@ -123,7 +123,7 @@ def mass_estimation(payloadAetheria, PLOT=False, PRINT=False):
     print("Data size: ", len(MTOM)          , "     ", len(MTOMreal))
   return mtomAetheriar, oemAetheriar
 
-mass_estimation(510, True, True)
+
 
 
 
