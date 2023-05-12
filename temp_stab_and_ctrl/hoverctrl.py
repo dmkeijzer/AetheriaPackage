@@ -2,7 +2,7 @@ import json
 from hover_controllabilty import HoverControlCalcTandem, HoverControlCalcBase
 
 
-f = open('')
+f = open('W1_constants.json')
 data = json.load(f)
 
 istandem = True
@@ -36,7 +36,7 @@ x_wr = 7.38/8.75 * lfus
 
 hovercalc = HoverControlCalcTandem(m, n_rot_f, n_rot_r, x_wf, x_wr, rot_y_range_f, rot_y_range_r, K, ku)
 
-hovercalc_same_instance= HoverControlCalcBase(m, rotors)
+#hovercalc_same_instance= HoverControlCalcBase(m, rotors)
 
 
 x_min = 0
@@ -44,4 +44,4 @@ x_max = lfus
 dx = 0.01
 failure_eval_cg = [0.55*lfus,0]
 n_failures = [0,1,2]
-cg_range = hovercalc_same_instance.calc_crit_x_cg_range(x_min, x_max, dx,failure_eval_cg, n_failures)
+#cg_range = hovercalc_same_instance.calc_crit_x_cg_range(x_min, x_max, dx,failure_eval_cg, n_failures)
