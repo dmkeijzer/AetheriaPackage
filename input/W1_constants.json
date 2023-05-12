@@ -2,6 +2,8 @@
   "name": "W1",
   "mtom": 2510,
   "oem": 2000,
+  "l_fuse": 10.74,
+  "w_fuse": 1.38,
   "eff": 0.9,
   "diskloading": 300,
   "v_cruise": 83.33,

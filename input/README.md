@@ -25,6 +25,8 @@
 ## L1
 - `mtom` [kg]: Maximum takeoff weight
 - `oem` [kg]: Operational empty weight
+- `l_fuse` [m]: Length of fuselage
+- `w_fuse` [m]: Width of fuselage
 - `eff` [-]: Uses ducted fans efficiency so is assumed to be 0.8
 - `diskloading` [-]: Disk loading
 - `v_cruise` [m/s]: Cruise speed
