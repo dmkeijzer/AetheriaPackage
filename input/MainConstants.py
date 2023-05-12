@@ -20,7 +20,6 @@ R = 287                 #[J/kg*K]   O
 
 class Propeller:
     eff_prop = 0.8          #[-]        ?
-    eff_openprop = eff_prop #[-]        ?
     eff_ductedfans = 0.7    #[-]        ?
     diskloading = 100       #[-]        ?
 
@@ -35,10 +34,8 @@ class Performance:
 
 
 class Aero:
-    CL = 0.5                #[-]        ?
-    CLmax = 1.5            #[-]        ?
-    CLmin = 0.5
-    CDmin = 0.03
+    CL_cruise = 0.5                #[-]        ?
+    CLmax = 1.8            #[-]        ?
     CD = 0.07              #[-]        ?
     e = 0.9                 #[-]        ?
 
