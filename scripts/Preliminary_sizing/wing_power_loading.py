@@ -69,6 +69,10 @@ def plot_wing_power_loading_graphs(eff, StotS, diskloading, no_engines,name,WS_r
     plt.ylim(ylim)
     output_directory = str(list(pl.Path(__file__).parents)[2])+'\\output\\wing_power_loading_diagrams\\'
     plt.savefig(output_directory+str(name)+'.png')
+    print(name)
+    print("WS = ",str(STALLSPEED))
+    print("WP = ",str(round(lowest_area_y[-1],8)))
+    print("WP_noverticalflight = ",str(round(lowest_area_y_novf[-1],8)))
     #print(os.path.dirname(os.getcwd()))
     
 
