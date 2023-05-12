@@ -37,6 +37,7 @@ class Aero:
     CL_cruise = 0.5                #[-]        ?
     CLmax = 1.8            #[-]        ?
     CD = 0.07              #[-]        ?
+    CD0 = 0.017
     e = 0.9                 #[-]        ?
 
 class Wing:

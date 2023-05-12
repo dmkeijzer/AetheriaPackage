@@ -1,8 +1,14 @@
 # -*- coding: utf-8 -*-
 import numpy as np
+import sys
+import os
+import pathlib as pl
+
+sys.path.append(str(list(pl.Path(__file__).parents)[2]))
+
 import matplotlib.pyplot as plt
 
-from preliminary_sizing import *
+from modules.preliminary_sizing import *
 
 
 WS_range = np.arange(0,4000,1)
@@ -19,12 +25,12 @@ def plot_wing_power_loading_graphs(eff, StotS, diskloading, no_engines,name,WS_r
     plt.figure(i)
     
     #DETERMINE VALUES
-    TW_range = powerloading_thrustloading(no_engines,WS_range,rho0,ROC,StotS)
-    CLIMBRATE = powerloading_climbrate(eff, ROC, WS_range,rho_cruise,CD0,e,A)
-    TURN_VCRUISE = powerloading_turningloadfactor(rho_cruise,V_cruise,WS_range,eff,A,e,loadfactor,CD0)
-    TURN_VMAX = powerloading_turningloadfactor(rho_cruise,V_max,WS_range,eff,A,e,loadfactor,CD0)
+    TW_range = powerloading_thrustloading(no_engines,WS_range,rho0,Performance.ROC,StotS)
+    CLIMBRATE = powerloading_climbrate(eff, Performance.ROC, WS_range,rho_cruise,Aero.CD0,Aero.e,Wing.A)
+    TURN_VCRUISE = powerloading_turningloadfactor(rho_cruise,Performance.V_cruise,WS_range,eff,Wing.A,Aero.e,Performance.loadfactor,Aero.CD0)
+    TURN_VMAX = powerloading_turningloadfactor(rho_cruise,Performance.V_max,WS_range,eff,Wing.A,Aero.e,Performance.loadfactor,Aero.CD0)
     VERTICALFLIGHT = powerloading_verticalflight(TW_range,diskloading,rho0,eff,ducted_bool)
-    STALLSPEED = wingloading_stall(CLmax, V_stall, rho0)
+    STALLSPEED = wingloading_stall(Aero.CLmax,Performance.V_stall, rho0)
     
     plt.plot(WS_range,CLIMBRATE,label="Climbrate")
     plt.plot(WS_range,TURN_VCRUISE,label='Turnload@cruise speed')
@@ -39,11 +45,11 @@ def plot_wing_power_loading_graphs(eff, StotS, diskloading, no_engines,name,WS_r
     plt.ylabel('Powerloading W/P')
     plt.xlim([WS_range[100],WS_range[-1]])
     plt.ylim(ylim)
-    plt.savefig('input_output/wing_power_loading_diagrams/'+str(name))
+    # plt.savefig('input_output/wing_power_loading_diagrams/'+str(name))
 
 #FIRST EASY PRELIMINARY DESIGN
 name = ['Joby-like',  'Lilium-like','Wigeon-like']
-eff =  [eff_prop,eff_ductedfans,eff_prop]
+eff =  [Propeller.eff_prop,Propeller.eff_ductedfans,Propeller.eff_prop]
 StotS =[ 1.6,         1.6,             1.2]
 diskloading = [50,    1200,           300 ]
 no_engines = [6,       36,              12]
