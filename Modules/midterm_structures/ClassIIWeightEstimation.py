@@ -24,7 +24,7 @@ class Wing:
         self.mtow_lbs = 2.20462 * mtom
         self.pos1, self.pos2 = pos
         self.wweight1 = 0.04674*((self.mtow_lbs/2)**0.397)*(self.S1_ft**0.36)*(self.n_ult**0.397)*(self.A_1**1.712)*0.453592
-        self.mass = np.array([self.wweight1, self.wweight2])
+        self.mass = np.array([self.wweight1])
         self.moment = np.array(self.mass)*np.array(pos)
         self.wmac, self.toc = wmac, toc
 

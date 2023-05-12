@@ -27,7 +27,7 @@ weight_J1.add_component()
 
 #L1
 weight_L1 = VtolWeightEstimation()
-weight_L1.add_component(L1["mtom"], L1["S1"], L1["S1"], n_ult)
+weight_L1.add_component(L1["mtom"], L1["S1"], L1["S1"], n_ult, L1["A1"], L1["A2"] )
 weight_L1.add_component()
 
 # W1
