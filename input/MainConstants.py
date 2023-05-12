@@ -44,4 +44,7 @@ class Wing:
     A = 6                   #[-]        ?
     StotS = 1.2             #[-]        ?
 
-
+class Structure:
+    payload = 510           #[kg]       0
+    MTOMclassI = 2510       #[kg]       0
+    OEMclassI = 2000        #[kg]       0
