@@ -26,3 +26,4 @@ def powerloading_climbgradient(e,A,CD0,WS,rho,eff,G):
     CL = np.sqrt(np.pi*e*A*CD0)
     CD = 2*CD0
     WP = (np.sqrt(WS*2/(rho*CL))*(G+CD/CL))**(-1) * eff
+    return WP
