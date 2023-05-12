@@ -22,4 +22,7 @@ def powerloading_verticalflight(TW,diskloading,rho,eff,ducted_bool):
         return (0.5*TW*np.sqrt(diskloading/rho))**(-1)*eff
     else:
         return (TW*np.sqrt(diskloading/(2*rho)))**(-1)*eff
-
+def powerloading_climbgradient(e,A,CD0,WS,rho,eff,G):
+    CL = np.sqrt(np.pi*e*A*CD0)
+    CD = 2*CD0
+    WP = (np.sqrt(WS*2/(rho*CL))*(G+CD/CL))**(-1) * eff
