@@ -5,41 +5,50 @@ i=1;
 %%%%INPUTS%%%%
 
 s2i = struct('anticlockwise', 1, 'clockwise', -1);
-rotor_direction = [1 1 -1 -1 1 -1];
+rotor_direction = [-1 1 -1 1 -1 1];
 
 n=size(rotor_direction);
 n=n(2);
 r_ku = ones(1,n) * 0.1;
 
-x_rotor_loc = [4 5 4 5 8 8];
+x_rotor_loc = [0.275 0.1375 -0.1375 -0.275 -0.1375 0.1375];
 
-y_rotor_loc = [7 10 -7 -10 5 -5];
+y_rotor_loc = [0 0.238 0.238 0 -0.238 -0.238];
 
 Rotor = 1:n;
 
 rotor_eta = ones(1,n);
 
-mass = 2500;
+mass = 1.535;
 
-S_proj = 14*1.4;
+S_proj = 0;
 
-lfus = 10;
+cg_fw_gess = 0;
+
+cg_r_guess = 0;
 
 
 %%%%LOOOOP%%%%
-
-while condition
-    x_cg_fw(end+1) = Finding_minimum_cg_based_on_ACAI(-1, rotor_direction, r_ku, 0, x_rotor_loc, y_rotor_loc, Rotor, rotor_eta, mass, S_proj);
-    x_cg_r(end+1) = Finding_minimum_cg_based_on_ACAI(1, rotor_direction, r_ku, lfus, x_rotor_loc, y_rotor_loc, Rotor, rotor_eta, mass, S_proj);
-    rotor_eta(i)=0;
-    if i > n
-        condition = false;
+combinations = unique(perms(rotor_direction), 'rows');
+othercondition = true;
+i1=1;
+while othercondition
+    rotor_direction = combinations(i1,:);
+    while condition
+        x_cg_fw(end+1) = cg_range_calc(-1, rotor_direction, r_ku, cg_fw_gess, x_rotor_loc, y_rotor_loc, Rotor, rotor_eta, mass, S_proj);
+        x_cg_r(end+1) = cg_range_calc(1, rotor_direction, r_ku, cg_r_guess, x_rotor_loc, y_rotor_loc, Rotor, rotor_eta, mass, S_proj);
+        rotor_eta = ones(1,n);
+        rotor_eta(i)=0;
+        if i > n
+            condition = false;
+        end
+        i=i+1;
     end
-    i=i+1;
-end
+    i1 = i1 +1;
+
 
 fprintf('The constraining fw cg is %d.\n', max(x_cg_fw))
-fprintf('The costraining rear cg is %d.\n', min(my_lis))
+fprintf('The costraining rear cg is %d.\n', min(x_cg_r))
 
 
 
