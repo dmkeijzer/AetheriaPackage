@@ -22,7 +22,7 @@ def plotmaneuvrenv(WoS, Vc, CLmax, nmin, nmax):
     plt.plot([VD, VD], [maneuvrenv(VD, Vs, WoS, CLmax, nmin, nmax, True), maneuvrenv(VD, Vs, WoS, CLmax, nmin, nmax, True)], color='blue',zorder=3)
     plt.plot([VD, VD],[0, nmax], color='blue',zorder=3)
     plt.grid(True)
-    plt.xlim(-5,VD+7)
+    plt.xlim(0,VD+7)
     plt.plot([-5,VD+7],[0,0], color='black', lw=1)
 
 
@@ -61,10 +61,16 @@ def plotgustenv(V_s, Vc, CLalpha, WoS, TEXT=False):
     plt.plot([Vb, Vb], [2-nb, nb], linestyle='dashed', color='black', zorder=1, alpha=0.5)
     plt.plot([Vc, Vc], [2-nc, nc], linestyle='dashed', color='black', zorder=1, alpha=0.5)
     if TEXT:
-        plt.text(Vb + 1, -0.25, 'Vb', fontsize = 11, weight='bold')
-        plt.text(V_s + 1, -0.25, 'Vs', fontsize=11, weight='bold')
-        plt.text(Vc + 1, -0.25, 'Vc', fontsize=11, weight='bold')
-        plt.text(VD + 1, -0.25, 'Vd', fontsize=11, weight='bold')
+        plt.text(Vb + 1, 0.1, 'Vb', fontsize = 11, weight='bold')
+        plt.text(V_s + 1, 0.1, 'Vs', fontsize=11, weight='bold')
+        plt.text(Vc + 1, 0.1, 'Vc', fontsize=11, weight='bold')
+        plt.text(VD + 1, 0.1, 'Vd', fontsize=11, weight='bold')
+        plt.plot([V_s,V_s],[0, 0.05], color='black')
+        plt.plot([Vb, Vb], [0, 0.05], color='black')
+        plt.plot([Vc, Vc], [0, 0.05], color='black')
+        plt.plot([Vc, Vc], [0, 0.05], color='black')
+
+
 
     return np.max([posgustload(V, Vs, us, ns, CLalpha, WoS) for V in x])
     # plt.savefig('gust.png')
