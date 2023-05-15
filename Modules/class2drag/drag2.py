@@ -6,6 +6,27 @@ class Fuselage():
     cylindrical_fuselage_length: float
     conical
 
+@dataclass
+class FlightParam():
+    mach_cruise: float
+    rho_cruise: float
+    viscosity: float
+    V_cruise: float
+    V_hover: float
+    V_stall: float
+    V_max: float
+
+@dataclass
+class Airfoil:
+    C_l: float
+    C_L: float
+    C_d0: float
+    C_D0: float
+    C_Lmax: float
+    C_L_alpha: float
+    C_L_cruise: float
+    thickness_to_chord: float
+
 
 class componentdrag:
     def __init__(self, type, S_ref, l1, l2, l3, d, V_cr, rho, MAC, AR1, AR2, M_cr, k, frac_lam_f, frac_lam_w, mu, tc,xcm,sweepm, sweepLE, u, c_t,h, IF_f, IF_w,IF_v, C_L_minD, Abase, S_v,s1,s2, h_wl1,h_wl2 , k_wl):
