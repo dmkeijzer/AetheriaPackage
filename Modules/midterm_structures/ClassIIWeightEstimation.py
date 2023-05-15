@@ -7,9 +7,19 @@ class VtolWeightEstimation:
         self.components = []
 
     def add_component(self, CompObject):
+        """ Method for adding a component to the VTOL
+
+        :param CompObject: The component to be added to the VTOL
+        :type CompObject: Component parent class
+        """        
         self.components.append(CompObject)  
 
     def compute_mass(self):
+        """ Computes the mass of entire vtol
+
+        :return: Entire mass of VTOL
+        :rtype: float
+        """        
         mass_lst = [i.return_mass() for i in self.components]
         return np.sum(mass_lst)
 
@@ -36,17 +46,17 @@ class Wing(Component):
 
 class Fuselage(Component):
     # Roskam method (not accurate because does not take into account density of material but good enough for comparison
-    def __init__(self, mtom, Pmax, lf, npax):
-        """ Component Class
+    def __init__(self,identifier, mtom, Pmax, lf, npax):
+        """ Returns fuselage weight
 
-        :param mtom: _description_
-        :type mtom: _type_
-        :param Pmax: _description_
-        :type Pmax: _type_
-        :param lf: _description_
-        :type lf: _type_
-        :param npax: _description_
-        :type npax: _type_
+        :param mtom: Maximum take off weight
+        :type mtom: float
+        :param Pmax:  Maximium perimeter of the fuselage
+        :type Pmax: float
+        :param lf: Fuselage length
+        :type lf: float
+        :param npax: Amount of passengers
+        :type npax: int
         """        
         super().__init__()
         self.id = "fuselage"
@@ -54,25 +64,37 @@ class Fuselage(Component):
         self.lf_ft, self.lf = lf*3.28084, lf
         self.Pmax_ft = Pmax*3.28084
         self.npax = npax
-        self.fweight_high = 14.86*(self.mtow_lbs**0.144)*((self.lf_ft/self.Pmax_ft)**0.778)*(self.lf_ft**0.383)*(self.npax**0.455)
-        self.fweight_low = 0.04682*(self.mtow_lbs**0.692)*(self.Pmax_ft**0.379)*(self.lf_ft**0.590)
-        self.fweight = (self.fweight_high + self.fweight_low)/2
-        self.mass = self.fweight*0.453592
+        if identifier == "J1":
+            self.fweight_high = 14.86*(self.mtow_lbs**0.144)*((self.lf_ft/self.Pmax_ft)**0.778)*(self.lf_ft**0.383)*(self.npax**0.455)
+            self.mass = self.fweight_high*0.453592
+        else:
+            self.fweight_high = 14.86*(self.mtow_lbs**0.144)*((self.lf_ft/self.Pmax_ft)**0.778)*(self.lf_ft**0.383)*(self.npax**0.455)
+            self.fweight_low = 0.04682*(self.mtow_lbs**0.692)*(self.Pmax_ft**0.379)*(self.lf_ft**0.590)
+            self.fweight = (self.fweight_high + self.fweight_low)/2
+            self.mass = self.fweight*0.453592
 
 class LandingGear(Component):
     def __init__(self, mtom):
         super().__init__()
         self.id = "landing gear"
         self.mass = 0.04*mtom
-        self.moment = self.mass * self.pos
 
-class Propulsion(Component):
-    def __init__(self, n_prop, m_prop = [] ):
+class Engines(Component):
+    def __init__(self,p_max, p_dense ):
+        """Returns the mas of the engines based on power
+
+        :param p_max: Maximum power [w]
+        :type p_max: float
+        :param p_dense: Power density [w]
+        :type p_dense: float
+        """        
         super().__init__()
-        self.nprop = n_prop
-        self.wprop = np.array(m_prop)
-        self.moment_prop = self.wprop*self.pos_prop
-        self.mass = np.sum(self.wprop)
+        self.mass = p_max/p_dense
 
+
+#TODO add hydrogen system
+#TODO add battery/turbine engine system
+#TODO add tail 
+#TODO Think of penalty for weight of fuselage for crashworthiness, firewall et cetera  
 
         
