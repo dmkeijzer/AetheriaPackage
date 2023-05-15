@@ -34,3 +34,6 @@ def winglet_correction(wing: Wing, winglet_correction: float):
     wing.effective_span = wing.span*np.sqrt(wing.effective_aspectratio/wing.aspectratio)
     return wing
     
+def winglet_factor(h_wl, b, k_wl):  #https://www.fzt.haw-hamburg.de/pers/Scholz/Aero/AERO_PUB_Winglets_IntrinsicEfficiency_CEAS2017.pdf
+
+    return (1+(2/k_wl)*(h_wl/b))**2
