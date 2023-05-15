@@ -16,7 +16,6 @@ from matplotlib import colors as mc
 import colorsys
 from dataclasses import dataclass
 from itertools import combinations
-import constants as consts
 
 # numbers of states and control variables
 # Hard-coded because they would not make sense as arguments
@@ -90,7 +89,7 @@ class HoverControlCalcBase:
             return -1E6
 
         G = np.zeros(n_ctrl)
-        G[0] = self.m * consts.g
+        G[0] = self.m * 9.80665
 
         m = Bf.shape[1]
         M = np.arange(m)

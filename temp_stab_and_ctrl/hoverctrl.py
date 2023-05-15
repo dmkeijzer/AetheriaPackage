@@ -45,3 +45,6 @@ dx = 0.01
 failure_eval_cg = [0.55*lfus,0]
 n_failures = [0,1,2]
 #cg_range = hovercalc_same_instance.calc_crit_x_cg_range(x_min, x_max, dx,failure_eval_cg, n_failures)
+print(hovercalc.acai(failure_eval_cg))
+print(hovercalc.calc_x_cg_range(x_min, x_max, dx, 0))
+print(hovercalc.calc_crit_x_cg_range(x_min, x_max, dx,failure_eval_cg, n_failures))

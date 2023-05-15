@@ -9,6 +9,7 @@ An ~ means it's defined but maybe not needed and a ? means it's a guess.
 
 
 '''
+
 h_cruise = 400          #[m]        O
 g0 = 9.80665            #[m/s^2]    O
 rho0 = 1.225            #[kg/m^3]   O
@@ -16,13 +17,19 @@ rho_cruise = 1.19011    #[kg/m^3]   O
 T0 = 288.15             #[K]        O
 p0 = 101325             #[N/m^@]    O
 R = 287                 #[J/kg*K]   O
-n_ult = 2.5*1.5        # [-]       O   Ultimate load factor
 npax = 4                # Amount of passengers 0
 
 
 # Power
 p_density = 3.117e3     # w/kg    ? # averaged from:  A review: high power density motors for electric vehicles
 
+# Requirements
+n_min = -1              # [-]       O   Min load factor
+n_max = 2.5             # [-]       O   Max load factor
+n_ult = 1.5*n_max       # [-]       O   Ultimate load factor
+ub = 20.12              # [m/s]     0   Gust at Vb from EASA
+uc = 15.24              # [m/s]     0   Gust at Vc from EASA
+ud = 7.62               # [m/s]     0   Gust at Vd from EASA
 
 # class Propeller:
 #     eff_prop = 0.9          #[-]        ?

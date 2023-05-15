@@ -41,7 +41,7 @@ def plot_wing_power_loading_graphs(dict_directory,dict_name,i):
     plt.plot(WS_range,TURN_VMAX,label="Turnload@max speed")
     plt.plot(WS_range,VERTICALFLIGHT,label="Vertical flight/TO")
     plt.plot(WS_range,CLIMBGRADIENT,label="Climb gradient")
-    plt.vlines(STALLSPEED,ymin=ylim[0],ymax=ylim[1],label="Stall speed:CLmax=1.5")
+    plt.vlines(STALLSPEED,ymin=ylim[0],ymax=ylim[1],label="Stall speed:CLmax=1.5",color="black")
 
     #DETERMINE LOWEST
     lowest_area_y_novf = []
