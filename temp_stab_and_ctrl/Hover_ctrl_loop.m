@@ -12,21 +12,21 @@ n=size(rotor_direction);
 n=n(2);
 r_ku = ones(1,n) * 0.1;
 
-x_rotor_loc = [0.275 0.1375 -0.1375 -0.275 -0.1375 0.1375];
+x_rotor_loc = [0.5656 0.5656 3.39 3.39 6.79 6.79];
 
-y_rotor_loc = [0 0.238 0.238 0 -0.238 -0.238];
+y_rotor_loc = [2.3 -2.3 5.4 -5.4 2.3 -2.3];
 
 Rotor = 1:n;
 
 rotor_eta = ones(1,n);
 
-mass = 1.535;
+mass = 2510;
 
-S_proj = 0;
+S_proj = 16.8;
 
-cg_fw_gess = 0;
+cg_fw_gess = 3.5;
 
-cg_r_guess = 0;
+cg_r_guess = 3.3;
 
 Tfacvec = 1:0.05:2.5;
 
@@ -43,6 +43,7 @@ while yetanothercondition
     Tfac = Tfacvec(i2);
     othercondition = true;
     i1 = 1;
+    cgranges = zeros(4,0);
     while othercondition
         rotor_direction = combinations(i1,:);
         i=1;
@@ -88,7 +89,13 @@ end
 % %cgranges = cgranges(:, ~cgranges(2:) == 1e6);
 % cgranges(:,cgranges(2,:)==1e6) = [];
 % cgranges = cgranges(:,cgranges(2,:) - cgranges(1,:) == max(cgranges(2,:) - cgranges(1,:)));
-resultslog(:,all(diff(resultslog))==0) = [];
+% resultslog(:,all(diff(resultslog))==0) = [];
+
+disp(resultslog)
+plot(resultslog(1,:),resultslog(end,:))
+hold on
+plot(resultslog(2,:),resultslog(end,:))
+plot(resultslog(2,:)-resultslog(1,:),resultslog(end,:))
 
 
 

@@ -18,6 +18,7 @@ ylim = [0,0.15]
 
 def plot_wing_power_loading_graphs(dict_directory,dict_name,i):
     #Check if it"s lilium or not to define the variable that will say to vertical_flight what formula to use.
+    cont_factor = 1
     with open(dict_directory+"\\"+dict_name, "r") as jsonFile:
         data = json.loads(jsonFile.read())
     #data["WS"],data["TW"],data["WP_cruise"],data["WP_hover"] = plot_wing_power_loading_graphs(data["eff"], data["StotS"], data["diskloading"], data["name"],WS_range,i)
@@ -27,13 +28,15 @@ def plot_wing_power_loading_graphs(dict_directory,dict_name,i):
     plt.figure(i)#make sure each plot has its own value
     
     #CALCULATE ALL THE VALUES FOR THE GRAPHS
-    TW_range = powerloading_thrustloading(WS_range,rho0,data['roc'],data['StotS'])
-    CLIMBRATE = powerloading_climbrate(data['eff'], data['roc'], WS_range,rho_cruise,data['cd0'],data['e'],data['A'])
-    TURN_VCRUISE = powerloading_turningloadfactor(rho_cruise,data['v_cruise'],WS_range,data['eff'],data['A'],data['e'],data['loadfactor'],data['cd0'])
-    TURN_VMAX = powerloading_turningloadfactor(rho_cruise,data['v_max'],WS_range,data['eff'],data['A'],data['e'],data['loadfactor'],data['cd0'])
-    VERTICALFLIGHT = powerloading_verticalflight(TW_range,data['diskloading'],rho0,data['eff'],data['ducted_bool'])
+    TW_range = powerloading_thrustloading(WS_range,rho0,data['roc'],data['StotS'])  
+    #if data["name"] == "J1":   
+    #    TW_range = TW_range*1.3     #Added 30% extra thrust to maintain stability
+    CLIMBRATE = cont_factor*powerloading_climbrate(data['eff'], data['roc'], WS_range,rho_cruise,data['cd0'],data['e'],data['A'])
+    TURN_VCRUISE = cont_factor*powerloading_turningloadfactor(rho_cruise,data['v_cruise'],WS_range,data['eff'],data['A'],data['e'],data['loadfactor'],data['cd0'])
+    TURN_VMAX = cont_factor*powerloading_turningloadfactor(rho_cruise,data['v_max'],WS_range,data['eff'],data['A'],data['e'],data['loadfactor'],data['cd0'])
+    VERTICALFLIGHT = cont_factor*powerloading_verticalflight(data['mtom'],TW_range,data['A_tot'],rho0,data['eff'],data['ducted_bool'],9.81)
     STALLSPEED = wingloading_stall(data['cLmax'],data['v_stall'], rho0)
-    CLIMBGRADIENT = powerloading_climbgradient(data['e'],data['A'],data['cd0'],WS_range,rho0,data['eff'],data['G'])
+    CLIMBGRADIENT = cont_factor*powerloading_climbgradient(data['e'],data['A'],data['cd0'],WS_range,rho0,data['eff'],data['G'])
     
     #PLOT ALL THE LINES
     plt.plot(WS_range,CLIMBRATE,label="Climbrate")
@@ -63,14 +66,11 @@ def plot_wing_power_loading_graphs(dict_directory,dict_name,i):
     
     
     #PLOT LIMITING DESIGN POINTS AND WRITE THE VALUES
-    if lowest_area_y_novf[-1] == lowest_area_y[-1]:
-        plt.plot(STALLSPEED,lowest_area_y_novf[-1],marker = "o",color = "green")
-        plt.annotate((str(int(STALLSPEED))+", "+str(round(WP_cruise,8))),(STALLSPEED,WP_cruise+0.005))
-    else: 
-        plt.plot(STALLSPEED,lowest_area_y_novf[-1],marker = "o",color = "green")
-        plt.annotate((str(int(STALLSPEED))+", "+str(round(WP_cruise,8))),(STALLSPEED,WP_cruise+0.005))
+    plt.plot(STALLSPEED,lowest_area_y_novf[-1],marker = "o",color = "green")
+    plt.annotate((str(int(STALLSPEED))+", "+str(round(WP_cruise,8))),(STALLSPEED,WP_cruise+0.005))
+    if lowest_area_y_novf[-1] != lowest_area_y[-1]:
         plt.plot(STALLSPEED,lowest_area_y[-1],marker = "o",color = "red")
-        plt.annotate((str(int(STALLSPEED))+", "+str(round(WP_hover,8))),(STALLSPEED,WP_hover-0.01))
+        plt.annotate((str(int(STALLSPEED))+", "+str(round(WP_hover,8))),(STALLSPEED,WP_hover+0.005))
     
     #GRAPH MAKE-UP
     plt.legend(loc='upper right')
@@ -83,11 +83,13 @@ def plot_wing_power_loading_graphs(dict_directory,dict_name,i):
     
     #PRINT VALUES
     print(data['name'])
+    print("\n\n\n")
     print("WS = ",str(STALLSPEED))
-    print("WP = ",str(round(lowest_area_y[-1],8)))
-    print("WP_noverticalflight = ",str(round(lowest_area_y_novf[-1],8)))
+    print("WP = ",str(round(WP_hover,8)))
+    print("WP_noverticalflight = ",str(round(WP_cruise,8)))
     print("TW = ", str(round(TW_max,8))),'\n'
-    
+    print("Power required  = ", 2510*9.81/WP_hover/1000,"[kW]")
+
     with open(dict_directory+"\\"+dict_name, "r") as jsonFile:
         data = json.loads(jsonFile.read())
     data["WS"],data["TW"],data["WP_cruise"],data["WP_hover"] = WS_max,TW_max,WP_cruise,WP_hover
