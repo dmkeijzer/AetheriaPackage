@@ -1,22 +1,27 @@
 import numpy as np
-from drag import *
-AR1 = 6.8
-AR2 = 6.8
 
-W = 3024.8  # STR["MTOW"] #[N]
-Vcruise = 72.18  # FP["V_cruise"] #[m/s]
+from Code2021.Final_optimization.Aero_tools import ISA
+from Code2021.Preliminary_Lift.Airfoil import Mach
+from drag import *
+
+AR1 = 9.5
+AR2 = 10
+
+W = 2510.  # STR["MTOW"] #[N]
+Vcruise = 83.33  # FP["V_cruise"] #[m/s]
 Vstall = 40
 
 # Cruise conditions
-h = 1000  # cruise height[m]
+h = 400  # cruise height[m]
 atm_flight = ISA(h)
 rho = atm_flight.density()  # cte.rho
 mu = atm_flight.viscosity_dyn()
 a = atm_flight.soundspeed()
 M = Mach(Vcruise, a)
 print("Mach", M)
+
 # Wing planform
-S_ref = 19.8213  # W/Wing_loading #[m**2] PLACEHOLDER
+S_ref = 14  # W/Wing_loading #[m**2] PLACEHOLDER
 
 
 CLmax = 1.5856096132929682
@@ -27,6 +32,7 @@ s1 = 0.5
 
 s2 = 1-s1
 b = np.sqrt(0.5*(AR1*s1+s2*AR2)*S_ref)  # Due to reqs
+print(b)
 # Sweep
 sweepc41 = 0
 sweepc42 = 0
