@@ -1,11 +1,18 @@
 #import statements
 import numpy as np
 import matplotlib.pyplot as plt
-from battery import BatterySizing
-from fuellCell import FuellCellSizing
-from hydrogenTank import HydrogenTankSizing
-from energypowerrequirement import MissionRequirements
-from powersystem import PropulsionSystem, onlyFuelCellSizng
+import sys 
+import pathlib as pl
+import os
+
+sys.path.append(str(list(pl.Path(__file__).parents)[2]))
+sys.path.append(os.path.join(list(pl.Path(__file__).parents)[2], "modules","powersizing"))
+
+from modules.powersizing.battery import BatterySizing
+from modules.powersizing.fuellCell import FuellCellSizing
+from modules.powersizing.hydrogenTank import HydrogenTankSizing
+from modules.powersizing.energypowerrequirement import MissionRequirements
+from modules.powersizing.powersystem import PropulsionSystem, onlyFuelCellSizng
 
 #plotfunction
 def plotAll(echo, variable,variableUnit):
