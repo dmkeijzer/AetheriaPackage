@@ -17,6 +17,11 @@ T0 = 288.15             #[K]        O
 p0 = 101325             #[N/m^@]    O
 R = 287                 #[J/kg*K]   O
 n_ult = 2.5*1.5        # [-]       O   Ultimate load factor
+npax = 4                # Amount of passengers 0
+
+
+# Power
+p_density = 3.117e3     # w/kg    ? # averaged from:  A review: high power density motors for electric vehicles
 
 
 # class Propeller:

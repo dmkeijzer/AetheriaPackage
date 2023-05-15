@@ -6,6 +6,7 @@
   "w_fuse": 1.38,
   "eff": 0.9,
   "diskloading": 300,
+  "p_max": 1.4e6,
   "v_cruise": 83.33,
   "v_max": 104.17,
   "v_stall": 40,
