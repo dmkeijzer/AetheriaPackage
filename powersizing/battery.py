@@ -24,7 +24,7 @@ class BatterySizing:
         self.ChargingEfficiency = charging_efficiency
 
 
-    def Energymass(self,Energy):
+    def energymass(self,Energy):
         """
         :param Energy: Required total energy for the battery [kWh]
         :param sp_en_den: Specific energy density of the battery [kWh/kg]
