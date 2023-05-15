@@ -42,6 +42,7 @@ class FlightParam():
     V_hover: float
     V_stall: float
     V_max: float
+    Reynolds_no: float
 
 @dataclass
 class Airfoil:
