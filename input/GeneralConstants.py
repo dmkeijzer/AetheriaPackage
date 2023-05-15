@@ -18,6 +18,7 @@ T0 = 288.15             #[K]        O
 p0 = 101325             #[N/m^@]    O
 R = 287                 #[J/kg*K]   O
 npax = 4                # Amount of passengers 0
+gamma = 1.4             #
 
 
 # Power
