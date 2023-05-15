@@ -34,6 +34,10 @@ othercondition = true;
 i1=1;
 while othercondition
     rotor_direction = combinations(i1,:);
+    i=1;
+    x_cg_fw = [];
+    x_cg_r = [];
+    condition = true;
     while condition
         x_cg_fw(end+1) = cg_range_calc(-1, rotor_direction, r_ku, cg_fw_gess, x_rotor_loc, y_rotor_loc, Rotor, rotor_eta, mass, S_proj);
         x_cg_r(end+1) = cg_range_calc(1, rotor_direction, r_ku, cg_r_guess, x_rotor_loc, y_rotor_loc, Rotor, rotor_eta, mass, S_proj);
@@ -49,6 +53,7 @@ while othercondition
     fprintf('The rotor direction vector is %s.\n', mat2str(rotor_direction))
 
     i1 = i1 +1;
+    
     if i1> size(combinations,1)
         othercondition = false;
     end
