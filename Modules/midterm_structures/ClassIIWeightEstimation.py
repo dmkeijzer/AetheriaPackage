@@ -2,6 +2,7 @@ import numpy as np
 
 
 
+
 class VtolWeightEstimation:
     def __init__(self) -> None:
         self.components = []
@@ -46,13 +47,13 @@ class Wing(Component):
 
 class Fuselage(Component):
     # Roskam method (not accurate because does not take into account density of material but good enough for comparison
-    def __init__(self,identifier, mtom, Pmax, lf, npax):
+    def __init__(self,identifier, mtom, max_per, lf, npax):
         """ Returns fuselage weight
 
         :param mtom: Maximum take off weight
         :type mtom: float
-        :param Pmax:  Maximium perimeter of the fuselage
-        :type Pmax: float
+        :param max_per:  Maximium perimeter of the fuselage
+        :type max_per: float
         :param lf: Fuselage length
         :type lf: float
         :param npax: Amount of passengers
@@ -62,7 +63,7 @@ class Fuselage(Component):
         self.id = "fuselage"
         self.mtow_lbs = 2.20462 * mtom
         self.lf_ft, self.lf = lf*3.28084, lf
-        self.Pmax_ft = Pmax*3.28084
+        self.Pmax_ft = max_per*3.28084
         self.npax = npax
         if identifier == "J1":
             self.fweight_high = 14.86*(self.mtow_lbs**0.144)*((self.lf_ft/self.Pmax_ft)**0.778)*(self.lf_ft**0.383)*(self.npax**0.455)
@@ -91,10 +92,37 @@ class Engines(Component):
         super().__init__()
         self.mass = p_max/p_dense
 
+class HorizontalTail(Component):
+    def __init__(self, w_to, S_h, A_h, t_r_h ):
+        """Computes the mass of the horizontal tail, only used for Joby
+
+        :param W_to: take off weight in  kg
+        :type W_to: float
+        :param S_h: Horizontal tail area in  m^2
+        :type S_h: float
+        :param A_h: Aspect ratio horizontal tail
+        :type A_h: float
+        :param t_r_h: Horizontal tail maximum root thickness in m 
+        :type t_r_h: float
+        """        
+
+        w_to_lbs = 2.20462262*w_to
+        S_h_ft = 10.7639104*S_h
+        t_r_h_ft = 3.2808399*t_r_h
+
+        super().__init__()
+        self.mass =  (3.184*w_to_lbs**0.887*S_h_ft**0.101*A_h**0.138)/(57.5*t_r_h_ft**0.223)*0.45359237
+
+class Nacelle(Component):
+    def __init__(self, w_to):
+        super().__init__()
+        w_to_lbs = 2.20462262*w_to
+        self.mass = 0.1*w_to_lbs*0.45359237 # Original was 0.24 but decreased it since the electric aircraft would require less structural weight0
+
+
 
 #TODO add hydrogen system
 #TODO add battery/turbine engine system
-#TODO add tail 
 #TODO Think of penalty for weight of fuselage for crashworthiness, firewall et cetera  
 
         
