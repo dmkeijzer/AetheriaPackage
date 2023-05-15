@@ -4,7 +4,7 @@
 
 %%%%%%%%%%%%%%%%%%%%%INPUTS%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function [ret] = cg_range_calc(convergence_direction,rotor_dir,rotor_ku,x_cg,x_rotor_locations,y_rotor_locations,Rotors,rotor_Yita,ma,Sproj)
+function [ret] = cg_range_calc(convergence_direction,rotor_dir,rotor_ku,x_cg,x_rotor_locations,y_rotor_locations,Rotors,rotor_Yita,ma,Sproj,Tfactor)
 step_size=0.01;     %program works by approaching the cg 0.1m at a time, this is an absolute value of step size, LEAVE AS IS.  
 ACAI=1;    %any positive number works, LEAVE AS IS. 
 %convergence_direction=1; %put as +1 to find max cg, put as -1 to find min cg.
@@ -100,8 +100,8 @@ while ACAI>0
     % minimum lift of the rotors
     umin=0;
     % maximum lift of the rotors
-    umax = 6.125;
-    % umax= 9.80665*ma*1.2*(1+1/(array_size-1))*(1+1.225*4*Sproj/(ma*9.80665))/(array_size);
+    % umax = 6.125;
+    umax= 9.80665*ma*Tfactor*(1+1/(array_size-1))*(1+1.225*4*Sproj/(ma*9.80665))/(array_size);
     % control constraint set
     Uset.umin=umin*ones(sz,1);
     Uset.umax=umax*ones(sz,1);
