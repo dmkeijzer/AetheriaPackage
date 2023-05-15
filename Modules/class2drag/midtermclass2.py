@@ -9,7 +9,7 @@ AR2 = 10
 
 W = 2510.  # STR["MTOW"] #[N]
 Vcruise = 83.33  # FP["V_cruise"] #[m/s]
-Vstall = 40
+Vstall = 40  # PLACEHOLDER
 
 # Cruise conditions
 h = 400  # cruise height[m]
