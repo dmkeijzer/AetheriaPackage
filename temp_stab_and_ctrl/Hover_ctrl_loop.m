@@ -33,6 +33,7 @@ cg_r_guess = 0;
 while condition
     x_cg_fw(end+1) = cg_range_calc(-1, rotor_direction, r_ku, cg_fw_gess, x_rotor_loc, y_rotor_loc, Rotor, rotor_eta, mass, S_proj);
     x_cg_r(end+1) = cg_range_calc(1, rotor_direction, r_ku, cg_r_guess, x_rotor_loc, y_rotor_loc, Rotor, rotor_eta, mass, S_proj);
+    rotor_eta = ones(1,n);
     rotor_eta(i)=0;
     if i > n
         condition = false;
