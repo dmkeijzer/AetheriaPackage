@@ -5,35 +5,40 @@ i=1;
 cgranges = zeros(4,0);
 %%%%INPUTS%%%%
 
-s2i = struct('anticlockwise', 1, 'clockwise', -1);
-rotor_direction = [-1 1 -1 1 -1 1];
+% s2i = struct('anticlockwise', 1, 'clockwise', -1);
+rotor_direction = [-1 -1 -1 1 1 1 -1 -1 -1 1 1 1];
 
-n=size(rotor_direction);
-n=n(2);
+x_rotor_loc = [1.19 1.19 1.19 1.19 1.19 1.19 9.55 9.55 9.55 9.55 9.55 9.55];
+
+y_rotor_loc = [4.2 2.99 1.78 -1.78 -2.99 -4.2 4.2 2.99 1.78 -1.78 -2.99 -4.2];
+
+n=size(x_rotor_loc,2);
 r_ku = ones(1,n) * 0.1;
-
-x_rotor_loc = [0.275 0.1375 -0.1375 -0.275 -0.1375 0.1375];
-
-y_rotor_loc = [0 0.238 0.238 0 -0.238 -0.238];
 
 Rotor = 1:n;
 
 rotor_eta = ones(1,n);
 
-mass = 1.535;
+mass = 2510;
 
-S_proj = 0;
+S_proj = 16.8;
 
-cg_fw_gess = 0;
+cg_fw_gess = 5;
 
-cg_r_guess = 0;
+cg_r_guess = 5;
 
-Tfacvec = 1:0.05:2.5;
+Tfacvec = 1:0.25:2.5;
 
 
 
 %%%%LOOOOP%%%%
-combinations = unique(perms(rotor_direction), 'rows');
+% combinations = unique(perms(rotor_direction), 'rows');
+% combinations = dec2bin(0:2^n-1)-'0';
+% combinations = combinations(sum(combinations,2) == 6,:);
+% combinations(combinations==0) = -1;
+combinations = rotor_direction;
+
+
 othercondition = true;
 i1=1;
 yetanothercondition = true;
@@ -43,6 +48,7 @@ while yetanothercondition
     Tfac = Tfacvec(i2);
     othercondition = true;
     i1 = 1;
+    cgranges = zeros(4,0);
     while othercondition
         rotor_direction = combinations(i1,:);
         i=1;
@@ -80,6 +86,9 @@ while yetanothercondition
     cgranges(:,cgranges(1,:)==-1e6) = [];
     %cgranges = cgranges(:, ~cgranges(2:) == 1e6);
     cgranges(:,cgranges(2,:)==1e6) = [];
+    % hold on
+    % scatter(cgranges(1,:), cgranges(end,:))
+    % scatter(cgranges(2,:), cgranges(end,:))
     cgranges = cgranges(:,cgranges(2,:) - cgranges(1,:) == max(cgranges(2,:) - cgranges(1,:)));
     resultslog = horzcat(resultslog,cgranges);
 end
@@ -88,7 +97,13 @@ end
 % %cgranges = cgranges(:, ~cgranges(2:) == 1e6);
 % cgranges(:,cgranges(2,:)==1e6) = [];
 % cgranges = cgranges(:,cgranges(2,:) - cgranges(1,:) == max(cgranges(2,:) - cgranges(1,:)));
-resultslog(:,all(diff(resultslog))==0) = [];
+% resultslog(:,all(diff(resultslog))==0) = [];
+
+disp(resultslog)
+plot(resultslog(1,:),resultslog(end,:))
+hold on
+plot(resultslog(2,:),resultslog(end,:))
+plot(resultslog(2,:)-resultslog(1,:),resultslog(end,:))
 
 
 
