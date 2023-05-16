@@ -107,7 +107,7 @@ class LandingGear(Component):
         """        
         super().__init__()
         self.id = "landing gear"
-        self.mass = 0.04*mtom
+        self.mass = 0.04*mtom + 6.2
 
 class Engines(Component):
     def __init__(self,p_max, p_dense ):
@@ -198,6 +198,20 @@ class H2System(Component):
 
         self.mass = min(OnlyH2FC + OnlyH2Tank, max(TotalMass))
 
+
+class Miscallenous(Component):
+    def __init__(self, mtom) -> None:
+        """_summary_
+
+        :param mtom: Maximum take-off weight
+        :type mtom: float
+        """        
+        super().__init__()
+        w_to_lbs = 2.20462262*mtom
+
+        mass_fc = 1.08*w_to_lbs**0.7 # flight control system weight Torebeek method for power
+        mass_elec = 0.0268*w_to_lbs # Electrical system mass  cessna method
+        mass_avionics = 40 + 0.008*w_to_lbs # Avionics system mass
 
 
 
