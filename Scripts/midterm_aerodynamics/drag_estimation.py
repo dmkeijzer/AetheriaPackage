@@ -70,4 +70,4 @@ for dict_name in dict_names:
         CD_var = CD(CD0_var, CDi_var)
         lift_over_drag_var = lift_over_drag(data["cL_cruise"], CD_var)
         
-        print(lift_over_drag_var)
+        print(data["cL_cruise"], lift_over_drag_var)

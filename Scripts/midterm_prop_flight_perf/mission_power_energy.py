@@ -31,4 +31,32 @@ for dict_name in dict_names:
 
     prop_eff = propeff(v_aft, const.v_cr)
 
-    cruisepower, cruiseenergy = cruisestuff(data["mtom"],const.v_cr,data["clcd"], prop_eff, range)
+
+    # ------------ Energy calculation ----------
+
+    # Take-off
+    if data["name"] == "L1":
+        takeoff_power_var = hoverstuffduct(data["mtow"]*1.1, const.rho0, data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)[0]
+    else:
+        takeoff_power_var = hoverstuffopen(data["mtow"]*1.1, const.rho0, data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)
+    energy_takeoff = takeoff_power_var * t_takeoff
+
+    # Horizontal Climb
+
+
+    # Transition (after climb because it needs the power)
+    energy_transition = (takeoff_power_var + power_climb_var)*t_trans / 2
+
+    
+
+
+
+    # Cruise
+    powercruise_var = powercruise(data["MTOW"], const.v_cr, data["lift_over_drag"], prop_eff, const.range)
+    cruise_energy = powercruise_var * const.t_cr
+
+    # Descend
+
+    # Loiter
+
+
