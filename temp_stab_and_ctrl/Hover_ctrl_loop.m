@@ -5,16 +5,15 @@ i=1;
 cgranges = zeros(4,0);
 %%%%INPUTS%%%%
 
-s2i = struct('anticlockwise', 1, 'clockwise', -1);
-rotor_direction = [-1 1 -1 1 -1 1];
+% s2i = struct('anticlockwise', 1, 'clockwise', -1);
+rotor_direction = [-1 -1 -1 1 1 1 -1 -1 -1 1 1 1];
 
-n=size(rotor_direction);
-n=n(2);
+x_rotor_loc = [1.19 1.19 1.19 1.19 1.19 1.19 9.55 9.55 9.55 9.55 9.55 9.55];
+
+y_rotor_loc = [4.2 2.99 1.78 -1.78 -2.99 -4.2 4.2 2.99 1.78 -1.78 -2.99 -4.2];
+
+n=size(x_rotor_loc,2);
 r_ku = ones(1,n) * 0.1;
-
-x_rotor_loc = [0.5656 0.5656 3.39 3.39 6.79 6.79];
-
-y_rotor_loc = [2.3 -2.3 5.4 -5.4 2.3 -2.3];
 
 Rotor = 1:n;
 
@@ -24,16 +23,22 @@ mass = 2510;
 
 S_proj = 16.8;
 
-cg_fw_gess = 3.5;
+cg_fw_gess = 5;
 
-cg_r_guess = 3.3;
+cg_r_guess = 5;
 
-Tfacvec = 1:0.05:2.5;
+Tfacvec = 1:0.25:2.5;
 
 
 
 %%%%LOOOOP%%%%
-combinations = unique(perms(rotor_direction), 'rows');
+% combinations = unique(perms(rotor_direction), 'rows');
+% combinations = dec2bin(0:2^n-1)-'0';
+% combinations = combinations(sum(combinations,2) == 6,:);
+% combinations(combinations==0) = -1;
+combinations = rotor_direction;
+
+
 othercondition = true;
 i1=1;
 yetanothercondition = true;
@@ -81,6 +86,9 @@ while yetanothercondition
     cgranges(:,cgranges(1,:)==-1e6) = [];
     %cgranges = cgranges(:, ~cgranges(2:) == 1e6);
     cgranges(:,cgranges(2,:)==1e6) = [];
+    % hold on
+    % scatter(cgranges(1,:), cgranges(end,:))
+    % scatter(cgranges(2,:), cgranges(end,:))
     cgranges = cgranges(:,cgranges(2,:) - cgranges(1,:) == max(cgranges(2,:) - cgranges(1,:)));
     resultslog = horzcat(resultslog,cgranges);
 end
