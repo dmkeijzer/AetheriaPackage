@@ -29,6 +29,7 @@ ChargingEfficiency = 0.7
 
 #performance
 v_cr = 300/3.6
+k = 0.634 * 10**(-5) # Surface smoothness parameter
 
 #fuelcell input
 VolumeDensityFuellCell = 3.25 #kW /l

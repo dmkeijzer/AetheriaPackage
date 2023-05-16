@@ -7,7 +7,7 @@ import numpy as np
 
 # Import from modules and input folder
 import input.GeneralConstants  as const
-from  modules.class2drag.clean_class2drag  import *
+from  Modules.class2drag.clean_class2drag  import *
 
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
 # import CL_cruise from json files
@@ -32,10 +32,10 @@ for dict_name in dict_names:
             mac = (data["mac1"] + data["mac2"])/2
 
         #General flight variables
-        re_var = Reynolds(rho_cr, const.v_cr, mac, mhu)
-        M_var = Mach_cruise(const.v_cr, const.gamma, const.R,t_cr)
+        re_var = Reynolds(rho_cr, const.v_cr, mac, mhu, const.k)
+        M_var = Mach_cruise(const.v_cr, const.gamma, const.R, t_cr)
         if data["name"]== "J1":
-            Oswald_eff_var = Oswald_eff(A)
+            Oswald_eff_var = Oswald_eff(data["A"])
         else: 
             Oswald_eff_var = Oswald_eff_tandem(b1,b2,h)
 
@@ -64,3 +64,5 @@ for dict_name in dict_names:
         CDi_var = CDi(CL, A, e_var)
         CD_var = CD(CD0_var, CDi_var)
         lift_over_drag_var = lift_over_drag(CL, CD_var)
+        
+        print(lift_over_drag_var)
