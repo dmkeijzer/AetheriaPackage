@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.colors as mcolors
 import seaborn as sns
 
-beta = np.radians(20) # The angle at which the engines are tilted
+beta = np.radians(10) # The angle at which the engines are tilted
 b = 14
 lf = 10
 mtow = 3000*9.80665
@@ -90,10 +90,10 @@ for i in range(2):
 
         #           F1  F2 F3 F4 F5 F6
 eom_mat = np.array([[0, 0, 0, 0, 0, 0],                # Fx
-           [np.sin(beta), -np.sin(beta), np.sin(5), -np.sin(5), np.sin(5), -np.sin(5)], #Fy equation
+           [np.sin(beta), -np.sin(beta), np.sin(beta), -np.sin(beta), np.sin(beta), -np.sin(beta)], #Fy equation
            [np.cos(beta),np.cos(beta),np.cos(beta),np.cos(beta),np.cos(beta),np.cos(beta)], # Fz equation
            [b*np.cos(beta),-b*np.cos(beta),b*np.cos(beta),-b*np.cos(beta),b*np.cos(beta),-b*np.cos(beta)], # Mx equation
-           [-0.4*lf*np.cos(5),-0.4*lf*np.cos(5),-0.1*lf*np.cos(5),-0.1*lf*np.cos(5),0.6*lf*np.cos(5),0.6*lf*np.cos(5)], # My equation
+           [-0.4*lf*np.cos(beta),-0.4*lf*np.cos(beta),-0.1*lf*np.cos(beta),-0.1*lf*np.cos(beta),0.6*lf*np.cos(beta),0.6*lf*np.cos(beta)], # My equation
            [-0.1, 0.1, -0.1, 0.1, -0.1, 0.1]])              # Mz equation 10% of the forces was taken
 
 res_vec = np.array([0,0, mtow, 0, 0, 0])
