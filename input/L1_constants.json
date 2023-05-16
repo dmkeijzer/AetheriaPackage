@@ -52,5 +52,6 @@
   "l_tail": 3.942,
   "l_fuselage": 9.295,
   "d_fuselage": 1.7,
-  "upsweep": 0.1745
+  "upsweep": 0.1745,
+  "h_wings": 0
 }

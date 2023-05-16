@@ -13,7 +13,7 @@
   "h_hover": 30.5,
   "roc": 5,
   "cL_cruise": 0.427,
-  "mac":1.374,
+  "mac": 1.374,
   "cLmax": 1.5,
   "cd": 0.07,
   "cd0": 0.017,
@@ -50,5 +50,6 @@
   "l_tail": 3.942,
   "l_fuselage": 9.295,
   "d_fuselage": 1.7,
-  "upsweep": 0.1745
+  "upsweep": 0.1745,
+  "h_wings": 0
 }
