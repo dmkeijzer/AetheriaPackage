@@ -39,24 +39,37 @@ for dict_name in dict_names:
         takeoff_power_var = hoverstuffduct(data["mtow"]*1.1, const.rho0, data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)[0]
     else:
         takeoff_power_var = hoverstuffopen(data["mtow"]*1.1, const.rho0, data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)
-    energy_takeoff = takeoff_power_var * t_takeoff
+    energy_takeoff_var = takeoff_power_var * t_takeoff
 
     # Horizontal Climb
-
-
-    # Transition (after climb because it needs the power)
-    energy_transition = (takeoff_power_var + power_climb_var)*t_trans / 2
-
+    climb_power_var = powerclimb(data["mtow"], v_climb, lod_climb, prop_eff)
+    t_climb = (const.h_cruise/const.h_transition)/const.ROC
+    energy_climb_var = climb_power_var * const.t_climb
     
-
-
+    # Transition (after climb because it needs the power)
+    energy_transition_vert2hor_var = (takeoff_power_var + climb_power_var)*const.t_trans / 2
 
     # Cruise
-    powercruise_var = powercruise(data["MTOW"], const.v_cr, data["lift_over_drag"], prop_eff, const.range)
-    cruise_energy = powercruise_var * const.t_cr
+    powercruise_var = powercruise(data["mtow"], const.v_cr, data["lift_over_drag"], prop_eff, const.range)
+    cruise_energy_var = powercruise_var * const.t_cr
 
     # Descend
+    power_descend_var = powercruise_var *0.2
+    energy_descend_var = power_descend_var* const.t_descend
 
     # Loiter
+    power_loiter_var = powerloiter(data["mtow"], const.v_climb, const.lod_climb, propeff)
+    energy_loiter_var = power_loiter_var * const.t_loiter
 
+    # Landing 
+    if data["name"] == "L1":
+        landing_power_var = hoverstuffduct(data["mtow"]*0.9, const.rho0, data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)[0]
+    else:
+        landing_power_var = hoverstuffopen(data["mtow"]*0.9, const.rho0, data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)
+    energy_landing_var = takeoff_power_var * t_takeoff
 
+    # Transition (from horizontal to vertical)
+    energy_transition_hor2vert_var = (landing_power_var + descend_power_var)*const.t_trans / 2
+
+    # ----- TOTAL ENERGY CONSUMPTION -----
+    energy_consumption = energy_takeoff_var + energy_transition_vert2hor_var + energy_climb_var + cruise_energy_var + energy_descend_var + energy_transition_hor2vert_var + energy_landing_var

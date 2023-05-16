@@ -7,7 +7,7 @@ import numpy as np
 
 # Import from modules and input folder
 import input.GeneralConstants  as const
-from  Modules.class2drag.clean_class2drag  import *
+from  Modules.midterm_aero.clean_class2drag  import *
 
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
 # import CL_cruise from json files
@@ -70,4 +70,4 @@ for dict_name in dict_names:
         CD_var = CD(CD0_var, CDi_var)
         lift_over_drag_var = lift_over_drag(data["cL_cruise"], CD_var)
         
-        print(data["cL_cruise"], lift_over_drag_var)
+        print(CD_wing_var/14)

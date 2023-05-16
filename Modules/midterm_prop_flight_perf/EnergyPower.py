@@ -30,6 +30,13 @@ def powercruise(MTOW,v_cr,lift_over_drag,propeff,range):
     powercruise = MTOW*v_cr/(lift_over_drag*propeff)
     return powercruise
 
+def powerclimb(MTOW, v_climb, lod_climb, prop_eff, ROC):
+    climb_power = (MTOW * v_climb * (1/lod_climb) + ROC )/prop_eff
+    return climb_power
+
+def powerloiter(MTOW, v_climb, lod_climb, propeff):
+    loiter_power = (MTOW * v_climb * (1/lod_climb))/prop_eff
+    return loiter_power 
 
 
 
