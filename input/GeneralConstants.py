@@ -31,6 +31,14 @@ ChargingEfficiency = 0.7
 v_cr = 300/3.6
 k = 0.634 * 10**(-5) # Surface smoothness parameter
 
+#airfoil
+toc = 0.1 #PLACEHOLDER
+xcm = 0.1 # PLACEHOLDER
+sweep_m = 0.1 #PLACEHOLDER
+A_base = 0 #PLACEHOLDER
+frac_lam_fus = 0.05
+frac_lam_wing = 0.1
+
 #fuelcell input
 VolumeDensityFuellCell = 3.25 #kW /l
 PowerDensityFuellCell = 3.9 #kW/kg

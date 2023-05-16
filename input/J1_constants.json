@@ -12,7 +12,7 @@
   "loadfactor": 2,
   "h_hover": 30.5,
   "roc": 5,
-  "cL_cruise": 0.427,
+  "cL_cruise": 0.346,
   "mac": 1.374,
   "cLmax": 1.5,
   "cd": 0.07,

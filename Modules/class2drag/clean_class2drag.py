@@ -1,15 +1,12 @@
+from input.GeneralConstants import *
+import numpy as np
+import os
+import json
 import sys
 import pathlib as pl
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
-import json
-import os
-import numpy as np
-from input.GeneralConstants import *
 
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
-
-
-
 
 
 ###################      Move class ISA to different location, ISA is needed for T_cruise       #################
@@ -93,8 +90,9 @@ def Reynolds(rho_cruise, V_cruise, mac, mu, k):
     :type k: float
     :return: Reyolds number
     :rtype: _type_
-    """    
+    """
     return min((rho_cruise * V_cruise * mac / mu), 38.21 * (mac / k) ** 1.053)
+
 
 def Mach_cruise(V_cruise, gamma, R, T_cruise):
     """_summary_
@@ -109,9 +107,10 @@ def Mach_cruise(V_cruise, gamma, R, T_cruise):
     :type T_cruise: _type_
     :return: _description_
     :rtype: _type_
-    """    
+    """
     a = np.sqrt(gamma * R * T_cruise)
     return V_cruise / a
+
 
 def FF_fus(l, d):
     """_summary_
@@ -122,9 +121,10 @@ def FF_fus(l, d):
     :type d: _type_
     :return: _description_
     :rtype: _type_
-    """    
+    """
     f = l / d
     return 1 + 60 / (f ** 3) + f / 400
+
 
 def FF_wing(toc, xcm, M, sweep_m):
     """_summary_
@@ -139,8 +139,9 @@ def FF_wing(toc, xcm, M, sweep_m):
     :type sweep_m: _type_
     :return: _description_
     :rtype: _type_
-    """    
+    """
     return (1 + 0.6 * toc / xcm + 100 * toc * 4) * (1.34 * (M * 0.18) * (np.cos(sweep_m)) * 0.28)
+
 
 def S_wet_fus(d, l1, l2, l3):
     """_summary_
@@ -155,8 +156,9 @@ def S_wet_fus(d, l1, l2, l3):
     :type l3: _type_
     :return: _description_
     :rtype: _type_
-    """    
+    """
     return (np.pi * d / 4) * (((1 / (3 * l1 ** 2)) * ((4 * l1 ** 2 + ((d ** 2) / 4)) ** 1.5 - ((d ** 3) / 8))) - d + 4 * l2 + 2 * np.sqrt(l3 ** 2 + (d ** 2) / 4))
+
 
 def CD_upsweep(u, d, S_wet_fus):
     """_summary_
@@ -169,8 +171,9 @@ def CD_upsweep(u, d, S_wet_fus):
     :type S_wet_fus: _type_
     :return: _description_
     :rtype: _type_
-    """    
+    """
     return 3.83 * (u ** 2.5) * np.pi * d ** 2 / (4 * S_wet_fus)
+
 
 def CD_base(M, A_base, S_wet_fus):
     """_summary_
@@ -183,10 +186,11 @@ def CD_base(M, A_base, S_wet_fus):
     :type S: _type_
     :return: _description_
     :rtype: _type_
-    """    
-    return (0.139 + 0.419 * (M - 0.161) ** 2) * A_base / S
+    """
+    return (0.139 + 0.419 * (M - 0.161) ** 2) * A_base / S_wet_fus
 
-def C_fe_fus(frac_lam_fus, Reynolds):
+
+def C_fe_fus(frac_lam_fus, Reynolds, M):
     """_summary_
 
     :param frac_lam_fus: fraction laminar flow fuselage
@@ -195,13 +199,14 @@ def C_fe_fus(frac_lam_fus, Reynolds):
     :type Reynolds: _type_
     :return: _description_
     :rtype: _type_
-    """    
+    """
     C_f_lam = 1.328 / np.sqrt(Reynolds)
     C_f_turb = 0.455 / (((np.log10(Reynolds)) ** 2.58)
                         * (1 + 0.144 * M ** 2) ** 0.65)
     return frac_lam_fus * C_f_lam + (1 - frac_lam_fus) * C_f_turb
 
-def C_fe_wing(frac_lam_wing, Reynolds):
+
+def C_fe_wing(frac_lam_wing, Reynolds, M):
     """_summary_
 
     :param frac_lam_wing: fraction laminar flow wing
@@ -210,7 +215,7 @@ def C_fe_wing(frac_lam_wing, Reynolds):
     :type Reynolds: _type_
     :return: _description_
     :rtype: _type_
-    """    
+    """
     C_f_lam = 1.328 / np.sqrt(Reynolds)
     C_f_turb = 0.455 / (((np.log10(Reynolds)) ** 2.58)
                         * (1 + 0.144 * M ** 2) ** 0.65)
@@ -228,9 +233,10 @@ def CD_fus(C_fe_fus, FF_fus, S_wet_fus):
     :type S_wet_fus: _type_
     :return: _description_
     :rtype: _type_
-    """    
+    """
     IF_fus = 1.0        # From WIGEON script
     return C_fe_fus * FF_fus * IF_fus * S_wet_fus
+
 
 def CD_wing(C_fe_wing, FF_wing, S_wet_wing):
     """_summary_
@@ -243,7 +249,7 @@ def CD_wing(C_fe_wing, FF_wing, S_wet_wing):
     :type S_wet_wing: _type_
     :return: _description_
     :rtype: _type_
-    """    
+    """
     IF_wing = 1.1       # From WIGEON script
     return C_fe_wing * FF_wing * IF_wing * S_wet_wing
 
@@ -263,7 +269,7 @@ def CD0(S, CD_fus, CD_wing, CD_upsweep, CD_base):
     :type CD_base: _type_
     :return: _description_
     :rtype: _type_
-    """    
+    """
     return (1 / S) * (CD_fus + CD_wing) + CD_upsweep + CD_base
 
 
@@ -278,8 +284,9 @@ def CDi(CL, A, e):
     :type e: _type_
     :return: _description_
     :rtype: _type_
-    """    
+    """
     return CL**2 / (np.pi * A * e)
+
 
 def CD(CD0, CDi):
     """_summary_
@@ -290,8 +297,9 @@ def CD(CD0, CDi):
     :type CDi: _type_
     :return: _description_
     :rtype: _type_
-    """    
+    """
     return CD0 + CDi
+
 
 def lift_over_drag(CL_output, CD_output):
     """_summary_
@@ -302,7 +310,7 @@ def lift_over_drag(CL_output, CD_output):
     :type CD_output: _type_
     :return: _description_
     :rtype: _type_
-    """    
+    """
     return CL_output / CD_output
 
 
@@ -313,8 +321,9 @@ def Oswald_eff(A):
     :type A: _type_
     :return: _description_
     :rtype: _type_
-    """    
+    """
     return 1.78 * (1 - 0.045 * A**0.68) - 0.64
+
 
 def Oswald_eff_tandem(b1, b2, h):
     """_summary_
@@ -331,8 +340,7 @@ def Oswald_eff_tandem(b1, b2, h):
     :type Oswald_eff: _type_
     :return: _description_
     :rtype: _type_
-    """    
+    """
     b_avg = (b1 + b2) / 2
     factor = 0.5 + (1 - 0.66 * (h / b_avg)) / (2.1 + 7.4 * (h / b_avg))
-    return factor * 0.8
-
+    return factor * 0.
