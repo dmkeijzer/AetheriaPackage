@@ -81,13 +81,13 @@ class ISA:
 def Reynolds(rho_cruise, V_cruise, mac, mu, k):
     """Returns the Reynold number
 
-    :param rho_cruise: _description_
+    :param rho_cruise: Density at cruise altitude
     :type rho_cruise: _type_
-    :param V_cruise: _description_
+    :param V_cruise: Cruise velocity
     :type V_cruise: _type_
     :param mac: Mean aerodynamic chord
     :type mac: float
-    :param mu: _description_
+    :param mu: dynamic viscosity
     :type mu: _type_
     :param k: surface factor in the order of 1e-5 and 1e-7
     :type k: float
@@ -99,7 +99,7 @@ def Reynolds(rho_cruise, V_cruise, mac, mu, k):
 def Mach_cruise(V_cruise, gamma, R, T_cruise):
     """_summary_
 
-    :param V_cruise: _description_
+    :param V_cruise: Cruise speed [m/s]
     :type V_cruise: _type_
     :param gamma: _description_
     :type gamma: _type_
@@ -116,9 +116,9 @@ def Mach_cruise(V_cruise, gamma, R, T_cruise):
 def FF_fus(l, d):
     """_summary_
 
-    :param l: _description_
+    :param l: length fuselage
     :type l: _type_
-    :param d: _description_
+    :param d: diameter fuselage
     :type d: _type_
     :return: _description_
     :rtype: _type_
@@ -129,55 +129,55 @@ def FF_fus(l, d):
 def FF_wing(toc, xcm, M, sweep_m):
     """_summary_
 
-    :param toc: _description_
+    :param toc: thickness over chord ratio
     :type toc: _type_
-    :param xcm: _description_
+    :param xcm: (x/c)m, position of maximum thickness
     :type xcm: _type_
-    :param M: _description_
+    :param M: Mach number
     :type M: _type_
-    :param sweep_m: _description_
+    :param sweep_m: sweep angle at maximum thickness position
     :type sweep_m: _type_
     :return: _description_
     :rtype: _type_
     """    
     return (1 + 0.6 * toc / xcm + 100 * toc * 4) * (1.34 * (M * 0.18) * (np.cos(sweep_m)) * 0.28)
 
-def S_wet(d, l1, l2, l3):
+def S_wet_fus(d, l1, l2, l3):
     """_summary_
 
-    :param d: _description_
+    :param d: diameter fuselage
     :type d: _type_
-    :param l1: _description_
+    :param l1: length cockpit/parabolic section
     :type l1: _type_
-    :param l2: _description_
+    :param l2: length cylindrical section
     :type l2: _type_
-    :param l3: _description_
+    :param l3: length conical section
     :type l3: _type_
     :return: _description_
     :rtype: _type_
     """    
     return (np.pi * d / 4) * (((1 / (3 * l1 ** 2)) * ((4 * l1 ** 2 + ((d ** 2) / 4)) ** 1.5 - ((d ** 3) / 8))) - d + 4 * l2 + 2 * np.sqrt(l3 ** 2 + (d ** 2) / 4))
 
-def CD_upsweep(u, d, S):
+def CD_upsweep(u, d, S_wet_fus):
     """_summary_
 
-    :param u: _description_
+    :param u: upsweep angle (rad)
     :type u: _type_
-    :param d: _description_
+    :param d: diameter fuselage
     :type d: _type_
-    :param S: _description_
-    :type S: _type_
+    :param S_wet_fus: _description_
+    :type S_wet_fus: _type_
     :return: _description_
     :rtype: _type_
     """    
-    return 3.83 * (u * 2.5) * np.pi * d * 2 / (4 * S)
+    return 3.83 * (u ** 2.5) * np.pi * d ** 2 / (4 * S_wet_fus)
 
-def CD_base(M, A_base, S):
+def CD_base(M, A_base, S_wet_fus):
     """_summary_
 
     :param M: _description_
     :type M: _type_
-    :param A_base: _description_
+    :param A_base: base area fuselage
     :type A_base: _type_
     :param S: _description_
     :type S: _type_
@@ -189,7 +189,7 @@ def CD_base(M, A_base, S):
 def C_fe_fus(frac_lam_fus, Reynolds):
     """_summary_
 
-    :param frac_lam_fus: _description_
+    :param frac_lam_fus: fraction laminar flow fuselage
     :type frac_lam_fus: _type_
     :param Reynolds: _description_
     :type Reynolds: _type_
@@ -204,7 +204,7 @@ def C_fe_fus(frac_lam_fus, Reynolds):
 def C_fe_wing(frac_lam_wing, Reynolds):
     """_summary_
 
-    :param frac_lam_wing: _description_
+    :param frac_lam_wing: fraction laminar flow wing
     :type frac_lam_wing: _type_
     :param Reynolds: _description_
     :type Reynolds: _type_
@@ -220,9 +220,9 @@ def C_fe_wing(frac_lam_wing, Reynolds):
 def CD_fus(C_fe_fus, FF_fus, S_wet_fus):
     """_summary_
 
-    :param C_fe_fus: _description_
+    :param C_fe_fus: skin friction coefficient fuselage
     :type C_fe_fus: _type_
-    :param FF_fus: _description_
+    :param FF_fus: form factor fuselage
     :type FF_fus: _type_
     :param S_wet_fus: _description_
     :type S_wet_fus: _type_
@@ -235,9 +235,9 @@ def CD_fus(C_fe_fus, FF_fus, S_wet_fus):
 def CD_wing(C_fe_wing, FF_wing, S_wet_wing):
     """_summary_
 
-    :param C_fe_wing: _description_
+    :param C_fe_wing: skin friction coefficient wing
     :type C_fe_wing: _type_
-    :param FF_wing: _description_
+    :param FF_wing: form factor wing
     :type FF_wing: _type_
     :param S_wet_wing: _description_
     :type S_wet_wing: _type_
@@ -251,7 +251,7 @@ def CD_wing(C_fe_wing, FF_wing, S_wet_wing):
 def CD0(S, CD_fus, CD_wing, CD_upsweep, CD_base):
     """_summary_
 
-    :param S: _description_
+    :param S: wing area
     :type S: _type_
     :param CD_fus: _description_
     :type CD_fus: _type_
@@ -309,21 +309,21 @@ def lift_over_drag(CL_output, CD_output):
 def Oswald_eff(A):
     """_summary_
 
-    :param A: _description_
+    :param A: aspect ratio
     :type A: _type_
     :return: _description_
     :rtype: _type_
     """    
     return 1.78 * (1 - 0.045 * A**0.68) - 0.64
 
-def Oswald_eff_tandem(b1, b2, h, b, Oswald_eff):
+def Oswald_eff_tandem(b1, b2, h):
     """_summary_
 
-    :param b1: _description_
+    :param b1: span front wing
     :type b1: _type_
-    :param b2: _description_
+    :param b2: span aft wing
     :type b2: _type_
-    :param h: _description_
+    :param h: height difference between wingss
     :type h: _type_
     :param b: _description_
     :type b: _type_
@@ -334,5 +334,5 @@ def Oswald_eff_tandem(b1, b2, h, b, Oswald_eff):
     """    
     b_avg = (b1 + b2) / 2
     factor = 0.5 + (1 - 0.66 * (h / b_avg)) / (2.1 + 7.4 * (h / b_avg))
-    return factor * Oswald_eff
+    return factor * 0.8
 
