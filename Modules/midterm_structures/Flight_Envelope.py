@@ -30,7 +30,7 @@ def plotmaneuvrenv(WoS, Vc, CLmax, nmin, nmax):
     return np.max([maneuvrenv(V, Vs, WoS, CLmax, nmin, nmax, True) for V in x])
 
 def posgustload(V, Vs, us, ns, CLalpha, WoS):
-    n = lambda V, u: 1 + rho_cruise * V * CLalpha * u / (2 * WoS)
+    n = lambda V, u: 1 + rho_cr * V * CLalpha * u / (2 * WoS)
     (ub, uc, ud), (Vb, Vc, VD), (nb, nc, nd)  = us, Vs, ns
     interpolate = lambda V, V1, V2, n1, n2: n1 + (V - V1) * (n2 - n1) / (V2 - V1)
     return n(V, ub) if 0 <= V <= Vb else \
@@ -44,7 +44,7 @@ def plot_dash(V, n):
 
 
 def plotgustenv(V_s, Vc, CLalpha, WoS, TEXT=False):
-    n = lambda V, u: 1 + rho_cruise * V * CLalpha * u / (2 * WoS)
+    n = lambda V, u: 1 + rho_cr * V * CLalpha * u / (2 * WoS)
     Vb = np.sqrt(n(Vc, uc))*V_s
     Vb, Vc, VD = Vs = (Vb, Vc, 1.2*Vc) # Change if VD Changes
     us = ub, uc, ud  # Obtained from CS

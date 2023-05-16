@@ -9,17 +9,37 @@ An ~ means it's defined but maybe not needed and a ? means it's a guess.
 
 
 '''
+import numpy as np
+import sys
+import pathlib as pl
+import os
 
+sys.path.append(str(list(pl.Path(__file__).parents)[1]))
+
+from  modules.misc_tools.tools import ISA
+
+#performance
+v_cr = 300/3.6
 h_cruise = 400          #[m]        O
+mission_dist = 400e3  # km
+npax = 4                # Amount of passengers O
+
+#atmospheric constants
+atm = ISA(h_cruise)
 g0 = 9.80665            #[m/s^2]    O
-rho0 = 1.225            #[kg/m^3]   O
-rho_cruise = 1.19011    #[kg/m^3]   O
-mhu = 1.19011           #[kg/m^3]   O   the dynamic viscosity
-T0 = 288.15             #[K]        O
-p0 = 101325             #[N/m^@]    O
+rho_cr = atm.density()    #[kg/m^3]   O
+p_cr = atm.pressure()           # pressure at cr O
+t_cr = atm.temperature()      # Temperature at cr O
+a_cr = atm.soundspeed()     #Speed of sound at cruise O
 R = 287                 #[J/kg*K]   O
-npax = 4                # Amount of passengers 0
-gamma = 1.4             #
+
+# Sea leavel atmospheric constants
+rho_sl = atm.p_SL            #[kg/m^3]   O
+p_sl = atm.rho_SL
+T_sl = atm.T_SL
+mhu_sl = atm.mu_SL
+a_sl = atm.a_SL
+mhu = atm.viscosity_dyn()           #[kg/m^3]   O   the dynamic viscosity
 
 
 # Power
@@ -27,9 +47,9 @@ p_density = 3.117e3     # w totalEnergy/kg    ? # averaged from:  A review: high
 DOD = 0.8
 ChargingEfficiency = 0.7
 
-#performance
-v_cr = 300/3.6
-k = 0.634 * 10**(-5) # Surface smoothness parameter
+#standard masses
+m_pl = 475 # kg
+
 
 #airfoil
 toc = 0.1 #PLACEHOLDER
@@ -38,6 +58,7 @@ sweep_m = 0.1 #PLACEHOLDER
 A_base = 0 #PLACEHOLDER
 frac_lam_fus = 0.05
 frac_lam_wing = 0.1
+k = 0.634 * 10**(-5) # Surface smoothness parameter
 
 #fuelcell input
 VolumeDensityFuellCell = 3.25 #kW /l

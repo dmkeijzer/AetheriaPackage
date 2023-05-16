@@ -9,7 +9,7 @@ sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 
 import matplotlib.pyplot as plt
 
-from modules.preliminary_sizing import *
+from modules.midterm_preliminary_sizing import *
 
 
 WS_range = np.arange(1,4000,1)

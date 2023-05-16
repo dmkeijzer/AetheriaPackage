@@ -200,18 +200,24 @@ class H2System(Component):
 
 
 class Miscallenous(Component):
-    def __init__(self, mtom) -> None:
+    def __init__(self, mtom, oew, npax) -> None:
         """_summary_
 
         :param mtom: Maximum take-off weight
         :type mtom: float
         """        
         super().__init__()
+        self.id = "misc"
         w_to_lbs = 2.20462262*mtom
+        w_oew_lbs = 2.20462262*oew
 
-        mass_fc = 1.08*w_to_lbs**0.7 # flight control system weight Torebeek method for power
+        mass_fc = 0.0168*w_to_lbs # flight control system weight Torebeek method for power
         mass_elec = 0.0268*w_to_lbs # Electrical system mass  cessna method
-        mass_avionics = 40 + 0.008*w_to_lbs # Avionics system mass
+        mass_avionics = 40 + 0.008*w_to_lbs # Avionics system mass Torenbeek
+        mass_airco = 0.018*w_oew_lbs   # Airconditioning mass Torenbeek method
+        mass_fur = 0.412*npax**1.145*w_oew_lbs**0.489 # Furnishing mass Cessna method
+
+        self.mass = np.sum([mass_fur, mass_airco, mass_avionics, mass_elec, mass_fc])*0.45359237
 
 
 
