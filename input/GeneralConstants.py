@@ -21,7 +21,18 @@ npax = 4                # Amount of passengers 0
 
 
 # Power
-p_density = 3.117e3     # w/kg    ? # averaged from:  A review: high power density motors for electric vehicles
+p_density = 3.117e3     # w totalEnergy/kg    ? # averaged from:  A review: high power density motors for electric vehicles
+DOD = 0.8
+ChargingEfficiency = 0.7
+
+#fuelcell input
+VolumeDensityFuellCell = 3.25 #kW /l
+PowerDensityFuellCell = 3.9 #kW/kg
+effiencyFuellCell = 0.6
+
+#Tank input
+VolumeDensityTank = 0.5 #kg/l
+EnergyDensityTank = 1.85 # kWh/kg
 
 # Requirements
 n_min = -1              # [-]       O   Min load factor
