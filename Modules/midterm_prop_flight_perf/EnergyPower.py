@@ -26,26 +26,87 @@ def hoverstuffduct(T, rho, atot,toverw ):
     energyhoverductMAX = 90/3600 * PhductMAX * 1.3
     return Phduct, PhductMAX, energyhoverduct, energyhoverductMAX
 
-def cruisestuff(MTOW,vinf,clcd,propeff,range):
-    powercruise = MTOW*vinf/(clcd*propeff)
-    energycruise = range/(vinf*3.6) * powercruise * 1.3
-    return powercruise, energycruise
+def powercruise(MTOW,v_cr,lift_over_drag,propeff,range):
+    powercruise = MTOW*v_cr/(lift_over_drag*propeff)
+    return powercruise
+
+def powerclimb(MTOW, v_climb, lod_climb, prop_eff, ROC):
+    climb_power = (MTOW * v_climb * (1/lod_climb) + ROC )/prop_eff
+    return climb_power
+
+def powerloiter(MTOW, v_climb, lod_climb, propeff):
+    loiter_power = (MTOW * v_climb * (1/lod_climb))/prop_eff
+    return loiter_power 
+
+
 
 # if __name__ == '__main__':
+
+
+
+
 #     J1hoverpower, J1maxpower, J1hoverenergy, J1maxenergy = hoverstuffopen(MTOW, rho, J1area,J1toverw)
+
+
+
+
 #     W1hoverpower, W1maxpower, W1hoverenergy, W1maxenergy = hoverstuffopen(MTOW, rho, W1area, W1toverw)
+
+
+
+
 #     L1hoverpower, L1maxpower, L1hoverenergy, L1maxenergy = hoverstuffduct(MTOW, rho, L1area, L1toverw)
 
+
+
+
+
 #     J1vcr = vcruise(MTOW, rho, J1area, vinfms)
+
+
+
+
 #     L1vcr = vcruise(MTOW, rho, L1area, vinfms)
+
+
+
+
 #     W1vcr = vcruise(MTOW, rho, W1area, vinfms)
 
+
+
+
+
 #     J1prop = propeff(J1vcr, vinfms)
+
+
+
+
 #     L1prop = propeff(L1vcr, vinfms)
+
+
+
+
 #     W1prop = propeff(W1vcr, vinfms)
 
+
+
+
+
 #     J1cruisepower, J1cruiseenergy = cruisestuff(MTOW,vinfms,J1clcd, J1prop, range)
+
+
+
+
 #     L1cruisepower, L1cruiseenergy = cruisestuff(MTOW, vinfms,L1clcd, L1prop, range)
+
+
+
+
 #     W1cruisepower, W1cruiseenergy = cruisestuff(MTOW, vinfms, W1clcd, W1prop, range)
+
+
+
+
 
 

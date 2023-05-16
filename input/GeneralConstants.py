@@ -16,7 +16,7 @@ import os
 
 sys.path.append(str(list(pl.Path(__file__).parents)[1]))
 
-from  modules.misc_tools.tools import ISA
+from  Modules.misc_tools.tools import ISA
 
 #performance
 v_cr = 300/3.6
@@ -32,7 +32,7 @@ p_cr = atm.pressure()           # pressure at cr O
 t_cr = atm.temperature()      # Temperature at cr O
 a_cr = atm.soundspeed()     #Speed of sound at cruise O
 R = 287                 #[J/kg*K]   O
-
+gamma = 1.4
 # Sea leavel atmospheric constants
 rho_sl = atm.p_SL            #[kg/m^3]   O
 p_sl = atm.rho_SL
