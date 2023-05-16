@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.colors as mcolors
 import seaborn as sns
 
-beta = np.radians(10) # The angle at which the engines are tilted
+beta = np.radians(45) # The angle at which the engines are tilted
 b = 14
 lf = 10
 mtow = 3000*9.80665
@@ -123,7 +123,8 @@ vectors = np.array([[0, np.sin(beta), np.cos(beta)],    # F1
                     [0, -np.sin(beta), np.cos(beta)],     #F4
                     [0, np.sin(beta), np.cos(beta)]])     #F5
 # vector_lengths = [0, 0, 0.707, 1, 0.285]  # Lengths of the vectors
-vector_lengths = normalized_forces  # Lengths of the vectors
+vectors = vectors*normalized_forces.reshape(5,1)
+vector_lengths = np.ones(5)*5  # Lengths of the vectors
 vector_bases = np.array([[0.4*lf, b/4, 0], 
                         [0.4*lf, -b/4, 0],
                         [0.1*lf, b/2, 0],
@@ -142,14 +143,14 @@ ax.set_title("The solution")
 # Plotting the vectors
 
 for vector, length, base, col, label in zip(vectors, vector_lengths, vector_bases, colors, vector_labels):
-    ax.quiver(*base, *vector, length=length, color= col, normalize= True)
+    ax.quiver(*base, *vector, length=length, color= col)
     ax.text(base[0] + vector[0], base[1] + vector[1], base[2] , label)
 
 # Set plot limits
-max_range = 1.4*lf
+max_range = lf
 ax.set_xlim([-max_range, max_range])
 ax.set_ylim([-max_range, max_range])
-ax.set_zlim([0,np.max(np.abs(vector_lengths))])
+ax.set_zlim([0,max_range])
 
 # Set labels for the axes
 ax.set_xlabel('X + towards nose')
