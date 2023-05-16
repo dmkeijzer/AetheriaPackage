@@ -5,11 +5,10 @@ import numpy as np
 import matplotlib.colors as mcolors
 import seaborn as sns
 
-beta = np.radians(10) # The angle at which the engines are tilted
+beta = np.radians(5) # The angle at which the engines are tilted
 b = 14
 lf = 10
 mtow = 3000*9.80665
-
 
 for i in range(2):
     # Example 3D vectors
@@ -113,12 +112,18 @@ print(f"Resultant forces  \n ______________________ \n  {forces}")
 
 #---------------------------------------Plotting results --------------------------------------
 
+
+forces = np.array(forces)
+normalized_forces = (forces- np.min(forces)) / (np.max(forces) - np.min(forces))
+
+
 vectors = np.array([[0, np.sin(beta), np.sin(beta)],    # F1
                     [0, -np.sin(beta), np.sin(beta)],    #F2
                     [0, np.sin(beta), np.sin(beta)],     #F3
                     [0, -np.sin(beta), np.sin(beta)],     #F4
                     [0, np.sin(beta), np.sin(beta)]])     #F5
-vector_lengths = [0, 0, 0.707, 1, 0.285]  # Lengths of the vectors
+# vector_lengths = [0, 0, 0.707, 1, 0.285]  # Lengths of the vectors
+vector_lengths = normalized_forces  # Lengths of the vectors
 vector_bases = np.array([[0.4*lf, b/4, 0], 
                         [0.4*lf, -b/4, 0],
                         [0.1*lf, b/2, 0],
@@ -126,8 +131,8 @@ vector_bases = np.array([[0.4*lf, b/4, 0],
                         [-0.6*lf, b/4, 0]])
 
 vector_labels = ['F1', 'F2', 'F3', "F4", "F5"]  # Labels for each vector
+
 # Create a figure and 3D axis
-plt.clf()
 palette = 'Set2'  # Choose any Seaborn color palette of your choice
 colors = sns.color_palette(palette, 6)
 fig = plt.figure()
