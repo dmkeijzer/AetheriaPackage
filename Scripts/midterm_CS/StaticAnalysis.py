@@ -38,7 +38,7 @@ for i in range(2):
                             [0, np.sin(beta), np.cos(beta)],     #F3
                             [0, -np.sin(beta), np.cos(beta)],     #F4
                             [0, np.sin(beta), np.cos(beta)]])     #F5
-        vector_lengths = np.ones(6)*30  # Lengths of the vectors
+        vector_lengths = np.ones(6)  # Lengths of the vectors
         vector_bases = np.array([[0.4*lf, b/4, 0], 
                                 [0.4*lf, -b/4, 0],
                                 [0.1*lf, b/2, 0],
@@ -143,7 +143,7 @@ ax.set_title("The solution")
 
 for vector, length, base, col, label in zip(vectors, vector_lengths, vector_bases, colors, vector_labels):
     ax.quiver(*base, *vector, length=length, color= col, normalize= True)
-    ax.text(base[0] + vector[0], base[1] + vector[1], base[2] + vector[2], label)
+    ax.text(base[0] + vector[0], base[1] + vector[1], base[2] , label)
 
 # Set plot limits
 max_range = 1.4*lf
