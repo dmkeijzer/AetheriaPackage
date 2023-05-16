@@ -22,18 +22,18 @@ cgranges = zeros(4,0);
 % cg_r_guess = 5;
 
 
-%%%%%%J1
-x_rotor_loc = [0.57 0.57 3.4 3.4 6.8 6.8];
-
-y_rotor_loc = [2.3 -2.3 5.4 -5.4 2.3 -2.3];
-
-rotor_direction = [-1 1 -1 1 -1 1];
-
-S_proj = 16.8;
-
-cg_fw_gess = 6;
-
-cg_r_guess = 3;
+% J1
+% x_rotor_loc = [2.3 -2.3 ];
+% 
+% y_rotor_loc = [4.2 2.99 1.78 -1.78 -2.99 -4.2 4.2 2.99 1.78 -1.78 -2.99 -4.2];
+%
+% rotor_direction = [-1 -1 -1 1 1 1 -1 -1 -1 1 1 1];
+% 
+% S_proj = 16.8;
+% 
+% cg_fw_gess = 5;
+% 
+% cg_r_guess = 5;
 
 
 n=size(x_rotor_loc,2);
@@ -47,7 +47,7 @@ mass = 2510;
 
 
 
-Tfacvec = 1:0.05:6;
+Tfacvec = 1:0.05:2.5;
 
 
 
