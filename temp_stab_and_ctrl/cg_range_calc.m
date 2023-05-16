@@ -5,7 +5,7 @@
 %%%%%%%%%%%%%%%%%%%%%INPUTS%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function [ret] = cg_range_calc(convergence_direction,rotor_dir,rotor_ku,x_cg,x_rotor_locations,y_rotor_locations,Rotors,rotor_Yita,ma,Sproj,Tfactor)
-step_size=0.005;     %program works by approaching the cg 0.1m at a time, this is an absolute value of step size, LEAVE AS IS.  
+step_size=0.025;     %program works by approaching the cg 0.1m at a time, this is an absolute value of step size, LEAVE AS IS.  
 ACAI=1;    %any positive number works, LEAVE AS IS. 
 %convergence_direction=1; %put as +1 to find max cg, put as -1 to find min cg.
 s2i = struct('anticlockwise', 1, 'clockwise', -1);

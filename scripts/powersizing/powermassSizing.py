@@ -13,6 +13,7 @@ from modules.powersizing.fuellCell import FuellCellSizing
 from modules.powersizing.hydrogenTank import HydrogenTankSizing
 from modules.powersizing.energypowerrequirement import MissionRequirements
 from modules.powersizing.powersystem import PropulsionSystem, onlyFuelCellSizng
+import input.GeneralConstants as  const
 
 #plotfunction
 def plotAll(echo, variable,variableUnit):
@@ -31,25 +32,14 @@ def plotAll(echo, variable,variableUnit):
     axs[1, 1].grid()
     
 #-----------------------inputs-----------------
-plotting = True
+plotting = False
 echo = np.arange(0,1.5,0.05)
-DOD = 0.8
-ChargingEfficiency = 0.7
 
 #batteries
-Liionbat = BatterySizing(sp_en_den= 0.3, vol_en_den=0.45, sp_pow_den=2,cost =30.3, charging_efficiency= ChargingEfficiency, depth_of_discharge= DOD, discharge_effiency=0.95)
-Lisulbat = BatterySizing(sp_en_den= 0.42, vol_en_den=0.4, sp_pow_den=10,cost =61.1, charging_efficiency= ChargingEfficiency, depth_of_discharge= DOD, discharge_effiency=0.95)
-Solidstatebat = BatterySizing(sp_en_den= 0.4, vol_en_den=1, sp_pow_den=10,cost =82.2, charging_efficiency= ChargingEfficiency, depth_of_discharge= DOD, discharge_effiency=0.95)
+Liionbat = BatterySizing(sp_en_den= 0.3, vol_en_den=0.45, sp_pow_den=2,cost =30.3, charging_efficiency= const.ChargingEfficiency, depth_of_discharge= const.DOD, discharge_effiency=0.95)
+Lisulbat = BatterySizing(sp_en_den= 0.42, vol_en_den=0.4, sp_pow_den=10,cost =61.1, charging_efficiency= const.ChargingEfficiency, depth_of_discharge= const.DOD, discharge_effiency=0.95)
+Solidstatebat = BatterySizing(sp_en_den= 0.4, vol_en_den=1, sp_pow_den=10,cost =82.2, charging_efficiency= const.ChargingEfficiency, depth_of_discharge= const.DOD, discharge_effiency=0.95)
 #HydrogenBat = BatterySizing(sp_en_den=1.85,vol_en_den=3.25,sp_pow_den=2.9,cost=0,discharge_effiency=0.6,charging_efficiency=1,depth_of_discharge=1)
-
-#fuelcell input
-VolumeDensityFuellCell = 3.25 #kW /l
-PowerDensityFuellCell = 3.9 #kW/kg
-effiencyFuellCell = 0.6
-
-#Tank input
-VolumeDensityTank = 0.5 #kg/l
-EnergyDensityTank = 1.85 # kWh/kg
 
 #input Flight performance params
 totalEnergy = 340  #kWh
@@ -58,8 +48,8 @@ hoverPower = 1900 #kW
 
 #-----------------------Model-----------------
 BatteryUsed = Liionbat
-FirstFC = FuellCellSizing(PowerDensityFuellCell,VolumeDensityFuellCell,effiencyFuellCell, 0)
-FuelTank = HydrogenTankSizing(EnergyDensityTank,VolumeDensityTank,0)
+FirstFC = FuellCellSizing(const.PowerDensityFuellCell,const.VolumeDensityFuellCell,const.effiencyFuellCell, 0)
+FuelTank = HydrogenTankSizing(const.EnergyDensityTank,const.VolumeDensityTank,0)
 InitialMission = MissionRequirements(EnergyRequired= totalEnergy, CruisePower= cruisePower, HoverPower= hoverPower )
 
 
@@ -69,6 +59,7 @@ Mass = PropulsionSystem.mass(np.copy(echo),
                                                             Battery = BatteryUsed, 
                                                             FuellCell = FirstFC, 
                                                             FuellTank= FuelTank)
+
 TotalMass, TankMass, FuelCellMass, BatteryMass = Mass
 
 
@@ -89,6 +80,6 @@ OnlyH2Tank, OnlyH2FC = onlyFuelCellSizng(InitialMission, FuelTank, FirstFC)
 print(OnlyH2Tank + OnlyH2FC)
 
 print(np.min(TotalMass))
-if plotting:
+if plotting and __name__ == "__main__":
 
     plt.show()
