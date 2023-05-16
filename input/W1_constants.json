@@ -34,6 +34,7 @@
   "c_tip2": 0.476,
   "sweep_le1": 1.08,
   "sweep_le2": 1.08,
+  "sweep_m": 0.044028,
   "taper1": 0.4,
   "taper2": 0.4,
   "StotS": 1.2,

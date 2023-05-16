@@ -41,7 +41,7 @@ for dict_name in dict_names:
 
         #Form factor
         FF_fus_var = FF_fus(data["l_fuselage"], data["d_fuselage"])
-        FF_wing_var = FF_wing(const.toc, const.xcm, M_var, const.sweep_m)
+        FF_wing_var = FF_wing(const.toc, const.xcm, M_var, data["sweep_m"])
 
         #Wetted area
         S_wet_fus_var = S_wet_fus(data["d_fuselage"], data["l_cockpit"], data["l_cabin"], data["l_tail"])

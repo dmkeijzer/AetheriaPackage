@@ -52,10 +52,9 @@ m_pl = 475 # kg
 
 
 #airfoil
-toc = 0.1 #PLACEHOLDER
-xcm = 0.1 # PLACEHOLDER
-sweep_m = 0.1 #PLACEHOLDER
-A_base = 0 #PLACEHOLDER
+toc = 0.169 #NACA44017
+xcm = 0.293 # NACA44017
+A_base = 0 #Assumed 0 base area
 frac_lam_fus = 0.05
 frac_lam_wing = 0.1
 k = 0.634 * 10**(-5) # Surface smoothness parameter
