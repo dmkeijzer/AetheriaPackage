@@ -75,7 +75,7 @@ for i in range(2):
     ax.set_zlabel('Z + upwards')
 
     # Show the plot
-    plt.show()
+    # plt.show()
 
 # Solving for F6 falling out
 #------------------------------------------------------
@@ -99,7 +99,7 @@ eom_mat = np.array([[0, 0, 0, 0, 0, 0],                # Fx
 res_vec = np.array([0,0, mtow, 0, 0, 0])
 
 eom_reformed_mat =  np.matrix(eom_mat[1:,:-1]) # Picking out the correct rows and columns
-res_vec_reformed = res_vec[:5].reshape(5,1) # Remove F6
+res_vec_reformed = res_vec[1:].reshape(5,1) # Remove F6
 
 print(f"{eom_reformed_mat} * F vector \n \n = {res_vec_reformed} \n")
 
