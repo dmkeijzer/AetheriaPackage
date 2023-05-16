@@ -75,7 +75,7 @@ for i in range(2):
     ax.set_zlabel('Z + upwards')
 
     # Show the plot
-    # plt.show()
+    plt.show()
 
 # Solving for F6 falling out
 #------------------------------------------------------
@@ -86,6 +86,7 @@ for i in range(2):
 # [Sum in moment about x ]
 # [Sum in moment about y]
 # [Sum in moment about z] ]
+#------------------------------------------------------
 
 
         #           F1  F2 F3 F4 F5 F6
@@ -109,3 +110,45 @@ print(f"{eom_reformed_mat} * F vector \n \n = {res_vec_reformed} \n")
 forces = eom_reformed_mat**-1@res_vec_reformed
 
 print(f"Resultant forces  \n ______________________ \n  {forces}")
+
+#---------------------------------------Plotting results --------------------------------------
+
+vectors = np.array([[0, np.sin(beta), np.sin(beta)],    # F1
+                    [0, -np.sin(beta), np.sin(beta)],    #F2
+                    [0, np.sin(beta), np.sin(beta)],     #F3
+                    [0, -np.sin(beta), np.sin(beta)],     #F4
+                    [0, np.sin(beta), np.sin(beta)]])     #F5
+vector_lengths = [0, 0, 0.707, 1, 0.285]  # Lengths of the vectors
+vector_bases = np.array([[0.4*lf, b/4, 0], 
+                        [0.4*lf, -b/4, 0],
+                        [0.1*lf, b/2, 0],
+                        [0.1*lf, -b/2, 0],
+                        [-0.6*lf, b/4, 0]])
+
+vector_labels = ['F1', 'F2', 'F3', "F4", "F5"]  # Labels for each vector
+# Create a figure and 3D axis
+plt.clf()
+palette = 'Set2'  # Choose any Seaborn color palette of your choice
+colors = sns.color_palette(palette, 6)
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+ax.set_title("The solution")
+
+# Plotting the vectors
+
+for vector, length, base, col, label in zip(vectors, vector_lengths, vector_bases, colors, vector_labels):
+    ax.quiver(*base, *vector, length=length, color= col, normalize= True)
+    ax.text(base[0] + vector[0], base[1] + vector[1], base[2] + vector[2], label)
+
+# Set plot limits
+max_range = 1.4*lf
+ax.set_xlim([-max_range, max_range])
+ax.set_ylim([-max_range, max_range])
+ax.set_zlim([0,np.max(np.abs(vector_lengths))])
+
+# Set labels for the axes
+ax.set_xlabel('X + towards nose')
+ax.set_ylabel('Y + towards left wing')
+ax.set_zlabel('Z + upwards')
+
+plt.show()
