@@ -31,6 +31,7 @@ W1clcd = 14.3
 
 
 vinf = 300 # km/h
+vinfms = vinf / 3.6 #m/s
 range = 400 #km
 
 def vcruise(MTOW, rho,atot, vinf):
@@ -61,7 +62,7 @@ def hoverstuffduct(T, rho, atot,toverw ):
 
 def cruisestuff(MTOW,vinf,clcd,propeff,range):
     powercruise = MTOW*vinf/(clcd*propeff)
-    energycruise = range/vinf * powercruise * 1.3
+    energycruise = range/(vinf*3.6) * powercruise * 1.3
     return powercruise, energycruise
 
 if __name__ == '__main__':
@@ -69,16 +70,17 @@ if __name__ == '__main__':
     W1hoverpower, W1maxpower, W1hoverenergy, W1maxenergy = hoverstuffopen(MTOW, rho, W1area, W1toverw)
     L1hoverpower, L1maxpower, L1hoverenergy, L1maxenergy = hoverstuffduct(MTOW, rho, L1area, L1toverw)
 
-    J1vcr = vcruise(MTOW, rho, J1area, vinf)
-    L1vcr = vcruise(MTOW, rho, L1area, vinf)
-    W1vcr = vcruise(MTOW, rho, W1area, vinf)
+    J1vcr = vcruise(MTOW, rho, J1area, vinfms)
+    L1vcr = vcruise(MTOW, rho, L1area, vinfms)
+    W1vcr = vcruise(MTOW, rho, W1area, vinfms)
 
-    J1prop = propeff(J1vcr, vinf)
-    L1prop = propeff(L1vcr, vinf)
-    W1prop = propeff(W1vcr, vinf)
+    J1prop = propeff(J1vcr, vinfms)
+    L1prop = propeff(L1vcr, vinfms)
+    W1prop = propeff(W1vcr, vinfms)
 
-    J1cruisepower, J1cruiseenergy = cruisestuff(MTOW,vinf,J1clcd, J1prop, range)
-    L1cruisepower, L1cruiseenergy = cruisestuff(MTOW, vinf,L1clcd, L1prop, range)
-    W1cruisepower, W1cruiseenergy = cruisestuff(MTOW, vinf, W1clcd, W1prop, range)
+    J1cruisepower, J1cruiseenergy = cruisestuff(MTOW,vinfms,J1clcd, J1prop, range)
+    L1cruisepower, L1cruiseenergy = cruisestuff(MTOW, vinfms,L1clcd, L1prop, range)
+    W1cruisepower, W1cruiseenergy = cruisestuff(MTOW, vinfms, W1clcd, W1prop, range)
+
 
 

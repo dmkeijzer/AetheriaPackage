@@ -79,7 +79,7 @@ def plot_wing_power_loading_graphs(dict_directory,dict_name,i):
     plt.xlim([WS_range[100],WS_range[-1]])
     plt.ylim(ylim)
     output_directory = str(list(pl.Path(__file__).parents)[2])+"\\output\\wing_power_loading_diagrams\\"
-    plt.savefig(output_directory+str(data['name'])+".png")
+    plt.savefig(output_directory+str(data['name'])+".png",dpi=600)
     
     #PRINT VALUES
     print(data['name'])
@@ -89,6 +89,7 @@ def plot_wing_power_loading_graphs(dict_directory,dict_name,i):
     print("WP_noverticalflight = ",str(round(WP_cruise,8)))
     print("TW = ", str(round(TW_max,8))),'\n'
     print("Power required  = ", 2510*9.81/WP_hover/1000,"[kW]")
+    print("Wing surface = ", 2510*9.81/WS_max,'[m^2]')
 
     with open(dict_directory+"\\"+dict_name, "r") as jsonFile:
         data = json.loads(jsonFile.read())
