@@ -22,7 +22,7 @@ cgranges = zeros(4,0);
 % cg_r_guess = 5;
 
 
-%%%%%%J1
+%%%%%%J1 / J3
 x_rotor_loc = [0.57 0.57 3.4 3.4 6.8 6.8];
 
 y_rotor_loc = [2.3 -2.3 5.4 -5.4 2.3 -2.3];
@@ -75,7 +75,7 @@ mass = 2510;
 
 
 
-Tfacvec = 1:0.05:4;
+Tfacvec = 1:0.05:6;
 
 
 
@@ -103,17 +103,24 @@ while yetanothercondition
         x_cg_fw = [];
         x_cg_r = [];
         condition = true;
+
+        %%% uncomment next section for individual engine failure testing
         while condition
+        %%%% indent next two rows to use while loop (test for all
+        %%%% individual engine failures)
             x_cg_fw(end+1) = cg_range_calc(-1, rotor_direction, r_ku, cg_fw_gess, x_rotor_loc, y_rotor_loc, Rotor, rotor_eta, mass, S_proj,Tfac);
             x_cg_r(end+1) = cg_range_calc(1, rotor_direction, r_ku, cg_r_guess, x_rotor_loc, y_rotor_loc, Rotor, rotor_eta, mass, S_proj,Tfac);
             rotor_eta = ones(1,n);
-            rotor_eta(i)=0;
+            rotor_eta(i)=0; %0.5 for J3
             i=i+1;
-            if i > 
+            if i > n
                 condition = false;
             end
             
         end
+
+
+
         updatevector = [max(x_cg_fw) min(x_cg_r) rotor_direction Tfac];
         cgranges = horzcat(cgranges, updatevector');
         % fprintf('The constraining fw cg is %d.\n', max(x_cg_fw))
