@@ -1,5 +1,5 @@
 """"
-Author: Damien & Can
+Author: Damien & Can & Lucas
 
 """
 
@@ -46,7 +46,9 @@ for dict_name in dict_names:
 
     #-----------------------------Cruise-----------------------
     P_cr = powercruise(data["mtom"], const.g0, const.v_cr, data["ld_cr"], prop_eff_var)
-    t_cr = (const.mission_dist)/const.v_cr
+    d_climb = (const.h_cruise - const.h_transition)/np.tan(data["G"])
+    d_desc = (const.h_cruise - const.h_transition)/np.tan(data['G'])
+    t_cr = (const.mission_dist-d_desc-d_climb)/const.v_cr
     E_cr = P_cr * t_cr
 
     # -----------------------Descend-----------------------
