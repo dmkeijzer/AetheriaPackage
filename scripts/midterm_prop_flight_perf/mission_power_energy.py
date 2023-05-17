@@ -38,8 +38,8 @@ for dict_name in dict_names:
     #----------------------- Horizontal Climb --------------------------------------------------------------------
     v_aft= v_exhaust(data["mtom"], const.g0, const.rho_cr, data["mtom"]/data["diskloading"], const.v_cr)
     prop_eff_var = propeff(v_aft, const.v_cr)
-    climb_power_var = powerclimb(data["mtom"], const.g0, data["S"], const.rho_cr, data["ld_climb"], prop_eff_var, const.rho_cr)
-    t_climb = (const.h_cruise/const.h_transition)/const.roc_cr
+    climb_power_var = powerclimb(data["mtom"], const.g0, data["S"], const.rho_sl, data["ld_climb"], prop_eff_var, const.rho_cr)
+    t_climb = (const.h_cruise - const.h_transition) / const.roc_cr
     E_climb = climb_power_var * t_climb
     
     #-----------------------Transition (after climb because it needs the power)-----------------------
@@ -87,5 +87,5 @@ for dict_name in dict_names:
     with open(os.path.join(dict_directory, dict_name), "w") as jsonFile:
         json.dump(data, jsonFile, indent= 6)
         # print(data)
-    print(E_climb)
+    
     print(f"Energy consumption {data['name']} = {round(E_total/3.6e6, 1)} [Kwh]")
