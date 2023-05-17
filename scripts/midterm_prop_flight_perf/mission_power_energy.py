@@ -86,6 +86,16 @@ for dict_name in dict_names:
     data["power_hover"] = P_loit_land
     data["power_climb"] = climb_power_var
     data["power_cruise"] = P_cr 
+
+    data["takeoff_energy"] = E_to
+    data["trans2hor_energy"] = E_trans_ver2hor
+    data["climb_energy"] = E_climb
+    data["cruise_energy"] = E_cr
+    data["descend_energy"] = E_desc
+    data["hor_loiter_energy"] = E_loit_hor
+    data["trans2ver_energy"] = E_trans_hor2ver
+    data["ver_loiter_energy"] = E_loit_vert
+    data["land_energy"] = energy_landing_var
     
     download_dir = os.path.join(os.path.expanduser("~"), "Downloads")
 
