@@ -32,7 +32,8 @@ p_cr = atm.pressure()           # pressure at cr O
 t_cr = atm.temperature()      # Temperature at cr O
 a_cr = atm.soundspeed()     #Speed of sound at cruise O
 R = 287                 #[J/kg*K]   O
-gamma = 1.4
+gamma = 1.4                  #        O
+
 # Sea leavel atmospheric constants
 rho_sl = atm.p_SL            #[kg/m^3]   O
 p_sl = atm.rho_SL
@@ -58,6 +59,12 @@ A_base = 0 #Assumed 0 base area
 frac_lam_fus = 0.05
 frac_lam_wing = 0.1
 k = 0.634 * 10**(-5) # Surface smoothness parameter
+
+# Time constants
+t_cr = 400*1000/(300/3.6)
+t_takeoff = 15.3
+t_trans = 10 #PLACEHOLDER
+t_loiter = 20*60
 
 #fuelcell input
 VolumeDensityFuellCell = 3.25 #kW /l
