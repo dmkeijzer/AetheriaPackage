@@ -8,7 +8,7 @@ import numpy as np
 import sys
 import pathlib as pl
 
-sys.path.append(str(list(pl.Path(__file__).parents)[2]))
+sys.path.append(str(list(pl.Path(__file__).parents)[0]))
 
 from battery import BatterySizing
 from hydrogenTank import HydrogenTankSizing
