@@ -71,6 +71,14 @@ for dict_name in dict_names:
     #---------------------------- TOTAL ENERGY CONSUMPTION ----------------------------
     E_total = E_to + E_trans_ver2hor + E_climb + E_cr + E_desc + E_trans_hor2ver + energy_landing_var
 
-    #---------------------------- Writing to JSON ----------------------------
+    #---------------------------- Writing to JSON and printing result  ----------------------------
+    data["mission_energy"] = E_total
+    data["power_hover"] = takeoff_power_var
+    data["power_climb"] = climb_power_var
+    data["power_cruise"] = P_cr 
+
+    with open(os.path.join(dict_directory, dict_name), "w") as jsonFile:
+        json.dump(data, jsonFile, indent= 6)
+        # print(data)
 
     print(f"Energy consumption {data['name']} = {round(E_total/3.6e6, 1)} [Kwh]")
