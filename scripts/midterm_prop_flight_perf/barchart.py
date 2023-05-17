@@ -42,7 +42,7 @@ plt.xticks(rotation= -45, fontsize= 8)
 plt.ylabel('Energy (J)')
 
 name = ["J1", "L1", "W1"]
-plt.legend(labels=name, loc="upper right",fontsize=6)
+plt.legend(labels=name, loc="upper right",fontsize=10)
 plt.title("Mission Energy "+ data["name"], fontsize = 12)
 plt.tight_layout()
 
