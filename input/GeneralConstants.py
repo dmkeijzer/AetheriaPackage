@@ -20,8 +20,12 @@ from  modules.misc_tools.tools import ISA
 
 #performance
 v_cr = 300/3.6
+roc_cr = 5
+rod_cr = 10 # Rate of descend PLACEHOLDER
+roc_hvr = 2
 h_cruise = 400          #[m]        O
 mission_dist = 400e3  # km
+h_transition = 30 # meter PLACEHOLDER
 npax = 4                # Amount of passengers O
 
 #atmospheric constants
@@ -60,7 +64,7 @@ frac_lam_fus = 0.05
 frac_lam_wing = 0.1
 k = 0.634 * 10**(-5) # Surface smoothness parameter
 
-# Time constants
+# Time constants for midterm
 t_cr = 400*1000/(300/3.6)
 t_takeoff = 15.3
 t_trans = 10 #PLACEHOLDER

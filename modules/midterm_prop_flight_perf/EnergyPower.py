@@ -26,7 +26,7 @@ def hoverstuffduct(T, rho, atot,toverw ):
     energyhoverductMAX = 90/3600 * PhductMAX * 1.3
     return Phduct, PhductMAX, energyhoverduct, energyhoverductMAX
 
-def powercruise(MTOM, g0 ,v_cr,lift_over_drag,propeff,range):
+def powercruise(MTOM, g0 ,v_cr,lift_over_drag,propeff):
     powercruise = MTOM*g0*v_cr/(lift_over_drag*propeff)
     return powercruise
 
@@ -35,7 +35,7 @@ def powerclimb(MTOM, g0, v_climb, lod_climb, prop_eff, ROC):
     return climb_power
 
 def powerloiter(MTOM, g0, v_climb, lod_climb, propeff):
-    loiter_power = (MTOM*g0 * v_climb * (1/lod_climb))/prop_eff
+    loiter_power = (MTOM*g0 * v_climb * (1/lod_climb))/propeff
     return loiter_power 
 
 

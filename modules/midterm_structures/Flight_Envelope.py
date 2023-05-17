@@ -6,7 +6,7 @@ from input.GeneralConstants import *
 
 
 def maneuvrenv(V, Vs, WoS, CLmax, nmin, nmax, pos=True):
-    n = lambda CL, V, WoS: 0.5 * rho_cruise * V ** 2 * CL / WoS
+    n = lambda CL, V, WoS: 0.5 * rho_cr* V ** 2 * CL / WoS
     Vc, VD = Vs
     interpolate = lambda V, V1, V2, n1, n2: n1 + (V - V1) * (n2 - n1) / (V2 - V1)
     return min(n(CLmax, V, WoS), nmax) if pos else \
