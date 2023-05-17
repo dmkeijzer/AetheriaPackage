@@ -22,13 +22,15 @@ for dict_name in dict_names:
     mission = [data["takeoff_energy"], data["trans2hor_energy"], data["climb_energy"],  
                data["cruise_energy"], data["descend_energy"], data["hor_loiter_energy"],  
                data["trans2ver_energy"], data["ver_loiter_energy"], data["land_energy"]]
+    for i in range(len(mission)):
+        mission[i] = mission[i]/3.6e6
     bardata.append(mission)
     print(bardata)
 
 labels = ["Take-off", "Transition to horizontal", "Climbing", "Cruise", "Descend", "Loiter horizontal","Transition to vertical", "Loiter vertical", "Landing"]
 
 # Width of each bar
-bar_width = 0.1
+bar_width = 0.2
 
 # X locations for the bars
 x = np.arange(len(labels))
@@ -39,7 +41,7 @@ for i, segments in enumerate(bardata):
 
 plt.xlabel('Mission Segments')
 plt.xticks(rotation= -45, fontsize= 8)
-plt.ylabel('Energy (J)')
+plt.ylabel('Energy (kWh)')
 
 name = ["J1", "L1", "W1"]
 plt.legend(labels=name, loc="upper right",fontsize=10)
