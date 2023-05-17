@@ -83,6 +83,8 @@ for dict_name in dict_names:
     data["power_hover"] = P_loit_land
     data["power_climb"] = climb_power_var
     data["power_cruise"] = P_cr 
+    
+    download_dir = os.path.join(os.path.expanduser("~"), "Downloads")
 
     with open(os.path.join(dict_directory, dict_name), "w") as jsonFile:
         json.dump(data, jsonFile, indent= 6)
