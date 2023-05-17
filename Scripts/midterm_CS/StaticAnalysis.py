@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.colors as mcolors
 import seaborn as sns
 
-beta = np.radians(45) # The angle at which the engines are tilted
+beta = np.radians(20) # The angle at which the engines are tilted
 b = 14
 lf = 10
 mtow = 3000*9.80665
@@ -75,7 +75,7 @@ for i in range(2):
 
     # Show the plot
     plt.show()
-
+# 
 # Solving for F6 falling out
 #------------------------------------------------------
 # F1 F2 F3 F4 F5 F6

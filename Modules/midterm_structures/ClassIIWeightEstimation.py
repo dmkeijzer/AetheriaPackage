@@ -109,7 +109,7 @@ class LandingGear(Component):
         self.id = "landing gear"
         self.mass = 0.04*mtom + 6.2
 
-class Engines(Component):
+class Powertrain(Component):
     def __init__(self,p_max, p_dense ):
         """Returns the mas of the engines based on power
 
