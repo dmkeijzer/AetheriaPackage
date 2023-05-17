@@ -75,7 +75,7 @@ mass = 2510;
 
 
 
-Tfacvec = 1:0.05:4;
+Tfacvec = 1:0.05:6;
 
 
 
@@ -102,18 +102,25 @@ while yetanothercondition
         i=1;
         x_cg_fw = [];
         x_cg_r = [];
-        condition = true;
-        while condition
-            x_cg_fw(end+1) = cg_range_calc(-1, rotor_direction, r_ku, cg_fw_gess, x_rotor_loc, y_rotor_loc, Rotor, rotor_eta, mass, S_proj,Tfac);
-            x_cg_r(end+1) = cg_range_calc(1, rotor_direction, r_ku, cg_r_guess, x_rotor_loc, y_rotor_loc, Rotor, rotor_eta, mass, S_proj,Tfac);
-            rotor_eta = ones(1,n);
-            rotor_eta(i)=0;
-            i=i+1;
-            if i > n
-                condition = false;
-            end
+        condition = false;
+
+        %%%% uncomment next section for individual engine failure testing
+        % while condition
+        %%%%% indent next two rows to use while loop (test for all
+        %%%%% individual engine failures)
+        x_cg_fw(end+1) = cg_range_calc(-1, rotor_direction, r_ku, cg_fw_gess, x_rotor_loc, y_rotor_loc, Rotor, rotor_eta, mass, S_proj,Tfac);
+        x_cg_r(end+1) = cg_range_calc(1, rotor_direction, r_ku, cg_r_guess, x_rotor_loc, y_rotor_loc, Rotor, rotor_eta, mass, S_proj,Tfac);
+            % rotor_eta = ones(1,n);
+            % rotor_eta(i)=0;
+            % i=i+1;
+            % if i > 3
+            %     condition = false;
+            % end
             
-        end
+        % end
+
+
+
         updatevector = [max(x_cg_fw) min(x_cg_r) rotor_direction Tfac];
         cgranges = horzcat(cgranges, updatevector');
         % fprintf('The constraining fw cg is %d.\n', max(x_cg_fw))
