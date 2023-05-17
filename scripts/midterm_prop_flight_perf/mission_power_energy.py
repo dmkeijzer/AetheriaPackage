@@ -15,8 +15,10 @@ os.chdir(str(list(pl.Path(__file__).parents)[2]))
 from modules.midterm_prop_flight_perf.EnergyPower import *
 import input.GeneralConstants as const
     
+TEST = False
 dict_directory = "input"
 dict_names = ["J1_constants.json", "L1_constants.json", "W1_constants.json"]
+download_dir = os.path.join(os.path.expanduser("~"), "Downloads")
 
 # Loop through the JSON files
 for dict_name in dict_names:
@@ -84,10 +86,13 @@ for dict_name in dict_names:
     data["power_climb"] = climb_power_var
     data["power_cruise"] = P_cr 
     
-    download_dir = os.path.join(os.path.expanduser("~"), "Downloads")
+    
 
-    with open(os.path.join(dict_directory, dict_name), "w") as jsonFile:
-        json.dump(data, jsonFile, indent= 6)
-        # print(data)
+    if TEST:
+        with open(os.path.join(download_dir, dict_name), "w") as jsonFile:
+            json.dump(data, jsonFile, indent= 6)
+    else:
+        with open(os.path.join(dict_directory, dict_name), "w") as jsonFile:
+            json.dump(data, jsonFile, indent= 6)
     
     print(f"Energy consumption {data['name']} = {round(E_total/3.6e6, 1)} [Kwh]")
