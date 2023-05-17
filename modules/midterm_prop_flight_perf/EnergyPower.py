@@ -1,6 +1,6 @@
 import numpy as np
 
-def v_exhaust(MTOM, g0, rho,atot, vinf):
+def v_exhaust(MTOM, g0, rho, atot, vinf):
     Vcr = np.sqrt(2*(MTOM*g0)/(rho*atot)+vinf**2)
     return Vcr
 
@@ -30,9 +30,10 @@ def powercruise(MTOM, g0 ,v_cr,lift_over_drag,propeff):
     powercruise = MTOM*g0*v_cr/(lift_over_drag*propeff)
     return powercruise
 
-def powerclimb(MTOM, g0, v_climb, lod_climb, prop_eff, ROC):
-    climb_power = (MTOM*g0 * v_climb * (1/lod_climb) + ROC )/prop_eff
+def powerclimb(MTOM, g0, S, rho, lod_climb, prop_eff, ROC):
+    climb_power = MTOM*g0*(np.sqrt(2*MTOM*g0/(S*rho))*(1/lod_climb) + ROC )/prop_eff
     return climb_power
+
 
 def powerloiter(MTOM, g0, v_climb, lod_climb, propeff):
     loiter_power = (MTOM*g0 * v_climb * (1/lod_climb))/propeff
