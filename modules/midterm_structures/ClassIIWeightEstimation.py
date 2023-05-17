@@ -10,7 +10,7 @@ from modules.powersizing.battery import BatterySizing
 from modules.powersizing.fuellCell import FuellCellSizing
 from modules.powersizing.hydrogenTank import HydrogenTankSizing
 from modules.powersizing.energypowerrequirement import MissionRequirements
-from modules.powersizing.powersystem import PropulsionSystem, onlyFuelCellSizng
+from modules.powersizing.powersystem import PropulsionSystem, onlyFuelCellSizing
 import input.GeneralConstants as  const
 
 
@@ -119,7 +119,7 @@ class Powertrain(Component):
         :type p_dense: float
         """        
         super().__init__()
-        self.id = "engines"
+        self.id = "Powertrain"
         self.mass = p_max/p_dense
 
 class HorizontalTail(Component):
@@ -192,11 +192,11 @@ class H2System(Component):
                                                                     FuellCell = FirstFC, 
                                                                     FuellTank= FuelTank)
 
-        TotalMass, TankMass, FuelCellMass, BatteryMass = Mass
+        TotalMass, TankMass, FuelCellMass, BatteryMas, coolingmass= Mass
 
-        OnlyH2Tank, OnlyH2FC = onlyFuelCellSizng(InitialMission, FuelTank, FirstFC)
+        # OnlyH2Tank, OnlyH2FC, OnlyH2TankVol, OnlyH2FCVol = onlyFuelCellSizing(InitialMission, FuelTank, FirstFC)
 
-        self.mass = min(OnlyH2FC + OnlyH2Tank, max(TotalMass))
+        self.mass = max(TotalMass)
 
 
 class Miscallenous(Component):
