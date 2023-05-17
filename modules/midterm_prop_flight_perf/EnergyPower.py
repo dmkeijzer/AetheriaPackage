@@ -35,8 +35,8 @@ def powerclimb(MTOM, g0, S, rho, lod_climb, prop_eff, ROC):
     return climb_power
 
 
-def powerloiter(MTOM, g0, v_climb, lod_climb, propeff):
-    loiter_power = (MTOM*g0 * v_climb * (1/lod_climb))/propeff
+def powerloiter(MTOM, g0, S, rho, lod_climb, prop_eff):
+    loiter_power = MTOM*g0*(np.sqrt(2*MTOM*g0*(1/lod_climb)/(S*rho)))/prop_eff
     return loiter_power 
 
 
