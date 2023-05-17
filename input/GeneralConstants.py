@@ -65,7 +65,6 @@ frac_lam_wing = 0.1
 k = 0.634 * 10**(-5) # Surface smoothness parameter
 
 # Time constants for midterm
-t_cr = 400*1000/(300/3.6)
 t_takeoff = 15.3
 t_trans = 10 #PLACEHOLDER
 t_loiter = 20*60

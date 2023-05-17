@@ -24,7 +24,7 @@ with open('input/W1_constants.json', 'r') as f:
 
 # Computing masses
 
-#J1
+#---------------------------------J1---------------------------------
 weight_J1 = VtolWeightEstimation()
 weight_J1.add_component(Wing(J1["mtom"], J1["S"], const.n_ult, J1["A"]))
 weight_J1.add_component(Fuselage(J1["name"], J1["mtom"], np.pi*J1["w_fuse"], J1["l_fuse"], const.npax + 1 ))
@@ -49,7 +49,7 @@ J1["nacelle_weight"] = J1_results[5]
 J1["h2_weight"] = J1_results[6]
 J1["misc_weight"] = J1_results[7]
 
-#L1
+#---------------------------------L1---------------------------------
 weight_L1 = VtolWeightEstimation()
 weight_L1.add_component(Wing(L1["mtom"], L1["S1"], const.n_ult, L1["A1"]))
 weight_L1.add_component(Wing(L1["mtom"], L1["S2"], const.n_ult, L1["A2"]))
@@ -74,7 +74,7 @@ L1["nacelle_weight"] = L1_results[5]
 L1["h2_weight"] = L1_results[6]
 L1["misc_weight"] = L1_results[7]
 
-# W1
+#--------------------------------- W1---------------------------------
 weight_W1 = VtolWeightEstimation()
 weight_W1.add_component(Wing(W1["mtom"], W1["S1"], const.n_ult, W1["A1"]))
 weight_W1.add_component(Wing(W1["mtom"], W1["S2"], const.n_ult, W1["A2"]))
@@ -99,12 +99,14 @@ W1["nacelle_weight"] = W1_results[5]
 W1["h2_weight"] = W1_results[6]
 W1["misc_weight"] = W1_results[7]
 
+#--------------------------------- Printing results---------------------------------
 
 print("\n", mass_J1, [[i.id for i in weight_J1.components], [i.mass for i in weight_J1.components]],"\n")
 print(mass_L1,[[i.id for i in weight_L1.components], [i.mass for i in weight_L1.components]], "\n")
 print(mass_W1,[[i.id for i in weight_W1.components], [i.mass for i in weight_W1.components]])
 
-TEST = False
+#--------------------------------- Write results to JSON---------------------------------
+TEST = False # Set to true if you want to write to your downloads folders instead of rep0
 
 download_dir = os.path.join(os.path.expanduser("~"), "Downloads")
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
