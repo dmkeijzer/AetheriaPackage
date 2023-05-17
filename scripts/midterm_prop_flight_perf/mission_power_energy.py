@@ -28,22 +28,22 @@ for dict_name in dict_names:
 
     #----------------------- Take-off-----------------------
     if data["name"] == "L1":
-        takeoff_power_var = hoverstuffduct(data["mtom"]*1.1*const.g0, const.rho_sl, data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)[0]
+        P_loit_land = hoverstuffduct(data["mtom"]*1.1*const.g0, const.rho_sl, data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)[0]
     else:
-        takeoff_power_var = hoverstuffopen(data["mtom"]*1.1*const.g0, const.rho_sl, data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)[0]
-    E_to = takeoff_power_var * const.t_takeoff
+        P_loit_land = hoverstuffopen(data["mtom"]*1.1*const.g0, const.rho_sl, data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)[0]
+    E_to = P_loit_land * const.t_takeoff
 
 
 
     #----------------------- Horizontal Climb --------------------------------------------------------------------
     v_aft= v_exhaust(data["mtom"], const.g0, const.rho_cr, data["mtom"]/data["diskloading"], const.v_cr)
     prop_eff_var = propeff(v_aft, const.v_cr)
-    climb_power_var = powerclimb(data["mtom"], const.g0, const.roc_cr/data["G"], data["ld_climb"], prop_eff_var, const.roc_cr)
+    climb_power_var = powerclimb(data["mtom"], const.g0, data["S"], const.rho_cr, data["ld_climb"], prop_eff_var, const.rho_cr)
     t_climb = (const.h_cruise/const.h_transition)/const.roc_cr
     E_climb = climb_power_var * t_climb
     
     #-----------------------Transition (after climb because it needs the power)-----------------------
-    E_trans_ver2hor = (takeoff_power_var + climb_power_var)*const.t_trans / 2
+    E_trans_ver2hor = (P_loit_land + climb_power_var)*const.t_trans / 2
 
     #-----------------------------Cruise-----------------------
     P_cr = powercruise(data["mtom"], const.g0, const.v_cr, data["ld_cr"], prop_eff_var)
@@ -58,30 +58,34 @@ for dict_name in dict_names:
     E_desc = P_desc* t_desc
 
     #----------------------- Loiter-----------------------
-    P_loit_cr = powerloiter(data["mtom"], const.g0, const.v_cr, data["ld_cr"], prop_eff_var)
-    E_loit_cr = P_loit_cr * const.t_loiter
+    P_loit_cr = powerloiter(data["mtom"], const.g0, const.v_cr, data["ld_climb"], prop_eff_var)
+    if data["name"] == "L1":
+        P_loit_land = hoverstuffduct(data["mtom"]*const.g0, const.rho_sl, data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)[0]
+    else:
+        P_loit_land = hoverstuffopen(data["mtom"]*const.g0, const.rho_sl, data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)[0]
+    E_loit_cr = P_loit_cr * const.t_loiter + P_loit_land*30  # 30 sec for hover loitering
 
     #----------------------- Landing----------------------- 
     if data["name"] == "L1":
         landing_power_var = hoverstuffduct(data["mtom"]*const.g0, const.rho_sl, data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)[0]
     else:
         landing_power_var = hoverstuffopen(data["mtom"]*const.g0, const.rho_sl, data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)[0]
-    energy_landing_var = takeoff_power_var * const.t_takeoff
+    energy_landing_var = P_loit_land * const.t_takeoff
 
     #----------------------- Transition (from horizontal to vertical)-----------------------
     E_trans_hor2ver = (landing_power_var + P_desc)*const.t_trans / 2
 
     #---------------------------- TOTAL ENERGY CONSUMPTION ----------------------------
-    E_total = E_to + E_trans_ver2hor + E_climb + E_cr + E_desc + E_trans_hor2ver + energy_landing_var
+    E_total = E_to + E_trans_ver2hor + E_climb + E_cr + E_desc + E_loit_cr + E_trans_hor2ver + energy_landing_var
 
     #---------------------------- Writing to JSON and printing result  ----------------------------
     data["mission_energy"] = E_total
-    data["power_hover"] = takeoff_power_var
+    data["power_hover"] = P_loit_land
     data["power_climb"] = climb_power_var
     data["power_cruise"] = P_cr 
 
     with open(os.path.join(dict_directory, dict_name), "w") as jsonFile:
         json.dump(data, jsonFile, indent= 6)
         # print(data)
-
+    print(E_climb)
     print(f"Energy consumption {data['name']} = {round(E_total/3.6e6, 1)} [Kwh]")
