@@ -5,19 +5,19 @@ s2i = struct('anticlockwise', 1, 'clockwise', -1);
 %%%%%%%%%%%%%%%%%%%%%INPUTS%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-step_size=0.01;     %program works by approaching the cg 0.1m at a time, this is an absolute value of step size, LEAVE AS IS.  
+step_size=0.005;     %program works by approaching the cg 0.1m at a time, this is an absolute value of step size, LEAVE AS IS.  
 ACAI=1;    %any positive number works, LEAVE AS IS. 
 convergence_direction=1; %put as +1 to find max cg, put as -1 to find min cg.
 
-rotor_dir=[1 1 -1 -1 1 -1];
+rotor_dir=[1 1 1 -1 -1 -1];
 rotor_ku=[0.1 0.1 0.1 0.1 0.1 0.1];
-x_cg=7;   %Make any guess between the two wings. This is just to initialize. Exact value does not matter. 
-x_rotor_locations=[3 6 3 6 9 9];
-y_rotor_locations=[10 6 -10 -6 4 -4];
+x_cg=3.5;   %Make any guess between the two wings. This is just to initialize. Exact value does not matter. 
+x_rotor_locations=[0.57 3.4 6.8 0.57 3.4 6.8];
+y_rotor_locations=[2.3 5.4 2.3 -2.3 -5.4 -2.3];
 Rotors=[1 2 3 4 5 6];
-rotor_Yita=[1  1   0   1   1   1]; %efficiency parameters of the rotors (set to 0 or 1 depending on failure)
+rotor_Yita=[1  1   1   1   1   0]; %efficiency parameters of the rotors (set to 0 or 1 depending on failure)
 ma=2510; 
-Sproj=14*1.4;
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -93,7 +93,7 @@ while ACAI>0
     % minimum lift of the rotors
     umin=0;
     % maximum lift of the rotors
-    umax= 9.80665*ma*(1+1/(array_size-1))*(1+1.225*4*Sproj/(ma*9.80665))/(array_size);
+    umax=100000;
     % control constraint set
     Uset.umin=umin*ones(sz,1);
     Uset.umax=umax*ones(sz,1);
