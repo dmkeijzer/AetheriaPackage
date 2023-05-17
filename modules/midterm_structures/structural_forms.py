@@ -31,7 +31,11 @@ def torsion_circular(torque,dens,j_z):
     return torque*dens/j_z
 
 def torsion_thinwalled_closed(torque,thickness,area):
+<<<<<<< Updated upstream
     return torque/(2*thickness*area)
 
 def shear_open_sect(v_x,v_y,i_xx,i_yy,i_xy,thickness,x,y):
     return 
+=======
+    return torque/(2*thickness*area)
+>>>>>>> Stashed changes
