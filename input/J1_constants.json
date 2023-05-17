@@ -39,11 +39,11 @@
       "taper": 0.4,
       "StotS": 1.2,
       "diskloading": 45,
-      "mission_energy": 903551882.3444537,
+      "mission_energy": 934763066.5440756,
       "wp_hover": 0.06822382182812936,
-      "power_hover": 339944.1323715117,
-      "power_climb": 125791.93502327603,
-      "power_cruise": 163365.3629770598,
+      "power_hover": 350916.1952742013,
+      "power_climb": 131424.57364673255,
+      "power_cruise": 168638.1559686626,
       "wp_cruise": 0.06822382182812936,
       "tw": 1.2333333333333332,
       "ws": 1764.0,
@@ -83,5 +83,14 @@
             -2.3
       ],
       "ww": 400,
-      "w_eng": 120
+      "w_eng": 120,
+      "takeoff_energy": 6194180.697889517,
+      "trans2hor_energy": 2681364.9263674915,
+      "climb_energy": 9725418.44985821,
+      "cruise_energy": 776207684.8405092,
+      "descend_energy": 44970.1749249767,
+      "hor_loiter_energy": 122089724.6762651,
+      "trans2ver_energy": 1923219.1323396692,
+      "ver_loiter_energy": 10527485.858226039,
+      "land_energy": 5369017.78769528
 }
