@@ -60,9 +60,9 @@ for dict_name in dict_names:
 
     #----------------------- Landing----------------------- 
     if data["name"] == "L1":
-        landing_power_var = hoverstuffduct(data["mtom"], const.rho_sl, data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)[0]
+        landing_power_var = hoverstuffduct(data["mtom"]*const.g0, const.rho_sl, data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)[0]
     else:
-        landing_power_var = hoverstuffopen(data["mtom"], const.rho_sl, data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)[0]
+        landing_power_var = hoverstuffopen(data["mtom"]*const.g0, const.rho_sl, data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)[0]
     energy_landing_var = takeoff_power_var * const.t_takeoff
 
     #----------------------- Transition (from horizontal to vertical)-----------------------
