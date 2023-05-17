@@ -39,8 +39,8 @@ R = 287                 #[J/kg*K]   O
 gamma = 1.4                  #        O
 
 # Sea leavel atmospheric constants
-rho_sl = atm.p_SL            #[kg/m^3]   O
-p_sl = atm.rho_SL
+rho_sl = atm.rho_SL            #[kg/m^3]   O
+p_sl = atm.p_SL
 T_sl = atm.T_SL
 mhu_sl = atm.mu_SL
 a_sl = atm.a_SL

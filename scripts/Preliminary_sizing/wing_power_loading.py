@@ -28,15 +28,15 @@ def plot_wing_power_loading_graphs(dict_directory,dict_name,i):
     plt.figure(i)#make sure each plot has its own value
     
     #CALCULATE ALL THE VALUES FOR THE GRAPHS
-    TW_range = powerloading_thrustloading(WS_range,rho0,data['roc'],data['StotS'])  
+    TW_range = powerloading_thrustloading(WS_range,rho_sl,data['roc'],data['StotS'])  
     #if data["name"] == "J1":   
     #    TW_range = TW_range*1.3     #Added 30% extra thrust to maintain stability
-    CLIMBRATE = cont_factor*powerloading_climbrate(data['eff'], data['roc'], WS_range,rho_cruise,data['cd0'],data['e'],data['A'])
-    TURN_VCRUISE = cont_factor*powerloading_turningloadfactor(rho_cruise,data['v_cruise'],WS_range,data['eff'],data['A'],data['e'],data['loadfactor'],data['cd0'])
-    TURN_VMAX = cont_factor*powerloading_turningloadfactor(rho_cruise,data['v_max'],WS_range,data['eff'],data['A'],data['e'],data['loadfactor'],data['cd0'])
-    VERTICALFLIGHT = cont_factor*powerloading_verticalflight(data['mtom'],TW_range,data['A_tot'],rho0,data['eff'],data['ducted_bool'],9.81)
-    STALLSPEED = wingloading_stall(data['cLmax'],data['v_stall'], rho0)
-    CLIMBGRADIENT = cont_factor*powerloading_climbgradient(data['e'],data['A'],data['cd0'],WS_range,rho0,data['eff'],data['G'])
+    CLIMBRATE = cont_factor*powerloading_climbrate(data['eff'], data['roc'], WS_range,rho_cr,data['cd0'],data['e'],data['A'])
+    TURN_VCRUISE = cont_factor*powerloading_turningloadfactor(rho_cr,data['v_cruise'],WS_range,data['eff'],data['A'],data['e'],data['loadfactor'],data['cd0'])
+    TURN_VMAX = cont_factor*powerloading_turningloadfactor(rho_cr,data['v_max'],WS_range,data['eff'],data['A'],data['e'],data['loadfactor'],data['cd0'])
+    VERTICALFLIGHT = cont_factor*powerloading_verticalflight(data['mtom'],TW_range,data['A_tot'],rho_sl,data['eff'],data['ducted_bool'],9.81)
+    STALLSPEED = wingloading_stall(data['cLmax'],data['v_stall'], rho_sl)
+    CLIMBGRADIENT = cont_factor*powerloading_climbgradient(data['e'],data['A'],data['cd0'],WS_range,rho_sl,data['eff'],data['G'])
     
     #PLOT ALL THE LINES
     plt.plot(WS_range,CLIMBRATE,label="Climbrate")
@@ -56,7 +56,7 @@ def plot_wing_power_loading_graphs(dict_directory,dict_name,i):
         
     #DETERMINE LIMITING FACTORS
     WS_max = STALLSPEED
-    TW_max = powerloading_thrustloading(WS_max,rho0,data['roc'],data['StotS'])
+    TW_max = powerloading_thrustloading(WS_max,rho_sl,data['roc'],data['StotS'])
     WP_cruise = lowest_area_y_novf[-1]
     WP_hover = lowest_area_y[-1]
     

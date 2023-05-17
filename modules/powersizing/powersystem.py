@@ -5,10 +5,29 @@
 """
 
 import numpy as np
+import sys
+import pathlib as pl
+
+sys.path.append(str(list(pl.Path(__file__).parents)[0]))
+
 from battery import BatterySizing
 from hydrogenTank import HydrogenTankSizing
 from fuellCell import FuellCellSizing
 from energypowerrequirement import MissionRequirements
+
+def heatloss(power_electric: float, efficiency: float ) -> float:
+    """
+    :param: power_electric[kW]:  power required of the 
+    :param: efficiency
+    :return: heat[kW]"""
+    return power_electric * (1 - efficiency) / efficiency
+
+def coolingmass(heat: float, heatedensity:float) -> float:
+    """
+    :param: heat[kW]:  heat that has to be cooled
+    :param: heatdensity[kW/kg]: specific weight of the cooling system
+    :return: mass[kg]: mass of the cooling system """
+    return heat / heatedensity
 
 
 def energy_cruise_mass(EnergyRequired: float , echo: float , Tank: HydrogenTankSizing, Battery: BatterySizing, FuellCell: FuellCellSizing) -> list[float]:
@@ -37,9 +56,9 @@ def energy_cruise_mass(EnergyRequired: float , echo: float , Tank: HydrogenTankS
     Batterymass = Battery.energymass((1-echo)*EnergyRequired) / Battery.DOD /Battery.Efficiency
 
     #extra weights needed because battery recharching process has losses
-    AddedMassRecharging = EnergyRequired * (echo - 1 ) / Tank.EnergyDensity / Battery.ChargingEfficiency / FuellCell.Efficiency
+    #AddedMassRecharging = EnergyRequired * (echo - 1 ) / Tank.EnergyDensity / Battery.ChargingEfficiency / FuellCell.Efficiency
     
-    return  Tankmass + np.maximum(np.zeros(len(echo)), AddedMassRecharging) , Batterymass
+    return  Tankmass , Batterymass
 
 
 def power_cruise_mass(PowerRequired: float, echo: float,  FuellCell:FuellCellSizing, Battery:BatterySizing ) -> list[float] :
@@ -54,8 +73,7 @@ def power_cruise_mass(PowerRequired: float, echo: float,  FuellCell:FuellCellSiz
             -Batterymass[kg]: Battery mass
     """
     
-    FCmass = PowerRequired * echo / FuellCell.PowerDensity
-    FCmass = FuellCell.mass(echo * PowerRequired )
+    FCmass = FuellCell.mass(echo * PowerRequired ) 
     Batterymass = PowerRequired * (1-echo) / Battery.PowerDensity
 
 
@@ -79,7 +97,7 @@ def hover_energy_mass(PowerRequired: float ,MaxPowerFC: float, Battery: BatteryS
 
 class PropulsionSystem:
 
-    def mass(echo: float , Mission: MissionRequirements, Battery: BatterySizing, FuellCell: FuellCellSizing, FuellTank: HydrogenTankSizing) -> list[float]: #,MaxPowerFC:float,PowerDensityFC: float , PowerDensityBattery: float, EnergyDensityTank: float  ) -> list[float]:
+    def mass(echo: float , Mission: MissionRequirements, Battery: BatterySizing, FuellCell: FuellCellSizing, FuellTank: HydrogenTankSizing, coolingdensity:float = 0, hovertime: float = 90) -> list[float]: #,MaxPowerFC:float,PowerDensityFC: float , PowerDensityBattery: float, EnergyDensityTank: float  ) -> list[float]:
         """Calculate total mass of the propulsion system
         input: 
             -echo [-]: The percentage of power deliverd by the fuel cell, if over 1 than the fuell cell charges the  battery
@@ -94,11 +112,12 @@ class PropulsionSystem:
         #Initial sizing for cruise phase
         Tankmass,  EnergyBatterymass = energy_cruise_mass(Mission.EnergyRequired, echo, FuellTank, Battery, FuellCell)
         FCmass, CruiseBatterymass = power_cruise_mass(Mission.CruisePower, echo,FuellCell, Battery)
-        
+
+
         #initial sizing for hovering phase
         MaxPowerFuellCell = Battery.PowerDensity * FCmass
         HoverBatterymass = hover_mass(Mission.HoverPower, MaxPowerFuellCell, Battery)
-        HoverEnergyBatterymass = hover_energy_mass(Mission.HoverPower, MaxPowerFuellCell, Battery, 90)
+        HoverEnergyBatterymass = hover_energy_mass(Mission.HoverPower, MaxPowerFuellCell, Battery, hovertime)
 
         #heaviest battery is needed for the total mass
         Batterymass = np.zeros(len(echo))
@@ -106,14 +125,22 @@ class PropulsionSystem:
         #need to check which batterymass is limiting at each echo and hardcoded it because i did not trust np.maximum as it gave some weird results
         for i in range(len(echo)):
             Batterymass[i] = max(HoverBatterymass[i], HoverEnergyBatterymass[i], CruiseBatterymass[i], EnergyBatterymass[i])
-        #returning total mass and all component masss
-        Totalmass = Tankmass + FCmass + Batterymass
-        return  Totalmass, Tankmass, FCmass, Batterymass
 
-    def volume(echo:float, Battery: BatterySizing, FuellCell: FuellCellSizing, FuellTank: HydrogenTankSizing,  Tankmass: float , FuellCellmass:float, Batterymass:float) -> list[float]:
+        #calculating heat produced by the 
+        """"  
+        FCheat = heatloss(FCmass * FuellCell.PowerDensity, FuellCell.Efficiency)
+        BatteryHeat = heatloss(Batterymass * Battery.PowerDensity, Battery.Efficiency)
+        totalheat = FCheat + BatteryHeat"""
+        masscooling = FCmass  #coolingmass(totalheat,coolingdensity)
+        
+        #returning total mass and all component masss
+        Totalmass = Tankmass + FCmass + Batterymass + masscooling
+        return  Totalmass, Tankmass, FCmass, Batterymass, masscooling
+
+    def volume(echo:float, Battery: BatterySizing, FuellCell: FuellCellSizing, FuellTank: HydrogenTankSizing,Tankmass: float, FuellCellmass:float, Batterymass:float) -> list[float]:
 
         #calculating component mass
-        TankVolume = Tankmass / FuellTank.VolumeDensity * 0.001
+        TankVolume = Tankmass  * FuellTank.EnergyDensity / FuellTank.VolumeDensity * 0.001
         FuellCellVolume = FuellCell.PowerDensity / FuellCell.VolumeDensity * FuellCellmass * 0.001
         BatteryVolume = Battery.EnergyDensity / Battery.VolumeDensity * Batterymass *0.001
 
@@ -122,8 +149,10 @@ class PropulsionSystem:
         return TotalVolume , TankVolume, FuellCellVolume, BatteryVolume
 
 
-def onlyFuelCellSizng(mission: MissionRequirements, tank: HydrogenTankSizing, fuellcell: FuellCellSizing) -> list[float]:
+def onlyFuelCellSizing(mission: MissionRequirements, tank: HydrogenTankSizing, fuellcell: FuellCellSizing) -> list[float]:
     tankmass = tank.mass(mission.EnergyRequired) / fuellcell.Efficiency
-    fuellcellmass = fuellcell.mass(mission.HoverPower)
+    fuellcellmass = fuellcell.mass(mission.HoverPower) 
+    tankvolume = tank.volume(mission.EnergyRequired) / fuellcell.Efficiency
+    FuellCellVolume = fuellcell.PowerDensity / fuellcell.VolumeDensity * fuellcellmass * 0.001
 
-    return tankmass, fuellcellmass
+    return tankmass, fuellcellmass, tankvolume, FuellCellVolume

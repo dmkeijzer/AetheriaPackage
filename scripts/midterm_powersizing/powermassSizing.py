@@ -1,19 +1,16 @@
 #import statements
 import numpy as np
 import matplotlib.pyplot as plt
-import sys 
+import sys
 import pathlib as pl
-import os
 
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
-sys.path.append(os.path.join(list(pl.Path(__file__).parents)[2], "modules","powersizing"))
 
-from modules.powersizing.battery import BatterySizing
-from modules.powersizing.fuellCell import FuellCellSizing
-from modules.powersizing.hydrogenTank import HydrogenTankSizing
-from modules.powersizing.energypowerrequirement import MissionRequirements
-from modules.powersizing.powersystem import PropulsionSystem, onlyFuelCellSizng
-import input.GeneralConstants as  const
+from Modules.powersizing import BatterySizing
+from Modules.powersizing import FuellCellSizing
+from Modules.powersizing import HydrogenTankSizing
+from Modules.powersizing import MissionRequirements
+from Modules.powersizing import PropulsionSystem, onlyFuelCellSizing
 
 #plotfunction
 def plotAll(echo, variable,variableUnit):
@@ -32,54 +29,104 @@ def plotAll(echo, variable,variableUnit):
     axs[1, 1].grid()
     
 #-----------------------inputs-----------------
-plotting = False
-echo = np.arange(0,1.5,0.05)
+plotting = True
+echo = np.arange(0,1.5,0.01)
+DOD = 0.9
+ChargingEfficiency = 1
+N_loops = 30
 
 #batteries
-Liionbat = BatterySizing(sp_en_den= 0.3, vol_en_den=0.45, sp_pow_den=2,cost =30.3, charging_efficiency= const.ChargingEfficiency, depth_of_discharge= const.DOD, discharge_effiency=0.95)
-Lisulbat = BatterySizing(sp_en_den= 0.42, vol_en_den=0.4, sp_pow_den=10,cost =61.1, charging_efficiency= const.ChargingEfficiency, depth_of_discharge= const.DOD, discharge_effiency=0.95)
-Solidstatebat = BatterySizing(sp_en_den= 0.4, vol_en_den=1, sp_pow_den=10,cost =82.2, charging_efficiency= const.ChargingEfficiency, depth_of_discharge= const.DOD, discharge_effiency=0.95)
-#HydrogenBat = BatterySizing(sp_en_den=1.85,vol_en_den=3.25,sp_pow_den=2.9,cost=0,discharge_effiency=0.6,charging_efficiency=1,depth_of_discharge=1)
+Liionbat = BatterySizing(sp_en_den= 0.3, vol_en_den=0.45, sp_pow_den=2,cost =30.3, charging_efficiency= ChargingEfficiency, depth_of_discharge= DOD, discharge_effiency=0.95)
+Lisulbat = BatterySizing(sp_en_den= 0.42, vol_en_den=0.4, sp_pow_den=10,cost =61.1, charging_efficiency= ChargingEfficiency, depth_of_discharge= DOD, discharge_effiency=0.95)
+Solidstatebat = BatterySizing(sp_en_den= 0.4, vol_en_den=1, sp_pow_den=7,cost =82.2, charging_efficiency= ChargingEfficiency, depth_of_discharge= DOD, discharge_effiency=0.95)
+
+
+#fuelcell input
+VolumeDensityFuellCell = 3.25 #kW /l
+PowerDensityFuellCell = 3.9 #kW/kg
+effiencyFuellCell = 0.55
+
+#Tank input
+VolumeDensityTank = 0.8 #kWh/l
+EnergyDensityTank = 1.85 # kWh/kg
 
 #input Flight performance params
-totalEnergy = 340  #kWh
-cruisePower = 80*1.5 #kW
-hoverPower = 1900 #kW
+totalEnergy = 420  #kWh
+cruisePower = 160 #kW
+hoverPower = 455 #kW
 
 #-----------------------Model-----------------
 BatteryUsed = Liionbat
-FirstFC = FuellCellSizing(const.PowerDensityFuellCell,const.VolumeDensityFuellCell,const.effiencyFuellCell, 0)
-FuelTank = HydrogenTankSizing(const.EnergyDensityTank,const.VolumeDensityTank,0)
+FirstFC = FuellCellSizing(PowerDensityFuellCell,VolumeDensityFuellCell,effiencyFuellCell, 0)
+FuelTank = HydrogenTankSizing(EnergyDensityTank,VolumeDensityTank,0)
 InitialMission = MissionRequirements(EnergyRequired= totalEnergy, CruisePower= cruisePower, HoverPower= hoverPower )
 
 
-#calculating mass
 Mass = PropulsionSystem.mass(np.copy(echo),
                                                             Mission= InitialMission, 
                                                             Battery = BatteryUsed, 
                                                             FuellCell = FirstFC, 
                                                             FuellTank= FuelTank)
+TotalMass, tankMass, FuelCellMass, BatteryMass, coolingmass = Mass
 
-TotalMass, TankMass, FuelCellMass, BatteryMass = Mass
+
+
+SolidMass = PropulsionSystem.mass(np.copy(echo),
+                                                            Mission= InitialMission, 
+                                                            Battery = Solidstatebat, 
+                                                            FuellCell = FirstFC, 
+                                                            FuellTank= FuelTank)
+
+
 
 
 #calculating Volume
-Volumes = PropulsionSystem.volume(echo,
+Volumes = PropulsionSystem.volume(echo, 
                                 Battery =  BatteryUsed,
                                 FuellCell = FirstFC, 
                                 FuellTank = FuelTank,
-                                Tankmass= TankMass,FuellCellmass= FuelCellMass, Batterymass = BatteryMass)
+                                Tankmass = tankMass ,FuellCellmass= FuelCellMass, Batterymass = BatteryMass)
 
-plotAll(echo,Volumes ,"Volume [m^3]")
-plotAll(echo,Mass, "Mass [kg]")
+#calculating Volume
+solidVolumes = PropulsionSystem.volume(echo, 
+                                Battery =  Solidstatebat,
+                                FuellCell = FirstFC, 
+                                FuellTank = FuelTank,
+                                Tankmass = SolidMass[1],FuellCellmass= SolidMass[2], Batterymass = SolidMass[3])
+
+
+
+#plotAll(echo,Volumes ,"Volume [m^3]")
+#plotAll(echo,Mass, "Mass [kg]")
 
 #calculations for only the option with only the fuel cell
-OnlyH2Tank, OnlyH2FC = onlyFuelCellSizng(InitialMission, FuelTank, FirstFC)
+OnlyH2Tank, OnlyH2FC, Onlyh2tankVolume, Onlyh2FCVolume = onlyFuelCellSizing(InitialMission, FuelTank, FirstFC)
+OnlyH2mass = OnlyH2Tank + OnlyH2FC
+OnlyH2Volume = Onlyh2FCVolume + Onlyh2tankVolume
 
-#print(OnlyH2FC, OnlyH2Tank)
-print(OnlyH2Tank + OnlyH2FC)
+index = np.where(TotalMass == np.min(TotalMass))
+print(BatteryMass[index])
 
 print(np.min(TotalMass))
-if plotting and __name__ == "__main__":
+if plotting:
+    font = "large"
+    OnlyH2mass = np.ones(len(echo)) * OnlyH2mass
+    plt.figure(3)
+    plt.plot(echo,TotalMass, label ="Li-ion battery")
+    plt.plot(echo,SolidMass[0], label = "Solid State Battery")
+    plt.plot(echo, OnlyH2mass, label = "FC sized for hover" )
+    plt.ylabel("Power system mass [kg]", fontsize = font)
+    plt.xlabel("Fraction cruise power provide by Fuel Cell", fontsize = font)
+    plt.legend(fontsize = font)
+
+
+    OnlyH2Volume = np.ones(len(echo)) * OnlyH2Volume
+    plt.figure(4)
+    plt.plot(echo,Volumes[0], label ="Li-ion battery")
+    plt.plot(echo,solidVolumes[0], label = "Solid State Battery")
+    plt.plot(echo, OnlyH2Volume, label = "FC sized for hover" )
+    plt.ylabel("Power system Volume [m^3]", fontsize = font)
+    plt.xlabel("Fraction cruise power provide by Fuel Cell", fontsize = font)
+    plt.legend(fontsize = font)
 
     plt.show()
