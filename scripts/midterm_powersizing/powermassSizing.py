@@ -6,11 +6,11 @@ import pathlib as pl
 
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 
-from Modules.powersizing import BatterySizing
-from Modules.powersizing import FuellCellSizing
-from Modules.powersizing import HydrogenTankSizing
-from Modules.powersizing import MissionRequirements
-from Modules.powersizing import PropulsionSystem, onlyFuelCellSizing
+from modules.powersizing import BatterySizing
+from modules.powersizing import FuellCellSizing
+from modules.powersizing import HydrogenTankSizing
+from modules.powersizing import MissionRequirements
+from modules.powersizing import PropulsionSystem, onlyFuelCellSizing
 
 #plotfunction
 def plotAll(echo, variable,variableUnit):
