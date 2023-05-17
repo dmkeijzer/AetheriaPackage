@@ -8,18 +8,18 @@ cgranges = zeros(4,0);
 % s2i = struct('anticlockwise', 1, 'clockwise', -1);
 % %%%%%%%%%%UNCOMMENT DESIRED DESIGN%%%%%%%%%%%%
 % 
-%%%%%W1
-x_rotor_loc = [1.19 1.19 1.19 1.19 1.19 1.19 9.55 9.55 9.55 9.55 9.55 9.55];
-
-y_rotor_loc = [4.2 2.99 1.78 -1.78 -2.99 -4.2 4.2 2.99 1.78 -1.78 -2.99 -4.2];
-
-rotor_direction = [-1 -1 -1 1 1 1 -1 -1 -1 1 1 1];
-
-S_proj = 16.8;
-
-cg_fw_gess = 5;
-
-cg_r_guess = 5;
+% %%%%%W1
+% x_rotor_loc = [1.19 1.19 1.19 1.19 1.19 1.19 9.55 9.55 9.55 9.55 9.55 9.55];
+% 
+% y_rotor_loc = [4.2 2.99 1.78 -1.78 -2.99 -4.2 4.2 2.99 1.78 -1.78 -2.99 -4.2];
+% 
+% rotor_direction = [-1 -1 -1 1 1 1 -1 -1 -1 1 1 1];
+% 
+% S_proj = 16.8;
+% 
+% cg_fw_gess = 5;
+% 
+% cg_r_guess = 5;
 
 
 % %%%%%%J1 / J3
@@ -49,18 +49,18 @@ cg_r_guess = 5;
 % 
 % cg_r_guess = 3;
 
-% %%%%%%L1
-% x_rotor_loc = [0.9*ones(1,12), 6.9*ones(1,24)];
-% 
-% y_rotor_loc = [1.91	1.64	1.37 1.1	0.82	0.55	-0.55	-0.82	-1.1	-1.37	-1.64	-1.91 4.16	3.89	3.62	3.35	3.070	2.80	2.53	2.26	1.99	1.71	1.44	1.17	-1.17	-1.44	-1.71	-1.99	-2.26 -2.53	-2.8	-3.07	-3.35	-3.62	-3.89	-4.16];
-% 
-% rotor_direction = [-1*ones(1,6), ones(1,6), -1*ones(1,12), ones(1,12)];
-% 
-% S_proj = 16.8;
-% 
-% cg_fw_gess = 5;
-% 
-% cg_r_guess = 3;
+%%%%%%L1
+x_rotor_loc = [0.9*ones(1,12), 6.9*ones(1,24)];
+
+y_rotor_loc = [1.91	1.64	1.37 1.1	0.82	0.55	-0.55	-0.82	-1.1	-1.37	-1.64	-1.91 4.16	3.89	3.62	3.35	3.070	2.80	2.53	2.26	1.99	1.71	1.44	1.17	-1.17	-1.44	-1.71	-1.99	-2.26 -2.53	-2.8	-3.07	-3.35	-3.62	-3.89	-4.16];
+
+rotor_direction = [-1*ones(1,6), ones(1,6), -1*ones(1,12), ones(1,12)];
+
+S_proj = 16.8;
+
+cg_fw_gess = 5;
+
+cg_r_guess = 3;
 
 
 
@@ -75,7 +75,7 @@ mass = 2510;
 
 
 
-Tfacvec = 1:0.05:6;
+Tfacvec = 1:0.05:3.5;
 
 
 
@@ -104,20 +104,20 @@ while yetanothercondition
         x_cg_r = [];
         condition = true;
 
-        %%% uncomment next section for individual engine failure testing
-        while condition
-        %%%% indent next two rows to use while loop (test for all
-        %%%% individual engine failures)
-            x_cg_fw(end+1) = cg_range_calc(-1, rotor_direction, r_ku, cg_fw_gess, x_rotor_loc, y_rotor_loc, Rotor, rotor_eta, mass, S_proj,Tfac);
-            x_cg_r(end+1) = cg_range_calc(1, rotor_direction, r_ku, cg_r_guess, x_rotor_loc, y_rotor_loc, Rotor, rotor_eta, mass, S_proj,Tfac);
-            rotor_eta = ones(1,n);
-            rotor_eta(i)=0; %0.5 for J3
-            i=i+1;
-            if i > n
-                condition = false;
-            end
-            
-        end
+        % %%% uncomment next section for individual engine failure testing
+        % while condition
+        % %%%% indent next two rows to use while loop (test for all
+        % %%%% individual engine failures)
+        x_cg_fw(end+1) = cg_range_calc(-1, rotor_direction, r_ku, cg_fw_gess, x_rotor_loc, y_rotor_loc, Rotor, rotor_eta, mass, S_proj,Tfac);
+        x_cg_r(end+1) = cg_range_calc(1, rotor_direction, r_ku, cg_r_guess, x_rotor_loc, y_rotor_loc, Rotor, rotor_eta, mass, S_proj,Tfac);
+        %     rotor_eta = ones(1,n);
+        %     rotor_eta(i)=0; %0.5 for J3
+        %     i=i+1;
+        %     if i > n
+        %         condition = false;
+        %     end
+        % 
+        % end
 
 
 
