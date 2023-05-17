@@ -45,7 +45,8 @@ def plot_dash(V, n):
 
 def plotgustenv(V_s, Vc, CLalpha, WoS, TEXT=False):
     n = lambda V, u: 1 + rho_cr * V * CLalpha * u / (2 * WoS)
-    Vb = np.sqrt(n(Vc, uc))*V_s
+    #Vb = np.sqrt(n(Vc, uc))*V_s
+    Vb = Vc - 22.12
     Vb, Vc, VD = Vs = (Vb, Vc, 1.2*Vc) # Change if VD Changes
     us = ub, uc, ud  # Obtained from CS
     nb, nc, nd = ns = n(Vb, ub), n(Vc, uc), n(VD, ud)
