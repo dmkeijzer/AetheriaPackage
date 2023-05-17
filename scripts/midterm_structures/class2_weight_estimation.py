@@ -104,17 +104,6 @@ print("\n", mass_J1, [[i.id for i in weight_J1.components], [i.mass for i in wei
 print(mass_L1,[[i.id for i in weight_L1.components], [i.mass for i in weight_L1.components]], "\n")
 print(mass_W1,[[i.id for i in weight_W1.components], [i.mass for i in weight_W1.components]])
 
-#  test string
-#=================================================
-with open(r"C:\Users\damie\Downloads\rd.json", 'w') as f:
-    json.dump(J1, f, indent=6)
-
-with open(r"C:\Users\damie\Downloads\rd1.json", 'w') as f:
-    json.dump(L1, f, indent=6)
-
-with open(r"C:\Users\damie\Downloads\rd2.json", 'w') as f:
-    json.dump(W1, f, indent=6)
-
 TEST = False
 
 download_dir = os.path.join(os.path.expanduser("~"), "Downloads")
