@@ -59,13 +59,16 @@ for dict_name in dict_names:
     t_desc = (const.h_cruise/const.h_transition)/const.rod_cr # Equal descend as ascend
     E_desc = P_desc* t_desc
 
-    #----------------------- Loiter-----------------------
-    P_loit_cr = powerloiter(data["mtom"], const.g0, const.v_cr, data["ld_climb"], prop_eff_var)
+    #----------------------- Loiter cruise-----------------------
+    P_loit_cr = powerloiter(data["mtom"], const.g0, data["S"], const.rho_cr, data["ld_climb"], prop_eff_var)
+    E_loit_hor = P_loit_cr * const.t_loiter
+
+    #----------------------- Loiter vertically-----------------------
     if data["name"] == "L1":
         P_loit_land = hoverstuffduct(data["mtom"]*const.g0, const.rho_sl, data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)[0]
     else:
         P_loit_land = hoverstuffopen(data["mtom"]*const.g0, const.rho_sl, data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)[0]
-    E_loit_cr = P_loit_cr * const.t_loiter + P_loit_land*30  # 30 sec for hover loitering
+    E_loit_vert = P_loit_land * 30 # 30 sec for hovering vertically
 
     #----------------------- Landing----------------------- 
     if data["name"] == "L1":
@@ -78,13 +81,23 @@ for dict_name in dict_names:
     E_trans_hor2ver = (landing_power_var + P_desc)*const.t_trans / 2
 
     #---------------------------- TOTAL ENERGY CONSUMPTION ----------------------------
-    E_total = E_to + E_trans_ver2hor + E_climb + E_cr + E_desc + E_loit_cr + E_trans_hor2ver + energy_landing_var
+    E_total = E_to + E_trans_ver2hor + E_climb + E_cr + E_desc + E_loit_hor + E_loit_vert + E_trans_hor2ver + energy_landing_var
 
     #---------------------------- Writing to JSON and printing result  ----------------------------
     data["mission_energy"] = E_total
     data["power_hover"] = P_loit_land
     data["power_climb"] = climb_power_var
     data["power_cruise"] = P_cr 
+
+    data["takeoff_energy"] = E_to
+    data["trans2hor_energy"] = E_trans_ver2hor
+    data["climb_energy"] = E_climb
+    data["cruise_energy"] = E_cr
+    data["descend_energy"] = E_desc
+    data["hor_loiter_energy"] = E_loit_hor
+    data["trans2ver_energy"] = E_trans_hor2ver
+    data["ver_loiter_energy"] = E_loit_vert
+    data["land_energy"] = energy_landing_var
     
     
 
