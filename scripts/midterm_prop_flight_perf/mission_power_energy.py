@@ -11,7 +11,7 @@ import json
 
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 
-from Modules.midterm_prop_flight_perf.EnergyPower import *
+from modules.midterm_prop_flight_perf.EnergyPower import *
 import input.GeneralConstants as const
     
 dict_directory = "input"
@@ -23,11 +23,11 @@ for dict_name in dict_names:
     with open(os.path.join(dict_directory, dict_name)) as jsonFile:
         data = json.load(jsonFile)
     if data["name"] == "L1":
-        hoverpower, maxpower, hoverenergy, maxenergy = hoverstuffduct(data["mtom"], atm.rho(0), data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)
+        hoverpower, maxpower, hoverenergy, maxenergy = hoverstuffduct(data["mtom"], const.rho_sl, data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)
     else:
-        hoverpower, maxpower, hoverenergy, maxenergy = hoverstuffopen(data["mtom"], atm.rho(0), data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)
+        hoverpower, maxpower, hoverenergy, maxenergy = hoverstuffopen(data["mtom"], const.rho_sl, data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)
 
-    v_aft= v_exhaust(data["mtom"], const.rho_cr, data["mtom"]/data["diskloading"], const.v_cr)
+    v_aft= v_exhaust(data["mtom"], const.g0, const.rho_cr, data["mtom"]/data["diskloading"], const.v_cr)
 
     prop_eff = propeff(v_aft, const.v_cr)
 
@@ -36,10 +36,10 @@ for dict_name in dict_names:
 
     # Take-off
     if data["name"] == "L1":
-        takeoff_power_var = hoverstuffduct(data["mtom"]*1.1*const.g0, const.rho0, data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)[0]
+        takeoff_power_var = hoverstuffduct(data["mtom"]*1.1*const.g0, const.rho_sl, data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)[0]
     else:
-        takeoff_power_var = hoverstuffopen(data["mtom"]*1.1*const.g0, const.rho0, data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)
-    energy_takeoff_var = takeoff_power_var * t_takeoff
+        takeoff_power_var = hoverstuffopen(data["mtom"]*1.1*const.g0, const.rho_sl, data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)[0]
+    energy_takeoff_var = takeoff_power_var * const.t_takeoff
 
     # Horizontal Climb
     climb_power_var = powerclimb(data["mtom"], const.g0, v_climb, lod_climb, prop_eff)
@@ -63,9 +63,9 @@ for dict_name in dict_names:
 
     # Landing 
     if data["name"] == "L1":
-        landing_power_var = hoverstuffduct(data["mtom"]*0.9, atm.rho(0), data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)[0]
+        landing_power_var = hoverstuffduct(data["mtom"]*0.9, const.rho_sl, data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)[0]
     else:
-        landing_power_var = hoverstuffopen(data["mtom"]*0.9, atm.rho(0), data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)
+        landing_power_var = hoverstuffopen(data["mtom"]*0.9, const.rho_sl, data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)
     energy_landing_var = takeoff_power_var * t_takeoff
 
     # Transition (from horizontal to vertical)
