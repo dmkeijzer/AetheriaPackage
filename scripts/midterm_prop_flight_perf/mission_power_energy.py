@@ -55,7 +55,7 @@ for dict_name in dict_names:
     E_cr = P_cr * t_cr
 
     # -----------------------Descend-----------------------
-    P_desc = P_cr*0.2
+    P_desc = powerdescend(data["mtom"], const.g0, data["S"], const.rho_cr, data["ld_climb"], prop_eff_var, const.rod_cr)
     t_desc = (const.h_cruise - const.h_transition)/const.rod_cr # Equal descend as ascend
     E_desc = P_desc* t_desc
 
