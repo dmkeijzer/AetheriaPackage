@@ -10,6 +10,7 @@ import os
 import json
 
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
+os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
 from modules.midterm_prop_flight_perf.EnergyPower import *
 import input.GeneralConstants as const
