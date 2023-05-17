@@ -58,5 +58,9 @@
       "l_fuselage": 9.295,
       "d_fuselage": 1.7,
       "upsweep": 0.1745,
-      "h_wings": 0
+      "h_wings": 0,
+      "x_rotor_loc": [0.57, 0.57, 3.4, 3.4, 6.8, 6.8],
+      "y_rotor_loc": [2.3, -2.3, 5.4, -5.4, 2.3, -2.3],
+      "ww": 400,
+      "w_eng": 120
 }
