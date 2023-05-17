@@ -7,7 +7,7 @@ import numpy as np
 
 # Import from modules and input folder
 import input.GeneralConstants  as const
-from  Modules.midterm_aero.clean_class2drag  import *
+from  modules.midterm_aero.clean_class2drag  import *
 
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
 # import CL_cruise from json files
@@ -57,7 +57,7 @@ for dict_name in dict_names:
 
         #Total cd
         CD_fus_var = CD_fus(C_fe_fus_var, FF_fus_var, S_wet_fus_var)
-        CD_wing_var = CD_wing(C_fe_wing_var, FF_wing_var, S_wet_wing_var)
+        CD_wing_var = CD_wing(data["name"], C_fe_wing_var, FF_wing_var, S_wet_wing_var, data["S"])
         CD0_var = CD0(data["S"], CD_fus_var, CD_wing_var, CD_upsweep_var, CD_base_var)
        
         #Summation and L/D calculation
@@ -69,5 +69,8 @@ for dict_name in dict_names:
 
         CD_var = CD(CD0_var, CDi_var)
         lift_over_drag_var = lift_over_drag(data["cL_cruise"], CD_var)
+        print("CD0_wing", CD_wing_var/data["S"])
         
-        print(CDi_var)
+        data["ld_cr"] = lift_over_drag_var
+        with open(os.path.join(dict_directory, dict_name), "w") as jsonFile:
+            json.dump(data, jsonFile, indent= 6)
