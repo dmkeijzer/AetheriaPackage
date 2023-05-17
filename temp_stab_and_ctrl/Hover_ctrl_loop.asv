@@ -75,7 +75,7 @@ mass = 2510;
 
 
 
-Tfacvec = 1:0.1:2.2;
+Tfacvec = 1:0.05:4;
 
 
 
@@ -109,7 +109,7 @@ while yetanothercondition
             rotor_eta = ones(1,n);
             rotor_eta(i)=0;
             i=i+1;
-            if i > 1
+            if i > 
                 condition = false;
             end
             
