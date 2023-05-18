@@ -238,7 +238,7 @@ def CD_fus(C_fe_fus, FF_fus, S_wet_fus):
     return C_fe_fus * FF_fus * IF_fus * S_wet_fus
 
 
-def CD_wing(C_fe_wing, FF_wing, S_wet_wing):
+def CD_wing(name, C_fe_wing, FF_wing, S_wet_wing, S):
     """_summary_
 
     :param C_fe_wing: skin friction coefficient wing
@@ -250,9 +250,12 @@ def CD_wing(C_fe_wing, FF_wing, S_wet_wing):
     :return: _description_
     :rtype: _type_
     """
-    IF_wing = 1.1       # From WIGEON script
-    return C_fe_wing * FF_wing * IF_wing * S_wet_wing
-
+    IF_wing = 1.1      # From WIGEON script
+    if name == "W1":
+        CD_wing = max(float(C_fe_wing * FF_wing * IF_wing * S_wet_wing/S), 0.011) # from XFLR5
+    else: 
+        CD_wing = C_fe_wing * FF_wing * IF_wing * S_wet_wing/S
+    return CD_wing*S
 
 def CD0(S, CD_fus, CD_wing, CD_upsweep, CD_base):
     """_summary_
@@ -343,4 +346,4 @@ def Oswald_eff_tandem(b1, b2, h):
     """
     b_avg = (b1 + b2) / 2
     factor = 0.5 + (1 - 0.66 * (h / b_avg)) / (2.1 + 7.4 * (h / b_avg))
-    return factor * 0.
+    return factor * 0.8

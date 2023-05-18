@@ -21,10 +21,10 @@ from  modules.misc_tools.tools import ISA
 #performance
 v_cr = 300/3.6
 roc_cr = 5
-rod_cr = 10 # Rate of descend PLACEHOLDER
+rod_cr = 3 # Rate of descend PLACEHOLDER
 roc_hvr = 2
 h_cruise = 400          #[m]        O
-mission_dist = 400e3  # km
+mission_dist = 400e3  # m
 h_transition = 30 # meter PLACEHOLDER
 npax = 4                # Amount of passengers O
 

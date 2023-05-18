@@ -17,9 +17,9 @@ rotor_direction = [-1 -1 -1 1 1 1 -1 -1 -1 1 1 1];
 
 S_proj = 16.8;
 
-cg_fw_gess = 5;
+cg_fw_gess = 7;
 
-cg_r_guess = 5;
+cg_r_guess = 4;
 
 
 % %%%%%%J1 / J3
@@ -71,11 +71,11 @@ Rotor = 1:n;
 
 rotor_eta = ones(1,n);
 
-mass = 2510;
+mass = 3210.6;
 
 
 
-Tfacvec = 1:0.05:6;
+Tfacvec = 1:0.05:3.5;
 
 
 
@@ -116,7 +116,7 @@ while yetanothercondition
             if i > n
                 condition = false;
             end
-            
+
         end
 
 
@@ -147,6 +147,7 @@ while yetanothercondition
     % scatter(cgranges(2,:), cgranges(end,:))
     cgranges = cgranges(:,cgranges(2,:) - cgranges(1,:) == max(cgranges(2,:) - cgranges(1,:)));
     resultslog = horzcat(resultslog,cgranges);
+    disp(resultslog)
 end
 % %cgranges = cgranges(:, ~cgranges(1:) == -1e6);
 % cgranges(:,cgranges(1,:)==-1e6) = [];
