@@ -15,7 +15,7 @@ os.chdir(str(list(pl.Path(__file__).parents)[2]))
 from modules.midterm_prop_flight_perf.EnergyPower import *
 import input.GeneralConstants as const
     
-TEST = False
+TEST = input("\n\nType 1 if you want to write the JSON data to your download folder instead of the repo, type 0 otherwise:\n") # Set to true if you want to write to your downloads folders instead of rep0
 dict_directory = "input"
 dict_names = ["J1_constants.json", "L1_constants.json", "W1_constants.json"]
 download_dir = os.path.join(os.path.expanduser("~"), "Downloads")

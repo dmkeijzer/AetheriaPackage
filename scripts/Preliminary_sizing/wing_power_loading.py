@@ -6,12 +6,15 @@ import pathlib as pl
 import json
 
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
+download_dir = os.path.join(os.path.expanduser("~"), "Downloads")
 
 import matplotlib.pyplot as plt
 
 from modules.midterm_preliminary_sizing import *
+import input.GeneralConstants as const
 
 
+write_bool = int(input("\n\nType 1 if you want to write the JSON data to your download folder instead of the repo, type 0 otherwise:\n"))
 WS_range = np.arange(1,4000,1)
 ylim = [0,0.15]
 
@@ -88,14 +91,17 @@ def plot_wing_power_loading_graphs(dict_directory,dict_name,i):
     print("WP = ",str(round(WP_hover,8)))
     print("WP_noverticalflight = ",str(round(WP_cruise,8)))
     print("TW = ", str(round(TW_max,8))),'\n'
-    print("Power required  = ", 2510*9.81/WP_hover/1000,"[kW]")
-    print("Wing surface = ", 2510*9.81/WS_max,'[m^2]')
+    print("Power required  = ", data["mtom"]*const.g0/WP_hover/1000,"[kW]")
+    print("Wing surface = ", data["mtom"]*const.g0/WS_max,'[m^2]')
 
     with open(dict_directory+"\\"+dict_name, "r") as jsonFile:
         data = json.loads(jsonFile.read())
     data["WS"],data["TW"],data["WP_cruise"],data["WP_hover"] = WS_max,TW_max,WP_cruise,WP_hover
-    write_bool = int(input("Do you want to overwrite the current loading values? type 1 if you want to do this.")) == 1
-    if write_bool==True:
+    if write_bool:
+        with open(download_dir+"\\"+dict_name, "w") as jsonFile:
+            json.dump(data, jsonFile,indent=2)
+        print("Data written to downloads folder.")
+    else:
         with open(dict_directory+"\\"+dict_name, "w") as jsonFile:
             json.dump(data, jsonFile,indent=2)
         print("Old files were overwritten.")

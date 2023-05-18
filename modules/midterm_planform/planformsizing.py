@@ -23,8 +23,8 @@ def wing_planform(wing: Wing):
     wing.chord_root = 2 * wing.surface / ((1 + wing.taper) * wing.span)
     wing.chord_tip = wing.taper * wing.chord_root
     wing.chord_mac = (2 / 3) * wing.chord_root  * ((1 + wing.taper + wing.taper ** 2) / (1 + wing.taper))
-    wing.y_mac = (wing.span / 6) * ((1 + 2 * wing.taper) / (1 + wing.taper1))
-    wing.tan_sweep_LE = 0.25 * (2 * wing.chord_root / wing.span) * (1 - wing.taper) + np.tan(wing.quarterchord_sweep)
+    wing.y_mac = (wing.span / 6) * ((1 + 2 * wing.taper) / (1 + wing.taper))
+    wing.tan_sweep_LE = 0.25 * (2 * wing.chord_root / wing.span) * (1 - wing.taper) + np.tan(np.radians(wing.quarterchord_sweep))
 
     wing.X_lemac = wing.y_mac * wing.tan_sweep_LE
     return wing
