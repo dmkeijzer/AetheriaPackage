@@ -46,7 +46,7 @@
       "taper1": 0.4,
       "taper2": 0.4,
       "StotS": 1.2,
-      "mission_energy": 2115685112.675706,
+      "mission_energy": 2125419415.7315667,
       "WP_hover": 0.00903927246340794,
       "power_hover": 1932663.3306613546,
       "power_climb": 319104.13524833624,
@@ -149,9 +149,9 @@
       "trans2hor_energy": 12743989.885765612,
       "climb_energy": 23613706.00837688,
       "cruise_energy": 1641569345.8306105,
-      "descend_energy": 95105.55238660205,
+      "descend_energy": 9789195.16620223,
       "hor_loiter_energy": 305979038.2637072,
-      "trans2ver_energy": 10019962.474756531,
+      "trans2ver_energy": 10060175.916801458,
       "ver_loiter_energy": 57979899.919840634,
       "land_energy": 29569748.959118728
 }

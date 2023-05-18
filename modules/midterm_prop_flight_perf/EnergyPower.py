@@ -40,6 +40,10 @@ def powerloiter(MTOM, g0, S, rho, lod_climb, prop_eff):
     return loiter_power 
 
 
+def powerdescend(MTOM, g0, S, rho, lod_climb, prop_eff, ROD):
+    climb_power = MTOM*g0*(np.sqrt(2*MTOM*g0*(1/lod_climb)/(S*rho)) - ROD )/prop_eff
+    return climb_power
+
 
 # if __name__ == '__main__':
 
