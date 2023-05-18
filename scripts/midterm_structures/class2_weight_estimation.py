@@ -106,7 +106,7 @@ print(mass_L1,[[i.id for i in weight_L1.components], [i.mass for i in weight_L1.
 print(mass_W1,[[i.id for i in weight_W1.components], [i.mass for i in weight_W1.components]])
 
 #--------------------------------- Write results to JSON---------------------------------
-TEST = input("\n\nType 1 if you want to write the JSON data to your download folder instead of the repo, type 0 otherwise:\n") # Set to true if you want to write to your downloads folders instead of rep0
+TEST = int(input("\n\nType 1 if you want to write the JSON data to your download folder instead of the repo, type 0 otherwise:\n")) # Set to true if you want to write to your downloads folders instead of rep0
 
 download_dir = os.path.join(os.path.expanduser("~"), "Downloads")
 os.chdir(str(list(pl.Path(__file__).parents)[2]))

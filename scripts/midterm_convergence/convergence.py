@@ -9,7 +9,7 @@ os.chdir(str(list(pl.Path(__file__).parents)[2]))
 # Get the path of the current Python interpreter
 python_executable = sys.executable
 
-TEST =  True
+TEST = False # If True JSON gets writtien to your downloads folder, these values are not correct however
 
 
 # List of Python files to execute
@@ -21,7 +21,7 @@ python_files = [
 ]
 
 # Specify the number of times to loop
-loop_count = 3
+loop_count = 10
 
 # Loop through the Python files multiple times
 for i in range(1, loop_count+1):

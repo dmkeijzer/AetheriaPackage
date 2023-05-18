@@ -12,7 +12,7 @@ import input.GeneralConstants as const
 
 download_dir = os.path.join(os.path.expanduser("~"), "Downloads")
 
-TEST = input("\n\nType 1 if you want to write the JSON data to your download folder instead of the repo, type 0 otherwise:\n") # Set to true if you want to write to your downloads folders instead of rep0
+TEST = int(input("\n\nType 1 if you want to write the JSON data to your download folder instead of the repo, type 0 otherwise:\n")) # Set to true if you want to write to your downloads folders instead of rep0
 dict_directory = "input"
 dict_names = ["J1_constants.json", "L1_constants.json", "W1_constants.json"]
 download_dir = os.path.join(os.path.expanduser("~"), "Downloads")
