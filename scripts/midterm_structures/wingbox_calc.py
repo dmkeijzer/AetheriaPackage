@@ -26,7 +26,7 @@ def root_wingbox_geometry_cruise(dict_directory,dict_name,i):
         wing_weight = data["wing_weight"]
         b = data["b"]
         
-    h_root = c_root*t_c_ratio
+    h_root = c_root*data['t_c_ratio']
     
     t = 5
     h_wingbox = 0.8*h_root
@@ -38,8 +38,8 @@ def root_wingbox_geometry_cruise(dict_directory,dict_name,i):
     
     cross_section = h_wingbox*w_wingbox - ((h_wingbox-t*2)*(w_wingbox-t*2))
     
-    torsional_shear = 
-    shear_y = 
+    #torsional_shear =
+    #shear_y =
     
     max_normal = bending_stress(moment_x,moment_y,i_xx,i_yy,i_xy,c_root/2,h_root/2)
     
@@ -49,4 +49,4 @@ def root_wingbox_geometry_cruise(dict_directory,dict_name,i):
 dict_directory = str(list(pl.Path(__file__).parents)[2])+"\\input"          #determine file path
 dict_name = ["J1_constants.json",  "L1_constants.json","W1_constants.json"] #define list with all the constants for each configuration
 for i in range(len(dict_name)):                                             #iterate over each value
-    root_wingbox_geometry(dict_directory,dict_name[i],i)
+    root_wingbox_geometry_cruise(dict_directory,dict_name[i],i)
