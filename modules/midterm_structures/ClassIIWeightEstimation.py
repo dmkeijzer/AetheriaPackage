@@ -220,9 +220,4 @@ class Miscallenous(Component):
         self.mass = np.sum([mass_fur, mass_airco, mass_avionics, mass_elec, mass_fc])*0.45359237
 
 
-
-
-#TODO add battery/turbine engine system
-#TODO Think of penalty for weight of fuselage for crashworthiness, firewall et cetera  
-
         
