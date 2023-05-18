@@ -19,10 +19,16 @@ def root_wingbox_geometry_cruise(dict_directory,dict_name,i):
         data = json.loads(jsonFile.read())
     if data["tandem_bool"] ==1:
         c_root = data["c_root2"]
+        wing_weight = data["wing2_weight"]
+        b = data["b2"]
     else:
         c_root = data["c_root"]
+        wing_weight = data["wing_weight"]
+        b = data["b"]
+        
     h_root = c_root*t_c_ratio
     
+    t = 5
     h_wingbox = 0.8*h_root
     w_wingbox = 0.6*c_root
     
@@ -30,7 +36,12 @@ def root_wingbox_geometry_cruise(dict_directory,dict_name,i):
     i_yy = i_yy_thinwalled(w_wingbox,h_wingbox,3E-3)
     j_z = j_z_thinwalled(w_wingbox,h_wingbox,3E-3)
     
+    cross_section = h_wingbox*w_wingbox - ((h_wingbox-t*2)*(w_wingbox-t*2))
     
+    torsional_shear = 
+    shear_y = 
+    
+    max_normal = bending_stress(moment_x,moment_y,i_xx,i_yy,i_xy,c_root/2,h_root/2)
     
     return 
     
