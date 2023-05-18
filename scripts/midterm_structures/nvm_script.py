@@ -14,5 +14,6 @@ dict_directory = str(list(pl.Path(__file__).parents)[2])+"\\input"          #det
 dict_name = ["J1_constants.json",  "L1_constants.json","W1_constants.json"] #define list with all the constants for each configuration
 
 for i in range(len(dict_name)):                                             #iterate over each value
-    wing_root_cruise(dict_directory,dict_name[i], PRINT=True, ULTIMATE=False)
-    wing_root_hover(dict_directory, dict_name[i], PRINT=True)
+    Vx_cr, Vz_cr, Mx_cr, Mz_cr, T_cr = wing_root_cruise(dict_directory,dict_name[i], PRINT=True, ULTIMATE=False)
+    Vz_vf, Mx_vf, T_vf = wing_root_hover(dict_directory, dict_name[i], PRINT=True)
+

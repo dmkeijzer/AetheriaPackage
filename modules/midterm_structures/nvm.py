@@ -86,7 +86,7 @@ def wing_root_cruise(dict_directory, dict_name, PRINT=False, ULTIMATE=False):
     # engine weight
     indices = np.searchsorted(span, y_eng)
     engine_dist = np.zeros_like(span)
-    engine_dist[indices] = w_eng*g0
+    engine_dist[indices-1] = w_eng*g0
 
     torque_eng = np.zeros_like(span)
     if data["name"] == "J1":
@@ -95,7 +95,7 @@ def wing_root_cruise(dict_directory, dict_name, PRINT=False, ULTIMATE=False):
 
     # thrust per engine
     thrust_dist = np.zeros_like(span)
-    thrust_dist[indices] = drag/n_eng
+    thrust_dist[indices-1] = drag/n_eng
 
     # total force distribution in z and x direction
     total_dist_z =  (lift_dist - wing_dist - engine_dist)
@@ -167,6 +167,13 @@ def wing_root_cruise(dict_directory, dict_name, PRINT=False, ULTIMATE=False):
         print("T at root: ", round(T[0]/1000,1), 'kNm')
         print("--------------------")
 
+    data["Vx_cr"], data["Vz_cr"], data["Mx_cr"], data["Mz_cr"], data["T_cr"], = V_x[0], V_z[0], M_x[0], M_z[0], T[0]
+    write_bool = int(input("Do you want to overwrite the current loading values? type 1 if you want to do this.")) == 1
+    if write_bool==True:
+        with open(dict_directory+"\\"+dict_name, "w") as jsonFile:
+            json.dump(data, jsonFile,indent=2)
+        print("Old files were overwritten.")
+
     return V_x, V_z, M_x, M_z, T
 
 def wing_root_hover(dict_directory, dict_name, PRINT=False):
@@ -216,7 +223,7 @@ def wing_root_hover(dict_directory, dict_name, PRINT=False):
     # engine weight
     indices = np.searchsorted(span, y_eng)
     engine_dist = np.zeros_like(span)
-    engine_dist[indices] = w_eng*g0
+    engine_dist[indices-1] = w_eng*g0
 
     torque_eng = np.zeros_like(span)
     if data["name"] == "J1":
@@ -225,7 +232,7 @@ def wing_root_hover(dict_directory, dict_name, PRINT=False):
 
     # thrust per engine
     thrust_dist = np.zeros_like(span)
-    thrust_dist[indices] = mtom*g0/n_eng
+    thrust_dist[indices-1] = mtom*g0/n_eng
 
     # total force distribution in z and x direction
     total_dist_z =  (thrust_dist - wing_dist - engine_dist)
@@ -283,5 +290,12 @@ def wing_root_hover(dict_directory, dict_name, PRINT=False):
         print("Mx at root: ", round(M_x[0]/1000,1), 'kNm')
         print("T at root: ", round(T[0]/1000,1), 'kNm')
         print("--------------------")
+
+    data["Vz_vf"], data["Mx_vf"], data["T_vf"], = V_z[0], M_x[0], T[0]
+    write_bool = int(input("Do you want to overwrite the current loading values? type 1 if you want to do this.")) == 1
+    if write_bool==True:
+        with open(dict_directory+"\\"+dict_name, "w") as jsonFile:
+            json.dump(data, jsonFile,indent=2)
+        print("Old files were overwritten.")
 
     return V_z, M_x, T
