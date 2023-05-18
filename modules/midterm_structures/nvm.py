@@ -86,7 +86,7 @@ def wing_root_cruise(dict_directory, dict_name, PRINT=False, ULTIMATE=False):
     # engine weight
     indices = np.searchsorted(span, y_eng)
     engine_dist = np.zeros_like(span)
-    engine_dist[indices] = w_eng*g0
+    engine_dist[indices-1] = w_eng*g0
 
     torque_eng = np.zeros_like(span)
     if data["name"] == "J1":
@@ -95,7 +95,7 @@ def wing_root_cruise(dict_directory, dict_name, PRINT=False, ULTIMATE=False):
 
     # thrust per engine
     thrust_dist = np.zeros_like(span)
-    thrust_dist[indices] = drag/n_eng
+    thrust_dist[indices-1] = drag/n_eng
 
     # total force distribution in z and x direction
     total_dist_z =  (lift_dist - wing_dist - engine_dist)
@@ -223,7 +223,7 @@ def wing_root_hover(dict_directory, dict_name, PRINT=False):
     # engine weight
     indices = np.searchsorted(span, y_eng)
     engine_dist = np.zeros_like(span)
-    engine_dist[indices] = w_eng*g0
+    engine_dist[indices-1] = w_eng*g0
 
     torque_eng = np.zeros_like(span)
     if data["name"] == "J1":
@@ -232,7 +232,7 @@ def wing_root_hover(dict_directory, dict_name, PRINT=False):
 
     # thrust per engine
     thrust_dist = np.zeros_like(span)
-    thrust_dist[indices] = mtom*g0/n_eng
+    thrust_dist[indices-1] = mtom*g0/n_eng
 
     # total force distribution in z and x direction
     total_dist_z =  (thrust_dist - wing_dist - engine_dist)
