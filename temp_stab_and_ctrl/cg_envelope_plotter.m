@@ -51,6 +51,10 @@ plot(ones(1, Tfac_array_length) * x_np, Power_per_engine)
 plot(ones(1, Tfac_array_length) * x_cg, Power_per_engine)
 plot(xcgmax, Power_per_engine)
 plot(xcgmin, Power_per_engine)
+ylabel("Engine power requirement", "FontSize",18)
+xlabel("x_{cg} locations", "FontSize",18)
+title("CG range envelope for longitudinal and vertical criteria","FontSize",18)
+legend("x_{cg}_{aft} longitudinal constraint", "x_{cg}_{fw} longitudinal constraint", "x_{cg}_{aft} vertical constraint", "x_{cg}_{fw} vertical constraint", "FontSize",12)
 hold off; % Release the hold on the plot
 
 
