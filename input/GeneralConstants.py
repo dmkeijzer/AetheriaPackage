@@ -16,7 +16,7 @@ import os
 
 sys.path.append(str(list(pl.Path(__file__).parents)[1]))
 
-from  modules.misc_tools.tools import ISA
+from  modules.misc_tools.ISA_tool import ISA
 
 #performance
 v_cr = 300/3.6
