@@ -20,6 +20,7 @@ label = str(np.random.randint(0,1e5,1)[0])
 python_files = [
     "scripts/Preliminary_sizing/wing_power_loading.py",
     "scripts/midterm_aerodynamics/planform_sizing.py",
+    "scripts/midterm_aerodynamics/drag_estimation.py",
     "scripts/midterm_prop_flight_perf/mission_power_energy.py",
     "scripts/midterm_structures/class2_weight_estimation.py"
 ]

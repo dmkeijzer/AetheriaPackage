@@ -14,8 +14,10 @@ os.chdir(str(list(pl.Path(__file__).parents)[2]))
 # import CL_cruise from json files
 
 # Define the directory and filenames of the JSON files
+TEST = int(input("\n\nType 1 if you want to write the JSON data to your download folder instead of the repo, type 0 otherwise:\n")) # Set to true if you want to write to your downloads folders instead of rep0
 dict_directory = "input"
 dict_names = ["J1_constants.json", "L1_constants.json", "W1_constants.json"]
+download_dir = os.path.join(os.path.expanduser("~"), "Downloads")
 
 atm = ISA(const.h_cruise)
 t_cr = atm.temperature()
@@ -73,5 +75,10 @@ for dict_name in dict_names:
         print("CD0_wing", CD_wing_var/data["S"])
         
         data["ld_cr"] = lift_over_drag_var
-        with open(os.path.join(dict_directory, dict_name), "w") as jsonFile:
-            json.dump(data, jsonFile, indent= 6)
+
+        if TEST:
+            with open(os.path.join(download_dir, dict_name), "w") as jsonFile:
+                json.dump(data, jsonFile, indent= 6)
+        else:
+            with open(os.path.join(dict_directory, dict_name), "w") as jsonFile:
+                json.dump(data, jsonFile, indent= 6)
