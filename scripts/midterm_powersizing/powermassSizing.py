@@ -51,6 +51,8 @@ EnergyDensityTank = 1.85 # kWh/kg
 
 #input Flight performance params
 J1Mission = MissionRequirements(EnergyRequired= 270,CruisePower=170, HoverPower= 360)
+L1Mission = MissionRequirements(EnergyRequired=410,HoverPower=1653, CruisePower=191)
+W1Mission = MissionRequirements(EnergyRequired=300,CruisePower=137,HoverPower=1200)
 
 #-----------------------Model-----------------
 BatteryUsed = Liionbat
