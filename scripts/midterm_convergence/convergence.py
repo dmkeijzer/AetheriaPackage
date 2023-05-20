@@ -5,6 +5,7 @@ import os
 import numpy as np
 import json
 import pandas as pd
+import time
 
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
@@ -13,12 +14,13 @@ os.chdir(str(list(pl.Path(__file__).parents)[2]))
 python_executable = sys.executable
 
 TEST = False # If True JSON gets writtien to your downloads folder, these values are not correct however
-label = str(np.random.randint(0,1e5,1)[0])
+label  = ("_".join(time.asctime().split(" ")[1:-1])).replace(":",".")[:-3]
 
 
 # List of Python files to execute
 python_files = [
     "scripts/Preliminary_sizing/wing_power_loading.py",
+    "scripts/midterm_structures/flight_envelope_plotting.py",
     "scripts/midterm_aerodynamics/planform_sizing.py",
     "scripts/midterm_aerodynamics/drag_estimation.py",
     "scripts/midterm_prop_flight_perf/mission_power_energy.py",

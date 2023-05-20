@@ -7,7 +7,7 @@ import pathlib as pl
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
-label = str(48536)
+label = str(24952)
 
 csv_files = ["output\midterm_convergence\J1_" + label + "_hist.csv",
 "output\midterm_convergence\L1_" + label + "_hist.csv",
