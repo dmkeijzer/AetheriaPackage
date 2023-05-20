@@ -31,7 +31,7 @@ S2=7;
 Clmax_airfoil=1.67;
 ma=4021;
 Sproj=16.4;
-n_engines=32;
+n_engines=32;%NOT 36?
 ROC=2;
 rho=1.225;
 A_disk=2.089/n_engines;
@@ -53,7 +53,7 @@ S1=4;
 S2=10;
 
 %%%%%%J1andJ3%%%%%
-
+%Where is J2?
 Clmax_airfoil=1.67;
 ma=2510;
 Sproj=16.4;
@@ -83,7 +83,8 @@ x1= 3;  %%% I Played around with this to get the best cg range
 c1= 1.37 ;
 c2= 0.9 ;  %%b= sqrt(A*S)=3.6--> c=S/b=3.25/3.6=0.9
 S1= 3.25  ;
-S2= 14  ;
+S2= 14  ; % The horizontal stabiliser should be smaller
+
 
 
 
