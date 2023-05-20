@@ -6,11 +6,11 @@ import pathlib as pl
 
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 
-from modules.powersizing import BatterySizing
-from modules.powersizing import FuellCellSizing
-from modules.powersizing import HydrogenTankSizing
-from modules.powersizing import MissionRequirements
-from modules.powersizing import PropulsionSystem, onlyFuelCellSizing
+from Modules.powersizing import BatterySizing
+from Modules.powersizing import FuellCellSizing
+from Modules.powersizing import HydrogenTankSizing
+from Modules.powersizing import MissionRequirements
+from Modules.powersizing import PropulsionSystem, onlyFuelCellSizing
 
 #plotfunction
 def plotAll(echo, variable,variableUnit):
@@ -31,7 +31,7 @@ def plotAll(echo, variable,variableUnit):
 #-----------------------inputs-----------------
 plotting = True
 echo = np.arange(0,1.5,0.01)
-DOD = 0.9
+DOD = 0.8
 ChargingEfficiency = 1
 N_loops = 30
 
@@ -43,7 +43,7 @@ Solidstatebat = BatterySizing(sp_en_den= 0.4, vol_en_den=1, sp_pow_den=7,cost =8
 
 #fuelcell input
 VolumeDensityFuellCell = 3.25 #kW /l
-PowerDensityFuellCell = 3.9 #kW/kg
+PowerDensityFuellCell = 3 #kW/kg
 effiencyFuellCell = 0.55
 
 #Tank input
@@ -51,9 +51,9 @@ VolumeDensityTank = 0.8 #kWh/l
 EnergyDensityTank = 1.85 # kWh/kg
 
 #input Flight performance params
-totalEnergy = 420  #kWh
-cruisePower = 160 #kW
-hoverPower = 455 #kW
+totalEnergy = 2  #kWh
+cruisePower = 137  #kW
+hoverPower = 1195  #kW
 
 #-----------------------Model-----------------
 BatteryUsed = Liionbat
@@ -96,8 +96,8 @@ solidVolumes = PropulsionSystem.volume(echo,
 
 
 
-#plotAll(echo,Volumes ,"Volume [m^3]")
-#plotAll(echo,Mass, "Mass [kg]")
+plotAll(echo,Volumes ,"Volume [m^3]")
+plotAll(echo,Mass, "Mass [kg]")
 
 #calculations for only the option with only the fuel cell
 OnlyH2Tank, OnlyH2FC, Onlyh2tankVolume, Onlyh2FCVolume = onlyFuelCellSizing(InitialMission, FuelTank, FirstFC)
