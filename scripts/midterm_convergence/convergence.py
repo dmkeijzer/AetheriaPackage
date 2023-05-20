@@ -32,11 +32,23 @@ dict_names = ["J1_constants.json", "L1_constants.json", "W1_constants.json"]
 
 output_dir = "output/midterm_convergence"
 # Specify the number of times to loop
-loop_count = 25
+loop_count = 10
 
 # Loop through the Python files multiple times
 for i in range(1, loop_count+1):
     print(f"\n\n=====================\nLoop {i}\n=====================")
+
+    if not TEST:
+        for dict_name in dict_names:
+            # Load data from JSON file
+            with open(os.path.join(dict_directory, dict_name)) as jsonFile:
+                data = json.load(jsonFile)
+
+            if os.path.exists(os.path.join(output_dir, dict_name[:2] + "_" + label + "_hist.csv")):
+                pd.DataFrame(np.array(list(data.values())).reshape(1, len(data))).to_csv(os.path.join(output_dir, dict_name[:2] + "_" + label + "_hist.csv") , mode="a", header=False, index= False)
+            else: 
+                pd.DataFrame([data]).to_csv(os.path.join(output_dir, dict_name[:2] + "_" + label + "_hist.csv"), columns= list(data.keys()), index=False)
+                    # Read the output from the subprocess
     
     for file in python_files:
         print(f"\nRunning {file}\n")
@@ -50,17 +62,3 @@ for i in range(1, loop_count+1):
             process.stdin.write("0" + "\n")
         process.stdin.flush()
         print(process.stdout.read())
-
-    if not TEST:
-        for dict_name in dict_names:
-            # Load data from JSON file
-            with open(os.path.join(dict_directory, dict_name)) as jsonFile:
-                data = json.load(jsonFile)
-
-            if os.path.exists(os.path.join(output_dir, dict_name[:2] + "_" + label + "_hist.csv")):
-                pd.DataFrame(np.array(list(data.values())).reshape(1, len(data))).to_csv(os.path.join(output_dir, dict_name[:2] + "_" + label + "_hist.csv") , mode="a", header=False, index= False)
-            else: 
-                pd.DataFrame([data]).to_csv(os.path.join(output_dir, dict_name[:2] + "_" + label + "_hist.csv"), columns= list(data.keys()), index=False)
-                    # Read the output from the subprocess
-
-        # Print the output
