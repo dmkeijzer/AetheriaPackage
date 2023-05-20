@@ -102,7 +102,7 @@ class LandingGear(Component):
     def __init__(self, mtom):
         """Computes the mass of the landing gear 
 
-        :param mtom:
+        :param mtom: maximum take off weight
         :type mtom: float
         """        
         super().__init__()
