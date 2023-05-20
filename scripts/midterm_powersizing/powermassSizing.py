@@ -30,15 +30,14 @@ def plotAll(echo, variable,variableUnit):
     
 #-----------------------inputs-----------------
 plotting = True
-echo = np.arange(0,1.5,0.01)
+echo = np.arange(0,1.1,0.1)
 DOD = 0.8
 ChargingEfficiency = 1
-N_loops = 30
 
 #batteries
 Liionbat = BatterySizing(sp_en_den= 0.3, vol_en_den=0.45, sp_pow_den=2,cost =30.3, charging_efficiency= ChargingEfficiency, depth_of_discharge= DOD, discharge_effiency=0.95)
 Lisulbat = BatterySizing(sp_en_den= 0.42, vol_en_den=0.4, sp_pow_den=10,cost =61.1, charging_efficiency= ChargingEfficiency, depth_of_discharge= DOD, discharge_effiency=0.95)
-Solidstatebat = BatterySizing(sp_en_den= 0.4, vol_en_den=1, sp_pow_den=7,cost =82.2, charging_efficiency= ChargingEfficiency, depth_of_discharge= DOD, discharge_effiency=0.95)
+Solidstatebat = BatterySizing(sp_en_den= 0.5, vol_en_den=1, sp_pow_den=10,cost =82.2, charging_efficiency= ChargingEfficiency, depth_of_discharge= DOD, discharge_effiency=0.95)
 
 
 #fuelcell input
@@ -51,34 +50,21 @@ VolumeDensityTank = 0.8 #kWh/l
 EnergyDensityTank = 1.85 # kWh/kg
 
 #input Flight performance params
-totalEnergy = 2  #kWh
-cruisePower = 137  #kW
-hoverPower = 1195  #kW
+J1Mission = MissionRequirements(EnergyRequired= 270,CruisePower=170, HoverPower= 360)
 
 #-----------------------Model-----------------
 BatteryUsed = Liionbat
 FirstFC = FuellCellSizing(PowerDensityFuellCell,VolumeDensityFuellCell,effiencyFuellCell, 0)
 FuelTank = HydrogenTankSizing(EnergyDensityTank,VolumeDensityTank,0)
-InitialMission = MissionRequirements(EnergyRequired= totalEnergy, CruisePower= cruisePower, HoverPower= hoverPower )
+
 
 
 Mass = PropulsionSystem.mass(np.copy(echo),
-                                                            Mission= InitialMission, 
+                                                            Mission= J1Mission, 
                                                             Battery = BatteryUsed, 
                                                             FuellCell = FirstFC, 
                                                             FuellTank= FuelTank)
 TotalMass, tankMass, FuelCellMass, BatteryMass, coolingmass = Mass
-
-
-
-SolidMass = PropulsionSystem.mass(np.copy(echo),
-                                                            Mission= InitialMission, 
-                                                            Battery = Solidstatebat, 
-                                                            FuellCell = FirstFC, 
-                                                            FuellTank= FuelTank)
-
-
-
 
 #calculating Volume
 Volumes = PropulsionSystem.volume(echo, 
@@ -87,6 +73,17 @@ Volumes = PropulsionSystem.volume(echo,
                                 FuellTank = FuelTank,
                                 Tankmass = tankMass ,FuellCellmass= FuelCellMass, Batterymass = BatteryMass)
 
+'''
+SolidMass = PropulsionSystem.mass(np.copy(echo),
+                                                            Mission= J1Mission, 
+                                                            Battery = Solidstatebat, 
+                                                            FuellCell = FirstFC, 
+                                                            FuellTank= FuelTank)
+
+
+
+
+
 #calculating Volume
 solidVolumes = PropulsionSystem.volume(echo, 
                                 Battery =  Solidstatebat,
@@ -94,13 +91,13 @@ solidVolumes = PropulsionSystem.volume(echo,
                                 FuellTank = FuelTank,
                                 Tankmass = SolidMass[1],FuellCellmass= SolidMass[2], Batterymass = SolidMass[3])
 
-
+'''
 
 plotAll(echo,Volumes ,"Volume [m^3]")
 plotAll(echo,Mass, "Mass [kg]")
 
 #calculations for only the option with only the fuel cell
-OnlyH2Tank, OnlyH2FC, Onlyh2tankVolume, Onlyh2FCVolume = onlyFuelCellSizing(InitialMission, FuelTank, FirstFC)
+OnlyH2Tank, OnlyH2FC, Onlyh2tankVolume, Onlyh2FCVolume = onlyFuelCellSizing(J1Mission, FuelTank, FirstFC)
 OnlyH2mass = OnlyH2Tank + OnlyH2FC
 OnlyH2Volume = Onlyh2FCVolume + Onlyh2tankVolume
 
@@ -109,6 +106,7 @@ print(BatteryMass[index])
 
 print(np.min(TotalMass))
 if plotting:
+    ''' 
     font = "large"
     OnlyH2mass = np.ones(len(echo)) * OnlyH2mass
     plt.figure(3)
@@ -128,5 +126,5 @@ if plotting:
     plt.ylabel("Power system Volume [m^3]", fontsize = font)
     plt.xlabel("Fraction cruise power provide by Fuel Cell", fontsize = font)
     plt.legend(fontsize = font)
-
+    '''
     plt.show()

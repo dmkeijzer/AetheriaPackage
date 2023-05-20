@@ -14,8 +14,15 @@ from Modules.powersizing import MissionRequirements
 from Modules.powersizing import PropulsionSystem
 
 
+
+def convert_array_to_strings(arr):
+    # Convert the array to a list of strings
+    str_list = [str(np.round(x,3)) for x in arr]
+    return str_list
+
+
 echo = np.arange(0,1.1,0.01)
-DOD = 0.8
+DOD = 0.9
 ChargingEfficiency = 1
 N_loops = 30
 
@@ -28,7 +35,7 @@ effiencyFuellCell = 0.55
 
 #Tank input
 VolumeDensityTank = 0.8 #kWh/l
-EnergyDensityTank = 1.85 # kWh/kg
+EnergyDensityTank = 0.06 * 33.3 # kWh/kg
 
 #input Flight performance params
 J1Mission = MissionRequirements(EnergyRequired= 270,CruisePower=170, HoverPower= 360)
@@ -36,7 +43,6 @@ J1Mission = MissionRequirements(EnergyRequired= 270,CruisePower=170, HoverPower=
 
 #batteries
 Liionbat = BatterySizing(sp_en_den= 0.3, vol_en_den=0.45, sp_pow_den=2,cost =30.3, charging_efficiency= ChargingEfficiency, depth_of_discharge= DOD, discharge_effiency=0.95)
-Lisulbat = BatterySizing(sp_en_den= 0.42, vol_en_den=0.4, sp_pow_den=10,cost =61.1, charging_efficiency= ChargingEfficiency, depth_of_discharge= DOD, discharge_effiency=0.95)
 Solidstatebat = BatterySizing(sp_en_den= 0.4, vol_en_den=1, sp_pow_den=7,cost =82.2, charging_efficiency= ChargingEfficiency, depth_of_discharge= DOD, discharge_effiency=0.95)
 
 
@@ -44,45 +50,74 @@ Solidstatebat = BatterySizing(sp_en_den= 0.4, vol_en_den=1, sp_pow_den=7,cost =8
 
 BatteryUsed = Solidstatebat
 FirstFC = FuellCellSizing(PowerDensityFuellCell,VolumeDensityFuellCell,effiencyFuellCell, 0)
-FuelTank = HydrogenTankSizing(EnergyDensityTank,VolumeDensityTank,0)
+FuelTank700Bbar = HydrogenTankSizing(EnergyDensityTank,VolumeDensityTank,0)
+FueltankLiquid = HydrogenTankSizing(sp_en_den=33.3* 0.25,vol_en_den=8/3.6,cost= 0)
 
+
+#------first sensitivity analysis power density fc vs power density solidstate battery
 PowersdensitiesFC = np.arange(2.5,3.6,0.1)
 PowerdensitiesSolidState = np.arange(5,10.5,0.5)
+#PowerdensitiesLiion = np.arange(0.3,0.5,0.01)
 
 powerdensityFCm, Powerdensitiesbatm = np.meshgrid(PowersdensitiesFC,PowerdensitiesSolidState)
 
-sensitivity = np.zeros(powerdensityFCm.shape)
+sensitivityPowerFCBat = np.zeros(powerdensityFCm.shape)
 
 for i in range(powerdensityFCm.shape[0]):
     for j, powerdensities in enumerate(zip(powerdensityFCm[i],Powerdensitiesbatm[i])):
         powerdensityFC, powerdensitybat = powerdensities
         FirstFC.PowerDensity = powerdensityFC
         BatteryUsed.PowerDensity = powerdensitybat
-        label = "SPFC" + str(round(powerdensityFC,1)) + "SPBat" + str(round(powerdensitybat,1))
 
         Mass = PropulsionSystem.mass(np.copy(echo),
                                                                     Mission= J1Mission, 
                                                                     Battery = BatteryUsed, 
                                                                     FuellCell = FirstFC, 
-                                                                    FuellTank= FuelTank)
+                                                                    FuellTank= FuelTank700Bbar)
         TotalMass, tankMass, FuelCellMass, BatteryMass, coolingmass = Mass
-        sensitivity[i,j] = np.round(np.min(TotalMass),2)
-        print(label, powerdensityFC, powerdensitybat, np.min(TotalMass))
+        sensitivityPowerFCBat[i,j] = np.round(np.min(TotalMass),2)
 
 
-def convert_array_to_strings(arr):
-    str_list = []
-    with np.nditer(arr, flags=['buffered'], op_flags=['readonly']) as it:
-        for x in it:
-            str_list.append(str(np.round(x,1)))
-    return str_list
-
-#converting to 
+#converting to data frame
 sppowerfc = convert_array_to_strings(PowersdensitiesFC)
 sppowerbat = convert_array_to_strings(PowerdensitiesSolidState)
-sensitivity = pd.DataFrame(sensitivity,index= sppowerbat,columns=sppowerfc)
+sensitivityPowerFCBat = pd.DataFrame(sensitivityPowerFCBat,index= sppowerbat,columns=sppowerfc)
+print(sensitivityPowerFCBat)
 
-print(sensitivity)
+#------------------reset batteries and fuel cells
+#batteries
+Liionbat = BatterySizing(sp_en_den= 0.3, vol_en_den=0.45, sp_pow_den=2,cost =30.3, charging_efficiency= ChargingEfficiency, depth_of_discharge= DOD, discharge_effiency=0.95)
+Lisulbat = BatterySizing(sp_en_den= 0.42, vol_en_den=0.4, sp_pow_den=10,cost =61.1, charging_efficiency= ChargingEfficiency, depth_of_discharge= DOD, discharge_effiency=0.95)
+Solidstatebat = BatterySizing(sp_en_den= 0.4, vol_en_den=1, sp_pow_den=7,cost =82.2, charging_efficiency= ChargingEfficiency, depth_of_discharge= DOD, discharge_effiency=0.95)
 
-        
+
+FirstFC = FuellCellSizing(PowerDensityFuellCell,VolumeDensityFuellCell,effiencyFuellCell, 0)
+FuelTank700Bbar = HydrogenTankSizing(EnergyDensityTank,VolumeDensityTank,0)
+FueltankLiquid = HydrogenTankSizing(sp_en_den=33.3* 0.25,vol_en_den=8/3.6,cost= 0)
+
+#--------------Second Sensitivity analysis
+PowersdensitiesFC = np.arange(2.5,3.6,0.1)
+EnergyDensitiesTank = np.arange(0.06,0.1,0.005) * 33.3
+
+powerdensityFCm, EnergyDensitiesTankm = np.meshgrid(PowersdensitiesFC,EnergyDensitiesTank)
+
+sensitivityPowerFCEnergyTank = np.zeros(powerdensityFCm.shape)
+for i in range(powerdensityFCm.shape[0]):
+    for j, powerdensities in enumerate(zip(powerdensityFCm[i],EnergyDensitiesTankm[i])):
+        powerdensityFC, energydensityH2 = powerdensities
+        FirstFC.PowerDensity = powerdensityFC
+        FuelTank700Bbar.EnergyDensity = energydensityH2
+
+        Mass = PropulsionSystem.mass(np.copy(echo),
+                                                                    Mission= J1Mission, 
+                                                                    Battery = Liionbat, 
+                                                                    FuellCell = FirstFC, 
+                                                                    FuellTank= FuelTank700Bbar)
+        TotalMass, tankMass, FuelCellMass, BatteryMass, coolingmass = Mass
+        sensitivityPowerFCEnergyTank[i,j] = np.round(np.min(TotalMass),2)
+
+sppowerfc = convert_array_to_strings(PowersdensitiesFC)
+spenergyH2 = convert_array_to_strings(EnergyDensitiesTank/33.3)
+sensitivityPowerFCEnergyTank = pd.DataFrame(sensitivityPowerFCEnergyTank,index= spenergyH2,columns=sppowerfc)
+print(sensitivityPowerFCEnergyTank)
 

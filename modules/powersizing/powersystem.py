@@ -75,9 +75,11 @@ def power_cruise_mass(PowerRequired: float, echo: float,  FuellCell:FuellCellSiz
     
     FCmass = FuellCell.mass(echo * PowerRequired ) 
     Batterymass = PowerRequired * (1-echo) / Battery.PowerDensity
+    for i in range(len(Batterymass)):
+        Batterymass[i] = max(0,Batterymass[i])
 
 
-    return FCmass, np.maximum(Batterymass , np.zeros( len(Batterymass) ) )
+    return FCmass, Batterymass
 
 def hover_mass(PowerRequired: float ,MaxPowerFC: float, Battery: BatterySizing) -> float :
 
@@ -115,16 +117,17 @@ class PropulsionSystem:
 
 
         #initial sizing for hovering phase
-        MaxPowerFuellCell = Battery.PowerDensity * FCmass
-        HoverBatterymass = hover_mass(Mission.HoverPower, MaxPowerFuellCell, Battery)
-        HoverEnergyBatterymass = hover_energy_mass(Mission.HoverPower, MaxPowerFuellCell, Battery, hovertime)
+        MaxPowerFuellCell = FuellCell.PowerDensity * FCmass
+        HoverBatterymass = hover_mass(PowerRequired=Mission.HoverPower,MaxPowerFC= MaxPowerFuellCell,Battery= Battery)
+        HoverEnergyBatterymass = hover_energy_mass(PowerRequired= Mission.HoverPower, MaxPowerFC= MaxPowerFuellCell,Battery= Battery,HoverTime= hovertime)
 
         #heaviest battery is needed for the total mass
         Batterymass = np.zeros(len(echo))
-        
+
+
         #need to check which batterymass is limiting at each echo and hardcoded it because i did not trust np.maximum as it gave some weird results
         for i in range(len(echo)):
-            Batterymass[i] = max(HoverBatterymass[i], HoverEnergyBatterymass[i], CruiseBatterymass[i], EnergyBatterymass[i])
+            Batterymass[i] = max([HoverBatterymass[i], HoverEnergyBatterymass[i], CruiseBatterymass[i], EnergyBatterymass[i]])
 
         #calculating heat produced by the 
         """"  
