@@ -20,7 +20,7 @@ def i_xx_thinwalled(width, height, thickness):
 def i_zz_thinwalled(width, height, thickness):
     return 1 / 3 * width * width * height * thickness
 
-def j_y_thinwalled(width, height, thickness):
+def j_yw_thinwalled(width, height, thickness):
     return (height + width) * height * width * thickness / 3
 
 
