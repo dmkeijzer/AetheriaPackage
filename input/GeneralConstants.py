@@ -79,9 +79,14 @@ VolumeDensityTank = 0.5 #kg/l
 EnergyDensityTank = 1.85 # kWh/kg
 
 # Requirements
-n_min = -1              # [-]       O   Min load factor
-n_max = 2.5             # [-]       O   Max load factor
-n_ult = 1.5*n_max       # [-]       O   Ultimate load factor
+n_min_req = -1              # [-]       O   Min load factor
+n_max_req = 2.5             # [-]       O   Max load factor
+n_ult_req = 1.5*n_max_req       # [-]       O   Ultimate load factor
 ub = 20.12              # [m/s]     0   Gust at Vb from EASA
 uc = 15.24              # [m/s]     0   Gust at Vc from EASA
 ud = 7.62               # [m/s]     0   Gust at Vd from EASA
+
+
+#material properties
+E_alu = 73e9
+nu_alu = 0.33

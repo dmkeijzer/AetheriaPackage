@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 import matplotlib.pyplot as plt
+import pathlib as pl
+import sys
+sys.path.append(str(list(pl.Path(__file__).parents)[2]))
+from input.GeneralConstants import *
+
 """NORMAL STRESS"""
 def bending_stress(moment_x,moment_z,i_xx,i_zz,i_xz,width,height):
     sigma_a = ((moment_x * i_zz - moment_z * i_xz) * height/2 + (moment_z * i_xx - moment_x * i_xz) * -width/2) / (i_xx * i_zz - i_xz * i_xz)
@@ -140,3 +145,6 @@ def shear_thin_walled_rectangular_section(width,height,thickness,i_xx,i_zz,Vx,Vz
 
     #I added the minus below since I assumed cw+ but it should be ccw+ so the magnitudes are correct but they should point the other way around
     return tau_ab,tau_bc,tau_cd,tau_da
+
+
+def critical_buckling_stress(C,t,b): return C*(np.pi**2*E_alu)/(12*(1-nu_alu**2))*(t/b)**2

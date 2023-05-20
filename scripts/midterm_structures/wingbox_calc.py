@@ -78,6 +78,9 @@ def root_wingbox_stresses(dict_directory,dict_name,i):
 
     x = np.arange(0,w_wingbox,1E-5)
     y = np.arange(0,h_wingbox,1E-5)
+
+    """CALC CRITICAL BENDING STRESS"""
+    sigma_cr = critical_buckling_stress(4.00, thickness, w_wingbox)
     '''
     plt.plot(x,tau_ab,label="AB")
     plt.plot(y,tau_bc,label="BC")
@@ -93,15 +96,19 @@ def root_wingbox_stresses(dict_directory,dict_name,i):
     print(f"DA goes from {tau_da[0]} to {tau_da[-1]}")
     '''
     print("CRUISE SITUATION")
-    print(f"Max shear stress = {max_shear_cr/1000000}[MPa]")
-    print(f"Max bending stress = {max_axial_cr/1000000}[MPa]\n\n")
+    print(f"Max shear stress = {round(max_shear_cr/1000000,2)}[MPa]")
+    print(f"Max bending stress = {round(max_axial_cr/1000000,2)}[MPa]\n")
 
     print("VERTICAL FLIGHT SITUATION")
-    print(f"Max shear stress = {max_shear_vf/1000000}[MPa]")
-    print(f"Max bending stress = {max_axial_vf/1000000}[MPa]\n\n")
+    print(f"Max shear stress = {round(max_shear_vf/1000000,2)}[MPa]")
+    print(f"Max bending stress = {round(max_axial_vf/1000000,2)}[MPa]\n")
+
+    print("CRITICAL BUCKLING STRESS")
+    print(f"Critical Buckling Stress = {round(sigma_cr/1000000,2)}[MPa]\n")
 
     data["max_shear_cr"],data["max_axial_cr"] = max_shear_cr,max_bending_stress_cr
     data["max_shear_vf"],data["max_axial_vf"] = max_shear_vf,max_bending_stress_vf
+    data["crit_buck_stress"] = sigma_cr
     if write_bool:
         with open(download_dir+"\\"+dict_name, "w") as jsonFile:
             json.dump(data, jsonFile,indent=2)
@@ -110,9 +117,6 @@ def root_wingbox_stresses(dict_directory,dict_name,i):
         with open(dict_directory+"\\"+dict_name, "w") as jsonFile:
             json.dump(data, jsonFile,indent=2)
         print("Old files were overwritten.")
-
-
-
     return
 
 dict_directory = str(list(pl.Path(__file__).parents)[2])+"\\input"          #determine file path
