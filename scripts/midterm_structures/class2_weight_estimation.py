@@ -26,7 +26,7 @@ with open('input/W1_constants.json', 'r') as f:
 
 #---------------------------------J1---------------------------------
 weight_J1 = VtolWeightEstimation()
-weight_J1.add_component(Wing(J1["mtom"], J1["S"], const.n_ult, J1["A"]))
+weight_J1.add_component(Wing(J1["mtom"], J1["S"], J1["n_ult"], J1["A"]))
 weight_J1.add_component(Fuselage(J1["name"], J1["mtom"], np.pi*J1["w_fuse"], J1["l_fuse"], const.npax + 1 ))
 weight_J1.add_component(LandingGear(J1["mtom"]))
 weight_J1.add_component(Powertrain(J1["power_hover"], const.p_density))
@@ -51,8 +51,8 @@ J1["misc_weight"] = J1_results[7]
 
 #---------------------------------L1---------------------------------
 weight_L1 = VtolWeightEstimation()
-weight_L1.add_component(Wing(L1["mtom"], L1["S1"], const.n_ult, L1["A1"]))
-weight_L1.add_component(Wing(L1["mtom"], L1["S2"], const.n_ult, L1["A2"]))
+weight_L1.add_component(Wing(L1["mtom"], L1["S1"], L1["n_ult"], L1["A1"]))
+weight_L1.add_component(Wing(L1["mtom"], L1["S2"], L1["n_ult"], L1["A2"]))
 weight_L1.add_component(Fuselage(L1["name"], L1["mtom"], np.pi*L1["w_fuse"], L1["l_fuse"], const.npax + 1 ))
 weight_L1.add_component(LandingGear(L1["mtom"]))
 weight_L1.add_component(Powertrain(L1["power_hover"], const.p_density))
@@ -76,8 +76,8 @@ L1["misc_weight"] = L1_results[7]
 
 #--------------------------------- W1---------------------------------
 weight_W1 = VtolWeightEstimation()
-weight_W1.add_component(Wing(W1["mtom"], W1["S1"], const.n_ult, W1["A1"]))
-weight_W1.add_component(Wing(W1["mtom"], W1["S2"], const.n_ult, W1["A2"]))
+weight_W1.add_component(Wing(W1["mtom"], W1["S1"], W1["n_ult"], W1["A1"]))
+weight_W1.add_component(Wing(W1["mtom"], W1["S2"], W1["n_ult"], W1["A2"]))
 weight_W1.add_component(Fuselage(W1["name"], W1["mtom"], np.pi*W1["w_fuse"], W1["l_fuse"], const.npax + 1 ))
 weight_W1.add_component(LandingGear(W1["mtom"]))
 weight_W1.add_component(Powertrain(W1["power_hover"], const.p_density))

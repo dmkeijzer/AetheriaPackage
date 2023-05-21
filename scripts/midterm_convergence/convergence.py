@@ -20,7 +20,7 @@ label  = ("_".join(time.asctime().split(" ")[1:-1])).replace(":",".")[:-3]
 # List of Python files to execute
 python_files = [
     "scripts/Preliminary_sizing/wing_power_loading.py",
-    "scripts/midterm_structures/flight_envelope_plotting.py",
+    "scripts/midterm_structures/flight_envelope.py",
     "scripts/midterm_aerodynamics/planform_sizing.py",
     "scripts/midterm_aerodynamics/drag_estimation.py",
     "scripts/midterm_prop_flight_perf/mission_power_energy.py",
@@ -32,7 +32,7 @@ dict_names = ["J1_constants.json", "L1_constants.json", "W1_constants.json"]
 
 output_dir = "output/midterm_convergence"
 # Specify the number of times to loop
-loop_count = 10
+loop_count = 15
 
 # Loop through the Python files multiple times
 for i in range(1, loop_count+1):
@@ -51,14 +51,15 @@ for i in range(1, loop_count+1):
                     # Read the output from the subprocess
     
     for file in python_files:
-        print(f"\nRunning {file}\n")
+        print(f"\nRunning {file}\n-----------------------------------------------------------------------\n")
         process =  subprocess.Popen([python_executable, file], stdin=subprocess.PIPE, stdout=subprocess.PIPE, universal_newlines=True)
         # Send input to the subprocess
-        print(f"\nFinished running {file}\n")
-
         if TEST:
             process.stdin.write("1" + "\n")
         else:
             process.stdin.write("0" + "\n")
         process.stdin.flush()
         print(process.stdout.read())
+
+        print(f"\nFinished running {file}\n-----------------------------------------------------------------------\n")
+
