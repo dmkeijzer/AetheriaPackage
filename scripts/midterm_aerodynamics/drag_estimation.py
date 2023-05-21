@@ -75,6 +75,7 @@ for dict_name in dict_names:
         print("CD0_wing", CD_wing_var/data["S"])
         
         data["ld_cr"] = lift_over_drag_var
+        data["cd"] = CD_var
 
         if TEST:
             with open(os.path.join(download_dir, dict_name), "w") as jsonFile:
