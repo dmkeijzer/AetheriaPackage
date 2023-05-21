@@ -31,13 +31,6 @@ def coolingmass(heat: float, heatedensity:float) -> float:
 
 
 def energy_cruise_mass(EnergyRequired: float , echo: float , Tank: HydrogenTankSizing, Battery: BatterySizing, FuellCell: FuellCellSizing) -> list[float]:
-    """ Hydrogen tank sizing and battery sizing for the energy requirement of cruise condition
-        input:
-            -EnergyRequired[kWh]: The energy required for the entire mission
-            -echo [-]: The percentage of power deliverd by the fuel cell during cruise, if over 1 than the fuell cell charges the  battery
-            -EnergyDensityTank [kWh/kg]: The energy density of the hydrogen tank with the hydrogen inside it 
-            -EnergyDensityBattery [kWh/kg]: The energy density of the battery
-            """
     """Calculate the mass of the hydrogen tank + the hydrogen itself
         input:
             -EnergyRequired [kWh] : The total Energy required for the mission
@@ -91,10 +84,11 @@ def hover_mass(PowerRequired: float ,MaxPowerFC: float, Battery: BatterySizing) 
         output:
             -Batterymass
     """
-    return  (PowerRequired - MaxPowerFC) / Battery.PowerDensity
+    BatteryMass =(PowerRequired - MaxPowerFC) / Battery.PowerDensity
+    return  BatteryMass
 
 def hover_energy_mass(PowerRequired: float ,MaxPowerFC: float, Battery: BatterySizing, HoverTime:float) -> float:
-    BatteryMass = (PowerRequired - MaxPowerFC) * HoverTime /3600 / Battery.EnergyDensity / Battery.DOD 
+    BatteryMass = (PowerRequired - MaxPowerFC) * HoverTime /3600 / Battery.EnergyDensity / Battery.Efficiency 
     return BatteryMass
 
 class PropulsionSystem:

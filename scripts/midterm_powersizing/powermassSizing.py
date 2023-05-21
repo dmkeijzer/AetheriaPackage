@@ -6,10 +6,7 @@ import pathlib as pl
 
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 
-from modules.powersizing import BatterySizing
-from modules.powersizing import FuellCellSizing
-from modules.powersizing import HydrogenTankSizing
-from modules.powersizing import MissionRequirements
+from modules.powersizing import BatterySizing , FuellCellSizing,  HydrogenTankSizing, MissionRequirements
 from modules.powersizing import PropulsionSystem, onlyFuelCellSizing
 
 #plotfunction
