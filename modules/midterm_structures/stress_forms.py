@@ -92,6 +92,7 @@ def shear_thin_walled_rectangular_section(width,height,thickness,i_xx,i_zz,Vx,Vz
     #I added the minus below since I assumed cw+ but it should be ccw+ so the magnitudes are correct but they should point the other way around
     return -tau_ab,-tau_bc,-tau_cd,-tau_da
 '''
+
 def shear_thin_walled_rectangular_section(width,height,thickness,i_xx,i_zz,Vx,Vz):
     #Assumptions: Vx and Vz act at the centerpoint of the rectangle
     #The section is a rectangle with A in the bottom left corner and continueing counterclockwise with B, C and D respectively.
@@ -147,4 +148,14 @@ def shear_thin_walled_rectangular_section(width,height,thickness,i_xx,i_zz,Vx,Vz
     return tau_ab,tau_bc,tau_cd,tau_da
 
 
+
 def critical_buckling_stress(C,t,b): return C*(np.pi**2*E_alu)/(12*(1-nu_alu**2))*(t/b)**2
+
+def wohlers_curve(C,m,S):
+    return C/(S**m)
+
+def paris_law(C,beta,load,m,a_f,a_0):
+    def int_paris_law(a):
+        return -2/((m-2)*a**((m-2)/2))
+    return (1/(C * load **m)) * (1/((beta * np.sqrt(np.pi))**m)) * (int_paris_law(a_f)-int_paris_law(a_0))
+

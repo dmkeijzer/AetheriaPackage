@@ -75,7 +75,9 @@ def root_wingbox_stresses(dict_directory,dict_name,i):
     tau_da = tau_da_shear + tau_torsion
     max_shear_vf = max(max(abs(tau_ab)),max(abs(tau_bc)),max(abs(tau_cd)),max(abs(tau_da)))
 
-
+    """Fatigue equations"""
+    N_wohler = wohlers_curve(3.15E14, 4.10,max_axial_cr/1000000)
+    N_paris = paris_law(1E-12,1.225,max_axial_cr/1000000,3.0,thickness/2,0.45E-3)
     x = np.arange(0,w_wingbox,1E-5)
     y = np.arange(0,h_wingbox,1E-5)
 
@@ -96,8 +98,11 @@ def root_wingbox_stresses(dict_directory,dict_name,i):
     print(f"DA goes from {tau_da[0]} to {tau_da[-1]}")
     '''
     print("CRUISE SITUATION")
+
     print(f"Max shear stress = {round(max_shear_cr/1000000,2)}[MPa]")
     print(f"Max bending stress = {round(max_axial_cr/1000000,2)}[MPa]\n")
+    print(f"N_wohlers curve = {N_wohler/1000000}[*10^6]")
+    print(f"N_paris curve = {N_paris / 1000000}[*10^6]\n")
 
     print("VERTICAL FLIGHT SITUATION")
     print(f"Max shear stress = {round(max_shear_vf/1000000,2)}[MPa]")
@@ -106,6 +111,7 @@ def root_wingbox_stresses(dict_directory,dict_name,i):
     print("CRITICAL BUCKLING STRESS")
     print(f"Critical Buckling Stress = {round(sigma_cr/1000000,2)}[MPa]\n")
 
+    print(f"")
     data["max_shear_cr"],data["max_axial_cr"] = max_shear_cr,max_bending_stress_cr
     data["max_shear_vf"],data["max_axial_vf"] = max_shear_vf,max_bending_stress_vf
     data["crit_buck_stress"] = sigma_cr
