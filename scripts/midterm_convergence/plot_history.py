@@ -11,7 +11,7 @@ download_dir = os.path.join(os.path.expanduser("~"), "Downloads")
 
 write_option = int(input("Type 1 to save to your downloads folder, press 0 to simply view them one by one\n"))
 
-label = str("May_21_13.31")
+label = str("May_21_13.42")
 
 csv_files = ["output\midterm_convergence\J1_" + label + "_hist.csv",
 "output\midterm_convergence\L1_" + label + "_hist.csv",
@@ -29,7 +29,10 @@ for var, unit in zip(var_list, unit_list):
     for file in csv_files:
         data = pd.read_csv(file)
 
-        axs.plot(data[var],"^-", label= os.path.split(file)[-1][:2])
+        if var == "mission_energy":
+            axs.plot(data[var]/3.6e6,"^-", label= os.path.split(file)[-1][:2])
+        else:
+            axs.plot(data[var],"^-", label= os.path.split(file)[-1][:2])
         axs.set_ylabel(" ".join(var.split("_")) + " " +  unit)
         axs.set_xlabel("Iterations")
 

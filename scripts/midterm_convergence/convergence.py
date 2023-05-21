@@ -51,14 +51,15 @@ for i in range(1, loop_count+1):
                     # Read the output from the subprocess
     
     for file in python_files:
-        print(f"\nRunning {file}\n")
+        print(f"\nRunning {file}\n-----------------------------------------------------------------------\n")
         process =  subprocess.Popen([python_executable, file], stdin=subprocess.PIPE, stdout=subprocess.PIPE, universal_newlines=True)
         # Send input to the subprocess
-        print(f"\nFinished running {file}\n")
-
         if TEST:
             process.stdin.write("1" + "\n")
         else:
             process.stdin.write("0" + "\n")
         process.stdin.flush()
         print(process.stdout.read())
+
+        print(f"\nFinished running {file}\n-----------------------------------------------------------------------\n")
+

@@ -17,7 +17,7 @@ def flightEnvelope(dict_directory, dict_name, PRINT=False):
     with open(dict_directory + "\\" + dict_name, "r") as jsonFile:
         data = json.loads(jsonFile.read())
 
-    nm = Flight_Envelope.plotmaneuvrenv(data['WS'], data['v_cruise'], data['cLmax'], n_min, n_max)
+    nm = Flight_Envelope.plotmaneuvrenv(data['WS'], data['v_cruise'], data['cLmax'], n_min_req, n_max_req)
     ng = Flight_Envelope.plotgustenv(data['v_stall'], data['v_cruise'], data['clalpha'], data['WS'], TEXT=True)
 
     data['n_max'], data['n_ult'] = max(nm, ng), max(nm, ng)*1.5
