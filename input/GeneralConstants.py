@@ -53,7 +53,7 @@ DOD = 0.8
 ChargingEfficiency = 0.7
 
 #standard masses
-m_pl = 475 # kg
+m_pl =  510  # kg
 
 
 #airfoil
