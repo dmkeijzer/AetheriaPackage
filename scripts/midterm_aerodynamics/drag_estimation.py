@@ -44,6 +44,7 @@ for dict_name in dict_names:
 
         # Writing to JSON file
         data["e"] = Oswald_eff_var
+        data["depsda"] = 0.1
 
         #Form factor
         FF_fus_var = FF_fus(data["l_fuselage"], data["d_fuselage"])

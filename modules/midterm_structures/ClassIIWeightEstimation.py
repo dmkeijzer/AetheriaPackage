@@ -35,7 +35,7 @@ class VtolWeightEstimation:
         :rtype: float
         """        
         mass_lst = [i.return_mass() for i in self.components]
-        return np.sum(mass_lst)
+        return np.sum(mass_lst)*const.oem_cont
 
 class Component():
     """ This is the parent class for all weight components, it initalized the mass

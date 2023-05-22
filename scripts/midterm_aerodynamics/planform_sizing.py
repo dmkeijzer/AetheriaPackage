@@ -9,6 +9,8 @@ os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
 from modules.midterm_planform.planformsizing import *
 import input.GeneralConstants as const
+from  modules.midterm_aero.midterm_datcom_methods import datcom_cl_alpha
+from  modules.midterm_aero.clean_class2drag  import *
 
 download_dir = os.path.join(os.path.expanduser("~"), "Downloads")
 
@@ -44,6 +46,8 @@ for dict_name in dict_names:
         data["sweep_le"] = WingClass.tan_sweep_LE
         data["sweep_1/4"] = WingClass.quarterchord_sweep
         data["x_lemac"] = WingClass.X_lemac
+        M_var = Mach_cruise(const.v_cr, const.gamma, const.R, const.t_cr)
+        data["cl_alpha"] = datcom_cl_alpha(data["A"], M_var, data["sweep_1/4"] )
     
     else:
         
@@ -90,6 +94,12 @@ for dict_name in dict_names:
 
         data["x_lemac1"] = WingClass1.X_lemac
         data["x_lemac2"] = WingClass2.X_lemac
+
+
+        M_var = Mach_cruise(const.v_cr, const.gamma, const.R, const.t_cr)
+        data["cl_alpha1"] = datcom_cl_alpha(data["A1"], M_var, data["sweep1_1/4"] )
+        data["cl_alpha2"] = datcom_cl_alpha(data["A2"], M_var, data["sweep2_1/4"] )
+        data["alpha"] = data["S1/S"]*data["cl_alpha1"] + data["S2/S"]*data["cl_alpha2"]*(1 - data["depsda"])
 
     if TEST:
         with open(os.path.join(download_dir, dict_name), "w") as jsonFile:

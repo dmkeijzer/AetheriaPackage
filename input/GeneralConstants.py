@@ -86,6 +86,8 @@ ub = 20.12              # [m/s]     0   Gust at Vb from EASA
 uc = 15.24              # [m/s]     0   Gust at Vc from EASA
 ud = 7.62               # [m/s]     0   Gust at Vd from EASA
 
+# contingencies
+oem_cont = 1.1
 
 #material properties
 E_alu = 73e9
