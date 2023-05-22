@@ -51,7 +51,7 @@ for dict_name in dict_names:
 
         #Wetted area
         S_wet_fus_var = S_wet_fus(data["d_fuselage"], data["l_cockpit"], data["l_cabin"], data["l_tail"])
-        S_wet_wing_var = 1.07*2*np.sqrt((data["b"]-data["d_fuselage"])* data["AR"] )        # from ADSEE slides
+        S_wet_wing_var = 2*data["S"]        # from ADSEE slides
 
         #Miscoulanisous drag
         CD_upsweep_var = CD_upsweep(data["upsweep"], data["d_fuselage"], S_wet_fus_var)
