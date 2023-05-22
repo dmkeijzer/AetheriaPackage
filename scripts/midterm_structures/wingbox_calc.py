@@ -57,7 +57,7 @@ def root_wingbox_stresses(dict_directory,dict_name,i):
     #Determine shear stress due to torsion
     tau_torsion = torsion_thinwalled_closed(data["T_cr"],thickness,data["area_enclosed"])
     #Combine shear stresses
-    tau_ab = tau_ab_shear + tau_torsionf
+    tau_ab = tau_ab_shear + tau_torsion
     tau_bc = tau_bc_shear + tau_torsion
     tau_cd = tau_cd_shear + tau_torsion
     tau_da = tau_da_shear + tau_torsion
