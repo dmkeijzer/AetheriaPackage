@@ -92,8 +92,8 @@ rho=1.225;
 
 
 
-load("J1_input.mat")
-file_path = 'J3 Tfac vs cg range_m=2510.csv';
+load("L1_input.mat")
+file_path = 'L1 Tfac vs cg range_m=4021.csv';
 table_data = readtable(file_path);
 
 
@@ -119,17 +119,18 @@ xcgmin = table2array(table_data(1,:));
 
 Tfac_array_length = size(Tfac, 2);
 
-figure;
-hold on
-plot(ones(1, Tfac_array_length) * x_np, Pfac)
-plot(ones(1, Tfac_array_length) * x_cg, Pfac)
-plot(xcgmax, Pfac)
-plot(xcgmin, Pfac)
-ylabel("Power factor", "FontSize",18)
-xlabel("x_{cg} locations", "FontSize",18)
-title("CG range envelope for longitudinal and vertical criteria","FontSize",18)
-legend("x_{cg}_{aft} longitudinal constraint", "x_{cg}_{fw} longitudinal constraint", "x_{cg}_{aft} vertical constraint", "x_{cg}_{fw} vertical constraint", "FontSize",12)
-hold off; % Release the hold on the plot
+% figure;
+% hold on
+% plot(ones(1, Tfac_array_length) * x_np, Pfac)
+% plot(ones(1, Tfac_array_length) * x_cg, Pfac)
+% plot(xcgmax, Pfac)
+% plot(xcgmin, Pfac)
+% ylabel("Power factor", "FontSize",18)
+% xlabel("x_{cg} locations", "FontSize",18)
+% title("CG range envelope for longitudinal and vertical criteria","FontSize",18)
+% legend("x_{cg}_{aft} longitudinal constraint", "x_{cg}_{fw} longitudinal constraint", "x_{cg}_{aft} vertical constraint", "x_{cg}_{fw} vertical constraint", "FontSize",12)
+% hold off; % Release the hold on the plot
+writematrix(vertcat(xcgmin, xcgmax, Pfac),"L1_cg_rage_Pfac.csv")
 
 
 
