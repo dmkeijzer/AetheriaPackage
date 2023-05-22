@@ -33,23 +33,35 @@ dict_names = ["J1_constants.json", "L1_constants.json", "W1_constants.json"]
 
 output_dir = "output/midterm_sensitivity_diskloading"
 # Specify the number of times to loop
-loop_count = 1
+loop_count = 7
 
-disk_j1 = np.linspace(45,500,10)
-disk_l1 = np.linspace(1000,2000,10)
-disk_w1 = np.linspace(200,1000,10)
+A_j1 = np.linspace(5,10,10)
+A1_l1 = np.linspace(3,8,10)
+A2_l1 = np.linspace(6,11,10)
+A1_w1 = np.linspace(6,11,10)
+A2_w1 = np.linspace(6,11,10)
+
 
 # Loop through the Python files multiple times
-for  diskloading_j1, diskloading_l1, diskloading_w1 in zip(disk_j1, disk_l1, disk_w1):
+for  A_j1, A1_l1, A2_l1, A1_w1, A2_w1 in zip(A_j1, A1_l1, A2_l1, A1_w1, A2_w1):
 
-    disk_loading_lst = [diskloading_j1, diskloading_l1, diskloading_w1]
+    aspect_ratio_lst = [A_j1, A1_l1, A2_l1, A1_w1, A2_w1]
     
-    for dict_name, diskload in zip(dict_names, disk_loading_lst):
+    for dict_name in dict_names:
         # Load data from JSON file
         with open(os.path.join(dict_directory, dict_name)) as jsonFile:
             data = json.load(jsonFile)
 
-        data["diskloading"] = diskload
+        if data["name"] == "J1":
+            data["A"] = A_j1
+
+        if data["name"] == "L1":
+            data["A1"] = A1_l1
+            data["A2"] = A2_l1
+        else:
+            data["A1"] = A1_w1
+            data["A2"] = A2_w1
+
 
         with open(dict_directory+"\\"+dict_name, "w") as jsonFile:
             json.dump(data, jsonFile,indent=6)
@@ -79,8 +91,9 @@ for  diskloading_j1, diskloading_l1, diskloading_w1 in zip(disk_j1, disk_l1, dis
             with open(os.path.join(dict_directory, dict_name)) as jsonFile:
                 data = json.load(jsonFile)
 
-            if os.path.exists(os.path.join(output_dir, dict_name[:2] + "_" + label + "_sensitivity.csv")):
-                pd.DataFrame(np.array(list(data.values())).reshape(1, len(data))).to_csv(os.path.join(output_dir, dict_name[:2] + "_" + label + "_sensitivity.csv") , mode="a", header=False, index= False)
+            if os.path.exists(os.path.join(output_dir, dict_name[:2] + "_" + label + "_sensitivityAero.csv")):
+                pd.DataFrame(np.array(list(data.values())).reshape(1, len(data))).to_csv(os.path.join(output_dir, dict_name[:2] + "_" + label + "_sensitivityAero.csv") , mode="a", header=False, index= False)
             else: 
-                pd.DataFrame([data]).to_csv(os.path.join(output_dir, dict_name[:2] + "_" + label + "_sensitivity.csv"), columns= list(data.keys()), index=False)
+                pd.DataFrame([data]).to_csv(os.path.join(output_dir, dict_name[:2] + "_" + label + "_sensitivityAero.csv"), columns= list(data.keys()), index=False)
                     # Read the output from the subprocess
+
