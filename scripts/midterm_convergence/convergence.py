@@ -32,7 +32,7 @@ dict_names = ["J1_constants.json", "L1_constants.json", "W1_constants.json"]
 
 output_dir = "output/midterm_convergence"
 # Specify the number of times to loop
-loop_count = 15
+loop_count = 5
 
 # Loop through the Python files multiple times
 for i in range(1, loop_count+1):
