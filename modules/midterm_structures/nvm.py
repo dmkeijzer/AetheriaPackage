@@ -12,10 +12,10 @@ from input.GeneralConstants import *
 
 dy = 0.001
 
-def pos(lst):
+def pos(lst):   # return only positive values in a list
     return [x for x in lst if x > 0] or None
 
-def dist_to_force(dist):
+def dist_to_force(dist):    # calculate force array from force distribution array
     F, f = [], 0
     for i in range(len(dist)):
         f += dist[i]
@@ -23,7 +23,7 @@ def dist_to_force(dist):
     F -= F[-1]
     return F
 
-def force_to_moment(F):
+def force_to_moment(F):     # calculate moment array from force array
     M, m = [], 0
     for i in range(len(F)):
         m += F[i]*dy
@@ -31,21 +31,24 @@ def force_to_moment(F):
     M -= M[-1]
     return M
 
-def c_span(c_r, c_t): return c_r + 2*(c_t-c_r)/b*span
+def c_span(c_r, c_t): return c_r + 2*(c_t-c_r)/b*span # span function
 
-
+## calculate wing root forces and moment during cruise
 def wing_root_cruise(dict_directory, dict_name, PRINT=False, ULTIMATE=False):
     with open(dict_directory + "\\" + dict_name, "r") as jsonFile:
         data = json.loads(jsonFile.read())
 
+    # obtain general data from json files
     mtom, cd, S, n_eng, cm, x_eng = data["mtom"],  data["cd"], data["S"], len(data["y_rotor_loc"]), data["cm"], data["x_rotor_loc"]
     w_eng = (data["nacelle_weight"]+data["powertrain_weight"])/n_eng
 
+    # check if ultimate load has to be used
     if ULTIMATE:
         nult = data["n_ult"]
     else:
         nult = 1
 
+    # obtain configuration specific data from json files
     if data["name"] == "J1":
         b, c_r, c_t = data["b"], data["c_root"], data["c_tip"]
         x_eng, y_eng = pos(data["x_rotor_loc"])[:-1], pos(data["y_rotor_loc"])[:-1]
@@ -88,6 +91,7 @@ def wing_root_cruise(dict_directory, dict_name, PRINT=False, ULTIMATE=False):
     engine_dist = np.zeros_like(span)
     engine_dist[indices-1] = w_eng*g0
 
+    # determine torque created by engine weight (only for J1)
     torque_eng = np.zeros_like(span)
     if data["name"] == "J1":
         for i in range(len(y_eng)):
@@ -170,6 +174,7 @@ def wing_root_cruise(dict_directory, dict_name, PRINT=False, ULTIMATE=False):
 
     return V_x[0], V_z[0], M_x[0], M_z[0], T[0]
 
+## calculate wing root forces and moment during cruise
 def wing_root_hover(dict_directory, dict_name, PRINT=False):
     with open(dict_directory + "\\" + dict_name, "r") as jsonFile:
         data = json.loads(jsonFile.read())
@@ -276,7 +281,6 @@ def wing_root_hover(dict_directory, dict_name, PRINT=False):
     # Display the figure
     plt.show()
 
-
     ### PRINTING ###
     if PRINT:
         print("For ", data["name"], " during hover :")
@@ -284,6 +288,5 @@ def wing_root_hover(dict_directory, dict_name, PRINT=False):
         print("Mx at root: ", round(M_x[0]/1000,1), 'kNm')
         print("T at root: ", round(T[0]/1000,1), 'kNm')
         print("--------------------")
-
 
     return V_z[0], M_x[0], T[0]

@@ -1,16 +1,16 @@
 matfiles = dir('*.mat');
 for i = 1:length(matfiles)
     filename = matfiles(i).name;
-    Pfacname = sprintf("%s_cg_range_Pfac.csv", filename(1:2));
+    Ppename = sprintf("%s_cg_range_Ppe.csv", filename(1:2));
     Fwname = sprintf("%s_cg_range_frontwing_location.csv", filename(1:2));
     Rwname = sprintf("%s_cg_range_rearwing_location.csv", filename(1:2));
-    Pfactable = readtable(Pfacname);
+    Ppetable = readtable(Ppename);
     Fwtable = readtable(Fwname);
     Rwtable = readtable(Rwname);
 
-    xcgmin_hover = table2array(Pfactable(1,:));
-    xcgmax_hover = table2array(Pfactable(2,:));
-    Pfac = table2array(Pfactable(3,:));
+    xcgmin_hover = table2array(Ppetable(1,:));
+    xcgmax_hover = table2array(Ppetable(2,:));
+    Ppe = table2array(Ppetable(3,:));
 
     xcgmin_fw = table2array(Fwtable(1,:));
     xcgmax_fw = table2array(Fwtable(2,:));
@@ -21,15 +21,15 @@ for i = 1:length(matfiles)
     rwloc = table2array(Rwtable(3,:));
 
     figure
-    sgtitle("CG envelope for P-factor and wings lcoation - " + filename(1:2))
+    sgtitle("CG envelope for Power per engine and wings lcoation - " + filename(1:2))
     
     ax1 = subplot(2,1,1);
 
     yyaxis left
     hold on
-    plot(xcgmin_hover, Pfac)
-    plot(xcgmax_hover,Pfac)
-    ylabel("Pfac")
+    plot(xcgmin_hover, Ppe)
+    plot(xcgmax_hover,Ppe)
+    ylabel("Ppe")
     hold off
 
     yyaxis right
@@ -45,9 +45,9 @@ for i = 1:length(matfiles)
 
     yyaxis left
     hold on
-    plot(xcgmin_hover, Pfac)
-    plot(xcgmax_hover,Pfac)
-    ylabel("Pfac")
+    plot(xcgmin_hover, Ppe)
+    plot(xcgmax_hover,Ppe)
+    ylabel("Ppe")
     hold off
 
     yyaxis right
