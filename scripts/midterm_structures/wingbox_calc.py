@@ -44,18 +44,18 @@ def root_wingbox_stresses(dict_directory,dict_name,i):
     data["area"] = area_thinwalled(w_wingbox,h_wingbox,thickness)
 
     #Determine bending stress
-    max_bending_stress_cr,min_bending_stress_cr = bending_stress(data["Mx_cr"]*data["n_ult"],data["Mz_cr"]*data["n_ult"],data["i_xx"],data["i_zz"],data["i_xz"],w_wingbox,h_wingbox)
-    max_bending_stress_vf,min_bending_stress_vf = bending_stress(data["Mx_vf"]*data["n_ult"],data["Mz_vf"]*data["n_ult"],data["i_xx"],data["i_zz"],data["i_xz"],w_wingbox,h_wingbox)
-    normal_stress_cr = normal_stress(data["Vy_cr"]*data["n_ult"],data["area"])
-    normal_stress_vf = normal_stress(data["Vy_vf"]*data["n_ult"],data["area"])
+    max_bending_stress_cr,min_bending_stress_cr = bending_stress(data["Mx_cr"],data["Mz_cr"],data["i_xx"],data["i_zz"],data["i_xz"],w_wingbox,h_wingbox)
+    max_bending_stress_vf,min_bending_stress_vf = bending_stress(data["Mx_vf"],data["Mz_vf"],data["i_xx"],data["i_zz"],data["i_xz"],w_wingbox,h_wingbox)
+    normal_stress_cr = normal_stress(data["Vy_cr"],data["area"])
+    normal_stress_vf = normal_stress(data["Vy_vf"],data["area"])
 
     max_axial_cr = max(abs(max_bending_stress_cr+normal_stress_cr),abs(min_bending_stress_cr+normal_stress_cr))
     max_axial_vf = max(abs(max_bending_stress_vf+normal_stress_vf),abs(min_bending_stress_vf+normal_stress_vf))
     """CALC SHEAR FOR CRUISE"""
     #Determine shear stress due to shear loads
-    tau_ab_shear,tau_bc_shear,tau_cd_shear,tau_da_shear = shear_thin_walled_rectangular_section(w_wingbox, h_wingbox, thickness, data["i_xx"],data["i_zz"],data['Vx_cr']*data["n_ult"],data['Vz_cr']*data["n_ult"])
+    tau_ab_shear,tau_bc_shear,tau_cd_shear,tau_da_shear = shear_thin_walled_rectangular_section(w_wingbox, h_wingbox, thickness, data["i_xx"],data["i_zz"],data['Vx_cr'],data['Vz_cr'])
     #Determine shear stress due to torsion
-    tau_torsion = torsion_thinwalled_closed(data["T_cr"]*data["n_ult"],thickness,data["area_enclosed"])
+    tau_torsion = torsion_thinwalled_closed(data["T_cr"],thickness,data["area_enclosed"])
     #Combine shear stresses
     tau_ab = tau_ab_shear + tau_torsion
     tau_bc = tau_bc_shear + tau_torsion
@@ -65,9 +65,9 @@ def root_wingbox_stresses(dict_directory,dict_name,i):
 
     """CALC SHEAR FOR VERTICAL FLIGHT"""
     #Determine shear stress due to shear loads
-    tau_ab_shear,tau_bc_shear,tau_cd_shear,tau_da_shear = shear_thin_walled_rectangular_section(w_wingbox, h_wingbox, thickness, data["i_xx"],data["i_zz"],data['Vx_vf']*data["n_ult"],data['Vz_vf']*data["n_ult"])
+    tau_ab_shear,tau_bc_shear,tau_cd_shear,tau_da_shear = shear_thin_walled_rectangular_section(w_wingbox, h_wingbox, thickness, data["i_xx"],data["i_zz"],data['Vx_vf'],data['Vz_vf'])
     #Determine shear stress due to torsion
-    tau_torsion = torsion_thinwalled_closed(data["T_vf"]*data["n_ult"],thickness,data["area_enclosed"])
+    tau_torsion = torsion_thinwalled_closed(data["T_vf"],thickness,data["area_enclosed"])
     #Combine shear stresses
     tau_ab = tau_ab_shear + tau_torsion
     tau_bc = tau_bc_shear + tau_torsion
