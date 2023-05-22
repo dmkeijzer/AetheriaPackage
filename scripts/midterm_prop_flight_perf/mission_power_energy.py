@@ -88,6 +88,7 @@ for dict_name in dict_names:
     data["power_hover"] = P_loit_land
     data["power_climb"] = climb_power_var
     data["power_cruise"] = P_cr 
+    data["diskarea"] = data["mtom"]/data["diskloading"]
 
     data["takeoff_energy"] = E_to
     data["trans2hor_energy"] = E_trans_ver2hor
