@@ -62,6 +62,7 @@ def plot_wing_power_loading_graphs(dict_directory,dict_name,i):
     TW_max = powerloading_thrustloading(WS_max,rho_sl,data['roc'],data['StotS'])
     WP_cruise = lowest_area_y_novf[-1]
     WP_hover = lowest_area_y[-1]
+    CL_des = 2/(const.rho_cr*const.v_cr**2)*WS_max
     
     #FILL AREAS IN GRAPH
     plt.fill_between(lowest_area_x,lowest_area_y, color = "Green", alpha = 0.3)
@@ -96,7 +97,7 @@ def plot_wing_power_loading_graphs(dict_directory,dict_name,i):
 
     with open(dict_directory+"\\"+dict_name, "r") as jsonFile:
         data = json.loads(jsonFile.read())
-    data["WS"],data["TW"],data["WP_cruise"],data["WP_hover"] = WS_max,TW_max,WP_cruise,WP_hover
+    data["WS"],data["TW"],data["WP_cruise"],data["WP_hover"], data["cL_cruise"] = WS_max,TW_max,WP_cruise,WP_hover, CL_des
     if write_bool:
         with open(download_dir+"\\"+dict_name, "w") as jsonFile:
             json.dump(data, jsonFile,indent=2)

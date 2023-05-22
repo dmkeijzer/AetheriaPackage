@@ -42,6 +42,9 @@ for dict_name in dict_names:
         else: 
             Oswald_eff_var = Oswald_eff_tandem(data["b1"],data["b2"],data["h_wings"])
 
+        # Writing to JSON file
+        data["e"] = Oswald_eff_var
+
         #Form factor
         FF_fus_var = FF_fus(data["l_fuselage"], data["d_fuselage"])
         FF_wing_var = FF_wing(const.toc, const.xcm, M_var, data["sweep_m"])
@@ -74,8 +77,10 @@ for dict_name in dict_names:
         lift_over_drag_var = lift_over_drag(data["cL_cruise"], CD_var)
         print("CD0_wing", CD_wing_var/data["S"])
         
+        # Writing to JSON file
         data["ld_cr"] = lift_over_drag_var
         data["cd"] = CD_var
+        data["cd0"] = CD0_var
 
         if TEST:
             with open(os.path.join(download_dir, dict_name), "w") as jsonFile:
