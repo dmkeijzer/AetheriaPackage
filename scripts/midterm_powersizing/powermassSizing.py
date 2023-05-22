@@ -27,9 +27,9 @@ def plotAll(echo, variable,variableUnit):
     
 #-----------------------inputs-----------------
 plotting = True
-echo = np.arange(0,1.1,0.1)
+echo = np.arange(0,1.4,0.1)
 DOD = 0.8
-ChargingEfficiency = 1
+ChargingEfficiency = 0.7
 
 #batteries
 Liionbat = BatterySizing(sp_en_den= 0.3, vol_en_den=0.45, sp_pow_den=2,cost =30.3, charging_efficiency= ChargingEfficiency, depth_of_discharge= DOD, discharge_effiency=0.95)

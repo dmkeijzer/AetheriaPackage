@@ -2,7 +2,6 @@ import random
 import sys
 import pathlib as pl
 import numpy as np
-import os 
 
 sys.path.append(str(list(pl.Path(__file__).parents)[1]))
 
@@ -108,6 +107,7 @@ def test_PropulsionSystem_mass_meet_power_requirements():
     BatteryPower = Batterymass * battery.PowerDensity
     Totalpower = FCPower + BatteryPower
 
+    #substracting very small value to prevent error due to the floating point system
     #print(Totalpower, Mission.CruisePower)
     assert(all(Totalpower >= Mission.CruisePower - 1e-10))
     #print(Totalpower, Mission.HoverPower)
