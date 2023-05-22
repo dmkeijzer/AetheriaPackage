@@ -58,23 +58,25 @@ def plot_wing_power_loading_graphs(dict_directory,dict_name,i):
         lowest_area_y_novf.append(min(CLIMBRATE[i],TURN_VCRUISE[i],TURN_VMAX[i],CLIMBGRADIENT[i]))
         
     #DETERMINE LIMITING FACTORS
-    WS_max = STALLSPEED
+    margin = 0.95
+    WS_max = STALLSPEED*margin
     TW_max = powerloading_thrustloading(WS_max,rho_sl,data['roc'],data['StotS'])
-    WP_cruise = lowest_area_y_novf[-1]
-    WP_hover = lowest_area_y[-1]
+    WP_cruise = lowest_area_y_novf[-1]*margin
+    WP_hover = lowest_area_y[-1]*margin
     CL_des = 2/(const.rho_cr*const.v_cr**2)*WS_max
     
     #FILL AREAS IN GRAPH
     plt.fill_between(lowest_area_x,lowest_area_y, color = "Green", alpha = 0.3)
     plt.fill_between(lowest_area_x,lowest_area_y_novf, color = "Green", alpha = 0.2)
-    
-    
+
+
+
     #PLOT LIMITING DESIGN POINTS AND WRITE THE VALUES
-    plt.plot(STALLSPEED,lowest_area_y_novf[-1],marker = "o",color = "green")
-    plt.annotate((str(int(STALLSPEED))+", "+str(round(WP_cruise,8))),(STALLSPEED,WP_cruise+0.005))
+    plt.plot(WS_max,WP_cruise,marker = "o",color = "green")
+    plt.annotate((str(int(WS_max))+", "+str(round(WP_cruise,8))),(WS_max,WP_cruise+0.005))
     if lowest_area_y_novf[-1] != lowest_area_y[-1]:
-        plt.plot(STALLSPEED,lowest_area_y[-1],marker = "o",color = "red")
-        plt.annotate((str(int(STALLSPEED))+", "+str(round(WP_hover,8))),(STALLSPEED,WP_hover+0.005))
+        plt.plot(WS_max,WP_hover,marker = "o",color = "red")
+        plt.annotate((str(int(WS_max))+", "+str(round(WP_hover,8))),(WS_max,WP_hover+0.005))
     
     #GRAPH MAKE-UP
     plt.legend(loc='upper right')
@@ -88,7 +90,7 @@ def plot_wing_power_loading_graphs(dict_directory,dict_name,i):
     #PRINT VALUES
     print(data['name'])
     print("\n\n\n")
-    print("WS = ",str(STALLSPEED))
+    print("WS = ",str(WS_max))
     print("WP = ",str(round(WP_hover,8)))
     print("WP_noverticalflight = ",str(round(WP_cruise,8)))
     print("TW = ", str(round(TW_max,8))),'\n'

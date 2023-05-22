@@ -37,6 +37,7 @@ def flightEnvelope(dict_directory, dict_name, PRINT=False):
     # plt.plot([0, 40, 80, 100, 100, 80, 40, 0],[1, 3, 4, 2, -1, -1.5, -1, 1])
     if PRINT:
         print("Max load factor for", str(data['name']),":", round(max(nm, ng),2))
+        print("Ultimate load factor for", str(data['name']), ":", round(max(nm, ng)*1.5, 2))
         plt.show()
     #print("nm: ", round(nm, 2))
     #print("ng: ", round(ng, 2))
@@ -46,4 +47,4 @@ dict_directory = str(list(pl.Path(__file__).parents)[2])+"\\input"          #det
 dict_name = ["J1_constants.json",  "L1_constants.json","W1_constants.json"] #define list with all the constants for each configuration
 
 for i in range(len(dict_name)):                                             #iterate over each value
-    flightEnvelope(dict_directory,dict_name[i], PRINT=False)
+    flightEnvelope(dict_directory,dict_name[i], PRINT=True)
