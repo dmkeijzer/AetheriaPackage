@@ -143,8 +143,6 @@ def shear_thin_walled_rectangular_section(width,height,thickness,i_xx,i_zz,Vx,Vz
     tau_cd = q_cd(x)/(thickness)
     tau_da = q_da(y)/(thickness)
 
-
-    #I added the minus below since I assumed cw+ but it should be ccw+ so the magnitudes are correct but they should point the other way around
     return tau_ab,tau_bc,tau_cd,tau_da
 
 
