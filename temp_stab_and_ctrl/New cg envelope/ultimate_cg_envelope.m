@@ -26,7 +26,6 @@ for i=1:length(matfiles)
     if filename(1:2) == "J3"
         etabroken = 0.5;
     end
-    loopforrotationcombinations = true;
     loopfortfac = true;
     i2=1;
     resultslog = zeros(n+3,0);
