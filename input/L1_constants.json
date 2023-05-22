@@ -10,7 +10,7 @@
   "powertrain_weight": 225.74569714109197,
   "h2_weight": 1089.7692240375236,
   "misc_weight": 329.5535356888336,
-  "l_fuse": 10,
+  "l_fuse": 9.295,
   "w_fuse": 1.7,
   "eff": 0.6,
   "diskloading": 1200,
