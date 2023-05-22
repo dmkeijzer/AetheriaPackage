@@ -71,8 +71,8 @@ t_loiter = 20*60
 
 #fuelcell input
 VolumeDensityFuellCell = 3.25 #kW /l
-PowerDensityFuellCell = 3.9 #kW/kg
-effiencyFuellCell = 0.6
+PowerDensityFuellCell = 3.0 #kW/kg
+effiencyFuellCell = 0.55
 
 #Tank input
 VolumeDensityTank = 0.5 #kg/l

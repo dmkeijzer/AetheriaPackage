@@ -28,7 +28,7 @@ for i = 1:length(matfiles)
     plot(res(2,:), res(3,:))
     xlabel("Absolute cg location")
     ylabel("Absolute frontwing location")
-    title("CG range vs frontwing location"+filename(1:2))
+    title("CG range vs frontwing location "+filename(1:2))
     legend("Front cg boundary", "Rear cg boundary")
     hold off
 end
@@ -61,7 +61,7 @@ for i = 1:length(matfiles)
     plot(res(2,:), res(3,:))
     xlabel("Absolute cg location")
     ylabel("Absolute rearwing location")
-    title("CG range vs rearwing location" + filename(1:2))
+    title("CG range vs rearwing location " + filename(1:2))
     legend("Front cg boundary", "Rear cg boundary")
     hold off
 end
