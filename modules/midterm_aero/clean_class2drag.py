@@ -190,10 +190,10 @@ def CD_wing(name, C_fe_wing, FF_wing, S_wet_wing, S):
     """
     IF_wing = 1.1      # From WIGEON script
     if name == "W1":
-        CD_wing = max(float(C_fe_wing * FF_wing * IF_wing * S_wet_wing/S), 0.011) # from XFLR5
+        CD_wing = max(float(C_fe_wing * FF_wing * IF_wing * S_wet_wing), 0.011) # from XFLR5
     else: 
-        CD_wing = C_fe_wing * FF_wing * IF_wing * S_wet_wing/S
-    return CD_wing*S
+        CD_wing = C_fe_wing * FF_wing * IF_wing * S_wet_wing
+    return CD_wing
 
 def CD0(S, CD_fus, CD_wing, CD_upsweep, CD_base):
     """_summary_

@@ -11,15 +11,15 @@ download_dir = os.path.join(os.path.expanduser("~"), "Downloads")
 
 write_option = int(input("Type 1 to save to your downloads folder, press 0 to simply view them one by one\n"))
 
-label = str("May_22_08.37")
+label = str("May_22_09.19")
 
 csv_files = ["output\midterm_convergence\J1_" + label + "_hist.csv",
 "output\midterm_convergence\L1_" + label + "_hist.csv",
 "output\midterm_convergence\W1_" + label + "_hist.csv"
 ]
 
-var_list = ["mtom", "mission_energy", "S", "ld_cr", "n_ult"]
-unit_list = ["[kg]", "[KwH]", "[m^2]", "[-]", "[-]"]
+var_list = ["mtom", "mission_energy", "S", "ld_cr", "n_ult", "e"]
+unit_list = ["[kg]", "[KwH]", "[m^2]", "[-]", "[-]", "[-]"]
 
 
 for var, unit in zip(var_list, unit_list):

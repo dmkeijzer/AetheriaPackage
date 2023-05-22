@@ -77,6 +77,7 @@ for dict_name in dict_names:
         lift_over_drag_var = lift_over_drag(data["cL_cruise"], CD_var)
         print("CD0_wing", CD_wing_var/data["S"])
         
+        
         # Writing to JSON file
         data["ld_cr"] = lift_over_drag_var
         data["cd"] = CD_var
