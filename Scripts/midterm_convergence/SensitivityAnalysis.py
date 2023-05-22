@@ -31,9 +31,9 @@ python_files = [
 dict_directory = "input"
 dict_names = ["J1_constants.json", "L1_constants.json", "W1_constants.json"]
 
-output_dir = "output/midterm_convergence"
+output_dir = "output/midterm_sensitivity_diskloading"
 # Specify the number of times to loop
-loop_count = 15
+loop_count = 1
 
 disk_j1 = np.linspace(45,500,10)
 disk_l1 = np.linspace(1000,2000,10)
@@ -41,21 +41,24 @@ disk_w1 = np.linspace(200,1000,10)
 
 # Loop through the Python files multiple times
 for  diskloading_j1, diskloading_l1, diskloading_w1 in zip(disk_j1, disk_l1, disk_w1):
+
+    disk_loading_lst = [diskloading_j1, diskloading_l1, diskloading_w1]
     
+    for dict_name, diskload in zip(dict_names, disk_loading_lst):
+        # Load data from JSON file
+        with open(os.path.join(dict_directory, dict_name)) as jsonFile:
+            data = json.load(jsonFile)
+
+        data["diskloading"] = diskload
+
+        with open(dict_directory+"\\"+dict_name, "w") as jsonFile:
+            json.dump(data, jsonFile,indent=6)
+        
+
+
     for i in range(1, loop_count+1):
         print(f"\n\n=====================\nLoop {i}\n=====================")
 
-        if not TEST:
-            for dict_name in dict_names:
-                # Load data from JSON file
-                with open(os.path.join(dict_directory, dict_name)) as jsonFile:
-                    data = json.load(jsonFile)
-
-                if os.path.exists(os.path.join(output_dir, dict_name[:2] + "_" + label + "_hist.csv")):
-                    pd.DataFrame(np.array(list(data.values())).reshape(1, len(data))).to_csv(os.path.join(output_dir, dict_name[:2] + "_" + label + "_hist.csv") , mode="a", header=False, index= False)
-                else: 
-                    pd.DataFrame([data]).to_csv(os.path.join(output_dir, dict_name[:2] + "_" + label + "_hist.csv"), columns= list(data.keys()), index=False)
-                        # Read the output from the subprocess
         
         for file in python_files:
             print(f"\nRunning {file}\n-----------------------------------------------------------------------\n")
@@ -70,3 +73,14 @@ for  diskloading_j1, diskloading_l1, diskloading_w1 in zip(disk_j1, disk_l1, dis
 
             print(f"\nFinished running {file}\n-----------------------------------------------------------------------\n")
 
+    if not TEST:
+        for dict_name in dict_names:
+            # Load data from JSON file
+            with open(os.path.join(dict_directory, dict_name)) as jsonFile:
+                data = json.load(jsonFile)
+
+            if os.path.exists(os.path.join(output_dir, dict_name[:2] + "_" + label + "_sensitivity.csv")):
+                pd.DataFrame(np.array(list(data.values())).reshape(1, len(data))).to_csv(os.path.join(output_dir, dict_name[:2] + "_" + label + "_sensitivity.csv") , mode="a", header=False, index= False)
+            else: 
+                pd.DataFrame([data]).to_csv(os.path.join(output_dir, dict_name[:2] + "_" + label + "_sensitivity.csv"), columns= list(data.keys()), index=False)
+                    # Read the output from the subprocess
