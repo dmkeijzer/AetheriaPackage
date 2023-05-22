@@ -42,12 +42,12 @@ for i=1:length(matfiles)
             loopforbrokenengine = true;
             if filename(1:2) == "L1"
                 loopforbrokenengine =false;
-                x_cg_fw(end+1) = cg_range_calc(-1, rotor_direction, r_ku, cg_fw_gess, x_rotor_loc, y_rotor_loc, rotor_eta, ma, Sproj,Tfac);
+                x_cg_fw(end+1) = cg_range_calc(-1, rotor_direction, r_ku, cg_fw_guess, x_rotor_loc, y_rotor_loc, rotor_eta, ma, Sproj,Tfac);
                 x_cg_r(end+1) = cg_range_calc(1, rotor_direction, r_ku, cg_r_guess, x_rotor_loc, y_rotor_loc, rotor_eta, ma, Sproj,Tfac);
             end
     
             while loopforbrokenengine
-                x_cg_fw(end+1) = cg_range_calc(-1, rotor_direction, r_ku, cg_fw_gess, x_rotor_loc, y_rotor_loc, rotor_eta, ma, Sproj,Tfac);
+                x_cg_fw(end+1) = cg_range_calc(-1, rotor_direction, r_ku, cg_fw_guess, x_rotor_loc, y_rotor_loc, rotor_eta, ma, Sproj,Tfac);
                 x_cg_r(end+1) = cg_range_calc(1, rotor_direction, r_ku, cg_r_guess, x_rotor_loc, y_rotor_loc, rotor_eta, ma, Sproj,Tfac);
                 rotor_eta = ones(1,n);
                 rotor_eta(i3)=etabroken;
@@ -95,6 +95,8 @@ end
 
 %%
 %%%%%CG ENVELOPE PLOTTER (PPE CALC)
+ROC = 2;
+rho = 1.225;
 for i = 1:length(matfiles)
     filename = matfiles(i).name;
     load(filename)
