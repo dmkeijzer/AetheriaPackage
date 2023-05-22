@@ -11,7 +11,7 @@ download_dir = os.path.join(os.path.expanduser("~"), "Downloads")
 
 write_option = int(input("Type 1 to save to your downloads folder, press 0 to simply view them one by one\n"))
 
-label = str("May_22_13.30")
+label = str("May_22_15.34")
 
 csv_files = ["output\midterm_sensitivity_diskloading\J1_" + label + "_sensitivityAero.csv",
 "output\midterm_sensitivity_diskloading\L1_" + label + "_sensitivityAero.csv",
@@ -28,16 +28,16 @@ for file in csv_files:
     if data["name"][0] == "J1":
         
 
-        plt.plot(data["A"], data["mission_energy"], label= os.path.split(file)[-1][:2])
+        plt.plot(data["A"], data["ld_cr"], label= os.path.split(file)[-1][:2])
         plt.xlabel("Aspect ratio [-]")
-        plt.ylabel(" Mission Energy [J]")
+        plt.ylabel(" L/D (cruise) [-]")
     else:
         
 
-        plt.plot(data["A1"], data["mission_energy"], label= os.path.split(file)[-1][:2] )
-        # plt.plot(data["A2"], data["mtom"], label= os.path.split(file)[-1][:2]  + " wing 2")
+        plt.plot(data["A2"], data["ld_cr"], label= os.path.split(file)[-1][:2]  )
+        #plt.plot(data["A2"], data["mtom"], label= os.path.split(file)[-1][:2]  + " wing 2")
         plt.xlabel("Aspect ratio [-]")
-        plt.ylabel(" Mission Energy [J]")
+        plt.ylabel(" L/D (cruise) [-]")
 
     
 plt.legend()

@@ -33,7 +33,7 @@ dict_names = ["J1_constants.json", "L1_constants.json", "W1_constants.json"]
 
 output_dir = "output/midterm_sensitivity_diskloading"
 # Specify the number of times to loop
-loop_count = 7
+loop_count = 8
 
 A_j1 = np.linspace(5,10,10)
 A1_l1 = np.linspace(3,8,10)
