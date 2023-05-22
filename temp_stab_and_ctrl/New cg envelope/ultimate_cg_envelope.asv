@@ -151,7 +151,7 @@ for i = 1:length(matfiles)
     filename = matfiles(i).name;
     load(filename);
     condition = true;
-    x2vec = x1:0.1:lfus;
+    x2vec = x1:0.1:12;
     i1 = 1;
     res = zeros(3,0);
     while condition
