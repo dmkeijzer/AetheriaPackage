@@ -83,6 +83,8 @@ for dict_name in dict_names:
         data["ld_cr"] = lift_over_drag_var
         data["cd"] = CD_var
         data["cd0"] = CD0_var
+        data["cd_upsweep"] = CD_upsweep_var
+        data["cd_base"] = CD_base_var
 
         if TEST:
             with open(os.path.join(download_dir, dict_name), "w") as jsonFile:
