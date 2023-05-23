@@ -7,11 +7,11 @@ import pandas as pd
 
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 
-from Modules.powersizing import BatterySizing
-from Modules.powersizing import FuellCellSizing
-from Modules.powersizing import HydrogenTankSizing
-from Modules.powersizing import MissionRequirements
-from Modules.powersizing import PropulsionSystem
+from modules.powersizing import BatterySizing
+from modules.powersizing import FuellCellSizing
+from modules.powersizing import HydrogenTankSizing
+from modules.powersizing import MissionRequirements
+from modules.powersizing import PropulsionSystem
 def color_cell(value, min_value, max_value):
     # Define the color scale
     colors = [
@@ -187,7 +187,5 @@ for i in range(sensitivityPowerBatEnergyTank.shape[0]):
 sppowerbat = convert_array_to_strings(PowerdensitiesSolidState)
 spenergyH2 = convert_array_to_strings(EnergyDensitiesTank/33.3)
 sensitivityPowerBatEnergyTank = pd.DataFrame(sensitivityPowerBatEnergyTank,index= spenergyH2,columns=sppowerbat)
-#print(sensitivityPowerBatEnergyTank)
+print(sensitivityPowerBatEnergyTank)
 
-latex = dataframe_to_latex(sensitivityPowerBatEnergyTank)
-print(latex)
