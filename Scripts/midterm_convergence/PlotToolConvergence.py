@@ -11,7 +11,7 @@ download_dir = os.path.join(os.path.expanduser("~"), "Downloads")
 
 write_option = int(input("Type 1 to save to your downloads folder, press 0 to simply view them one by one\n"))
 
-label = str("May_22_09.19")
+label = str("May_22_16.39")
 
 csv_files = ["output\midterm_convergence\J1_" + label + "_hist.csv",
 "output\midterm_convergence\L1_" + label + "_hist.csv",

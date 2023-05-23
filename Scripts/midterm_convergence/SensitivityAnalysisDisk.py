@@ -14,7 +14,7 @@ os.chdir(str(list(pl.Path(__file__).parents)[2]))
 # Get the path of the current Python interpreter
 python_executable = sys.executable
 
-TEST = False # If True JSON gets writtien to your downloads folder, these values are not correct however
+TEST = True # If True JSON gets writtien to your downloads folder, these values are not correct however
 label  = ("_".join(time.asctime().split(" ")[1:-1])).replace(":",".")[:-3]
 
 
@@ -39,7 +39,7 @@ disk_j1 = np.linspace(45,500,10)
 disk_l1 = np.linspace(1000,2000,10)
 disk_w1 = np.linspace(200,1000,10)
 
-# Loop through the Python files multiple times
+# Loop through the Python files multiple times using varous disk loadings
 for  diskloading_j1, diskloading_l1, diskloading_w1 in zip(disk_j1, disk_l1, disk_w1):
 
     disk_loading_lst = [diskloading_j1, diskloading_l1, diskloading_w1]

@@ -48,7 +48,6 @@ class Component():
 
 
 class Wing(Component):
-    # Roskam method (not accurate because does not take into account density of material but good enough for comparison
     def __init__(self, mtom, S, n_ult, A):
         """Retunrs the weight of the wing, Cessna method cantilever wings pg. 67 pt 5. Component weight estimation Roskam
 
@@ -70,7 +69,6 @@ class Wing(Component):
         self.mass = 0.04674*(self.mtow_lbs**0.397)*(self.S_ft**0.36)*(self.n_ult**0.397)*(self.A**1.712)*0.453592
 
 class Fuselage(Component):
-    # Roskam method (not accurate because does not take into account density of material but good enough for comparison
     def __init__(self,identifier, mtom, max_per, lf, npax):
         """ Returns fuselage weight, cessna method page 75 Pt 5. component weight estimaation Roskam.
 
