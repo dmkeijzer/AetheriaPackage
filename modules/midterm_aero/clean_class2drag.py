@@ -190,11 +190,11 @@ def CD_wing(name, C_fe_wing, FF_wing, S_wet_wing, S):
     """
     IF_wing = 1.1      # From WIGEON script
     if name == "W1":
-        CD_wing = max(float(C_fe_wing * FF_wing * IF_wing * S_wet_wing), 0.011) # from XFLR5
+        CD_wing = max(float(C_fe_wing * FF_wing * IF_wing * S_wet_wing), 0.015) # from XFLR5
     elif name == "L1":
         CD_wing = max(float(C_fe_wing * FF_wing * IF_wing * S_wet_wing), 0.01) # from XFLR5
     else: 
-        CD_wing = C_fe_wing * FF_wing * IF_wing * S_wet_wing
+        CD_wing = max(float(C_fe_wing * FF_wing * IF_wing * S_wet_wing), 0.007)
     return CD_wing
 
 def CD0(S, CD_fus, CD_wing, CD_upsweep, CD_base):
@@ -229,11 +229,11 @@ def CDi(name, CL, A, e):
     :rtype: _type_
     """
     if name == "J1":
-        CDi = max(float(CL**2 / (np.pi * A * e)),0.009)
+        CDi = max(float(CL**2 / (np.pi * A * e)),0.007)
     elif name == "L1":
-       CDi = max(float(CL**2 / (np.pi * A * e)),0.011)
+       CDi = max(float(CL**2 / (np.pi * A * e)),0.006)
     else:
-        CDi = max(float(CL**2 / (np.pi * A * e)),0.019) 
+        CDi = max(float(CL**2 / (np.pi * A * e)),0.005) 
     return CDi
 
 
