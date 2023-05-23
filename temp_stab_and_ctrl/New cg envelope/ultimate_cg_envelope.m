@@ -79,6 +79,11 @@ for i=1:length(matfiles)
         cgranges(:,cgranges(2,:)==1e6) = [];
         cgranges = cgranges(:,cgranges(2,:) - cgranges(1,:) == max(cgranges(2,:) - cgranges(1,:)));
         resultslog = horzcat(resultslog,cgranges);
+        disp(resultslog)
+        if size(resultslog, 2) > 0
+            cg_fw_guess = resultslog(1,end)+0.01;
+            cg_r_guess = resultslog(2,end)-0.01;
+        end
         %disp(resultslog)
     end
     %disp(resultslog)
