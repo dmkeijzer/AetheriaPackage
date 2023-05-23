@@ -231,13 +231,15 @@ for i = 1:length(matfiles)
     plot(xcgmin_fw, fwloc)
     plot(xcgmax_fw, fwloc)
     ylabel("Frontwing location")
-    xline(cg_exc_front, "LineStyle","--","Color",[1 0.5 0])
-    xline(cg_exc_aft, "LineStyle","--","Color",[1 0.5 0],HandleVisibility="off")
-    xline(cgmargin_front, "LineStyle","-","Color",[0 0.5 0])
-    xline(cgmargin_aft, "LineStyle","-","Color",[0 0.5 0],HandleVisibility="off")
+    xline([cg_exc_front], "LineStyle","--","Color",[1 0.5 0])
+    xline([cg_exc_aft], "LineStyle","--","Color",[1 0.5 0],HandleVisibility="off")
+    xline([cgmargin_front], "LineStyle","-","Color",[0 0.5 0])
+    xline([cgmargin_aft], "LineStyle","-","Color",[0 0.5 0],HandleVisibility="off")
+
     hold off
-    xlabel("x_{cg} absolute location")
-    legend("x_{cg}_{min} hover", "x_{cg}_{max} hover", "x_{cg}_{min} longitudinal", "x_{cg}_{max} londitudinal", "x_{cg} range req", "x_{cg} range margin")
+    
+
+    legend("x_{cg}_{min} hover", "x_{cg}_{max} hover", "x_{cg}_{min} longitudinal", "x_{cg}_{max} londitudinal")
 
     ax2 = subplot(2,1,2);
 
@@ -256,8 +258,8 @@ for i = 1:length(matfiles)
     xline(cg_exc_front, "LineStyle","--","Color",[1 0.5 0])
     xline(cg_exc_aft, "LineStyle","--","Color",[1 0.5 0],HandleVisibility="off")
     xline(cgmargin_front, "LineStyle","-","Color",[0 0.5 0])
-    xline(cgmargin_aft, "LineStyle","-","Color",[0 0.5 0],HandleVisibility="off")
+    xline(cgmargin_aft], "LineStyle","-","Color",[0 0.5 0],HandleVisibility="off")
     hold off
-    xlabel("x_{cg} absolute location")
-    legend("x_{cg}_{min} hover", "x_{cg}_{max} hover", "x_{cg}_{min} longitudinal", "x_{cg}_{max} londitudinal", "x_{cg} range req", "x_{cg} range margin")
+
+    legend("x_{cg}_{min} hover", "x_{cg}_{max} hover", "x_{cg}_{min} longitudinal", "x_{cg}_{max} londitudinal")
 end
