@@ -191,6 +191,8 @@ def CD_wing(name, C_fe_wing, FF_wing, S_wet_wing, S):
     IF_wing = 1.1      # From WIGEON script
     if name == "W1":
         CD_wing = max(float(C_fe_wing * FF_wing * IF_wing * S_wet_wing), 0.011) # from XFLR5
+    elif name == "L1":
+        CD_wing = max(float(C_fe_wing * FF_wing * IF_wing * S_wet_wing), 0.01) # from XFLR5
     else: 
         CD_wing = C_fe_wing * FF_wing * IF_wing * S_wet_wing
     return CD_wing
@@ -214,7 +216,7 @@ def CD0(S, CD_fus, CD_wing, CD_upsweep, CD_base):
     return (1 / S) * (CD_fus + CD_wing) + CD_upsweep + CD_base
 
 
-def CDi(CL, A, e):
+def CDi(name, CL, A, e):
     """_summary_
 
     :param CL: _description_
@@ -226,7 +228,13 @@ def CDi(CL, A, e):
     :return: _description_
     :rtype: _type_
     """
-    return CL**2 / (np.pi * A * e)
+    if name == "J1":
+        CDi = max(float(CL**2 / (np.pi * A * e)),0.009)
+    elif name == "L1":
+       CDi = max(float(CL**2 / (np.pi * A * e)),0.011)
+    else:
+        CDi = max(float(CL**2 / (np.pi * A * e)),0.019) 
+    return CDi
 
 
 def CD(CD0, CDi):
@@ -285,3 +293,5 @@ def Oswald_eff_tandem(b1, b2, h):
     b_avg = (b1 + b2) / 2
     factor = 0.5 + (1 - 0.66 * (h / b_avg)) / (2.1 + 7.4 * (h / b_avg))
     return factor * 0.8
+
+
