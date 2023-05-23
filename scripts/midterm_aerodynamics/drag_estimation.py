@@ -69,10 +69,10 @@ for dict_name in dict_names:
        
         #Summation and L/D calculation
         if data["name"] == "J1":
-            CDi_var = CDi(data["cL_cruise"], data["A"], data["e"])
+            CDi_var = CDi(data["name"],data["cL_cruise"], data["A"], data["e"])
         else:
             A = (data["A1"]+data["A2"])/2
-            CDi_var = CDi(data["cL_cruise"], A, data["e"])
+            CDi_var = CDi(data["name"],data["cL_cruise"], A, data["e"])
 
         CD_var = CD(CD0_var, CDi_var)
         lift_over_drag_var = lift_over_drag(data["cL_cruise"], CD_var)
@@ -83,6 +83,8 @@ for dict_name in dict_names:
         data["ld_cr"] = lift_over_drag_var
         data["cd"] = CD_var
         data["cd0"] = CD0_var
+        data["cd_upsweep"] = CD_upsweep_var
+        data["cd_base"] = CD_base_var
 
         if TEST:
             with open(os.path.join(download_dir, dict_name), "w") as jsonFile:

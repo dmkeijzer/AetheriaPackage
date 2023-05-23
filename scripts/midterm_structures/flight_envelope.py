@@ -17,8 +17,13 @@ def flightEnvelope(dict_directory, dict_name, PRINT=False):
     with open(dict_directory + "\\" + dict_name, "r") as jsonFile:
         data = json.loads(jsonFile.read())
 
+    if data["name"] == "J1":
+        cl_alpha = data["cl_alpha"]
+    else:
+        cl_alpha = data["cl_alpha2"]
+
     nm = Flight_Envelope.plotmaneuvrenv(data['WS'], data['v_cruise'], data['cLmax'], n_min_req, n_max_req)
-    ng = Flight_Envelope.plotgustenv(data['v_stall'], data['v_cruise'], data['clalpha'], data['WS'], TEXT=True)
+    ng = Flight_Envelope.plotgustenv(data['v_stall'], data['v_cruise'], cl_alpha, data['WS'], TEXT=True)
 
     data['n_max'], data['n_ult'] = max(nm, ng), max(nm, ng)*1.5
 
@@ -47,4 +52,4 @@ dict_directory = str(list(pl.Path(__file__).parents)[2])+"\\input"          #det
 dict_name = ["J1_constants.json",  "L1_constants.json","W1_constants.json"] #define list with all the constants for each configuration
 
 for i in range(len(dict_name)):                                             #iterate over each value
-    flightEnvelope(dict_directory,dict_name[i], PRINT=False)
+    flightEnvelope(dict_directory,dict_name[i], PRINT=True)

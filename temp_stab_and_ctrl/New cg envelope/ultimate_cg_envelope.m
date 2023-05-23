@@ -79,6 +79,11 @@ for i=1:length(matfiles)
         cgranges(:,cgranges(2,:)==1e6) = [];
         cgranges = cgranges(:,cgranges(2,:) - cgranges(1,:) == max(cgranges(2,:) - cgranges(1,:)));
         resultslog = horzcat(resultslog,cgranges);
+        disp(resultslog)
+        if size(resultslog, 2) > 0
+            cg_fw_guess = resultslog(1,end)+0.01;
+            cg_r_guess = resultslog(2,end)-0.01;
+        end
         %disp(resultslog)
     end
     %disp(resultslog)
@@ -186,6 +191,7 @@ end
 %%%%%%%CG ENVELOPE PLOTTER WITH WINGS
 for i = 1:length(matfiles)
     filename = matfiles(i).name;
+    load(filename)
     Ppename = sprintf("%s_cg_range_Ppe.csv", filename(1:2));
     Fwname = sprintf("%s_cg_range_frontwing_location.csv", filename(1:2));
     Rwname = sprintf("%s_cg_range_rearwing_location.csv", filename(1:2));
@@ -205,6 +211,9 @@ for i = 1:length(matfiles)
     xcgmax_rw = table2array(Rwtable(2,:));
     rwloc = table2array(Rwtable(3,:));
 
+    cgmargin_front = cg_exc_front - 0.2*(cg_exc_aft-cg_exc_front);
+    cgmargin_aft = cg_exc_aft + 0.2*(cg_exc_aft-cg_exc_front);
+
     figure
     sgtitle("CG envelope for Power per engine and wings lcoation - " + filename(1:2))
     
@@ -222,9 +231,13 @@ for i = 1:length(matfiles)
     plot(xcgmin_fw, fwloc)
     plot(xcgmax_fw, fwloc)
     ylabel("Frontwing location")
+    xline(cg_exc_front, "LineStyle","--","Color",[1 0.5 0])
+    xline(cg_exc_aft, "LineStyle","--","Color",[1 0.5 0],HandleVisibility="off")
+    xline(cgmargin_front, "LineStyle","-","Color",[0 0.5 0])
+    xline(cgmargin_aft, "LineStyle","-","Color",[0 0.5 0],HandleVisibility="off")
     hold off
-
-    legend("x_{cg}_{min} hover", "x_{cg}_{max} hover", "x_{cg}_{min} longitudinal", "x_{cg}_{max} londitudinal")
+    xlabel("x_{cg} absolute location")
+    legend("x_{cg}_{min} hover", "x_{cg}_{max} hover", "x_{cg}_{min} longitudinal", "x_{cg}_{max} londitudinal", "x_{cg} range req", "x_{cg} range margin")
 
     ax2 = subplot(2,1,2);
 
@@ -240,7 +253,11 @@ for i = 1:length(matfiles)
     plot(xcgmin_rw, rwloc)
     plot(xcgmax_rw, rwloc)
     ylabel("Rearwing location")
+    xline(cg_exc_front, "LineStyle","--","Color",[1 0.5 0])
+    xline(cg_exc_aft, "LineStyle","--","Color",[1 0.5 0],HandleVisibility="off")
+    xline(cgmargin_front, "LineStyle","-","Color",[0 0.5 0])
+    xline(cgmargin_aft, "LineStyle","-","Color",[0 0.5 0],HandleVisibility="off")
     hold off
-
-    legend("x_{cg}_{min} hover", "x_{cg}_{max} hover", "x_{cg}_{min} longitudinal", "x_{cg}_{max} londitudinal")
+    xlabel("x_{cg} absolute location")
+    legend("x_{cg}_{min} hover", "x_{cg}_{max} hover", "x_{cg}_{min} longitudinal", "x_{cg}_{max} londitudinal", "x_{cg} range req", "x_{cg} range margin")
 end

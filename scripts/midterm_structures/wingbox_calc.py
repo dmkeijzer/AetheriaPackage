@@ -10,6 +10,10 @@ download_dir = os.path.join(os.path.expanduser("~"), "Downloads")
 import matplotlib.pyplot as plt
 
 from modules.midterm_structures import *
+import nvm_script
+
+nvm_script
+
 
 
 write_bool = int(input("\n\nType 1 if you want to write the JSON data to your download folder instead of the repo, type 0 otherwise:\n"))

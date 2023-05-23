@@ -121,7 +121,7 @@ class PropulsionSystem:
 
         #need to check which batterymass is limiting at each echo and hardcoded it because i did not trust np.maximum as it gave some weird results
         for i in range(len(echo)):
-            Batterymass[i] = max([HoverBatterymass[i], HoverEnergyBatterymass[i], CruiseBatterymass[i], EnergyBatterymass[i]])
+            Batterymass[i] = max([HoverBatterymass[i], 2* HoverEnergyBatterymass[i], CruiseBatterymass[i], EnergyBatterymass[i]])
 
         #calculating heat produced by the 
         """"  
@@ -134,7 +134,7 @@ class PropulsionSystem:
         Totalmass = Tankmass + FCmass + Batterymass + masscooling
         return  Totalmass, Tankmass, FCmass, Batterymass, masscooling
 
-    def volume(echo:float, Battery: BatterySizing, FuellCell: FuellCellSizing, FuellTank: HydrogenTankSizing,Tankmass: float, FuellCellmass:float, Batterymass:float) -> list[float]:
+    def volume(echo:float, Battery: BatterySizing, FuellCell: FuellCellSizing, FuellTank: HydrogenTankSizing,Tankmass: float, FuellCellmass:float, Batterymass:float) -> tuple[float]:
 
         #calculating component mass
         TankVolume = Tankmass  * FuellTank.EnergyDensity / FuellTank.VolumeDensity * 0.001
@@ -146,7 +146,7 @@ class PropulsionSystem:
         return TotalVolume , TankVolume, FuellCellVolume, BatteryVolume
 
 
-def onlyFuelCellSizing(mission: MissionRequirements, tank: HydrogenTankSizing, fuellcell: FuellCellSizing) -> list[float]:
+def onlyFuelCellSizing(mission: MissionRequirements, tank: HydrogenTankSizing, fuellcell: FuellCellSizing) -> tuple[float]:
     tankmass = tank.mass(mission.EnergyRequired) / fuellcell.Efficiency
     fuellcellmass = fuellcell.mass(mission.HoverPower) 
     tankvolume = tank.volume(mission.EnergyRequired) / fuellcell.Efficiency
