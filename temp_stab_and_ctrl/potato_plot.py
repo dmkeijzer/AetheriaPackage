@@ -5,17 +5,17 @@ import numpy as np
 design_name="J1"     # enter J1, W1, or L1
 
 if design_name=="J1":
-    with open('J1_constants.json') as file:
+    with open('C:/Users/Barkin/Documents/GitAetheriaPackage/input/J1_constants.json') as file:
         constants = json.load(file)
     x1=3
     x2=8.5
-elif design_name="L1":
-    with open('L1_constants.json') as file:
+elif design_name=="L1":
+    with open('C:/Users/Barkin/Documents/GitAetheriaPackage/input/L1_constants.json') as file:
         constants = json.load(file)
     x1=0.5
     x2=8
-elif design_name="W1":
-    with open('W1_constants.json') as file:
+elif design_name=="W1":
+    with open('C:/Users/Barkin/Documents/GitAetheriaPackage/input/W1_constants.json') as file:
         constants = json.load(file)
     x1=0.5
     x2=9
@@ -39,7 +39,7 @@ misc_weight=constants['misc_weight']
 
 if design_name=="J1":
     wing_weight=constants['wing_weight']
-    hor_tail_weight=constants['hor_tail_weight']
+    hor_tail_weight=constants['hortail_weight']
 else:
     wing_weight=constants['wing1_weight']
     hor_tail_weight=constants['wing2_weight']
@@ -94,7 +94,7 @@ plt.plot(mass_pos_array, mass_array, 'blue')
 plt.plot(mass_pos_array2, mass_array2, 'blue')
 plt.xlabel("cg location with respect to leading edge of fuselage [m]")
 plt.ylabel("Mass [kg]")
-plt.show()
+#plt.savefig('L1_potato.png')
     
 
 
