@@ -21,7 +21,7 @@ from  modules.misc_tools.ISA_tool import ISA
 #performance
 v_cr = 300/3.6
 roc_cr = 5
-rod_cr = 3 # Rate of descend PLACEHOLDER
+rod_cr = 3 # Rate of descend 
 roc_hvr = 2
 h_cruise = 400          #[m]        O
 mission_dist = 400e3  # m

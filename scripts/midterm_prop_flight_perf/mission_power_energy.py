@@ -29,14 +29,13 @@ for dict_name in dict_names:
     #==========================Energy calculation ================================= 
 
     #----------------------- Take-off-----------------------
-    if data["name"] == "L1":
-        P_loit_land = hoverstuffduct(data["mtom"]*1.1*const.g0, const.rho_sl, data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)[0]
-    else:
-        P_loit_land = hoverstuffopen(data["mtom"]*1.1*const.g0, const.rho_sl, data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)[0]
-    E_to = P_loit_land * const.t_takeoff
+    # if data["name"] == "L1":
+    #     P_loit_land = hoverstuffduct(data["mtom"]*1.1*const.g0, const.rho_sl, data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)[0]
+    # else:
+    #     P_loit_land = hoverstuffopen(data["mtom"]*1.1*const.g0, const.rho_sl, data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)[0]
 
-
-
+    P_takeoff = data["mtom"]*const.g0*const.roc_hvr + 1.2*data["mtom"]*const.g0*((-const.roc_hvr/2) + np.sqrt((const.roc_hvr**2/4)+(data["mtom"]*const.g0/(2*const.rho_cr*data["diskarea"]))))
+    E_to = P_takeoff * const.t_takeoff
     #----------------------- Horizontal Climb --------------------------------------------------------------------
     v_aft= v_exhaust(data["mtom"], const.g0, const.rho_cr, data["mtom"]/data["diskloading"], const.v_cr)
     prop_eff_var = propeff(v_aft, const.v_cr)
@@ -45,7 +44,7 @@ for dict_name in dict_names:
     E_climb = climb_power_var * t_climb
     
     #-----------------------Transition (after climb because it needs the power)-----------------------
-    E_trans_ver2hor = (P_loit_land + climb_power_var)*const.t_trans / 2
+    E_trans_ver2hor = (P_takeoff + climb_power_var)*const.t_trans / 2
 
     #-----------------------------Cruise-----------------------
     P_cr = powercruise(data["mtom"], const.g0, const.v_cr, data["ld_cr"], prop_eff_var)
@@ -110,3 +109,14 @@ for dict_name in dict_names:
             json.dump(data, jsonFile, indent= 6)
     
     print(f"Energy consumption {data['name']} = {round(E_total/3.6e6, 1)} [Kwh]")
+    print(f"Energy consumption {data['name']} = {round(E_to/3.6e6, 1)} [Kwh]")
+    print(f"Energy consumption {data['name']} = {round(E_trans_hor2ver/3.6e6, 1)} [Kwh]")
+    print(f"Energy consumption {data['name']} = {round(E_climb/3.6e6, 1)} [Kwh]")
+    print(f"Energy consumption {data['name']} = {round(E_cr/3.6e6, 1)} [Kwh]")
+    print(f"Energy consumption {data['name']} = {round(E_desc/3.6e6, 1)} [Kwh]")
+    print(f"Energy consumption loit {data['name']} = {round((E_loit_hor+E_loit_vert)/3.6e6, 1)} [Kwh]")
+    print(f"Energy consumption {data['name']} = {round(E_trans_hor2ver/3.6e6, 1)} [Kwh]")
+    print(f"Energy consumption {data['name']} = {round(E_loit_vert/3.6e6, 1)} [Kwh]")
+    print(f"Energy consumption {data['name']} = {round(energy_landing_var/3.6e6, 1)} [Kwh]")
+
+
