@@ -8,8 +8,8 @@ import json
 import pandas as pd
 import time
 
-sys.path.append(str(list(pl.Path(__file__).parents)[2]))
-os.chdir(str(list(pl.Path(__file__).parents)[2]))
+sys.path.append(str(list(pl.Path(__file__).parents)[3]))
+os.chdir(str(list(pl.Path(__file__).parents)[3]))
 
 # Get the path of the current Python interpreter
 python_executable = sys.executable

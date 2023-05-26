@@ -18,16 +18,8 @@ sys.path.append(str(list(pl.Path(__file__).parents)[1]))
 
 from  modules.misc_tools.ISA_tool import ISA
 
-#atmospheric constants
-atm = ISA(h_cruise)
+# constants of physics
 g0 = 9.80665            #[m/s^2]    O
-rho_cr = atm.density()    #[kg/m^3]   O
-p_cr = atm.pressure()           # pressure at cr O
-t_cr = atm.temperature()      # Temperature at cr O
-a_cr = atm.soundspeed()     #Speed of sound at cruise O
-R = 287                 #[J/kg*K]   O
-gamma = 1.4                  #        O
-
 
 #performance
 v_cr = 300/3.6
@@ -42,6 +34,17 @@ ax_target_climb = 0.5*g0   # PLACEHOLDER
 ay_target_climb = 0.2*g0 # PLACEHOLDER
 ax_target_descend = 0.5 * g0 # PLACEHOLDER
 ay_target_descend = 0.2 * g0 # PLACEHOLDER
+
+#atmospheric constants
+atm = ISA(h_cruise)
+rho_cr = atm.density()    #[kg/m^3]   O
+p_cr = atm.pressure()           # pressure at cr O
+t_cr = atm.temperature()      # Temperature at cr O
+a_cr = atm.soundspeed()     #Speed of sound at cruise O
+R = 287                 #[J/kg*K]   O
+gamma = 1.4                  #        O
+
+
 
 
 # Sea leavel atmospheric constants

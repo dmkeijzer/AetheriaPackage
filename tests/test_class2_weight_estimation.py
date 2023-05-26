@@ -7,7 +7,7 @@ import numpy as np
 sys.path.append(str(list(pl.Path(__file__).parents)[1]))
 os.chdir(str(list(pl.Path(__file__).parents)[1]))
 
-from modules.midterm_structures.ClassIIWeightEstimation import Wing, Fuselage, LandingGear, Powertrain, HorizontalTail, Nacelle, H2System, Miscallenous
+from modules.structures.ClassIIWeightEstimation import Wing, Fuselage, LandingGear, Powertrain, HorizontalTail, Nacelle, H2System, Miscallenous
 
 @pytest.fixture
 def example_values():
