@@ -1,4 +1,4 @@
-matfiles = dir('*.mat');
+matfiles = dir('../../input/StabCtrl/mditerm/*.mat');
 
 %%
 %%%%%%HOVER CTRL LOOOOP
@@ -87,7 +87,7 @@ for i=1:length(matfiles)
         %disp(resultslog)
     end
     %disp(resultslog)
-    outputname = sprintf("%s_Tfac_vs_cg_range.csv", filename(1:2));
+    outputname = sprintf("../../output/StabCtrl/midterm/%s_Tfac_vs_cg_range.csv", filename(1:2));
     writematrix(resultslog, outputname)
 end
 
@@ -105,7 +105,7 @@ rho = 1.225;
 for i = 1:length(matfiles)
     filename = matfiles(i).name;
     load(filename)
-    inputfilename = sprintf("%s_Tfac_vs_cg_range.csv", filename(1:2));
+    inputfilename = sprintf("../../input/StabCtrl/mditerm/%s_Tfac_vs_cg_range.csv", filename(1:2));
     table_data = readtable(inputfilename);
     
     xcgmax = table2array(table_data(2,:));
@@ -115,7 +115,7 @@ for i = 1:length(matfiles)
     Thrust = 9.80665*ma*Tfac*(1+1/(n_engines-1))*(1+1.225*ROC^2*Sproj/(ma*9.80665))/(n_engines);
     Power_per_engine = Thrust*ROC+1.2*Thrust.*(-ROC/2+sqrt(ROC^2/4+Thrust/(2*rho*A_disk)));
     
-    outputfilename = sprintf("%s_cg_range_Ppe.csv", filename(1:2));
+    outputfilename = sprintf("../../output/StabCtrl/midterm/%s_cg_range_Ppe.csv", filename(1:2));
     writematrix(vertcat(xcgmin, xcgmax, Power_per_engine),outputfilename)
 end
 
@@ -141,7 +141,7 @@ for i = 1:length(matfiles)
             condition = false;
         end
     end
-    savename = sprintf("%s_cg_range_frontwing_location.csv", filename(1:2));
+    savename = sprintf("../../output/StabCtrl/midterm/%s_cg_range_frontwing_location.csv", filename(1:2));
     writematrix(res, savename)
     % figure;
     % hold on
@@ -174,7 +174,7 @@ for i = 1:length(matfiles)
             condition = false;
         end
     end
-    savename = sprintf("%s_cg_range_rearwing_location.csv", filename(1:2));
+    savename = sprintf("../../output/StabCtrl/midterm/%s_cg_range_rearwing_location.csv", filename(1:2));
     writematrix(res, savename)
     % figure;
     % hold on
@@ -192,9 +192,9 @@ end
 for i = 1:length(matfiles)
     filename = matfiles(i).name;
     load(filename)
-    Ppename = sprintf("%s_cg_range_Ppe.csv", filename(1:2));
-    Fwname = sprintf("%s_cg_range_frontwing_location.csv", filename(1:2));
-    Rwname = sprintf("%s_cg_range_rearwing_location.csv", filename(1:2));
+    Ppename = sprintf("../../output/StabCtrl/midterm/%s_cg_range_Ppe.csv", filename(1:2));
+    Fwname = sprintf("../../output/StabCtrl/midterm/%s_cg_range_frontwing_location.csv", filename(1:2));
+    Rwname = sprintf("../../output/StabCtrl/midterm/%s_cg_range_rearwing_location.csv", filename(1:2));
     Ppetable = readtable(Ppename);
     Fwtable = readtable(Fwname);
     Rwtable = readtable(Rwname);

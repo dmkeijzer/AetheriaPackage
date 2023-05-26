@@ -1,21 +1,27 @@
 import matplotlib.pyplot as plt
 import json
 import numpy as np
+import sys
+import os
+import pathlib as pl
+
+sys.path.append(str(list(pl.Path(__file__).parents)[2]))
+os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
 design_name="J1"     # enter J1, W1, or L1
 
 if design_name=="J1":
-    with open('C:/Users/Barkin/Documents/GitAetheriaPackage/input/J1_constants.json') as file:
+    with open('input/J1_constants.json') as file:
         constants = json.load(file)
     x1=3
     x2=8.5
 elif design_name=="L1":
-    with open('C:/Users/Barkin/Documents/GitAetheriaPackage/input/L1_constants.json') as file:
+    with open('input/L1_constants.json') as file:
         constants = json.load(file)
     x1=0.5
     x2=8
 elif design_name=="W1":
-    with open('C:/Users/Barkin/Documents/GitAetheriaPackage/input/W1_constants.json') as file:
+    with open('input/W1_constants.json') as file:
         constants = json.load(file)
     x1=0.5
     x2=9

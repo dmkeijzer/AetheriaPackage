@@ -77,7 +77,7 @@ for i=1:length(matfiles)
     cg_fw_guess = xcgfwguess(i);
     cg_r_guess = xcgrguess(i);
     A_disk = data.diskarea / n_engines;
-    savename = sprintf("%s_input.mat", filename(1:2));
+    savename = sprintf("../../input/StabCtrl/midterm/%s_input.mat", filename(1:2));
     save(savename, "A_disk", "CL1", "CL2", "CLa1", "CLa2", "Cm1","Cm2", "Cma1", "Cma2", "S1", "S2", "Sproj", "V2_V1_ratio", "downwash", "ma", "x1", "x2", "c1", "c2", "x_rotor_loc","y_rotor_loc","rotor_direction", "n_engines", "cg_fw_guess", "cg_r_guess", "lfus", "-mat");
 end
 
