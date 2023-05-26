@@ -9,7 +9,7 @@ sys.path.append(str(list(pl.Path(__file__).parents)[1]))
 from modules.powersizing import *
 from modules.powersizing.powersystem import *
 
-@pytest.fixture
+
 def set_up(): 
     
     Liionbat = BatterySizing(sp_en_den= 0.3, vol_en_den=0.45, sp_pow_den=2,cost =30.3, 
