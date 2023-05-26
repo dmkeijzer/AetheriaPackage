@@ -28,10 +28,10 @@ def plotAll(echo, variable,variableUnit):
     axs[1, 1].grid()
     
 #-----------------------inputs-----------------
-designs = ["J1"]#,"L1","W1"]
-plotting = False
+designs = ["J1","L1","W1"]
+plotting = True
 designing = False
-echo = np.arange(0,1.2,0.01)
+echo = np.arange(0,1,0.01)
 DOD = 0.8
 ChargingEfficiency = 0.7
 
@@ -47,12 +47,12 @@ PowerDensityFuellCell = 3 #kW/kg
 effiencyFuellCell = 0.55
 
 #Tank input
-VolumeDensityTank = 0.8 #kWh/l
+VolumeDensityTank = 0.8#1.3 #kWh/l
 EnergyDensityTank = 1.85 # kWh/kg
 
 
 
-BatteryUsed =Solidstatebat
+BatteryUsed =Liionbat
 FirstFC = FuellCellSizing(PowerDensityFuellCell,VolumeDensityFuellCell,effiencyFuellCell, 0)
 FuelTank = HydrogenTankSizing(EnergyDensityTank,VolumeDensityTank,0)
 
@@ -77,15 +77,23 @@ for design in designs:
                                                                 FuellTank= FuelTank)
     TotalMass, tankMass, FuelCellMass, BatteryMass, coolingmass = Mass
     index = np.where(TotalMass == np.min(TotalMass))
-    print(design + ":",BatteryMass[index] * BatteryUsed.EnergyDensity)
+    print(design + ":",BatteryMass[index] )
+    
     if plotting:
-        plt.plot(echo, TotalMass, label= design + " design")
+        crosslines = echo[index] * np.ones(2)
+        crossy = [np.max(TotalMass),np.min(BatteryMass)-50]
+        plt.title(design + " design")
+        plt.plot(crosslines,crossy, linestyle = 'dashed')
+        plt.plot(echo, TotalMass, label= "Total mass")
+        plt.plot(echo, BatteryMass, label= "Battery mass")
         plt.xlabel(r'$\nu$ [-]')
-        plt.ylabel("Mass power system [kg]")
+        plt.ylabel("mass[kg]")
+        plt.legend()
+        plt.show()
 
 if plotting:
     plt.legend()
-    plt.show()
+    #plt.show()
 
 #calculating Volume
 Volumes = PropulsionSystem.volume(echo, 
@@ -103,9 +111,13 @@ OnlyH2mass = OnlyH2Tank + OnlyH2FC
 OnlyH2Volume = Onlyh2FCVolume + Onlyh2tankVolume
 
 index = np.where(TotalMass == np.min(TotalMass))
-print(BatteryMass[index])
-
+totalVolume = Volumes[0]
+print("Volume")
+print(np.min(totalVolume[index]*1000))
+print("Mass")
 print(np.min(TotalMass))
+print("echo")
+print(BatteryMass[index])
 if designing:
 
     plotAll(echo,Volumes ,"Volume [m^3]")
