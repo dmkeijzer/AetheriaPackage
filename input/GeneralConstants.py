@@ -18,16 +18,6 @@ sys.path.append(str(list(pl.Path(__file__).parents)[1]))
 
 from  modules.misc_tools.ISA_tool import ISA
 
-#performance
-v_cr = 300/3.6
-roc_cr = 5
-rod_cr = 3 # Rate of descend 
-roc_hvr = 2
-h_cruise = 400          #[m]        O
-mission_dist = 400e3  # m
-h_transition = 30 # meter PLACEHOLDER
-npax = 4                # Amount of passengers O
-
 #atmospheric constants
 atm = ISA(h_cruise)
 g0 = 9.80665            #[m/s^2]    O
@@ -37,6 +27,22 @@ t_cr = atm.temperature()      # Temperature at cr O
 a_cr = atm.soundspeed()     #Speed of sound at cruise O
 R = 287                 #[J/kg*K]   O
 gamma = 1.4                  #        O
+
+
+#performance
+v_cr = 300/3.6
+roc_cr = 5
+rod_cr = 3 # Rate of descend 
+roc_hvr = 2
+h_cruise = 400          #[m]        O
+mission_dist = 400e3  # m
+h_transition = 30 # meter PLACEHOLDER
+npax = 4                # Amount of passengers O
+ax_target_climb = 0.5*g0   # PLACEHOLDER
+ay_target_climb = 0.2*g0 # PLACEHOLDER
+ax_target_descend = 0.5 * g0 # PLACEHOLDER
+ay_target_descend = 0.2 * g0 # PLACEHOLDER
+
 
 # Sea leavel atmospheric constants
 rho_sl = atm.rho_SL            #[kg/m^3]   O
