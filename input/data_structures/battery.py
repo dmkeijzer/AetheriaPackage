@@ -4,6 +4,8 @@
 @author: Wessel Albers
 """
 from dataclasses import dataclass
+import json 
+
 
 @dataclass
 class Battery:
@@ -16,6 +18,7 @@ class Battery:
     :param: CostDensity: Cost per Wh of the battery [US$/kWh]"""
     EnergyDensity : float = None
     Energy : float = None
+    Power : float = None
     VolumeDensity : float = None
     PowerDensity : float  = None
     CostDensity : float = None
@@ -23,12 +26,23 @@ class Battery:
     DOD : float = None
     ChargingEfficiency : float = None
 
+    def load(self):
+        jsonfilename = "aetheria_constants.json"
+        with open(jsonfilename) as jsonfile:
+            data = json.open(jsonfile)
+            raise NotImplementedError
 
     def energymass(self):
         """
         :return: Mass of the battery [kg]
         """
         return self.Energy/ self.EnergyDensity
+    
+    def powermass(self):
+        """
+        :return: Mass of the battery [kg]
+        """
+        return self.Power/ self.PowerDensity
 
 
     def volume(self):
