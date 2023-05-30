@@ -5,32 +5,49 @@
 """
 from dataclasses import dataclass
 import json 
+import GeneralConstants as constants
 
 
 @dataclass
 class Battery:
-    """This class is to estimate the parameters of a battery"""
+    """
+    This class is to estimate the parameters of a Hydrogen tank.
 
-    """ 
-    :param: Energy Density of the battery [kWh/kg]
-    :param:: Volume Density [kWh/l]
-    :param: Power Density of the battery [kW/kg]
-    :param: CostDensity: Cost per Wh of the battery [US$/kWh]"""
-    EnergyDensity : float = None
+    :param EnergyDensity: Specific energy density [kWh/kg]
+    :param Energy: Required total energy for the tank [kWh]
+    :param Power: Power output of the tank [kW]
+    :param PowerDensity: Power density [kW/kg]
+    :param VolumeDensity: Specific volumetric density [kWh/l]
+    :param CostDensity: Cost density [US$/kWh]
+    :param Efficiency: Efficiency of the tank
+    :param Depth_of_discharge: Depth of discharge (DOD)
+    :param ChargingEfficiency: Charging efficiency
+    """
+    #power & energy
     Energy : float = None
     Power : float = None
-    VolumeDensity : float = None
+
+    #densities
+    EnergyDensity : float = None
     PowerDensity : float  = None
+    VolumeDensity : float = None
     CostDensity : float = None
+
+    #extra parameters
     Efficiency : float = None
-    DOD : float = None
+    Depth_of_discharge : float = None
     ChargingEfficiency : float = None
 
     def load(self):
-        jsonfilename = "aetheria_constants.json"
-        with open(jsonfilename) as jsonfile:
-            data = json.open(jsonfile)
-            raise NotImplementedError
+        #jsonfilename = "aetheria_constants.json"
+        self.EnergyDensity = constants.EnergyDensityBattery
+        self.PowerDensity = constants.PowerDensityBattery
+        self.VolumeDensity = constants.VolumeDensityBattery
+
+        self.Efficiency = constants.dischargeEfficiency
+        self.Depth_of_discharge = constants.DOD
+        self.ChargingEfficiency = constants.ChargingEfficiency
+            
 
     def energymass(self):
         """
