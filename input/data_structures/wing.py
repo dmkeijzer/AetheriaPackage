@@ -40,6 +40,11 @@ class Wing():
         self.X_lemac =  data["x_lemac"]
         # self.effective_aspectratio =  data[""] # Left out for now since it is not implemented yet
         # self.effective_span =  data[""] # Left out for now since it is not implemented yet
+    def dump(self):
+
+
+        with open(r"input/data_structures/aetheria_constants.json", "w") as jsonFile:
+            json.dump(data, jsonFile, indent= 6)
     
 
 
