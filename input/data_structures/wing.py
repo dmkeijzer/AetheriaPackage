@@ -23,6 +23,14 @@ class Wing():
     effective_aspectratio: float = None
     effective_span: float = None
 
+    # Aero part of the wing
+    cd: float = None
+    cd0: float = None
+    cL_alpha: float = None
+    cL_cruise: float = None
+    cm: float = None
+    e: float = None
+
     def load(self):
         with open(r"input/data_structures/aetheria_constants.json") as jsonFile:
             data = json.load(jsonFile)
@@ -38,13 +46,14 @@ class Wing():
         self.tan_sweep_LE =  data["sweep_le"]
         self.quarterchord_sweep =  data["sweep_le"]
         self.X_lemac =  data["x_lemac"]
+        self.cd =  data["cd"]
+        self.cd0 =  data["cd0"]
+        self.cL_alpha =  data["clalpha"]
+        self.cL_cruise =  data["cL_cruise"]
+        self.cm  =  data["cm"]
+        self.e  =  data["e"]
         # self.effective_aspectratio =  data[""] # Left out for now since it is not implemented yet
         # self.effective_span =  data[""] # Left out for now since it is not implemented yet
-    def dump(self):
-
-
-        with open(r"input/data_structures/aetheria_constants.json", "w") as jsonFile:
-            json.dump(data, jsonFile, indent= 6)
     
     def dump(self):
         data = {
@@ -58,7 +67,8 @@ class Wing():
             "y_mac": self.y_mac,
             "sweep_le": self.tan_sweep_LE,
             "quarterchord_sweep": self.quarterchord_sweep,
-            "x_lemac": self.X_lemac
+            "x_lemac": self.X_lemac,
+            "cd": self.cd
         }
 
         with open(r"output/data_structures/aetheria_constants.json", "w") as jsonFile:
