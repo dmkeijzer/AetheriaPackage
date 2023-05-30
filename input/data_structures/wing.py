@@ -46,6 +46,23 @@ class Wing():
         with open(r"input/data_structures/aetheria_constants.json", "w") as jsonFile:
             json.dump(data, jsonFile, indent= 6)
     
+    def dump(self):
+        data = {
+            "S": self.surface,
+            "taper": self.taper,
+            "A": self.aspectratio,
+            "b": self.span,
+            "c_root": self.chord_root,
+            "c_tip": self.chord_tip,
+            "mac": self.chord_mac,
+            "y_mac": self.y_mac,
+            "sweep_le": self.tan_sweep_LE,
+            "quarterchord_sweep": self.quarterchord_sweep,
+            "x_lemac": self.X_lemac
+        }
+
+        with open(r"output/data_structures/aetheria_constants.json", "w") as jsonFile:
+            json.dump(data, jsonFile, indent=4)
 
 
 if __name__ == "__main__":

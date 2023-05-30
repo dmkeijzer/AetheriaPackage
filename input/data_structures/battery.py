@@ -6,6 +6,11 @@
 from dataclasses import dataclass
 import json 
 import GeneralConstants as constants
+import sys 
+import pathlib as pl
+
+sys.path.append(str(list(pl.Path(__file__).parents)[0]))
+
 
 
 @dataclass
@@ -78,3 +83,7 @@ class Battery:
         """
         return self.Energy *self.Cost
 
+if __name__ == "__main__":
+    bat = Battery()
+    bat.load()
+    print(bat.ChargingEfficiency)
