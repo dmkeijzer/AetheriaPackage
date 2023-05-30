@@ -14,7 +14,12 @@ class HorTail():
     aspect_ratio: float = None #  aspect ratio of horizontal tail
     t_r_h: float = None #  maximum thickness at the root of the horizontal tail
     b_h: float = None # span of horizontal tail 
-
+    cm_alpha_h: float = None
+    cL_alpha_h: float = None
+    cm_h: float = None
+    cL_approach_h: float = None
+    chord_mac_h: float = None
+    downwash: float = None
     def load(self):
         """ Initializes the class automatically from the JSON file
         """        
@@ -24,6 +29,13 @@ class HorTail():
         self.aspect_ratio= data["A_h"]
         self.t_r_h = data["t_r_h"]
         #self.b_h = data["b_h"]
+        self.cm_alpha_h = data["cm_alpha_h"]
+        self.cL_alpha_h = data["cl_alpha_h"]
+        self.cm_h = data["cmac_h"]
+        self.cL_approach_h = data["cL_approach_h"]
+        self.chord_mac_h = data["mac_h"]
+        self.downwash = data["depsda"]
+
 
     def dump(self):
         """Dumps values into json file"""
