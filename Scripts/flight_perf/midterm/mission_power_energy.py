@@ -9,10 +9,10 @@ import pathlib as pl
 import os
 import json
 
-sys.path.append(str(list(pl.Path(__file__).parents)[2]))
-os.chdir(str(list(pl.Path(__file__).parents)[2]))
+sys.path.append(str(list(pl.Path(__file__).parents)[3]))
+os.chdir(str(list(pl.Path(__file__).parents)[3]))
 
-from modules.midterm_prop_flight_perf.EnergyPower import *
+from modules.flight_perf.EnergyPower import *
 import input.GeneralConstants as const
     
 TEST = int(input("\n\nType 1 if you want to write the JSON data to your download folder instead of the repo, type 0 otherwise:\n")) # Set to true if you want to write to your downloads folders instead of rep0

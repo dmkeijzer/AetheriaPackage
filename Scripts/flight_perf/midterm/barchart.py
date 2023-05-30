@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 from mission_power_energy import *
 import seaborn as sns
 
-os.chdir(str(list(pl.Path(__file__).parents)[2]))
+os.chdir(str(list(pl.Path(__file__).parents)[3]))
 
 # Generate a palette of 8 colors using the "hls" palette
 colors = list(sns.color_palette("hls", n_colors=10))

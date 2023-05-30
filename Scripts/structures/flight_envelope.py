@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import json
 
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
-from modules.midterm_structures import Flight_Envelope
+from modules.structures import Flight_Envelope
 from input.GeneralConstants import *
 
 write_bool = int(input("\n\nType 1 if you want to write the JSON data to your download folder instead of the repo, type 0 otherwise:\n"))

@@ -10,7 +10,7 @@ download_dir = os.path.join(os.path.expanduser("~"), "Downloads")
 
 import matplotlib.pyplot as plt
 
-from modules.midterm_preliminary_sizing import *
+from modules.preliminary_sizing import *
 import input.GeneralConstants as const
 
 

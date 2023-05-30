@@ -7,10 +7,10 @@ import json
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
-from modules.midterm_planform.planformsizing import *
+from modules.planform.planformsizing import *
 import input.GeneralConstants as const
-from  modules.midterm_aero.midterm_datcom_methods import datcom_cl_alpha
-from  modules.midterm_aero.clean_class2drag  import *
+from  modules.aero.midterm_datcom_methods import datcom_cl_alpha
+from  modules.aero.clean_class2drag  import *
 
 download_dir = os.path.join(os.path.expanduser("~"), "Downloads")
 

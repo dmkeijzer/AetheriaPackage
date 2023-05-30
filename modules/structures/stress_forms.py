@@ -149,8 +149,7 @@ def shear_thin_walled_rectangular_section(width,height,thickness,i_xx,i_zz,Vx,Vz
 
 def critical_buckling_stress(C,t,b): return C*(np.pi**2*E_alu)/(12*(1-nu_alu**2))*(t/b)**2
 
-def wohlers_curve(C,m,S):
-    return C/(S**m)
+def wohlers_curve(C,m,S): return C/(S**m)
 
 def paris_law(C,beta,load,m,a_f,a_0):
     def int_paris_law(a):

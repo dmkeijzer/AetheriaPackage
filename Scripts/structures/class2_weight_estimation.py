@@ -9,7 +9,7 @@ os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
 
 # Importing modules and input data
-from modules.midterm_structures.ClassIIWeightEstimation import *
+from modules.structures.ClassIIWeightEstimation import *
 import  input.GeneralConstants as const 
 
 #Getting JSON files
