@@ -4,7 +4,7 @@
 @author: Wessel Albers
 """
 from dataclasses import dataclass
-import json
+import GeneralConstants as constants
 @dataclass
 class HydrogenTank:
     """
@@ -12,19 +12,17 @@ class HydrogenTank:
 
     :param EnergyDensity  [kWh/kg]
     :param VolumeDensity [kWh/l]
-    :param cost [US$/kWh]
-    :param energy [kWh]
+    :param cost [US$/kWh] (not loaded)
+    :param energy [kWh] (not loaded)
     """
-    EnergyDensity: float = None
-    VolumeDensity: float = None
+    energyDensity: float = None
+    volumeDensity: float = None
     cost: float = None
     energy: float = None
     
     def load(self):
-        jsonfilename = "aetheria_constants.json"
-        with open(jsonfilename) as jsonfile:
-            data = json.open(jsonfile)
-            raise NotImplementedError
+        self.energyDensity = constants.EnergyDensityTank
+        self.volumeDensity = constants.VolumeDensityTank
 
 
     def mass(self) -> float:
