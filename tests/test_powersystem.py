@@ -2,7 +2,6 @@ import random
 import sys
 import pathlib as pl
 import numpy as np
-import pytest
 
 sys.path.append(str(list(pl.Path(__file__).parents)[1]))
 

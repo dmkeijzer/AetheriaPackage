@@ -26,11 +26,16 @@ def plotAll(echo, variable,variableUnit):
     axs[1, 1].plot(echo, np.array(variable[3]).reshape(len(echo)))
     axs[1, 1].set_title('Battery ' + variableUnit )
     axs[1, 1].grid()
-    
+
+
+def create_pie_chart(values, labels):
+    plt.pie(values, labels=labels, autopct='%1.1f%%', textprops={'fontsize': 20})
+    plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle
+    plt.show()  
 #-----------------------inputs-----------------
 designs = ["J1","L1","W1"]
 plotting = True
-designing = False
+designing = True
 echo = np.arange(0,1,0.01)
 DOD = 0.8
 ChargingEfficiency = 0.7
@@ -48,7 +53,7 @@ effiencyFuellCell = 0.55
 
 #Tank input
 VolumeDensityTank = 0.8#1.3 #kWh/l
-EnergyDensityTank = 1.85 # kWh/kg
+EnergyDensityTank = 0.08 * 33.3 # kWh/kg
 
 
 
@@ -76,25 +81,34 @@ for design in designs:
                                                                 FuellCell = FirstFC, 
                                                                 FuellTank= FuelTank)
     TotalMass, tankMass, FuelCellMass, BatteryMass, coolingmass = Mass
+
+    Volumes = PropulsionSystem.volume(np.copy(echo),
+                                      Battery= BatteryUsed,
+                                      FuellCell= FirstFC,
+                                      FuellTank= FuelTank,
+                                      Tankmass=tankMass,FuellCellmass= FuelCellMass, Batterymass= BatteryMass)
     index = np.where(TotalMass == np.min(TotalMass))
-    print(design + ":",BatteryMass[index] )
+    print(design + ":",FuelCellMass[index])
+    print(Mission.EnergyRequired/TotalMass[index])
     
     if plotting:
         crosslines = echo[index] * np.ones(2)
         crossy = [np.max(TotalMass),np.min(BatteryMass)-50]
-        plt.title(design + " design")
-        plt.plot(crosslines,crossy, linestyle = 'dashed')
-        plt.plot(echo, TotalMass, label= "Total mass")
-        plt.plot(echo, BatteryMass, label= "Battery mass")
-        plt.xlabel(r'$\nu$ [-]')
-        plt.ylabel("mass[kg]")
-        plt.legend()
-        plt.show()
+        plt.plot(echo, TotalMass, label= design + " design")
+
 
 if plotting:
-    plt.legend()
-    #plt.show()
 
+    # Example usage
+    values = [FuelCellMass[index][0]*2,BatteryMass[index][0],tankMass[index][0]]
+    labels = ['Fuel Cell System', 'Battery', 'Hydrogen Tank']
+
+  
+    plt.xlabel(r'Fuel cell cruise power fraction $\nu$ [-]',fontsize = 'large')
+    plt.ylabel("Total mass power system " + r'$[kg] $',fontsize = 'large')
+    plt.legend(fontsize = 'large')
+    plt.show()
+    create_pie_chart(values, labels)
 #calculating Volume
 Volumes = PropulsionSystem.volume(echo, 
                                 Battery =  BatteryUsed,
