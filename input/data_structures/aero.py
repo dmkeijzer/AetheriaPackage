@@ -15,6 +15,7 @@ class Aero():
     cL_alpha: float = None
     cL_cruise: float = None
     cm: float = None
+    cm_alpha: float = None
     e: float = None
 
     def load(self):
@@ -27,6 +28,7 @@ class Aero():
         self.cL_cruise =  data["cL_cruise"]
         self.cm  =  data["cm"]
         self.e  =  data["e"]
+        self.cm_alpha = data["cm_alpha"]
     
 
 if __name__ == "__main__":
