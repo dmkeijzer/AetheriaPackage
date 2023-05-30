@@ -1,3 +1,4 @@
+
 from dataclasses import dataclass
 import json
 import sys
@@ -8,12 +9,11 @@ sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
 @dataclass
-class Fuselage():
-    lf: float = None # Length of the fuseglage
-    l_cabin: float = None # Length of the cabin
-    d_fuselage: float = None # Diameter of the fuselage
-    upsweep: float = None #  Upsweep of the fuselage
-    h_wing: float = None # Height of the wing 
+class HorTail():
+    S_h: float = None #  Surface area
+    A_H: float = None #  aspect ratio of horizontal tail
+    t_r_h: float = None #  maximum thickness at the root of the horizontal tail
+    b_h: float = None # span of horizontal tail 
 
     def load(self):
         """ Initializes the class automatically from the JSON file
@@ -24,5 +24,3 @@ class Fuselage():
         self.d_fuselage = data["d_fuselage"]
         self.upsweep = data["upsweep"]
         self.h_wing = data["h_wings"]
-
-
