@@ -2,8 +2,8 @@ loopforShS = true;
 ShSvec = 0:0.002:0.6;
 i=1;
 res = zeros(3,0);
-loadname="input/StabCtrl/midterm/J1_input.mat";
-load(loadname)
+loadname="../../input/StabCtrl/midterm/W1_input.mat";
+load("../../input/StabCtrl/midterm/W1_input.mat")
 while loopforShS
     
     x_np_nom=-Cma1+(CLa1*x1)/(c1)-Cma2*(1-downwash)*(ShSvec(i))*(c2/c1)*(V2_V1_ratio)^2+CLa2*(1-downwash)*(x2/c1)*(ShSvec(i))*(V2_V1_ratio)^2;
