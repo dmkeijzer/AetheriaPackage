@@ -1,8 +1,10 @@
+from dataclasses import dataclass
+
 @dataclass
 class Wing():
-    surface: float
-    taper: float
-    aspectratio: float
+    surface: float = None
+    taper: float = None
+    aspectratio: float = None
     span: float = None
     chord_root: float = None
     chord_tip: float = None
@@ -13,3 +15,8 @@ class Wing():
     X_lemac: float = None
     effective_aspectratio: float = None
     effective_span: float = None
+
+def load(self):
+    pass
+
+
