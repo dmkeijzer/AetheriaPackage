@@ -28,18 +28,18 @@ for file in csv_files:
     if data["name"][0] == "J1":
         
 
-        plt.plot(data["A"], data["ld_cr"], label= os.path.split(file)[-1][:2])
+        plt.plot(data["A"], data["mtom"], label= os.path.split(file)[-1][:2])
         plt.xlabel("Aspect ratio [-]")
-        plt.ylabel(" L/D (cruise) [-]")
+        plt.ylabel(" Mission energy [J]")
     else:
         
 
-        plt.plot(data["A2"], data["ld_cr"], label= os.path.split(file)[-1][:2]  )
+        plt.plot(data["A2"], data["mtom"], label= os.path.split(file)[-1][:2]  )
         #plt.plot(data["A2"], data["mtom"], label= os.path.split(file)[-1][:2]  + " wing 2")
         plt.xlabel("Aspect ratio [-]")
-        plt.ylabel(" L/D (cruise) [-]")
+        plt.ylabel(" MTOM [kg] ")
 
-    
+plt.ylim(0, 7000)
 plt.legend()
 plt.grid()
 if write_option:
