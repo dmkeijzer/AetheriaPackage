@@ -34,8 +34,10 @@ for dict_name in dict_names:
     # else:
     #     P_loit_land = hoverstuffopen(data["mtom"]*1.1*const.g0, const.rho_sl, data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)[0]
 
-    P_takeoff = data["mtom"]*const.g0*const.roc_hvr + 1.2*data["mtom"]*const.g0*((-const.roc_hvr/2) + np.sqrt((const.roc_hvr**2/4)+(data["mtom"]*const.g0/(2*const.rho_cr*data["diskarea"]))))
+   # P_takeoff = data["mtom"]*const.g0*const.roc_hvr + 1.2*data["mtom"]*const.g0*((-const.roc_hvr/2) + np.sqrt((const.roc_hvr**2/4)+(data["mtom"]*const.g0/(2*const.rho_cr*data["diskarea"]))))
+    P_takeoff = powertakeoff(data["mtom"], const.g0, const.roc_hvr, data["diskarea"], const.rho_sl)
     E_to = P_takeoff * const.t_takeoff
+    
     #----------------------- Horizontal Climb --------------------------------------------------------------------
     v_aft= v_exhaust(data["mtom"], const.g0, const.rho_cr, data["mtom"]/data["diskloading"], const.v_cr)
     prop_eff_var = propeff(v_aft, const.v_cr)

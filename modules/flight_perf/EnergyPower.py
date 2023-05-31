@@ -26,6 +26,11 @@ def hoverstuffduct(T, rho, atot,toverw ):
     energyhoverductMAX = 90/3600 * PhductMAX * 1.3
     return Phduct, PhductMAX, energyhoverduct, energyhoverductMAX
 
+def powertakeoff(MTOM, g0, roc_hvr, diskloading, rho):
+    P_to = MTOM*g0*roc_hvr + 1.2*MTOM*g0*((-roc_hvr/2) + np.sqrt((roc_hvr**2/4)+(MTOM*g0/(2*rho*diskloading))))
+    return P_to
+
+
 def powercruise(MTOM, g0 ,v_cr,lift_over_drag,propeff):
     powercruise = MTOM*g0*v_cr/(lift_over_drag*propeff)
     return powercruise
