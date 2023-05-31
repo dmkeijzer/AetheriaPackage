@@ -31,7 +31,7 @@ HorTailClass.load()
 
 Cma1 = WingClass.cm_alpha
 Cma2 = HorTailClass.cm_alpha_h
-CLa1 = WingClass.cL_alpha
+CLaw = WingClass.cL_alpha
 CLa2 = HorTailClass.cL_alpha_h
 Cm1 = WingClass.cm
 Cm2 = HorTailClass.cm_h
@@ -44,14 +44,21 @@ downwash = HorTailClass.downwash
 w_fus = FuseClass.width_fuselage
 h_fus = FuseClass.height_fuselage
 x_lemac_x_rootchord = WingClass.X_lemac
+b = WingClass.span
+c_root = WingClass.chord_root
+S = WingClass.surface
+Cma1 = 0
+Cma2 = 0
+CLa1 = CLaw * (1+2.15 * w_fus / b) * (S-w_fus * c_root) / S + np.pi/2 * w_fus**2/S
 V2_V1_ratio = 1
 
 
 
-x1vec = np.arange(0, x2, 0.0001)
+x1vec = np.arange(0, x2, 0.002)
 log = np.zeros((1,8))
 
-for x1 in x1vec:
+for x_wing in x1vec:
+    x1 = x_wing - 1.8/CLa1 * w_fus*h_fus*(x_wing - x_lemac_x_rootchord)/S
     cglims = J1loading(x1,x2)[0]
     ShSstab = (-CLa1 * (cglims["rearcg"] - x1) - Cma1 * c1) / (Cma2 * (1 - downwash) * V2_V1_ratio ** 2 * c2 - CLa2 * (1-downwash) * V2_V1_ratio**2 * (x2 - cglims["rearcg"]))
     ShSctrl = (-Cm1 * c1 - CL1 * (cglims["frontcg"] - x1))/(Cm2* V2_V1_ratio**2 * c2 - CL2*V2_V1_ratio**2 * (x2 - cglims["frontcg"]))
@@ -62,7 +69,7 @@ for x1 in x1vec:
     x_np_den = CLa1 / c1 + CLa2 / c1 * (1 - downwash) * (ShS) * (V2_V1_ratio) ** 2
     x_aft = x_np_nom / x_np_den
     x_front = (-Cm1 - Cm2 * (c2 / c1) * (ShS) * V2_V1_ratio ** 2 + CL1 * x1 / c1 + CL2 * (x2 / c1) * (ShS) * V2_V1_ratio ** 2) / (CL1 / c1 + (CL2 / c1) * (ShS) * V2_V1_ratio ** 2)
-    log = np.vstack((log, [x1, ShS, x_aft, x_front, cglims["frontcg"], cglims["rearcg"], ShSctrl, ShSstab]))
+    log = np.vstack((log, [x_wing, ShS, x_aft, x_front, cglims["frontcg"], cglims["rearcg"], ShSctrl, ShSstab]))
 log = log[1:,:]
 # rows_to_delete = np.where(log[:,3] > log[:,2])[0]
 # log = np.delete(log, rows_to_delete, axis=0)
