@@ -54,7 +54,7 @@ V2_V1_ratio = 1
 
 
 
-x1vec = np.arange(0, x2, 0.002)
+x1vec = np.arange(0, x2, 0.0002)
 log = np.zeros((1,8))
 
 for x_wing in x1vec:
@@ -99,7 +99,7 @@ print(x1_minShS)
 
 
 print(J1loading(x1_minShS, x2)[0]["frontcg"], J1loading(x1_minShS, x2)[0]["rearcg"])
-x1 = x1_minShS
+x1 = x1_minShS - 1.8/CLa1 * w_fus*h_fus*(x1_minShS - x_lemac_x_rootchord)/S
 ShS = minShS
 x_np_nom = -Cma1 + (CLa1 * x1) / (c1) - Cma2 * (1 - downwash) * (ShS) * (c2 / c1) * (V2_V1_ratio) ** 2 + CLa2 * (1 - downwash) * (x2 / c1) * (ShS) * (V2_V1_ratio) ** 2
 x_np_den = CLa1 / c1 + CLa2 / c1 * (1 - downwash) * (ShS) * (V2_V1_ratio) ** 2
