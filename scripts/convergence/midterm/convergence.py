@@ -35,7 +35,7 @@ output_dir = "output/midterm_convergence"
 loop_count = 10
 
 # Loop through the Python files multiple times
-qqq
+for i in range(1, loop_count+1):
     print(f"\n\n=====================\nLoop {i}\n=====================")
 
     if not TEST:
