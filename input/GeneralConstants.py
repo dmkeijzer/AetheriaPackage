@@ -16,7 +16,7 @@ import os
 
 sys.path.append(str(list(pl.Path(__file__).parents)[1]))
 
-from  modules.misc_tools.ISA_tool import ISA
+from  input.data_structures.ISA_tool import ISA
 
 # constants of physics
 g0 = 9.80665            #[m/s^2]    O
