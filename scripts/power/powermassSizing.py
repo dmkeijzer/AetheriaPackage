@@ -36,7 +36,7 @@ def create_pie_chart(values, labels):
 designs = ["J1","L1","W1"]
 plotting = True
 designing = True
-echo = np.arange(0,1,0.01)
+echo = np.arange(0,1.0001,0.01)
 DOD = 0.8
 ChargingEfficiency = 0.7
 
@@ -53,11 +53,12 @@ effiencyFuellCell = 0.55
 
 #Tank input
 VolumeDensityTank = 0.8#1.3 #kWh/l
-EnergyDensityTank = 0.08 * 33.3 # kWh/kg
+EnergyDensityTank = 1.85 # kWh/kg
 
 
 
-BatteryUsed =Liionbat
+BatteryUsed =Solidstatebat
+
 FirstFC = FuellCellSizing(PowerDensityFuellCell,VolumeDensityFuellCell,effiencyFuellCell, 0)
 FuelTank = HydrogenTankSizing(EnergyDensityTank,VolumeDensityTank,0)
 
@@ -94,7 +95,7 @@ for design in designs:
     if plotting:
         crosslines = echo[index] * np.ones(2)
         crossy = [np.max(TotalMass),np.min(BatteryMass)-50]
-        plt.plot(echo, TotalMass, label= design + " design")
+        plt.plot(echo, TotalMass, label= design + " design", linewidth = 4)
 
 
 if plotting:
@@ -103,10 +104,13 @@ if plotting:
     values = [FuelCellMass[index][0]*2,BatteryMass[index][0],tankMass[index][0]]
     labels = ['Fuel Cell System', 'Battery', 'Hydrogen Tank']
 
-  
-    plt.xlabel(r'Fuel cell cruise power fraction $\nu$ [-]',fontsize = 'large')
-    plt.ylabel("Total mass power system " + r'$[kg] $',fontsize = 'large')
-    plt.legend(fontsize = 'large')
+    font = 14
+    plt.yticks(np.arange(0,1501,250),fontsize= 12)
+    plt.xticks(fontsize = 12)
+    plt.xlabel(r'Fuel cell cruise power fraction $\nu$ [-]',fontsize = font)
+    plt.ylabel("Total mass power system " + r'$[kg] $',fontsize = font)
+    plt.legend(fontsize = font)
+    plt.grid()
     plt.show()
     create_pie_chart(values, labels)
 #calculating Volume

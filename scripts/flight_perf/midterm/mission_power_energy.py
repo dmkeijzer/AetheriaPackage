@@ -64,16 +64,16 @@ for dict_name in dict_names:
 
     #----------------------- Loiter vertically-----------------------
     if data["name"] == "L1":
-        P_loit_land = hoverstuffduct(data["mtom"]*const.g0, const.rho_sl, data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)[0]
+        P_loit_land = hoverstuffduct(data["mtom"]*const.g0, const.rho_sl, data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)[1]
     else:
-        P_loit_land = hoverstuffopen(data["mtom"]*const.g0, const.rho_sl, data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)[0]
+        P_loit_land = hoverstuffopen(data["mtom"]*const.g0, const.rho_sl, data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)[1]
     E_loit_vert = P_loit_land * 30 # 30 sec for hovering vertically
 
     #----------------------- Landing----------------------- 
     if data["name"] == "L1":
-        landing_power_var = hoverstuffduct(data["mtom"]*const.g0, const.rho_sl, data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)[0]
+        landing_power_var = hoverstuffduct(data["mtom"]*const.g0, const.rho_sl, data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)[1]
     else:
-        landing_power_var = hoverstuffopen(data["mtom"]*const.g0, const.rho_sl, data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)[0]
+        landing_power_var = hoverstuffopen(data["mtom"]*const.g0, const.rho_sl, data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)[1]
     energy_landing_var = P_loit_land * const.t_takeoff
 
     #----------------------- Transition (from horizontal to vertical)-----------------------
@@ -84,7 +84,7 @@ for dict_name in dict_names:
 
     #---------------------------- Writing to JSON and printing result  ----------------------------
     data["mission_energy"] = E_total
-    data["power_hover"] = P_loit_land
+    data["power_hover"] = landing_power_var
     data["power_climb"] = climb_power_var
     data["power_cruise"] = P_cr 
     data["diskarea"] = data["mtom"]/data["diskloading"]
