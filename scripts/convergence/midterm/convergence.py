@@ -19,12 +19,12 @@ label  = ("_".join(time.asctime().split(" ")[1:-1])).replace(":",".")[:-3]
 
 # List of Python files to execute
 python_files = [
-    "scripts/Preliminary_sizing/wing_power_loading.py",
-    "scripts/midterm_structures/flight_envelope.py",
-    "scripts/midterm_aerodynamics/planform_sizing.py",
-    "scripts/midterm_aerodynamics/drag_estimation.py",
-    "scripts/midterm_prop_flight_perf/mission_power_energy.py",
-    "scripts/midterm_structures/class2_weight_estimation.py"
+    "scripts/preliminary_sizing/wing_power_loading.py",
+    "scripts/structures/flight_envelope.py",
+    "scripts/aerodynamics/planform_sizing.py",
+    "scripts/aerodynamics/drag_estimation.py",
+    "scripts/prop_flight_perf/mission_power_energy.py",
+    "scripts/structures/class2_weight_estimation.py"
 ]
 
 dict_directory = "input"
@@ -35,7 +35,7 @@ output_dir = "output/midterm_convergence"
 loop_count = 10
 
 # Loop through the Python files multiple times
-for i in range(1, loop_count+1):
+qqq
     print(f"\n\n=====================\nLoop {i}\n=====================")
 
     if not TEST:
