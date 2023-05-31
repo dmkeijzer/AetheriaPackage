@@ -66,8 +66,8 @@ m_pl =  510  # kg
 
 
 #airfoil
-toc = 0.169 #NACA44017
-xcm = 0.293 # NACA44017
+toc = 0.12 #NACA2412
+xcm = 0.3 # NACA2412 position of maximum thickness
 A_base = 0 #Assumed 0 base area
 frac_lam_fus = 0.05
 frac_lam_wing = 0.1
