@@ -13,7 +13,9 @@ class Fuselage():
     length_cabin: float = None # Length of the cabin
     diameter_fuselage: float = None # Diameter of the fuselage
     upsweep: float = None #  Upsweep of the fuselage
-    h_wing: float = None # Height of the wing 
+    h_wing: float = None # Height of the wing
+    width_fuselage: float = None
+    height_fuselage: float = None
 
     def load(self):
         """ Initializes the class automatically from the JSON file
@@ -24,6 +26,9 @@ class Fuselage():
         self.diameter_fuselage = data["d_fuselage"]
         self.upsweep = data["upsweep"]
         self.h_wing = data["h_wings"]
+        self.width_fuselage = data["w_fuselage"]
+        self.height_fuselage = data["h_fuselage"]
+
 
     def dump(self):
         """Dumps values into the json file"""
