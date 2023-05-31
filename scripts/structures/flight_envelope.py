@@ -52,4 +52,4 @@ dict_directory = str(list(pl.Path(__file__).parents)[2])+"\\input"          #det
 dict_name = ["J1_constants.json",  "L1_constants.json","W1_constants.json"] #define list with all the constants for each configuration
 
 for i in range(len(dict_name)):                                             #iterate over each value
-    flightEnvelope(dict_directory,dict_name[i], PRINT=True)
+    flightEnvelope(dict_directory,dict_name[i], PRINT=False)

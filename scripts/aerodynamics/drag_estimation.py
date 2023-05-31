@@ -8,7 +8,7 @@ import numpy as np
 # Import from modules and input folder
 import input.GeneralConstants  as const
 from  modules.aero.clean_class2drag  import *
-from modules.misc_tools.ISA_tool import ISA
+from input.data_structures.ISA_tool import ISA
 
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
 # import CL_cruise from json files

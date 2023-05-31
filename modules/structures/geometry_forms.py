@@ -31,4 +31,4 @@ def enclosed_area_thinwalled(width,height,thickness):
 def area_thinwalled(width,height,thickness):
     return (width*height - (width-thickness*2)*(height - thickness*2))
 
-def centre_line(x_lst,top_lst,bottom_lst)
+def centre_line(x_lst,top_lst,bottom_lst):
