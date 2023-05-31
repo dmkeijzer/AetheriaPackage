@@ -249,19 +249,19 @@ for i = 1:length(matfiles)
     hold on
     plot(xcgmin_hover, Ppe, "LineWidth",4)
     plot(xcgmax_hover,Ppe, "LineWidth",4)
-    ylabel("Ppe [W]" ,"FontSize",14)
+    ylabel("Ppe [W]")
     hold off
 
     yyaxis right
     hold on
     plot(xcgmin_rw, rwloc, "LineWidth",4)
     plot(xcgmax_rw, rwloc,"LineWidth",4)
-    ylabel("Rearwing location [m]", "FontSize",14)
+    ylabel("Rearwing location [m]")
     xline(cg_exc_front, "LineStyle","--","Color",[1 0.5 0],"LineWidth",4)
     xline(cg_exc_aft, "LineStyle","--","Color",[1 0.5 0],HandleVisibility="off",LineWidth=4)
     xline(cgmargin_front, "LineStyle","-","Color",[0 0.5 0],"LineWidth",4)
     xline(cgmargin_aft, "LineStyle","-","Color",[0 0.5 0],HandleVisibility="off",LineWidth=4)
     hold off
-    xlabel("x_{cg} absolute location [m]", "FontSize",14)
-    legend("x_{cg}_{min} hover", "x_{cg}_{max} hover", "x_{cg}_{min} longitudinal", "x_{cg}_{max} londitudinal", "x_{cg} range req", "x_{cg} range margin", "Color", "none","EdgeColor", "k", "LineWidth",2, "FontSize", 14)
+    xlabel("x_{cg} absolute location [m]")
+    legend("x_{cg}_{min} hover", "x_{cg}_{max} hover", "x_{cg}_{min} longitudinal", "x_{cg}_{max} londitudinal", "x_{cg} range req", "x_{cg} range margin", "Color", "none","EdgeColor", "k", "LineWidth",2)
 end
