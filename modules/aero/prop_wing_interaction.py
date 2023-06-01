@@ -1,5 +1,5 @@
 import numpy as np
-
+import matplotlib.pyplot as plt
 
 
 def prop_interaction(T, S_W, n_e, D, b_W, V_0, angle_of_attack, CL_wing, CL_alpha_s_eff, i_cs, rho, delta_alpha_zero_f, alpha_0):
@@ -31,17 +31,17 @@ def prop_interaction(T, S_W, n_e, D, b_W, V_0, angle_of_attack, CL_wing, CL_alph
     """    
     # https://arc.aiaa.org/doi/pdf/10.2514/6.2017-0236
 
-    #lift from wing including slipstream effect
+    # -------- lift from wing including slipstream effect -----------
     C_T = 2*T/(rho*V_0*V_0*S_W)
     V_delta_over_V_0 = np.sqrt(1+(C_T*S_W*4/(n_e*D*D)))-1
     V_delta = V_delta_over_V_0 * V_0
 
-    D_star = D*np.sqrt((V_0+V_delta/2)/V_0+V_delta)
+    D_star = D*np.sqrt((V_0+(V_delta/2))/(V_0+V_delta))
 
     #effective aspect ratio of the wing imersed in the slipstream
     A_w = b_W*b_W/S_W
     A_s = n_e*D*D/b_W   # from wigeon, needs verification, couldnt find explanation for this...
-    A_s_eff = A_s + (A_w - A_s)*((V_0/(V_0/V_delta))**(A_w-A_s))
+    A_s_eff = A_s + (A_w - A_s)*((V_0/(V_0+V_delta))**(A_w-A_s))
 
     #angle-of-attack of this section
     alpha_star = np.arctan((V_0*np.sin(angle_of_attack))/(V_0*np.cos(angle_of_attack) + (V_delta/2)))
@@ -51,18 +51,21 @@ def prop_interaction(T, S_W, n_e, D, b_W, V_0, angle_of_attack, CL_wing, CL_alph
     sin_epsilon_s = (2*CL_alpha_s_eff * np.sin(alpha_s))/(np.pi*A_s_eff)
     sin_epsilon = (2*CL_wing)/(np.pi*A_w)
 
-    CL_ws = 2*((np.pi/4)*b_W*b_W - n_e*(np.pi/4)*D_star*D_star)*sin_epsilon/S_W + (n_e*np.pi*D_star*D_star*(V_0+V_delta)**2 * sin_epsilon_s)/(2*S_W*V_0*V_0)
-
-    #lift from thrust perpendicular to free stream velocity
+    CL_w = 2*((np.pi/4)*b_W*b_W - n_e*(np.pi/4)*D_star*D_star)*sin_epsilon/S_W
+    CL_s = (n_e*np.pi*D_star*D_star*(V_0+V_delta)**2 * sin_epsilon_s)/(2*S_W*V_0*V_0)
+    CL_ws = CL_w + CL_s
+    CL_slipstream = CL_ws - CL_wing
+    # ----------- lift from thrust perpendicular to free stream velocity -----------
     CL_T = C_T * np.sin(angle_of_attack)
-
+    
     #total CL
-    CL_tot = CL_ws + CL_T
+    CL_tot = CL_slipstream + CL_T
 
     return CL_tot
 
 
 
-a = prop_interaction(T=20000, S_W=12, n_e=6, D=0.5, b_W=10, V_0=83, angle_of_attack=0.01, CL_wing=0.434, CL_alpha_s_eff=0.07, i_cs=0, rho=1.225, delta_alpha_zero_f=0, alpha_0=0.1)
+a = prop_interaction(T=0, S_W=12, n_e=4, D=3, b_W=10, V_0=83, angle_of_attack=0.34, CL_wing=1.0, CL_alpha_s_eff=0.07, i_cs=0, rho=1.225, delta_alpha_zero_f=0, alpha_0=-0.03)
+
 
 print(a)
