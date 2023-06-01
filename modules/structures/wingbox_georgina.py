@@ -1,19 +1,8 @@
 
 from math import *
 
-def chord(b, c_r, wing):
-    """_summary_
-
-    :param b: _description_
-    :type b: _type_
-    :param c_r: _description_
-    :type c_r: _type_
-    :param wing: Data structure defined within input/datastructures
-    :type wing: Wing
-    :return: _description_
-    :rtype: _type_
-    """    
-    c = lambda y: c_r - c_r * (1 - wing.taper) * y * 2 / b
+def chord(b, c_r):
+    c = lambda y: c_r - c_r * (1 - taper) * y * 2 / b
     return c
 
 
