@@ -4,13 +4,12 @@
 @author: Wessel Albers
 """
 from dataclasses import dataclass
-import json 
-import GeneralConstants as constants
+import numpy as np
+import os
 import sys 
 import pathlib as pl
-
-sys.path.append(str(list(pl.Path(__file__).parents)[0]))
-
+sys.path.append(str(list(pl.Path(__file__).parents)[1]))
+os.chdir(str(list(pl.Path(__file__).parents)[1]))
 
 
 @dataclass
@@ -27,44 +26,37 @@ class Battery:
     :param Efficiency: Efficiency of the tank
     :param Depth_of_discharge: Depth of discharge (DOD)
     :param ChargingEfficiency: Charging efficiency
+    :param End_of_life
     """
     #power & energy
     Energy : float = None
     Power : float = None
 
     #densities
-    EnergyDensity : float = None
-    PowerDensity : float  = None
-    VolumeDensity : float = None
+    EnergyDensity : float = 0.34
+    PowerDensity : float  = 3.8
+    VolumeDensity : float = .85
     CostDensity : float = None
 
     #extra parameters
     Efficiency : float = None
-    Depth_of_discharge : float = None
+    Depth_of_discharge : float = 1
+    End_of_life : float = 0.8
     ChargingEfficiency : float = None
 
-    def load(self):
-        #jsonfilename = "aetheria_constants.json"
-        self.EnergyDensity = constants.EnergyDensityBattery
-        self.PowerDensity = constants.PowerDensityBattery
-        self.VolumeDensity = constants.VolumeDensityBattery
 
-        self.Efficiency = constants.dischargeEfficiency
-        self.Depth_of_discharge = constants.DOD
-        self.ChargingEfficiency = constants.ChargingEfficiency
-            
 
     def energymass(self):
         """
         :return: Mass of the battery [kg]
         """
-        return self.Energy/ self.EnergyDensity
+        return self.Energy/ self.EnergyDensity /self.Efficiency
     
     def powermass(self):
         """
         :return: Mass of the battery [kg]
         """
-        return self.Power/ self.PowerDensity
+        return self.Power/ self.PowerDensity / self.Depth_of_discharge /self.End_of_life
 
 
     def volume(self):
@@ -81,9 +73,7 @@ class Battery:
         :param cost: Cost per Wh of the battery [US$/kWh]
         :return: Approx cost of the battery [US$]
         """
-        return self.Energy *self.Cost
+        return self.Energy *self.CostDensity
 
 if __name__ == "__main__":
     bat = Battery()
-    bat.load()
-    print(bat.ChargingEfficiency)
