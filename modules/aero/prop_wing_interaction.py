@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def prop_interaction(T, S_W, n_e, D, b_W, V_0, angle_of_attack, CL_wing, CL_alpha_s_eff, i_cs, rho, delta_alpha_zero_f, alpha_0):
+def prop_lift_slipstream(T, S_W, n_e, D, b_W, V_0, angle_of_attack, CL_wing, CL_alpha_s_eff, i_cs, rho, delta_alpha_zero_f, alpha_0):
     """_summary_
     :param T: thrust -> weight of the aircraft
     :type T: _type_
@@ -55,17 +55,16 @@ def prop_interaction(T, S_W, n_e, D, b_W, V_0, angle_of_attack, CL_wing, CL_alph
     CL_s = (n_e*np.pi*D_star*D_star*(V_0+V_delta)**2 * sin_epsilon_s)/(2*S_W*V_0*V_0)
     CL_ws = CL_w + CL_s
     CL_slipstream = CL_ws - CL_wing
-    # ----------- lift from thrust perpendicular to free stream velocity -----------
-    CL_T = C_T * np.sin(angle_of_attack)
-    
+
     #total CL
-    CL_tot = CL_slipstream + CL_T
-
-    return CL_tot
+    return CL_slipstream, CL_ws
 
 
 
-a = prop_interaction(T=0, S_W=12, n_e=4, D=3, b_W=10, V_0=83, angle_of_attack=0.34, CL_wing=1.0, CL_alpha_s_eff=0.07, i_cs=0, rho=1.225, delta_alpha_zero_f=0, alpha_0=-0.03)
+def prop_lift_thrust(c_d, angle_of_attack):
+    CL_T = c_d * np.sin(angle_of_attack)
+    return CL_T
 
+a = prop_lift_slipstream(T=650, S_W=6, n_e=2, D=1.9, b_W=5, V_0=83.33, angle_of_attack=0.054, CL_wing=0.434, CL_alpha_s_eff=0.07, i_cs=0, rho=1.225, delta_alpha_zero_f=0, alpha_0=-0.03)
 
 print(a)
