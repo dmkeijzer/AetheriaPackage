@@ -1,19 +1,13 @@
-
 from math import *
+import numpy as np
+from scipy.interpolate import interp1d
+from scipy.integrate import trapz
+from scipy.optimize import minimize
+import matplotlib.pyplot as plt
 
-def chord(b, c_r, wing):
-    """_summary_
 
-    :param b: _description_
-    :type b: _type_
-    :param c_r: _description_
-    :type c_r: _type_
-    :param wing: Data structure defined within input/datastructures
-    :type wing: Wing
-    :return: _description_
-    :rtype: _type_
-    """    
-    c = lambda y: c_r - c_r * (1 - wing.taper) * y * 2 / b
+def chord(b, c_r):
+    c = lambda y: c_r - c_r * (1 - taper) * y * 2 / b
     return c
 
 
@@ -489,30 +483,30 @@ def N_xy(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
 
 
 
-def local_buckling(c_r, b_st,t):
+def local_buckling(c_r, b_st,t,E,poisson):
     bst = new_bst(c_r, b_st)
     buck = 4* pi ** 2 * E / (12 * (1 - poisson ** 2)) * (t / bst) ** 2
     return buck
 
 
-def flange_buckling(t_st, w_st):
+def flange_buckling(t_st, w_st,E,poisson):
     buck = 2 * pi ** 2 * E / (12 * (1 - poisson ** 2)) * (t_st / w_st) ** 2
     return buck
 
 
-def web_buckling(t_st, h_st):
+def web_buckling(t_st, h_st,E,poisson):
     buck = 4 * pi ** 2 * E / (12 * (1 - poisson ** 2)) * (t_st / h_st) ** 2
     return buck
 
 
-def global_buckling(c_r, b_st, h_st,t_st,t):
+def global_buckling(c_r, b_st, h_st,t_st,t,E,poisson):
     n = n_st(c_r, b_st)
     bst = new_bst(c_r, b_st)
     tsmr = (t * bst + t_st * n * (h_st - t)) / bst
     return 4 * pi ** 2 * E / (12 * (1 - poisson ** 2)) * (tsmr / bst) ** 2
 
 
-def shear_buckling(c_r, b_st,t):
+def shear_buckling(c_r, b_st,t,E,poisson):
     bst = new_bst(c_r, b_st)
     buck = 5.35 * pi ** 2 * E / (12 * (1 - poisson)) * (t / bst) ** 2
     return buck
@@ -540,7 +534,7 @@ def column_st(b, L,h_st,t_st,w_st,t_sk):
     return i
 
 
-def f_ult(b,c_r,L,b_st,h_st,t_st,w_st,t):
+def f_ult(b,c_r,L,b_st,h_st,t_st,w_st,t,sigma_uts):
     A_st = area_st(h_st,t_st,w_st)
     n=n_st(c_r,b_st)
     tarr=t_arr(b,L,t)
@@ -605,7 +599,7 @@ def web_flange(b,c_r, L,b_st, h_st,t_st,t):
         diff[i] =web-loc
     return diff[0]
 
-def von_Mises(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
+def von_Mises(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t,sigma_yield):
     tarr = t_arr(b, L,t)
     vm = np.zeros(len(tarr))
     Nxy=N_xy(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)
@@ -617,7 +611,7 @@ def von_Mises(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
 
 
 
-def crippling(b,L, h_st,t_st,w_st,t):
+def crippling(b,L, h_st,t_st,w_st,t,beta,sigma_yield,E,m_crip):
     tarr = t_arr(b, L,t)
     crip= np.zeros(len(tarr))
     A = area_st(h_st, t_st, w_st)
@@ -627,7 +621,7 @@ def crippling(b,L, h_st,t_st,w_st,t):
     return crip[0]
 
 
-def post_buckling(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st, t):
+def post_buckling(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st, t,n_max):
     f=f_ult(b,c_r,L,b_st,h_st,t_st,w_st,t)
     ratio=2/(2+1.3*(1-1/pb))
     px= n_max*shear_force(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)
