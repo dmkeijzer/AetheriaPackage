@@ -1,6 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
-
 
 def prop_lift_slipstream(T, S_W, n_e, D, b_W, V_0, angle_of_attack, CL_wing, CL_alpha_s_eff, i_cs, rho, delta_alpha_zero_f, alpha_0):
     """_summary_
@@ -44,19 +42,24 @@ def prop_lift_slipstream(T, S_W, n_e, D, b_W, V_0, angle_of_attack, CL_wing, CL_
     A_s_eff = A_s + (A_w - A_s)*((V_0/(V_0+V_delta))**(A_w-A_s))
 
     #angle-of-attack of this section
-    alpha_star = np.arctan((V_0*np.sin(angle_of_attack))/(V_0*np.cos(angle_of_attack) + (V_delta/2)))
+    alpha_star = np.arctan2((V_0*np.sin(angle_of_attack)),(V_0*np.cos(angle_of_attack) + (V_delta/2)))
     alpha_s = alpha_star + i_cs - alpha_0 - delta_alpha_zero_f
     
     #downwash due to slipstream
     sin_epsilon_s = (2*CL_alpha_s_eff * np.sin(alpha_s))/(np.pi*A_s_eff)
+    sin_epsilon_s = 0.05
     sin_epsilon = (2*CL_wing)/(np.pi*A_w)
 
-    CL_w = 2*((np.pi/4)*b_W*b_W - n_e*(np.pi/4)*D_star*D_star)*sin_epsilon/S_W
-    CL_s = (n_e*np.pi*D_star*D_star*(V_0+V_delta)**2 * sin_epsilon_s)/(2*S_W*V_0*V_0)
+    # CL of the wing excluding propellors calculated through slipstream equation
+    CL_w = (2/S_W)*((np.pi/4)*b_W*b_W - n_e*(np.pi/4)*D_star*D_star) * sin_epsilon
+    
+    # CL of the propellors calculated through slipstream equation
+    CL_s = n_e*(np.pi*D_star*D_star/(2*S_W)) * ((V_0+V_delta)**2/(V_0*V_0))*sin_epsilon_s
+
     CL_ws = CL_w + CL_s
     CL_slipstream = CL_ws - CL_wing
 
-    #total CL
+    #total CL slipstream
     return CL_slipstream, CL_ws
 
 
@@ -65,6 +68,6 @@ def prop_lift_thrust(c_d, angle_of_attack):
     CL_T = c_d * np.sin(angle_of_attack)
     return CL_T
 
-a = prop_lift_slipstream(T=650, S_W=6, n_e=2, D=1.9, b_W=5, V_0=83.33, angle_of_attack=0.054, CL_wing=0.434, CL_alpha_s_eff=0.07, i_cs=0, rho=1.225, delta_alpha_zero_f=0, alpha_0=-0.03)
-
-print(a)
+a = prop_lift_slipstream(T=650, S_W=12, n_e=4, D=1.9, b_W=10, V_0=83.33, angle_of_attack=0.054, CL_wing=0.434, CL_alpha_s_eff=0.5, i_cs=0, rho=1.225, delta_alpha_zero_f=0, alpha_0=-0.03)
+b = prop_lift_thrust(c_d=0.008, angle_of_attack=0.054)
+print(a[1]+b)
