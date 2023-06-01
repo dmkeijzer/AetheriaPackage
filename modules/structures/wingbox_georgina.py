@@ -1,7 +1,12 @@
 
 from math import *
+import numpy as np
+from scipy.interpolate import interp1d
+from scipy.integrate import trapz
+from scipy.optimize import minimize
+import matplotlib.pyplot as plt
 
-def chord(b, c_r):
+def chord(b, c_r, taper):
     c = lambda y: c_r - c_r * (1 - taper) * y * 2 / b
     return c
 
@@ -117,7 +122,7 @@ def t_arr(b, L,t):
 
 
 
-def rib_weight(b, c_r, t_rib):
+def rib_weight(b, c_r, t_rib, rho):
     c = chord(b, c_r)
     h = height(b, c_r)
     w_rib = lambda z: 0.6 * c(z) * h(z) * t_rib * rho
@@ -127,7 +132,7 @@ def rib_weight(b, c_r, t_rib):
 
 
 
-def panel_weight(b, c_r,t_sp, L, b_st, h_st,t_st,w_st,t):
+def panel_weight(b, c_r,t_sp, L, b_st, h_st,t_st,w_st,t, rho):
     t_sk = t_arr(b, L,t)
     c = chord(b, c_r)
     h = height(b, c_r)
@@ -207,7 +212,7 @@ def rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
 
 
 
-def shear_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
+def shear_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, W_eng):
     x = rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)[0]
     y = rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)[1]
     f2 = interp1d(x, y)
@@ -282,7 +287,7 @@ def m(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
 
 
 
-def m_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
+def m_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, W_eng):
     moment = m(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)
     x = rib_coordinates(b, L)
     f = interp1d(x, moment, kind='quadratic')
@@ -376,7 +381,7 @@ def shear_force(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
     Vz = np.zeros(len(tarr))
 
     sta = rib_coordinates(b, L)
-    aero= lambda y:-151.7143*9.81*y+531*9.81
+    aero= lambda y:-151.7143*9.81*y+531*9.81 #TODO change aero function to our lift
     for i in range(len(tarr)):
         Vz[i] = aero(sta[i])-shear[2 * i]
     return Vz
