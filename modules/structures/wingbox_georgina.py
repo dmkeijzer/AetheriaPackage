@@ -4,11 +4,7 @@ from scipy.interpolate import interp1d
 from scipy.integrate import trapz
 from scipy.optimize import minimize
 import matplotlib.pyplot as plt
-import numpy as np
-from scipy.interpolate import interp1d
-from scipy.integrate import trapz
-from scipy.optimize import minimize
-import matplotlib.pyplot as plt
+import input.GeneralConstants as const
 
 
 def chord(b, c_r, taper):
