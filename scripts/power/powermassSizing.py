@@ -33,15 +33,15 @@ def create_pie_chart(values, labels):
     plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle
     plt.show()  
 #-----------------------inputs-----------------
-designs = ["J1","L1","W1"]
-plotting = True
-designing = True
+designs = ["J1"]#,"L1","W1"]
+plotting = False
+designing = False
 echo = np.arange(0,1.0001,0.01)
 DOD = 0.8
 ChargingEfficiency = 0.7
 
 #batteries
-Liionbat = BatterySizing(sp_en_den= 0.3, vol_en_den=0.45, sp_pow_den=2,cost =30.3, charging_efficiency= ChargingEfficiency, depth_of_discharge= DOD, discharge_effiency=0.95)
+Liionbat = BatterySizing(sp_en_den= 0.34, vol_en_den=0.85, sp_pow_den=3.8,cost =30.3, charging_efficiency= ChargingEfficiency, depth_of_discharge= DOD, discharge_effiency=0.90)
 Lisulbat = BatterySizing(sp_en_den= 0.42, vol_en_den=0.4, sp_pow_den=10,cost =61.1, charging_efficiency= ChargingEfficiency, depth_of_discharge= DOD, discharge_effiency=0.95)
 Solidstatebat = BatterySizing(sp_en_den= 0.5, vol_en_den=1, sp_pow_den=10,cost =82.2, charging_efficiency= ChargingEfficiency, depth_of_discharge= DOD, discharge_effiency=0.95)
 
@@ -57,24 +57,24 @@ EnergyDensityTank = 1.85 # kWh/kg
 
 
 
-BatteryUsed =Solidstatebat
-
+BatteryUsed = Liionbat
 FirstFC = FuellCellSizing(PowerDensityFuellCell,VolumeDensityFuellCell,effiencyFuellCell, 0)
 FuelTank = HydrogenTankSizing(EnergyDensityTank,VolumeDensityTank,0)
 
 
 #-----------------------Model-----------------
-
+contingency = 1.1
 if plotting: 
     plt.figure
 #input Flight performance params
 for design in designs:
     path_to_json = "input/" + str(design) + "_constants.json"
-    with open(path_to_json, "r") as file:
+    print(type(path_to_json))
+    with open(path_to_json) as file:
         ac = json.load(file)
-        Mission = MissionRequirements(EnergyRequired= ac["mission_energy"] /3.6 / 1e6, #transfer joules to kWh
-                                    CruisePower=ac["power_cruise"] / 1000, # divide 1000 to get to kW
-                                    HoverPower= ac["power_hover"] / 1000) # divide 1000 to get to kW
+    Mission = MissionRequirements(EnergyRequired= ac["mission_energy"] /3.6 / 1e6 * contingency, #transfer joules to kWh
+                                    CruisePower=ac["power_cruise"] / 1000 * contingency, # divide 1000 to get to kW
+                                    HoverPower= ac["power_hover"] / 1000 * contingency) # divide 1000 to get to kW
 
     Mass = PropulsionSystem.mass(np.copy(echo),
                                                                 Mission= Mission, 
@@ -135,7 +135,23 @@ print(np.min(totalVolume[index]*1000))
 print("Mass")
 print(np.min(TotalMass))
 print("echo")
+print(echo[index])
+print("batmas")
 print(BatteryMass[index])
+print("FC power")
+print(FuelCellMass[index] * FirstFC.PowerDensity)
+print("battery power ")
+print(Mission.HoverPower-FuelCellMass[index] * FirstFC.PowerDensity)
+print("Energy battery")
+print(Mission.EnergyRequired * (1-echo[index]) /Liionbat.Efficiency)
+
+print("tank mass")
+print(tankMass[index])
+print(Mission)
+
+
+
+
 if designing:
 
     plotAll(echo,Volumes ,"Volume [m^3]")

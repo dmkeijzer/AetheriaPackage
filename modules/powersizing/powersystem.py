@@ -67,7 +67,7 @@ def power_cruise_mass(PowerRequired: float, echo: float,  FuellCell:FuellCellSiz
     """
     
     FCmass = FuellCell.mass(echo * PowerRequired ) 
-    Batterymass = PowerRequired * (1-echo) / Battery.PowerDensity
+    Batterymass = PowerRequired * (1-echo) / Battery.PowerDensity / Battery.DOD
     for i in range(len(Batterymass)):
         Batterymass[i] = max(0,Batterymass[i])
 
