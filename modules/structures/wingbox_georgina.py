@@ -1,7 +1,13 @@
-
 from math import *
+import numpy as np
+from scipy.interpolate import interp1d
+from scipy.integrate import trapz
+from scipy.optimize import minimize
+import matplotlib.pyplot as plt
+import input.GeneralConstants as const
 
-def chord(b, c_r):
+
+def chord(b, c_r, taper):
     c = lambda y: c_r - c_r * (1 - taper) * y * 2 / b
     return c
 
@@ -117,7 +123,7 @@ def t_arr(b, L,t):
 
 
 
-def rib_weight(b, c_r, t_rib):
+def rib_weight(b, c_r, t_rib, rho):
     c = chord(b, c_r)
     h = height(b, c_r)
     w_rib = lambda z: 0.6 * c(z) * h(z) * t_rib * rho
@@ -127,7 +133,7 @@ def rib_weight(b, c_r, t_rib):
 
 
 
-def panel_weight(b, c_r,t_sp, L, b_st, h_st,t_st,w_st,t):
+def panel_weight(b, c_r,t_sp, L, b_st, h_st,t_st,w_st,t, rho):
     t_sk = t_arr(b, L,t)
     c = chord(b, c_r)
     h = height(b, c_r)
@@ -207,7 +213,7 @@ def rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
 
 
 
-def shear_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
+def shear_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, W_eng):
     x = rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)[0]
     y = rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)[1]
     f2 = interp1d(x, y)
@@ -282,7 +288,7 @@ def m(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
 
 
 
-def m_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
+def m_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, W_eng):
     moment = m(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)
     x = rib_coordinates(b, L)
     f = interp1d(x, moment, kind='quadratic')
@@ -376,7 +382,7 @@ def shear_force(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
     Vz = np.zeros(len(tarr))
 
     sta = rib_coordinates(b, L)
-    aero= lambda y:-151.7143*9.81*y+531*9.81
+    aero= lambda y:-151.7143*9.81*y+531*9.81 #TODO change aero function to our lift
     for i in range(len(tarr)):
         Vz[i] = aero(sta[i])-shear[2 * i]
     return Vz
@@ -478,30 +484,30 @@ def N_xy(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
 
 
 
-def local_buckling(c_r, b_st,t):
+def local_buckling(c_r, b_st,t,E,poisson):
     bst = new_bst(c_r, b_st)
     buck = 4* pi ** 2 * E / (12 * (1 - poisson ** 2)) * (t / bst) ** 2
     return buck
 
 
-def flange_buckling(t_st, w_st):
+def flange_buckling(t_st, w_st,E,poisson):
     buck = 2 * pi ** 2 * E / (12 * (1 - poisson ** 2)) * (t_st / w_st) ** 2
     return buck
 
 
-def web_buckling(t_st, h_st):
+def web_buckling(t_st, h_st,E,poisson):
     buck = 4 * pi ** 2 * E / (12 * (1 - poisson ** 2)) * (t_st / h_st) ** 2
     return buck
 
 
-def global_buckling(c_r, b_st, h_st,t_st,t):
+def global_buckling(c_r, b_st, h_st,t_st,t,E,poisson):
     n = n_st(c_r, b_st)
     bst = new_bst(c_r, b_st)
     tsmr = (t * bst + t_st * n * (h_st - t)) / bst
     return 4 * pi ** 2 * E / (12 * (1 - poisson ** 2)) * (tsmr / bst) ** 2
 
 
-def shear_buckling(c_r, b_st,t):
+def shear_buckling(c_r, b_st,t,E,poisson):
     bst = new_bst(c_r, b_st)
     buck = 5.35 * pi ** 2 * E / (12 * (1 - poisson)) * (t / bst) ** 2
     return buck
@@ -529,7 +535,7 @@ def column_st(b, L,h_st,t_st,w_st,t_sk):
     return i
 
 
-def f_ult(b,c_r,L,b_st,h_st,t_st,w_st,t):
+def f_ult(b,c_r,L,b_st,h_st,t_st,w_st,t,sigma_uts):
     A_st = area_st(h_st,t_st,w_st)
     n=n_st(c_r,b_st)
     tarr=t_arr(b,L,t)
@@ -594,7 +600,7 @@ def web_flange(b,c_r, L,b_st, h_st,t_st,t):
         diff[i] =web-loc
     return diff[0]
 
-def von_Mises(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
+def von_Mises(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t,sigma_yield):
     tarr = t_arr(b, L,t)
     vm = np.zeros(len(tarr))
     Nxy=N_xy(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)
@@ -606,7 +612,7 @@ def von_Mises(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
 
 
 
-def crippling(b,L, h_st,t_st,w_st,t):
+def crippling(b,L, h_st,t_st,w_st,t,beta,sigma_yield,E,m_crip):
     tarr = t_arr(b, L,t)
     crip= np.zeros(len(tarr))
     A = area_st(h_st, t_st, w_st)
@@ -616,7 +622,7 @@ def crippling(b,L, h_st,t_st,w_st,t):
     return crip[0]
 
 
-def post_buckling(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st, t):
+def post_buckling(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st, t,n_max):
     f=f_ult(b,c_r,L,b_st,h_st,t_st,w_st,t)
     ratio=2/(2+1.3*(1-1/pb))
     px= n_max*shear_force(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)
