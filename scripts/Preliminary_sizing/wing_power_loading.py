@@ -4,6 +4,7 @@ import sys
 import os
 import pathlib as pl
 import json
+import matplotlib
 
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 download_dir = os.path.join(os.path.expanduser("~"), "Downloads")
@@ -29,7 +30,9 @@ def plot_wing_power_loading_graphs(dict_directory,dict_name,i):
         data['A'] = (data['S1']*data['A1'] + data['S2']*data['A2'])/(data['S1']+data['S2']) #Aspect ratio is averaged with respect to surface
         data['S'] = data['S1'] + data['S2']
     plt.figure(i)#make sure each plot has its own value
-    
+    font = {'size': 13}
+
+    matplotlib.rc('font', **font)
     #CALCULATE ALL THE VALUES FOR THE GRAPHS
     TW_range = powerloading_thrustloading(WS_range,rho_sl,data['roc'],data['StotS'])  
     #if data["name"] == "J1":   
@@ -86,6 +89,7 @@ def plot_wing_power_loading_graphs(dict_directory,dict_name,i):
     plt.ylim(ylim)
     output_directory = str(list(pl.Path(__file__).parents)[2])+"\\output\\wing_power_loading_diagrams\\"
     plt.savefig(output_directory+str(data['name'])+".png",dpi=600)
+    plt.show()
     
     #PRINT VALUES
     print(data['name'])
