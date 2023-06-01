@@ -136,6 +136,7 @@
       "cd_upsweep": 0.003276899118861381,
       "cd_base": 0.0,
       "cL0": 0.171,
+      "cL0_approach": 0.798,
       "cL_approach": 1.638,
       "h_fuselage": 1.8,
       "w_fuselage": 1.7,

@@ -39,7 +39,7 @@ Lambdah2 = 0 #Assumed
 CLaw = WingClass.cL_alpha
 c_root = WingClass.chord_root
 l_f = FuseClass.length_fuselage
-CL0 = WingClass.cL_alpha0
+CL0_approach = WingClass.cL_alpha0_approach
 Cm_ac_wing = WingClass.cm
 CLAh_approach= WingClass.cL_approach #Assumes fuselage contribution negligible
 x_lemac_x_rootc = WingClass.X_lemac
@@ -111,8 +111,8 @@ for wing_loc in np.linspace(0.3, 0.65, np.size(np.arange(-1,2,0.001))):
     q_stab = (x_ac_stab_bar - SM) / ((CLah / CLaAh) * (1 - depsda) * (l_h / MAC) * Vh_V_2)
 
     CLh_approach = -0.35 * A_h ** (1 / 3)
-    Cm_ac_flaps = -0.15#Preliminary
-    Cm_ac_fuselage = -1.8 * (1 - 2.5 * b_f / l_f) * np.pi * b_f * h_f * l_f * CL0 / (
+    Cm_ac_flaps = -0.1825#From delta CL0
+    Cm_ac_fuselage = -1.8 * (1 - 2.5 * b_f / l_f) * np.pi * b_f * h_f * l_f * CL0_approach / (
                 4 * S * MAC * CLaAh)  # CLaAh for ctrl is different than for stab if cruise in compressible flow
     Cm_ac_nacelles = 0  # Assumed/missing data on nacelles
     Cm_ac = Cm_ac_wing + Cm_ac_flaps + Cm_ac_fuselage + Cm_ac_nacelles
