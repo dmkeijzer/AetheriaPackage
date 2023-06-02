@@ -16,16 +16,31 @@ import input.data_structures.GeneralConstants as const
 
 #------- TO DO summary ----------------------------
 #TODO The thick
+taper = None
+rho = None
+W_eng = None
+E = None
+poisson = None
+pb= None
+beta= None
+g= None
+sigma_yield = None
+m_crip = None
+sigma_uts = None
+n_max= None
 
 
-def chord(b, c_r, taper):
+    
+
+
+def chord(b, c_r):
     c = lambda y: c_r - c_r * (1 - taper) * y * 2 / b
     return c
 
 
-def height(b, c_r, taper):
-    c = chord(b, c_r, taper)
-    h = lambda Y: 0.12 * c(Y) 
+def height(b, c_r):
+    c = chord(b, c_r)
+    h = lambda Y: 0.17 * c(Y)
     return h
 
 
@@ -44,17 +59,17 @@ def I_st(h_st,t_st,w_st):
 
 
 
-def w_sp(b, c_r, taper):
-    h = height(b, c_r, taper)
+def w_sp(b, c_r):
+    h = height(b, c_r)
     i = lambda z: 0.5 * h(z)
     return i
 
 
 
 
-def I_sp(b, c_r,t_sp, taper):
-    h = height(b, c_r, taper)
-    wsp = w_sp(b, c_r, taper)
+def I_sp(b, c_r,t_sp):
+    h = height(b, c_r)
+    wsp = w_sp(b, c_r)
     i = lambda z: t_sp * (h(z) - 2 * t_sp) ** 3 / 12 + 2 * wsp(z) * t_sp ** 3 / 12 + 2 * t_sp * wsp(z) * (
             0.5 * h(z)) ** 2
     return i
@@ -99,11 +114,11 @@ def rib_coordinates(b, L):
 
 
 
-def I_xx(b,c_r,t_sp,b_st, h_st,t_st,w_st,t_sk, taper):
-    h = height(b, c_r, taper)
+def I_xx(b,c_r,t_sp,b_st, h_st,t_st,w_st,t_sk):
+    h = height(b, c_r)
     nst = n_st(c_r, b_st)
     Ist = I_st(h_st,t_st,w_st)
-    Isp = I_sp(b, c_r,t_sp, taper)
+    Isp = I_sp(b, c_r,t_sp)
     A = area_st(h_st,t_st,w_st)
     i = lambda z: 2 * (Ist + A * (0.5 * h(z)) ** 2) * nst + 2 * Isp(z) + 2 * (0.6 * c_r * t_sk ** 3 / 12 + t_sk * 0.6 * c_r * (0.5 * h(z)) ** 2)
     return i
@@ -134,9 +149,9 @@ def t_arr(b, L,t):
 
 
 
-def rib_weight(b, c_r, t_rib, rho, taper):
-    c = chord(b, c_r, taper)
-    h = height(b, c_r, taper)
+def rib_weight(b, c_r, t_rib):
+    c = chord(b, c_r)
+    h = height(b, c_r)
     w_rib = lambda z: 0.6 * c(z) * h(z) * t_rib * rho
     return w_rib
 
@@ -144,10 +159,10 @@ def rib_weight(b, c_r, t_rib, rho, taper):
 
 
 
-def panel_weight(b, c_r,t_sp, L, b_st, h_st,t_st,w_st,t, rho, taper):
+def panel_weight(b, c_r,t_sp, L, b_st, h_st,t_st,w_st,t):
     t_sk = t_arr(b, L,t)
-    c = chord(b, c_r, taper)
-    h = height(b, c_r, taper)
+    c = chord(b, c_r)
+    h = height(b, c_r)
     nst = n_st(c_r, b_st)
     stations = rib_coordinates(b, L)
     w = np.zeros(len(stations))
@@ -162,7 +177,7 @@ def panel_weight(b, c_r,t_sp, L, b_st, h_st,t_st,w_st,t, rho, taper):
 
 
 
-def wing_weight(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, rho, taper):
+def wing_weight(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
     b=abs(b)
     c_r=abs(c_r)
     t_sp=abs(t_sp)
@@ -175,9 +190,9 @@ def wing_weight(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, rho, taper):
     for i in range(len(t)):
         t[i]=abs(t[i])
     stations = rib_coordinates(b, L)
-    skin_weight = panel_weight(b, c_r, t_sp, L, b_st, h_st,t_st,w_st,t, rho, taper)
+    skin_weight = panel_weight(b, c_r, t_sp, L, b_st, h_st,t_st,w_st,t)
     cumsum = np.sum(skin_weight)
-    rbw = rib_weight(b, c_r, t_rib, rho, taper)
+    rbw = rib_weight(b, c_r, t_rib)
 
     for i in stations:
         cumsum = cumsum + rbw(i)
@@ -187,8 +202,8 @@ def wing_weight(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, rho, taper):
 
 
 
-def skin_interpolation(b, c_r, t_sp, L, b_st, h_st,t_st,w_st,t, rho, taper):
-    skin_weight = panel_weight(b, c_r, t_sp, L, b_st, h_st,t_st,w_st,t, rho, taper)
+def skin_interpolation(b, c_r, t_sp, L, b_st, h_st,t_st,w_st,t):
+    skin_weight = panel_weight(b, c_r, t_sp, L, b_st, h_st,t_st,w_st,t)
     skin_weight = np.flip(skin_weight)
     skin_weight = np.cumsum(skin_weight)
     skin_weight = np.flip(skin_weight)
@@ -198,9 +213,9 @@ def skin_interpolation(b, c_r, t_sp, L, b_st, h_st,t_st,w_st,t, rho, taper):
 
 
 
-def rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, taper, rho):
-    f = skin_interpolation(b, c_r, t_sp, L, b_st, h_st,t_st,w_st,t, rho, taper)
-    rbw = rib_weight(b, c_r, t_rib, rho, taper)
+def rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
+    f = skin_interpolation(b, c_r, t_sp, L, b_st, h_st,t_st,w_st,t)
+    rbw = rib_weight(b, c_r, t_rib)
     sta = rib_coordinates(b, L)
     f2 = np.repeat(f, 2)
     sta2 = np.repeat(sta, 2)
@@ -224,29 +239,36 @@ def rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, taper, rho
 
 
 
-def shear_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, W_eng, taper, rho,y_rotor_loc):
-    x = rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, taper, rho)[0]
-    y = rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, taper, rho)[1]
+def shear_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
+    x = rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)[0]
+    y = rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)[1]
     f2 = interp1d(x, y)
-    x_engine = np.array(y_rotor_loc[1],y_rotor_loc[3])
+    x_engine = np.array([0.5 * b / 4, 0.5 * b / 2, 0.5 * 3 * b / 4])
     x_combi = np.concatenate((x, x_engine))
     x_sort = np.sort(x_combi)
 
-    index1 = np.where(x_sort == y_rotor_loc[0])
+    index1 = np.where(x_sort == 0.5 * 3 * b / 4)
     if len(index1[0]) == 1:
         index1 = int(index1[0])
     else:
         index1 = int(index1[0][0])
     y_new1 = f2(x_sort[index1]) + 9.81 * W_eng
 
-    index2 = np.where(x_sort == y_rotor_loc[1])
+    index2 = np.where(x_sort == 0.5 * b / 2)
     if len(index2[0]) == 1:
         index2 = int(index2[0])
     else:
         index2 = int(index2[0][0])
     y_new2 = f2(x_sort[index2]) + 9.81 * W_eng
 
-    y_engine = np.ndarray.flatten(np.array([y_new1, y_new2]))
+    index3 = np.where(x_sort == 0.5 * b / 4)
+    if len(index3[0]) == 1:
+        index3 = int(index3[0])
+    else:
+        index3 = int(index3[0][0])
+    y_new3 = f2(x_sort[index3]) + 9.81 * W_eng
+
+    y_engine = np.ndarray.flatten(np.array([y_new1, y_new2, y_new3]))
     y_combi = np.concatenate((y, y_engine))
     y_sort = np.sort(y_combi)
     y_sort = np.flip(y_sort)
@@ -255,15 +277,17 @@ def shear_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, W_eng, taper, rho,
         y_sort[i] = y_sort[i] + 9.81 * W_eng
     for i in range(int(index2)):
         y_sort[i] = y_sort[i] + 9.81 * W_eng
+    for i in range(int(index3)):
+        y_sort[i] = y_sort[i] + 9.81 * W_eng
 
-    return x_sort, y_sort, index1, index2
+    return x_sort, y_sort, index1, index2, index3
 
 
 
-def m(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, taper, rho):
-    f = skin_interpolation(b, c_r, t_sp, L, b_st, h_st,t_st,w_st,t, rho, taper)
+def m(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
+    f = skin_interpolation(b, c_r, t_sp, L, b_st, h_st,t_st,w_st,t)
     sta = rib_coordinates(b, L)
-    rbw = rib_weight(b, c_r, t_rib, rho, taper)
+    rbw = rib_weight(b, c_r, t_rib)
 
     f2 = interp1d(sta, f)
 
@@ -290,8 +314,8 @@ def m(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, taper, rho):
 
 
 
-def m_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, W_eng, taper, rho):
-    moment = m(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, taper, rho)
+def m_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
+    moment = m(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)
     x = rib_coordinates(b, L)
     f = interp1d(x, moment, kind='quadratic')
 
@@ -338,11 +362,11 @@ def m_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, W_eng, taper, rho):
 
 
 
-def N_x(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, taper, rho, w_eng):
+def N_x(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
     sta = rib_coordinates(b, L)
-    moment = m_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, w_eng, taper, rho)[1]
-    x_sort = m_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, w_eng, taper, rho)[0]
-    h = height(b, c_r, taper)
+    moment = m_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)[1]
+    x_sort = m_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)[0]
+    h = height(b, c_r)
     tarr = t_arr(b,L,t)
     Nx = np.zeros(len(tarr))
 
@@ -367,7 +391,7 @@ def N_x(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, taper, rho, w_eng):
     moment = np.delete(moment, np.array([index1, index2, index3]))
     bend_stress=np.zeros(len(tarr))
     for i in range(len(tarr)):
-        Ixx = I_xx(b,c_r,t_sp,b_st, h_st,t_st,w_st,tarr[i], taper)(sta[i])
+        Ixx = I_xx(b,c_r,t_sp,b_st, h_st,t_st,w_st,tarr[i])(sta[i])
         bend_stress[i] = moment[i] * 0.5 * h(sta[i]) / Ixx
         Nx[i] = bend_stress[i] * tarr[i]
     return Nx, bend_stress
@@ -378,27 +402,27 @@ def N_x(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, taper, rho, w_eng):
 
 
 
-def shear_force(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, w_eng, taper, rho,y_rotor_loc):
-    shear = shear_eng(b, c_r, t_sp, t_rib, L, b_st, h_st, t_st, w_st,t, w_eng, taper, rho,y_rotor_loc)[1]
+def shear_force(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
+    shear = shear_eng(b, c_r, t_sp, t_rib, L, b_st, h_st, t_st, w_st,t)[1]
     tarr = t_arr(b, L,t)
     Vz = np.zeros(len(tarr))
 
     sta = rib_coordinates(b, L)
-    aero= lambda y:-151.7143*9.81*y+531*9.81 #TODO change aero function to our lift
+    aero= lambda y:-151.7143*9.81*y+531*9.81
     for i in range(len(tarr)):
         Vz[i] = aero(sta[i])-shear[2 * i]
     return Vz
 
-def N_xy(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, w_eng, taper, rho,y_rotor_loc):
-    h1 = height(b, c_r, taper)
-    ch = chord(b, c_r, taper)
+def N_xy(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
+    h1 = height(b, c_r)
+    ch = chord(b, c_r)
     tarr = t_arr(b,L,t)
     sta = rib_coordinates(b, L)
-    Vz=shear_force(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, w_eng, taper, rho,y_rotor_loc)
+    Vz=shear_force(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)
     Nxy = np.zeros(len(tarr))
 
     for i in range(len(tarr)):
-        Ixx1 = I_xx(b,c_r,t_sp,b_st, h_st,t_st,w_st,tarr[i], taper)
+        Ixx1 = I_xx(b,c_r,t_sp,b_st, h_st,t_st,w_st,tarr[i])
         Ixx = Ixx1(sta[i])
         h = h1(sta[i])
         l_sk = sqrt(h ** 2 + (0.25 * c_r) ** 2)
@@ -486,63 +510,63 @@ def N_xy(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, w_eng, taper, rho,y_rot
 
 
 
-def local_buckling(c_r, b_st,t,E,poisson):
+def local_buckling(c_r, b_st,t):
     bst = new_bst(c_r, b_st)
     buck = 4* pi ** 2 * E / (12 * (1 - poisson ** 2)) * (t / bst) ** 2
     return buck
 
 
-def flange_buckling(t_st, w_st,E,poisson):
+def flange_buckling(t_st, w_st):
     buck = 2 * pi ** 2 * E / (12 * (1 - poisson ** 2)) * (t_st / w_st) ** 2
     return buck
 
 
-def web_buckling(t_st, h_st,E,poisson):
+def web_buckling(t_st, h_st):
     buck = 4 * pi ** 2 * E / (12 * (1 - poisson ** 2)) * (t_st / h_st) ** 2
     return buck
 
 
-def global_buckling(c_r, b_st, h_st,t_st,t,E,poisson):
+def global_buckling(c_r, b_st, h_st,t_st,t):
     n = n_st(c_r, b_st)
     bst = new_bst(c_r, b_st)
     tsmr = (t * bst + t_st * n * (h_st - t)) / bst
     return 4 * pi ** 2 * E / (12 * (1 - poisson ** 2)) * (tsmr / bst) ** 2
 
 
-def shear_buckling(c_r, b_st,t,E,poisson):
+def shear_buckling(c_r, b_st,t):
     bst = new_bst(c_r, b_st)
     buck = 5.35 * pi ** 2 * E / (12 * (1 - poisson)) * (t / bst) ** 2
     return buck
 
 
 
-def buckling(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, taper,rho, w_eng, E, poisson,y_rotor_loc):
-    Nxy = N_xy(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, w_eng, taper, rho,y_rotor_loc)
-    Nx = N_x(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, taper, rho, w_eng)[0]
+def buckling(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
+    Nxy = N_xy(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)
+    Nx = N_x(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)[0]
     tarr = t_arr(b, L,t)
     buck = np.zeros(len(tarr))
     for i in range(len(tarr)):
-        Nx_crit = local_buckling(c_r, b_st,tarr[i], E, poisson)*tarr[i]
-        Nxy_crit = shear_buckling(c_r, b_st,tarr[i], E, poisson)*tarr[i]
+        Nx_crit = local_buckling(c_r, b_st,tarr[i])*tarr[i]
+        Nxy_crit = shear_buckling(c_r, b_st,tarr[i])*tarr[i]
         buck[i] = Nx[i] / Nx_crit + (Nxy[i] / Nxy_crit) ** 2
     return buck
 
 
 
 
-def column_st(b, L,h_st,t_st,w_st,t_sk, E):
+def column_st(b, L,h_st,t_st,w_st,t_sk):
     Lnew=new_L(b,L)
     Ist = t_st * h_st ** 3 / 12 + (w_st - t_st) * t_st ** 3 / 12 +t_sk**3*w_st/12+t_sk*w_st*(0.5*h_st)**2
     i= pi ** 2 * E * Ist / (2*w_st* Lnew ** 2)
     return i
 
 
-def f_ult(b,c_r,L,b_st,h_st,t_st,w_st,t,sigma_uts, taper):
+def f_ult(b,c_r,L,b_st,h_st,t_st,w_st,t):
     A_st = area_st(h_st,t_st,w_st)
     n=n_st(c_r,b_st)
     tarr=t_arr(b,L,t)
-    c=chord(b,c_r, taper)
-    h=height(b,c_r, taper)
+    c=chord(b,c_r)
+    h=height(b,c_r)
     stations=rib_coordinates(b,L)
     f_uts=np.zeros(len(tarr))
     for i in range(len(tarr)):
@@ -553,8 +577,8 @@ def f_ult(b,c_r,L,b_st,h_st,t_st,w_st,t,sigma_uts, taper):
 
 
 
-def buckling_constr(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, taper, rho, w_eng, E, poission,y_rotor_loc):
-    buck = buckling(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, taper, rho, w_eng,E, poission,y_rotor_loc )
+def buckling_constr(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
+    buck = buckling(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)
     tarr = t_arr(b, L,t)
     vector = np.zeros(len(tarr))
     for i in range(len(tarr)):
@@ -562,51 +586,51 @@ def buckling_constr(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, taper, rho, 
     return vector[0]
 
 
-def global_local(b, c_r, L, b_st, h_st,t_st,t, E, poisson):
+def global_local(b, c_r, L, b_st, h_st,t_st,t):
     tarr = t_arr(b, L,t)
     diff = np.zeros(len(tarr))
     for i in range(len(tarr)):
-        glob = global_buckling(c_r, b_st, h_st,t_st,tarr[i], E, poisson)
-        loc = local_buckling(c_r, b_st,tarr[i], E, poisson)
+        glob = global_buckling(c_r, b_st, h_st,t_st,tarr[i])
+        loc = local_buckling(c_r, b_st,tarr[i])
         diff[i] = glob - loc
     return diff[0]
 
 
 
-def local_column(b, c_r, L, b_st, h_st,t_st,w_st,t, E, poisson):
+def local_column(b, c_r, L, b_st, h_st,t_st,w_st,t):
     tarr = t_arr(b, L,t)
     diff = np.zeros(len(tarr))
     for i in range(len(tarr)):
-        col=column_st(b, L, h_st,t_st,w_st, tarr[i], E)
-        loc = local_buckling(c_r, b_st, tarr[i], E, poisson)*tarr[i]
+        col=column_st(b, L, h_st,t_st,w_st, tarr[i])
+        loc = local_buckling(c_r, b_st, tarr[i])*tarr[i]
         diff[i] = col - loc
     return diff[0]
 
 
-def flange_loc_loc(b, c_r, L, b_st, t_st,w_st,t, E, poisson):
+def flange_loc_loc(b, c_r, L, b_st, t_st,w_st,t):
     tarr = t_arr(b, L,t)
     diff = np.zeros(len(tarr))
-    flange = flange_buckling(t_st, w_st, E, poisson)
+    flange = flange_buckling(t_st, w_st)
     for i in range(len(tarr)):
-        loc = local_buckling(c_r, b_st, tarr[i], E, poisson)
+        loc = local_buckling(c_r, b_st, tarr[i])
         diff[i] = flange - loc
     return diff[0]
 
 
-def web_flange(b,c_r, L,b_st, h_st,t_st,t, E, poisson):
+def web_flange(b,c_r, L,b_st, h_st,t_st,t):
     tarr = t_arr(b, L,t)
     diff = np.zeros(len(tarr))
-    web = web_buckling(t_st, h_st, E, poisson)
+    web = web_buckling(t_st, h_st)
     for i in range(len(tarr)):
-        loc = local_buckling(c_r, b_st, tarr[i], E, poisson)
+        loc = local_buckling(c_r, b_st, tarr[i])
         diff[i] =web-loc
     return diff[0]
 
-def von_Mises(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t,sigma_yield, taper, rho, w_eng,y_rotor_loc):
+def von_Mises(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
     tarr = t_arr(b, L,t)
     vm = np.zeros(len(tarr))
-    Nxy=N_xy(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, w_eng, taper, rho,y_rotor_loc)
-    bend_stress=N_x(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, taper, rho, w_eng)[1]
+    Nxy=N_xy(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)
+    bend_stress=N_x(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)[1]
     for i in range(len(tarr)):
         tau_shear= Nxy[i] / tarr[i]
         vm[i]=sigma_yield-sqrt(0.5 * (3 * tau_shear ** 2+bend_stress[i]**2))
@@ -614,44 +638,72 @@ def von_Mises(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t,sigma_yield, taper,
 
 
 
-def crippling(b,L, h_st,t_st,w_st,t,beta,sigma_yield,E,m_crip, g):
+def crippling(b,L, h_st,t_st,w_st,t):
     tarr = t_arr(b, L,t)
     crip= np.zeros(len(tarr))
     A = area_st(h_st, t_st, w_st)
     for i in range(len(tarr)):
-        col = column_st(b, L,h_st,t_st,w_st,tarr[i], E)
+        col = column_st(b, L,h_st,t_st,w_st,tarr[i])
         crip[i] = t_st* beta *sigma_yield* ((g * t_st ** 2 / A) * sqrt(E / sigma_yield)) ** m_crip-col
     return crip[0]
 
 
-def post_buckling(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st, t,n_max, sigma_uts, taper, pb, w_eng, rho,y_rotor_loc):
-    f=f_ult(b,c_r,L,b_st,h_st,t_st,w_st,t, sigma_uts, taper)
+def post_buckling(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st, t):
+    f=f_ult(b,c_r,L,b_st,h_st,t_st,w_st,t)
     ratio=2/(2+1.3*(1-1/pb))
-    px= n_max*shear_force(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, w_eng, taper, rho,y_rotor_loc)
+    px= n_max*shear_force(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)
     diff=np.subtract(ratio*f,px)
     return diff[0]
 
-def wingbox_optimization(x0, material, wing, engine):
-    """_summary_
+
+
+
+
+
+def create_bounds(wing):
+    """ Returns the bounds for the wingbox_optimization
+
+    :param wing: Wing class from data structures
+    :type wing: Wing class
+    :return: tuple of tuple with 2 elements
+    :rtype: tuple
+    """    
+    return ((wing.span - 1e-8, wing.span + 1e-8), (wing.chord_root - 1e-8, wing.chord_root + 1e-8), (0.001, 0.005), (0.001, 0.005), (0.007, 0.05), (0.001, 0.01),(0.001, 0.01),(0.001, 0.003),(0.004, 0.005),(0.001, 0.003))
+
+def wingbox_optimization(x0, bounds):
+    """ TODO note down assumption that we simulate the load on the wingtip for the engine
 
     :param x0: Initial estimate Design vector X = [b, cr, tsp, trib, L, bst, hst, tst, wst, t]
     :type x0: 
+    :param bounds: Boundareies
+    :type: tuple with tuples with 2 elements min and max
     :param material: The material class created in input/data_structures
     :type: Bespoke Material class
-    :param wing: The material class created in input/data_structures
-    :type: Bespoke  Wing class
+    :param wing: the material class created in input/data_structures
+    :type: bespoke  wing class
     """    
-    fun = lambda x: wing_weight(x[0], x[1],x[2],x[3], x[4], x[5], x[6], x[7],x[8],[x[9]], material.rho, wing.taper)
-    cons = ({'type': 'ineq', 'fun': lambda x: global_local(x[0], x[1], x[4], x[5], x[6], x[7],[x[9]], material.E, material.poisson)},
-            {'type': 'ineq', 'fun': lambda x: post_buckling(x[0], x[1], x[2], x[3],  x[4], x[5], x[6], x[7], x[8], [x[9]], const.n_max_req, material.sigma_uts, wing.taper, material.pb, engine.mass_pertotalengine, material.rho,engine.y_rotor_loc)}, #TODO N_max has to badded
-            {'type': 'ineq', 'fun': lambda x: von_Mises(x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7],x[8],[x[9]], material.sigma_yield, wing.taper, material.rho, engine.mass_pertotalengine,engine.y_rotor_loc)}, # TODO Add sigma yield
-            {'type': 'ineq', 'fun': lambda x: buckling_constr(x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7],x[8],[x[9]], wing.taper, material.rho, engine.mass_pertotalengine, material.E, material.poisson,engine.y_rotor_loc)},
-            {'type': 'ineq', 'fun': lambda x: flange_loc_loc(x[0], x[1], x[4], x[5],x[7],x[8],[x[9]], material.E, material.poisson)},
-            {'type': 'ineq', 'fun': lambda x: local_column(x[0], x[1], x[4], x[5],x[6],x[7],x[8],[x[9]], material.E, material.poisson)},
-            {'type': 'ineq', 'fun': lambda x: crippling(x[0],  x[4],  x[6], x[7], x[8], [x[9]], material.beta, material.sigma_yield, material.E, material.m_crip, material.g)}, #TODO add beta, sigma yield, E, m_crip
-            {'type': 'ineq', 'fun': lambda x: web_flange(x[0], x[1], x[4], x[5], x[6], x[7], [x[9]], material.E, material.poisson)})
+    # fun = lambda x: wing_weight(x[0], x[1],x[2],x[3], x[4], x[5], x[6], x[7],x[8],[x[9]], material.rho, wing.taper)
+    # cons = ({'type': 'ineq', 'fun': lambda x: global_local(x[0], x[1], x[4], x[5], x[6], x[7],[x[9]], material.E, material.poisson)},
+    #         {'type': 'ineq', 'fun': lambda x: post_buckling(x[0], x[1], x[2], x[3],  x[4], x[5], x[6], x[7], x[8], [x[9]], const.n_max_req, material.sigma_uts, wing.taper, material.pb, engine.mass_pertotalengine, material.rho,engine.y_rotor_loc)}, #TODO N_max has to badded
+    #         {'type': 'ineq', 'fun': lambda x: von_Mises(x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7],x[8],[x[9]], material.sigma_yield, wing.taper, material.rho, engine.mass_pertotalengine,engine.y_rotor_loc)}, # TODO Add sigma yield
+    #         {'type': 'ineq', 'fun': lambda x: buckling_constr(x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7],x[8],[x[9]], wing.taper, material.rho, engine.mass_pertotalengine, material.E, material.poisson,engine.y_rotor_loc)},
+    #         {'type': 'ineq', 'fun': lambda x: flange_loc_loc(x[0], x[1], x[4], x[5],x[7],x[8],[x[9]], material.E, material.poisson)},
+    #         {'type': 'ineq', 'fun': lambda x: local_column(x[0], x[1], x[4], x[5],x[6],x[7],x[8],[x[9]], material.E, material.poisson)},
+    #         {'type': 'ineq', 'fun': lambda x: crippling(x[0],  x[4],  x[6], x[7], x[8], [x[9]], material.beta, material.sigma_yield, material.E, material.m_crip, material.g)}, #TODO add beta, sigma yield, E, m_crip
+    #         {'type': 'ineq', 'fun': lambda x: web_flange(x[0], x[1], x[4], x[5], x[6], x[7], [x[9]], material.E, material.poisson)})
 
+    fun = lambda x: wing_weight(x[0], x[1],x[2],x[3], x[4], x[5], x[6], x[7],x[8],[x[9]])
+    cons = ({'type': 'ineq', 'fun': lambda x: global_local(x[0], x[1], x[4], x[5], x[6], x[7],[x[9]])},
+            {'type': 'ineq', 'fun': lambda x: post_buckling(x[0], x[1], x[2], x[3],  x[4], x[5], x[6], x[7], x[8], [x[9]])},
+            {'type': 'ineq', 'fun': lambda x: von_Mises(x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7],x[8],[x[9]])},
+            {'type': 'ineq', 'fun': lambda x: buckling_constr(x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7],x[8],[x[9]])},
+            {'type': 'ineq', 'fun': lambda x: flange_loc_loc(x[0], x[1], x[4], x[5],x[7],x[8],[x[9]])},
+            {'type': 'ineq', 'fun': lambda x: local_column(x[0], x[1], x[4], x[5],x[6],x[7],x[8],[x[9]])},
+            {'type': 'ineq', 'fun': lambda x: crippling(x[0],  x[4],  x[6], x[7], x[8], [x[9]])},
+            {'type': 'ineq', 'fun': lambda x: web_flange(x[0], x[1], x[4], x[5], x[6], x[7], [x[9]])})
 
-    bnds = ((5, 9), (1, 4), (0.001, 0.005), (0.001, 0.005), (0.007, 0.05), (0.001, 0.01),(0.001, 0.01),(0.001, 0.003),(0.004, 0.005),(0.001, 0.003))
+    # bnds = ((5, 9), (1, 4), (0.001, 0.005), (0.001, 0.005), (0.007, 0.05), (0.001, 0.01),(0.001, 0.01),(0.001, 0.003),(0.004, 0.005),(0.001, 0.003))
+    bnds = bounds
     rez = minimize(fun, x0, method='trust-constr',bounds=bnds, constraints=cons)
     return rez
+

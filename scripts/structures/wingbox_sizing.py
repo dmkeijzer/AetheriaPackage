@@ -7,7 +7,7 @@ import pickle
 
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 
-from modules.structures.wingbox_georgina  import *
+import  modules.structures.wingbox_georgina as wb
 import input.data_structures.GeneralConstants as const
 from input.data_structures.material import Material
 from input.data_structures.wing import Wing
@@ -25,20 +25,53 @@ MatClass.load()
 EngClass.load()
 #-----------------------------------------------------------------------------------------
 
+#--------------------------- Assign correct values to global values in wingbox_georgina -----------
+
+
+wb.taper = WingClass.taper
+wb.rho = MatClass.rho
+wb.W_eng = EngClass.mass_pertotalengine
+wb.E = MatClass.E
+wb.poisson = MatClass.poisson
+wb.pb= MatClass.pb
+wb.beta= MatClass.beta
+wb.g= MatClass.g
+wb.sigma_yield = MatClass.sigma_yield
+wb.m_crip = MatClass.m_crip
+wb.sigma_uts = MatClass.sigma_uts
+wb.n_max= const.n_max_req
+
 
 #------------------------------- Run script  ----------------------------------------------
 
 
-x0=np.array([7, 1.5, 0.003, 0.003, 0.12, 0.07, 0.003,0.003,0.004,0.0022])
+x0=np.array([WingClass.span, WingClass.chord_root, 0.003, 0.003, 0.12, 0.07, 0.003,0.003,0.004,0.0022])
+    # :param x0: Initial estimate Design vector X = [b, cr, tsp, trib, L, bst, hst, tst, wst, t]
+
+bnds = wb.create_bounds(WingClass) # create bounds
 
 
-res = wingbox_optimization(x0, MatClass, WingClass, EngClass)
+res = wb.wingbox_optimization(x0, bnds)
 
 with open(r"output/structures/wingbox_output.pkl", "wb") as f:
     pickle.dump(res, f)
     print("Succesfully loaded data structure into wingbox_output.pkl")
 
+ 
+#------------------------------- Print out results  ----------------------------------------------
+str = ["span", "chord root", "t spar", "t rib", "Rib pitch", 
+        "Pitch stringer", "Height Stringer", "t stringer", "Stringer Flange Width", "thickness"]
+vec_res = res.x
 
-print(res)
+i = 0
+
+for str_ele, res_ele  in zip(str, vec_res):
+    i += 1
+    if i > 2:
+        print(f"{str_ele} = {np.round(res_ele*1000, 4)} [mm]")
+    else:     
+        print(f"{str_ele} = {np.round(res_ele, 4)} [m]")
+
+#---------------------------------------------------------------------------------------------------
 
 
