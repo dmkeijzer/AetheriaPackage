@@ -8,6 +8,9 @@ import pathlib as pl
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
+from modules.aero.midterm_datcom_methods import datcom_cl_alpha
+from input.data_structures.GeneralConstants import *
+
 @dataclass
 class Aero():
     cd: float = None
@@ -24,9 +27,9 @@ class Aero():
 
         self.cd =  data["cd"]
         self.cd0 =  data["cd0"]
-        self.cL_alpha =  data["clalpha"]
+        self.cL_alpha =  datcom_cl_alpha(A=data["A"], mach=v_cr/a_cr, sweep_half=-data["sweep_le"])
         self.cL_cruise =  data["cL_cruise"]
-        self.cm  =  data["cm"]
+        self.cm_ac  =  data["cm_ac"]
         self.e  =  data["e"]
         self.cm_alpha = data["cm_alpha"]
     

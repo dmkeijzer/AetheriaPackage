@@ -22,7 +22,7 @@ python_files = [
     "scripts/preliminary_sizing/wing_power_loading.py",
     "scripts/structures/flight_envelope.py",
     "scripts/aerodynamics/planform_sizing.py",
-    "scripts/aerodynamics/drag_estimation.py",
+    "scripts/aerodynamics/midterm_drag_estimation.py",
     "scripts/flight_perf/midterm/mission_power_energy.py",
     "scripts/structures/class2_weight_estimation.py"
 ]
