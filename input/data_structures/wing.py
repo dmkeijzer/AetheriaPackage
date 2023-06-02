@@ -58,7 +58,7 @@ class Wing():
         self.cm  =  data["cm"]
         self.e  =  data["e"]
         #self.cm_alpha = data["cm_alpha"]
-        self.cL_approach = data["cL_approach"]
+        self.cL_approach = data["cLmax_flaps60"]
         self.cL_alpha0 = data["cL0"]
         self.mach_cruise = data["mach_cruise"]
         self.cL_alpha0_approach = data["cL0_approach"]
