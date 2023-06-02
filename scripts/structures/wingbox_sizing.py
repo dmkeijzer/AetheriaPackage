@@ -9,7 +9,9 @@ from modules.structures.wingbox_georgina *
 import input.data_structures.GeneralConstants as const
 from input.data_structures.material import *
 from input.data_structures. import *
-
+from input.data_structures.material import Material
+from input.data_structures.wing import Wing
+from input.data_structures
 taper = Wing.taper
 rho = ISA_tool.density() #kg/m^3 for Aluminium
 W_eng = Engine.weight #kg
