@@ -143,6 +143,7 @@
       "h_fuselage": 1.8,
       "w_fuselage": 1.7,
       "mach_cruise": 0.2459,
+      "mach_stall": 0.11809022304116654,
       "material": {
             "youngsmodulus": 70000000000.0,
             "poisson": 0.3,
@@ -154,5 +155,8 @@
             "rho": 2710,
             "g": 5
       },
-      "alpha_zero_L": -0.0352
+      "alpha_zero_L": -0.0352,
+      "ld_stall": 9.524226592413127,
+      "cd_stall": 0.2110407580602019,
+      "cd0_stall": 0.01954671455847806
 }
