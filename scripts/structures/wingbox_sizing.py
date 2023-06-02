@@ -47,7 +47,9 @@ x0=np.array([7, 1.5, 0.003, 0.003, 0.12, 0.07, 0.003,0.003,0.004,0.0022])
 
 res = wingbox_optimization(x0, MatClass, WingClass, EngClass)
 
-with open()
+with open(r"output/structures/wingbox_output.pkl", "wb") as f:
+    pickle.dump(res, f)
+    print("Succesfully loaded data structure into wingbox_output.pkl")
 
 
 print(res)

@@ -14,6 +14,10 @@ os.chdir(str(list(pl.Path(__file__).parents)[2]))
 import input.data_structures.GeneralConstants as const
 
 
+#------- TO DO summary ----------------------------
+#TODO The thick
+
+
 def chord(b, c_r, taper):
     c = lambda y: c_r - c_r * (1 - taper) * y * 2 / b
     return c
@@ -21,7 +25,7 @@ def chord(b, c_r, taper):
 
 def height(b, c_r, taper):
     c = chord(b, c_r, taper)
-    h = lambda Y: 0.17 * c(Y)
+    h = lambda Y: 0.12 * c(Y) 
     return h
 
 
