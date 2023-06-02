@@ -79,6 +79,55 @@ data["cd0"] = CD0_var
 data["cd_upsweep"] = CD_upsweep_var
 data["cd_base"] = CD_base_var
 
+# ------------------------ DRAG DURING STALL -------------- 
+# General flight variables
+re_var = Reynolds(rho_sl, const.v_stall, mac, mhu, const.k)
+M_var = Mach_cruise(const.v_stall, const.gamma, const.R, t_stall)
+Oswald_eff_var = Oswald_eff(data["A"])
+
+
+# Writing to JSON file
+data["e"] = Oswald_eff_var
+data["depsda"] = 0.1
+
+# Form factor
+FF_fus_var = FF_fus(data["l_fuselage"], data["d_fuselage"])
+FF_wing_var = FF_wing(const.toc, const.xcm, M_var, sweep_m(data["sweep_le"], const.xcm, data["c_root"], data["b"], data["taper"]))
+
+# Wetted area
+S_wet_fus_var = S_wet_fus(data["d_fuselage"], data["l_cockpit"], data["l_cabin"], data["l_tail"])
+S_wet_wing_var = 2 * data["S"]  # from ADSEE slides
+
+# Miscellaneous drag
+CD_upsweep_var = CD_upsweep(data["upsweep"], data["d_fuselage"], S_wet_fus_var)
+CD_base_var = CD_base(M_var, const.A_base, S_wet_fus_var)
+
+# Skin friction coefficienct
+C_fe_fus_var = C_fe_fus(const.frac_lam_fus, re_var, M_var)
+C_fe_wing_var = C_fe_wing(const.frac_lam_wing, re_var, M_var)
+
+# Total cd
+CD_fus_var = CD_fus(C_fe_fus_var, FF_fus_var, S_wet_fus_var)
+CD_wing_var = CD_wing(data["name"], C_fe_wing_var, FF_wing_var, S_wet_wing_var, data["S"])
+CD0_var = CD0(data["S"], CD_fus_var, CD_wing_var, CD_upsweep_var, CD_base_var)
+
+# Summation and L/D calculation
+CDi_var = CDi(data["name"], data["cLmax_flaps60"], data["A"], data["e"])
+CD_var = CD(CD0_var, CDi_var)
+lift_over_drag_var = lift_over_drag(data["cLmax_flaps60"], CD_var)
+
+print("CD0_wing", CD_wing_var / data["S"])
+
+# Writing to JSON file
+data["ld_stall"] = lift_over_drag_var
+data["cd_stall"] = CD_var
+data["cd0_stall"] = CD0_var
+data['mach_stall'] = M_var
+
+
+
+
+
 if TEST:
     with open(os.path.join(download_dir, dict_name), "w") as jsonFile:
         json.dump(data, jsonFile, indent=6)

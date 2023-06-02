@@ -356,8 +356,7 @@ def longitudinal_derivatives(c, lh, CL0, CD0, lcg, Cmafuse=None, Cmqfuse=0, CLa=
 
 
 def lateral_derivatives(Sv, lv, S, b, dihedral, taper, CL0, CLav=None, Vv=None, CLa=None, Cnbfuse=None, clav=None,
-                        Av=None,
-                        cla=None, A=None, Vfuse=None):
+                        Av=None, cla=None, A=None, Vfuse=None):
     """
     Sv: vertical tail surface area [m^2]
     lv: distance from wing ac to vertical tail [m]
