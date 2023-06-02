@@ -639,7 +639,7 @@ def post_buckling(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st, t,n_max, sigma_u
 def wingbox_optimization(x0, material, wing, engine):
     """_summary_
 
-    :param x0: Initial estiamte Design vector X = [b, cr, tsp, trib, L, bst, hst, tst, wst, t]
+    :param x0: Initial estimate Design vector X = [b, cr, tsp, trib, L, bst, hst, tst, wst, t]
     :type x0: 
     :param material: The material class created in input/data_structures
     :type: Bespoke Material class
