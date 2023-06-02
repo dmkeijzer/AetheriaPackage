@@ -1,6 +1,6 @@
 import numpy as np
 
-def prop_lift_slipstream(T, S_W, n_e, D, b_W, V_0, angle_of_attack, CL_wing, CL_alpha_s_eff, i_cs, rho, delta_alpha_zero_f, alpha_0):
+def prop_lift_slipstream(mach, sweep_half, T, S_W, n_e, D, b_W, V_0, angle_of_attack, CL_wing, i_cs, rho, delta_alpha_zero_f, alpha_0):
     """_summary_
     :param T: thrust -> weight of the aircraft
     :type T: _type_
@@ -46,11 +46,14 @@ def prop_lift_slipstream(T, S_W, n_e, D, b_W, V_0, angle_of_attack, CL_wing, CL_
     alpha_s = alpha_star + i_cs - alpha_0 - delta_alpha_zero_f
     
     #downwash due to slipstream
+    beta = np.sqrt(1 - mach**2)
+    CL_alpha_s_eff =  (2*np.pi*A_s_eff)/(2 + np.sqrt(4 + ((A_s_eff*beta)/0.95)**2*(1 + (np.tan(sweep_half)**2)/(beta**2))))
+
     sin_epsilon_s = (2*CL_alpha_s_eff * np.sin(alpha_s))/(np.pi*A_s_eff)
     sin_epsilon = (2*CL_wing)/(np.pi*A_w)
 
     # CL of the wing excluding propellors calculated through slipstream equation
-    CL_w = (2/S_W)*((np.pi/4)*b_W*b_W - n_e*(np.pi/4)*D_star*D_star) * sin_epsilon
+    CL_w = (2/S_W)*((np.pi/4)*b_W*b_W - (n_e*(np.pi/4)*D_star*D_star)) * sin_epsilon
     
     # CL of the propellors calculated through slipstream equation
     CL_s = n_e*(np.pi*D_star*D_star/(2*S_W)) * ((V_0+V_delta)**2/(V_0*V_0))*sin_epsilon_s
@@ -63,11 +66,11 @@ def prop_lift_slipstream(T, S_W, n_e, D, b_W, V_0, angle_of_attack, CL_wing, CL_
 
 
 
-def prop_lift_thrust(T, rho, V_0, S_W, angle_of_attack):
-    C_T = 2*T/(rho*V_0*V_0*S_W)
-    CL_T = C_T * np.sin(angle_of_attack)
-    return CL_T
+# def prop_lift_thrust(T, rho, V_0, S_W, angle_of_attack):
+#     C_T = 2*T/(rho*V_0*V_0*S_W)
+#     CL_T = C_T * np.sin(angle_of_attack)
+#     return CL_T
 
-a = prop_lift_slipstream(T=1300, S_W=12, n_e=4, D=1.9, b_W=10, V_0=40, angle_of_attack=0.3, CL_wing=1.5, CL_alpha_s_eff=0.05, i_cs=0, rho=1.225, delta_alpha_zero_f=0, alpha_0=-0.03)
-b = prop_lift_thrust(T=1300, rho=1.225, V_0=40, S_W=12, angle_of_attack=0.3)
-print(a[1]+b)
+# a = prop_lift_slipstream(mach=0.24, sweep_half=-0.051, T=1300, S_W=12, n_e=4, D=1.9, b_W=10, V_0=83, angle_of_attack=0.06, CL_wing=0.434, i_cs=0, rho=1.225, delta_alpha_zero_f=0, alpha_0=-0.03)
+# b = prop_lift_thrust(T=1300, rho=1.225, V_0=83, S_W=12, angle_of_attack=0.06)
+# print(a[1]+b)
