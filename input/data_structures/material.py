@@ -27,6 +27,3 @@ class Material():
         self.sigma_yield = data["sigma_yield"]
         self.sigma_uts = data["ultimate_tensile_stress"]
         self.m_crip = data["m_crip"]
-
-        with open(r"output/data_structures/aetheria_constants.json", "w") as jsonFile:
-            json.dump(data, jsonFile, indent=6)
