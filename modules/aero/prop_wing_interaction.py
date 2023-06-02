@@ -47,7 +47,6 @@ def prop_lift_slipstream(T, S_W, n_e, D, b_W, V_0, angle_of_attack, CL_wing, CL_
     
     #downwash due to slipstream
     sin_epsilon_s = (2*CL_alpha_s_eff * np.sin(alpha_s))/(np.pi*A_s_eff)
-    sin_epsilon_s = 0.05
     sin_epsilon = (2*CL_wing)/(np.pi*A_w)
 
     # CL of the wing excluding propellors calculated through slipstream equation
@@ -64,10 +63,11 @@ def prop_lift_slipstream(T, S_W, n_e, D, b_W, V_0, angle_of_attack, CL_wing, CL_
 
 
 
-def prop_lift_thrust(c_d, angle_of_attack):
-    CL_T = c_d * np.sin(angle_of_attack)
+def prop_lift_thrust(T, rho, V_0, S_W, angle_of_attack):
+    C_T = 2*T/(rho*V_0*V_0*S_W)
+    CL_T = C_T * np.sin(angle_of_attack)
     return CL_T
 
-a = prop_lift_slipstream(T=650, S_W=12, n_e=4, D=1.9, b_W=10, V_0=83.33, angle_of_attack=0.054, CL_wing=0.434, CL_alpha_s_eff=0.5, i_cs=0, rho=1.225, delta_alpha_zero_f=0, alpha_0=-0.03)
-b = prop_lift_thrust(c_d=0.008, angle_of_attack=0.054)
+a = prop_lift_slipstream(T=1300, S_W=12, n_e=4, D=1.9, b_W=10, V_0=40, angle_of_attack=0.3, CL_wing=1.5, CL_alpha_s_eff=0.05, i_cs=0, rho=1.225, delta_alpha_zero_f=0, alpha_0=-0.03)
+b = prop_lift_thrust(T=1300, rho=1.225, V_0=40, S_W=12, angle_of_attack=0.3)
 print(a[1]+b)
