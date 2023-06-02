@@ -74,8 +74,8 @@ SM = 0.05 #Stability margin, standard
 # q_ctrl = ((Cm_ac/CLAh_approach) - x_ac_stab_bar) / ((CLh_approach/CLAh_approach)* (l_h/MAC)*Vh_V_2) #x_ac_bar for ctrl is different than for stab if cruise in compressible flow
 # #ShS_ctrl = m_ctrl * x_front_ctrl_bar + q_ctrl
 
-def stabcg(ShS, x_ac, CLah, CLaAh, depsda, lh, c, VhV2):
-    x_cg = x_ac + (CLah/CLaAh)*(1-depsda)*ShS*(lh/c)*VhV2 - 0.05
+def stabcg(ShS, x_ac, CLah, CLaAh, depsda, lh, c, VhV2, SM):
+    x_cg = x_ac + (CLah/CLaAh)*(1-depsda)*ShS*(lh/c)*VhV2 - SM
     return x_cg
 def ctrlcg(ShS, x_ac, Cmac, CLAh, CLh, lh, c, VhV2):
     x_cg = x_ac - Cmac/CLAh + CLh*lh*ShS * VhV2 / c
@@ -109,7 +109,7 @@ def CLh_approach_estimate(A_h):
     CLh_approach = -0.35 * A_h ** (1 / 3)
     return CLh_approach
 
-def cmac_fuselage_contr(b_f, l_f, h_f, CL0_approach, S, MAC, CLaAh)
+def cmac_fuselage_contr(b_f, l_f, h_f, CL0_approach, S, MAC, CLaAh):
     Cm_ac_fuselage = -1.8 * (1 - 2.5 * b_f / l_f) * np.pi * b_f * h_f * l_f * CL0_approach / (4 * S * MAC * CLaAh)
     return Cm_ac_fuselage
 
@@ -188,7 +188,7 @@ def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass):
         if np.size(log_stab) == 0 or np.size(log_ctrl) == 0:
             continue
         ShSmin = max(np.min(log_stab[:,1]), np.min(log_ctrl[:,1]))
-        log_final = np.vstack((log_final, np.array([wing_loc, ShSmin, frontcgexc, rearcgexc, ctrlcg(ShSmin, x_ac_stab_bar, Cm_ac,CLAh_approach, CLh_approach, l_h, MAC, Vh_V_2), stabcg(ShSmin, x_ac_stab_bar, CLah, CLaAh, depsda, l_h,MAC, Vh_V_2)])))
+        log_final = np.vstack((log_final, np.array([wing_loc, ShSmin, frontcgexc, rearcgexc, ctrlcg(ShSmin, x_ac_stab_bar, Cm_ac,CLAh_approach, CLh_approach, l_h, MAC, Vh_V_2), stabcg(ShSmin, x_ac_stab_bar, CLah, CLaAh, depsda, l_h,MAC, Vh_V_2, SM)])))
     return log_final[np.where(log_final[:,1] == np.min(log_final[:,1]))[0], 0:2]
     # plt.plot(log_final[:,0], log_final[:,1])
     # plt.show()
