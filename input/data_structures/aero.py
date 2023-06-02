@@ -17,7 +17,7 @@ class Aero():
     cd0: float = None
     cL_alpha: float = None
     cL_cruise: float = None
-    cm: float = None
+    cm_ac: float = None
     cm_alpha: float = None
     e: float = None
 

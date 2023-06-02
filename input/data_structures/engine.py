@@ -23,6 +23,8 @@ class Engine:
     mass_perpowertrain: float = None
     mass_pernacelle: float = None
     mass_pertotalengine: float = None
+    x_rotor_loc: list = None
+    y_rotor_loc: list = None
 
 
     def load(self):
@@ -33,3 +35,5 @@ class Engine:
         self.mass_perpowertrain = data["powertrain_weight"]/self.no_engines
         self.mass_pernacelle = data["nacelle_weight"]/self.no_engines
         self.mass_pertotalengine = self.totalmass/self.no_engines
+        self.x_rotor_loc = data["x_rotor_loc"]
+        self.y_rotor_loc = data["y_rotor_loc"]
