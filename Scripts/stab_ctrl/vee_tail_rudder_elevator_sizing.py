@@ -2,6 +2,23 @@ from scipy.interpolate import RegularGridInterpolator,interp1d
 import numpy as np
 from wing_loc_horzstab_sizing import CLahcalc
 
+#Cn_beta (according roskam 2) = 0.0571   1/rad  #ch11, page 25 --> Jan Roskam Part II, equation 11.9
+#Since there is no one engine inoperative condition, we size the Cn_dr to be able to maintain a non-yawing flight at a high beta:
+#0=Cn_beta*beta+Cn_dr*dr=0 with dr limited to 10 degrees due to using a V-tail. Problematic at low speeds.
+#Maximum cross-wind component is given as 36knots at 10m height https://www.smartcockpit.com/docs/Crosswind_Guidelines.pdf  (slide 3)
+#Assuming a conventional landing at 1.1Vs,
+#) There may be no uncontrollable ground or water looping tendency in 90° cross winds, up to a
+#wind velocity of 18.5 km/h (10 knots) at any speed at which the aeroplane may be expected to
+#be operated on the ground or water.   https://www.caa.co.uk/media/ippebxfn/caa-cs-vla-amendment-1-initial-airworthiness.pdf page 36
+#This is 20 knots for CS25.
+#https://www.easa.europa.eu/en/document-library/certification-specifications/group/cs-23-normal-utility-aerobatic-and-commuter-aeroplanes#cs-23-normal-utility-aerobatic-and-commuter-aeroplanes
+#Above is for CS23, initial issue , pdf page 300, ground loops --> no requirement
+#so take max crosswind as 10 knots as this aircraft is not meant to land normally but it shoud --> 40*1.1=44--> betamax= arctan(10/44) =0.22347
+#Cn_dr=-0.0571*0.22347/(10*pi/180)=-0.073
+
+Cn_beta_req=0.0571
+Cn_dr_req=-0.073
+
 def get_K(taper_h, AR_h):
     taper_vee=taper_h    #####important, due to CL_alpha_t_h=CL_alpha_N
     AR_vee=AR_h          #####important, due to CL_alpha_t_h=CL_alpha_N
