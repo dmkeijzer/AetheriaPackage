@@ -28,7 +28,7 @@ rho_cr = atm.density()
 mhu = atm.viscosity_dyn()
 
 diameter_propellers = 2*np.sqrt(data['diskarea']/(np.pi*6))
-
+D = diameter_propellers
 # ---------- CRUISE ---------
 drag_cruise = 0.5*rho_cr*data['S']*const.v_cr*const.v_cr*data['cd']
 
@@ -36,12 +36,12 @@ drag_cruise = 0.5*rho_cr*data['S']*const.v_cr*const.v_cr*data['cd']
 C_T_var = C_T(T=drag_cruise, rho=const.rho_cr, V_0=const.v_cr, S_W=data["S"])
 
 #change in V
-V_delta_var = V_delta(C_T=C_T_var, S_W=data['S'], n_e=4, D=1.9, V_0=const.v_cr)
+V_delta_var = V_delta(C_T=C_T_var, S_W=data['S'], n_e=4, D=D, V_0=const.v_cr)
 
 # effective Diameter
 D_star_var = D_star(D=1.9, V_0=const.v_cr, V_delta=V_delta_var)
 
-A_eff_var = A_s_eff(b_W=data["b"], S_W=data['S'], n_e=4, D=1.9, V_0=const.v_cr, V_delta=V_delta_var)[0]
+A_eff_var = A_s_eff(b_W=data["b"], S_W=data['S'], n_e=4, D=D, V_0=const.v_cr, V_delta=V_delta_var)[0]
 
 # DATCOM
 CL_eff_alpha_var = CL_effective_alpha(mach=data["mach_cruise"], A_s_eff= A_eff_var, sweep_half=-data["sweep_le"])
