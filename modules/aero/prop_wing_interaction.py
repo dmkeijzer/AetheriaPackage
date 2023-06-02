@@ -66,10 +66,10 @@ def prop_lift_slipstream(mach, sweep_half, T, S_W, n_e, D, b_W, V_0, angle_of_at
 
 
 
-# def prop_lift_thrust(T, rho, V_0, S_W, angle_of_attack):
-#     C_T = 2*T/(rho*V_0*V_0*S_W)
-#     CL_T = C_T * np.sin(angle_of_attack)
-#     return CL_T
+def prop_lift_thrust(T, rho, V_0, S_W, angle_of_attack):
+    C_T = 2*T/(rho*V_0*V_0*S_W)
+    CL_T = C_T * np.sin(angle_of_attack)
+    return CL_T
 
 # a = prop_lift_slipstream(mach=0.24, sweep_half=-0.051, T=1300, S_W=12, n_e=4, D=1.9, b_W=10, V_0=83, angle_of_attack=0.06, CL_wing=0.434, i_cs=0, rho=1.225, delta_alpha_zero_f=0, alpha_0=-0.03)
 # b = prop_lift_thrust(T=1300, rho=1.225, V_0=83, S_W=12, angle_of_attack=0.06)

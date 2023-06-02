@@ -142,5 +142,6 @@
       "cL_approach": 1.638,
       "h_fuselage": 1.8,
       "w_fuselage": 1.7,
-      "mach_cruise": 0.2459
+      "mach_cruise": 0.2459,
+      "alpha_zero_L": -0.0352
 }
