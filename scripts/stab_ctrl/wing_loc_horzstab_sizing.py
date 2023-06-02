@@ -1,5 +1,4 @@
 import json
-from potato_plot import J1loading
 import sys
 import pathlib as pl
 import os
@@ -9,41 +8,43 @@ import pandas as pd
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
 import matplotlib.pyplot as plt
-from input.data_structures import *
-
-
-WingClass = Wing()
-FuseClass = Fuselage()
-HorTailClass = HorTail()
-
-
-WingClass.load()
-FuseClass.load()
-HorTailClass.load()
+# from input.data_structures import *
+from scripts.stab_ctrl.potato_plot import J1loading
 
 
 
-depsda = HorTailClass.downwash
-MAC = WingClass.chord_mac
-Vh_V_2 = 0.95 #From SEAD, V-tail somewhat similar to fin-mounted stabiliser
-S = WingClass.surface
-b_f = FuseClass.width_fuselage
-h_f = FuseClass.height_fuselage
-b = WingClass.span
-Lambdac4 = WingClass.quarterchord_sweep
-taper = WingClass.taper
-A_h = HorTailClass.aspect_ratio
-eta = 0.95
-Mach = WingClass.mach_cruise
-Lambdah2 = 0 #Assumed
-CLaw = WingClass.cL_alpha
-c_root = WingClass.chord_root
-l_f = FuseClass.length_fuselage
-CL0_approach = WingClass.cL_alpha0_approach
-Cm_ac_wing = WingClass.cm
-CLAh_approach= WingClass.cL_approach #Assumes fuselage contribution negligible
-x_lemac_x_rootc = WingClass.X_lemac
-SM = 0.05 #Stability margin, standard
+# WingClass = Wing()
+# FuseClass = Fuselage()
+# HorTailClass = HorTail()
+#
+#
+# WingClass.load()
+# FuseClass.load()
+# HorTailClass.load()
+#
+#
+#
+# depsda = HorTailClass.downwash
+# MAC = WingClass.chord_mac
+# Vh_V_2 = 0.95 #From SEAD, V-tail somewhat similar to fin-mounted stabiliser
+# S = WingClass.surface
+# b_f = FuseClass.width_fuselage
+# h_f = FuseClass.height_fuselage
+# b = WingClass.span
+# Lambdac4 = WingClass.quarterchord_sweep
+# taper = WingClass.taper
+# A_h = HorTailClass.aspect_ratio
+# eta = 0.95
+# Mach = WingClass.mach_cruise
+# Lambdah2 = 0 #Assumed
+# CLaw = WingClass.cL_alpha
+# c_root = WingClass.chord_root
+# l_f = FuseClass.length_fuselage
+# CL0_approach = WingClass.cL_alpha0_approach
+# Cm_ac_wing = WingClass.cm
+# CLAh_approach= WingClass.cL_approach #Assumes fuselage contribution negligible
+# x_lemac_x_rootc = WingClass.X_lemac
+# SM = 0.05 #Stability margin, standard
 
 # CLaAh = CLaw*(1+2.15*b_f/b)*(S-b_f*c_root)/S + np.pi * b_f ** 2 / (2 * S)
 #
@@ -78,7 +79,7 @@ def stabcg(ShS, x_ac, CLah, CLaAh, depsda, lh, c, VhV2, SM):
     x_cg = x_ac + (CLah/CLaAh)*(1-depsda)*ShS*(lh/c)*VhV2 - SM
     return x_cg
 def ctrlcg(ShS, x_ac, Cmac, CLAh, CLh, lh, c, VhV2):
-    x_cg = x_ac - Cmac/CLAh + CLh*lh*ShS * VhV2 / c
+    x_cg = x_ac - Cmac/CLAh + CLh*lh*ShS * VhV2 / (c * CLAh)
     return x_cg
 
 def CLaAhcalc(CLaw, b_f, b, S, c_root):
@@ -90,14 +91,14 @@ def x_ac_fus_1calc(b_f, h_f, l_fn, CLaAh, S, MAC):
     return x_ac_stab_fus1_bar
 
 def x_ac_fus_2calc(b_f, S, b, Lambdac4, taper, MAC):
-    x_ac_stab_fus2_bar = (0.273 * b_f * S * (b - b_f) * np.tan(Lambdac4)) / ((1 + taper) * MAC ** 2 * (b + 2.15 * b_f))
+    x_ac_stab_fus2_bar = (0.273 * b_f * S * (b - b_f) * np.tan(Lambdac4)) / ((1 + taper) * MAC ** 2 * b*(b + 2.15 * b_f))
     return x_ac_stab_fus2_bar
 
 def betacalc(M):
     return np.sqrt(1-M**2)
 
 def CLahcalc(A_h, beta, eta, Lambdah2):
-    CLah = 2 * np.pi * A_h / (2 + np.sqrt(4 + (A_h * beta / eta) ** 2) * (1 + (np.tan(Lambdah2)) ** 2 / beta ** 2))
+    CLah = 2 * np.pi * A_h / (2 + np.sqrt(4 + (A_h * beta / eta) ** 2 * (1 + (np.tan(Lambdah2)) ** 2 / beta ** 2)))
     return CLah
 
 def stab_formula_coefs(CLah, CLaAh, depsda, l_h, MAC, Vh_V_2, x_ac_stab_bar, SM):
@@ -118,7 +119,7 @@ def ctrl_formula_coefs(CLh_approach, CLAh_approach, l_h, MAC, Vh_V_2, Cm_ac, x_a
     q_ctrl = ((Cm_ac / CLAh_approach) - x_ac_stab_bar) / ((CLh_approach / CLAh_approach) * (l_h / MAC) * Vh_V_2)
     return m_ctrl, q_ctrl
 
-def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass):
+def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, plot=False):
     log_final = np.zeros((0,6))
     depsda = HorTailClass.downwash
     MAC = WingClass.chord_mac
@@ -142,7 +143,7 @@ def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass):
     x_lemac_x_rootc = WingClass.X_lemac
     SM = 0.05  # Stability margin, standard
 
-    for wing_loc in np.linspace(0.3, 0.65, np.size(np.arange(-1,2,0.001))):
+    for wing_loc in np.linspace(0.3, 0.65, np.size(np.arange(-1,2,0.002))):
         log_stab = np.zeros((0, 2))
         log_ctrl = np.zeros((0, 2))
         x_ac_stab_wing_bar = 0.24  # From graph from Torenbeek
@@ -176,10 +177,10 @@ def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass):
         m_ctrl, q_ctrl = ctrl_formula_coefs(CLh_approach, CLAh_approach, l_h, MAC, Vh_V_2, Cm_ac, x_ac_stab_bar) # x_ac_bar for ctrl is different than for stab if cruise in compressible flow
 
         #log_cgexc = np.vstack((log_cgexc, np.array([cglims["frontcg"], cglims["rearcg"], wing_loc])))
-        for x_aft_stab_bar in np.arange(-1,2,0.001):
+        for x_aft_stab_bar in np.arange(-1,2,0.002):
             ShS_stab = m_stab * x_aft_stab_bar + q_stab
             log_stab = np.vstack((log_stab, np.array([x_aft_stab_bar, ShS_stab])))
-        for x_front_ctrl_bar in np.arange(-1,2,0.001):
+        for x_front_ctrl_bar in np.arange(-1,2,0.002):
             ShS_ctrl = m_ctrl * x_front_ctrl_bar + q_ctrl
             log_ctrl = np.vstack((log_ctrl, np.array([x_front_ctrl_bar, ShS_ctrl])))
 
@@ -189,6 +190,17 @@ def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass):
             continue
         ShSmin = max(np.min(log_stab[:,1]), np.min(log_ctrl[:,1]))
         log_final = np.vstack((log_final, np.array([wing_loc, ShSmin, frontcgexc, rearcgexc, ctrlcg(ShSmin, x_ac_stab_bar, Cm_ac,CLAh_approach, CLh_approach, l_h, MAC, Vh_V_2), stabcg(ShSmin, x_ac_stab_bar, CLah, CLaAh, depsda, l_h,MAC, Vh_V_2, SM)])))
+    if plot:
+        plt.plot(log_final[:,0], log_final[:,1])
+        plt.show()
     return log_final[np.where(log_final[:,1] == np.min(log_final[:,1]))[0], 0:2]
-    # plt.plot(log_final[:,0], log_final[:,1])
-    # plt.show()
+
+if __name__ == "__main__":
+    from input.data_structures import *
+    WingClass = Wing()
+    FuseClass = Fuselage()
+    HorTailClass = HorTail()
+    WingClass.load()
+    FuseClass.load()
+    HorTailClass.load()
+    wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, plot = True)
