@@ -224,36 +224,29 @@ def rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, taper, rho
 
 
 
-def shear_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, W_eng, taper, rho):
+def shear_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, W_eng, taper, rho,y_rotor_loc):
     x = rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, taper, rho)[0]
     y = rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, taper, rho)[1]
     f2 = interp1d(x, y)
-    x_engine = np.array([0.5 * b / 4, 0.5 * b / 2, 0.5 * 3 * b / 4])
+    x_engine = np.array(y_rotor_loc[1],y_rotor_loc[3])
     x_combi = np.concatenate((x, x_engine))
     x_sort = np.sort(x_combi)
 
-    index1 = np.where(x_sort == 0.5 * 3 * b / 4)
+    index1 = np.where(x_sort == y_rotor_loc[0])
     if len(index1[0]) == 1:
         index1 = int(index1[0])
     else:
         index1 = int(index1[0][0])
     y_new1 = f2(x_sort[index1]) + 9.81 * W_eng
 
-    index2 = np.where(x_sort == 0.5 * b / 2)
+    index2 = np.where(x_sort == y_rotor_loc[1])
     if len(index2[0]) == 1:
         index2 = int(index2[0])
     else:
         index2 = int(index2[0][0])
     y_new2 = f2(x_sort[index2]) + 9.81 * W_eng
 
-    index3 = np.where(x_sort == 0.5 * b / 4)
-    if len(index3[0]) == 1:
-        index3 = int(index3[0])
-    else:
-        index3 = int(index3[0][0])
-    y_new3 = f2(x_sort[index3]) + 9.81 * W_eng
-
-    y_engine = np.ndarray.flatten(np.array([y_new1, y_new2, y_new3]))
+    y_engine = np.ndarray.flatten(np.array([y_new1, y_new2]))
     y_combi = np.concatenate((y, y_engine))
     y_sort = np.sort(y_combi)
     y_sort = np.flip(y_sort)
@@ -262,10 +255,8 @@ def shear_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, W_eng, taper, rho)
         y_sort[i] = y_sort[i] + 9.81 * W_eng
     for i in range(int(index2)):
         y_sort[i] = y_sort[i] + 9.81 * W_eng
-    for i in range(int(index3)):
-        y_sort[i] = y_sort[i] + 9.81 * W_eng
 
-    return x_sort, y_sort, index1, index2, index3
+    return x_sort, y_sort, index1, index2
 
 
 
@@ -387,8 +378,8 @@ def N_x(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, taper, rho, w_eng):
 
 
 
-def shear_force(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, w_eng, taper, rho):
-    shear = shear_eng(b, c_r, t_sp, t_rib, L, b_st, h_st, t_st, w_st,t, w_eng, taper, rho)[1]
+def shear_force(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, w_eng, taper, rho,y_rotor_loc):
+    shear = shear_eng(b, c_r, t_sp, t_rib, L, b_st, h_st, t_st, w_st,t, w_eng, taper, rho,y_rotor_loc)[1]
     tarr = t_arr(b, L,t)
     Vz = np.zeros(len(tarr))
 
@@ -398,12 +389,12 @@ def shear_force(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, w_eng, taper, rh
         Vz[i] = aero(sta[i])-shear[2 * i]
     return Vz
 
-def N_xy(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, w_eng, taper, rho):
+def N_xy(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, w_eng, taper, rho,y_rotor_loc):
     h1 = height(b, c_r, taper)
     ch = chord(b, c_r, taper)
     tarr = t_arr(b,L,t)
     sta = rib_coordinates(b, L)
-    Vz=shear_force(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, w_eng, taper, rho)
+    Vz=shear_force(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, w_eng, taper, rho,y_rotor_loc)
     Nxy = np.zeros(len(tarr))
 
     for i in range(len(tarr)):
@@ -525,8 +516,8 @@ def shear_buckling(c_r, b_st,t,E,poisson):
 
 
 
-def buckling(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, taper,rho, w_eng, E, poisson):
-    Nxy = N_xy(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, w_eng, taper, rho)
+def buckling(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, taper,rho, w_eng, E, poisson,y_rotor_loc):
+    Nxy = N_xy(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, w_eng, taper, rho,y_rotor_loc)
     Nx = N_x(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, taper, rho, w_eng)[0]
     tarr = t_arr(b, L,t)
     buck = np.zeros(len(tarr))
@@ -562,8 +553,8 @@ def f_ult(b,c_r,L,b_st,h_st,t_st,w_st,t,sigma_uts, taper):
 
 
 
-def buckling_constr(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, taper, rho, w_eng, E, poission):
-    buck = buckling(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, taper, rho, w_eng,E, poission )
+def buckling_constr(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, taper, rho, w_eng, E, poission,y_rotor_loc):
+    buck = buckling(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, taper, rho, w_eng,E, poission,y_rotor_loc )
     tarr = t_arr(b, L,t)
     vector = np.zeros(len(tarr))
     for i in range(len(tarr)):
@@ -611,10 +602,10 @@ def web_flange(b,c_r, L,b_st, h_st,t_st,t, E, poisson):
         diff[i] =web-loc
     return diff[0]
 
-def von_Mises(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t,sigma_yield, taper, rho, w_eng):
+def von_Mises(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t,sigma_yield, taper, rho, w_eng,y_rotor_loc):
     tarr = t_arr(b, L,t)
     vm = np.zeros(len(tarr))
-    Nxy=N_xy(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, w_eng, taper, rho)
+    Nxy=N_xy(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, w_eng, taper, rho,y_rotor_loc)
     bend_stress=N_x(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, taper, rho, w_eng)[1]
     for i in range(len(tarr)):
         tau_shear= Nxy[i] / tarr[i]
@@ -633,10 +624,10 @@ def crippling(b,L, h_st,t_st,w_st,t,beta,sigma_yield,E,m_crip, g):
     return crip[0]
 
 
-def post_buckling(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st, t,n_max, sigma_uts, taper, pb, w_eng, rho):
+def post_buckling(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st, t,n_max, sigma_uts, taper, pb, w_eng, rho,y_rotor_loc):
     f=f_ult(b,c_r,L,b_st,h_st,t_st,w_st,t, sigma_uts, taper)
     ratio=2/(2+1.3*(1-1/pb))
-    px= n_max*shear_force(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, w_eng, taper, rho)
+    px= n_max*shear_force(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, w_eng, taper, rho,y_rotor_loc)
     diff=np.subtract(ratio*f,px)
     return diff[0]
 
@@ -652,9 +643,9 @@ def wingbox_optimization(x0, material, wing, engine):
     """    
     fun = lambda x: wing_weight(x[0], x[1],x[2],x[3], x[4], x[5], x[6], x[7],x[8],[x[9]], material.rho, wing.taper)
     cons = ({'type': 'ineq', 'fun': lambda x: global_local(x[0], x[1], x[4], x[5], x[6], x[7],[x[9]], material.E, material.poisson)},
-            {'type': 'ineq', 'fun': lambda x: post_buckling(x[0], x[1], x[2], x[3],  x[4], x[5], x[6], x[7], x[8], [x[9]], const.n_max_req, material.sigma_uts, wing.taper, material.pb, engine.mass_pertotalengine, material.rho)}, #TODO N_max has to badded
-            {'type': 'ineq', 'fun': lambda x: von_Mises(x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7],x[8],[x[9]], material.sigma_yield, wing.taper, material.rho, engine.mass_pertotalengine)}, # TODO Add sigma yield
-            {'type': 'ineq', 'fun': lambda x: buckling_constr(x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7],x[8],[x[9]], wing.taper, material.rho, engine.mass_pertotalengine, material.E, material.poisson)},
+            {'type': 'ineq', 'fun': lambda x: post_buckling(x[0], x[1], x[2], x[3],  x[4], x[5], x[6], x[7], x[8], [x[9]], const.n_max_req, material.sigma_uts, wing.taper, material.pb, engine.mass_pertotalengine, material.rho,engine.y_rotor_loc)}, #TODO N_max has to badded
+            {'type': 'ineq', 'fun': lambda x: von_Mises(x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7],x[8],[x[9]], material.sigma_yield, wing.taper, material.rho, engine.mass_pertotalengine,engine.y_rotor_loc)}, # TODO Add sigma yield
+            {'type': 'ineq', 'fun': lambda x: buckling_constr(x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7],x[8],[x[9]], wing.taper, material.rho, engine.mass_pertotalengine, material.E, material.poisson,engine.y_rotor_loc)},
             {'type': 'ineq', 'fun': lambda x: flange_loc_loc(x[0], x[1], x[4], x[5],x[7],x[8],[x[9]], material.E, material.poisson)},
             {'type': 'ineq', 'fun': lambda x: local_column(x[0], x[1], x[4], x[5],x[6],x[7],x[8],[x[9]], material.E, material.poisson)},
             {'type': 'ineq', 'fun': lambda x: crippling(x[0],  x[4],  x[6], x[7], x[8], [x[9]], material.beta, material.sigma_yield, material.E, material.m_crip, material.g)}, #TODO add beta, sigma yield, E, m_crip

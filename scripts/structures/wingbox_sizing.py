@@ -28,19 +28,6 @@ EngClass.load()
 
 #------------------------------- Run script  ----------------------------------------------
 
-taper = WingClass.taper
-rho = ISAClass.density() #kg/m^3 for Aluminium
-W_eng = EngClass.mass_pertotalengine #kg
-E = MatClass.E #MPa
-poisson = MatClass.poisson
-pb=2.5 #post-buckling ratio
-beta= MatClass.beta #Constant for crippling
-g=5 #Constant associated to z-stringers
-sigma_yield = MatClass.sigma_yield #MPa
-m_crip = MatClass.m_crip
-sigma_uts = MatClass.sigma_uts  #MPa
-n_max=const.n_max_req
-
 
 x0=np.array([7, 1.5, 0.003, 0.003, 0.12, 0.07, 0.003,0.003,0.004,0.0022])
 
