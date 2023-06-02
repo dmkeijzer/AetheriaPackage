@@ -5,12 +5,15 @@ from scipy.optimize import minimize
 
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 
-from modules.structures.wingbox_georgina *
+from modules.structures.wingbox_georgina import *
 from input.data_structures.material import Material
 from input.data_structures.wing import Wing
-from input.data_structures
+from input.data_structures.engine import Engine
+from input.data_structures.ISA_tool import ISA
+
+
 taper = Wing.taper
-rho = ISA_tool.density() #kg/m^3 for Aluminium
+rho = ISA.density() #kg/m^3 for Aluminium
 W_eng = Engine.weight #kg
 E = Material.E #MPa
 poisson = Material.poisson
