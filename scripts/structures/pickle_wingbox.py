@@ -12,7 +12,7 @@ vec_res = res.x
 
 print(f"\nExited succesfully = {res.success} [kg]")
 print(f"\nExecution time = {np.round(res.execution_time, 1)} [s] = {np.round(res.execution_time/60, 1)} [min]")
-print(f"\nRequired iteration = {res.nit} [kg]")
+print(f"\nRequired iterations = {res.nit} ")
 print(f"\nWing weight = {res.fun} [kg]\n")
 
 i = 0

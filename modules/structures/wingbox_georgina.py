@@ -668,7 +668,7 @@ def create_bounds(wing):
     :return: tuple of tuple with 2 elements
     :rtype: tuple
     """    
-    return ((wing.span - 1e-8, wing.span + 1e-8), (wing.chord_root - 1e-8, wing.chord_root + 1e-8), (0.001, 0.005), (0.001, 0.005), (0.007, 0.05), (0.001, 0.01),(0.001, 0.01),(0.001, 0.003),(0.004, 0.005),(0.001, 0.003))
+    return ((wing.span/2 - 1e-8, wing.span/2 + 1e-8), (wing.chord_root - 1e-8, wing.chord_root + 1e-8), (0.001, 0.005), (0.001, 0.005), (0.007, 0.05), (0.001, 0.01),(0.001, 0.01),(0.001, 0.003),(0.004, 0.005),(0.001, 0.003))
 
 def wingbox_optimization(x0, bounds):
     """ TODO note down assumption that we simulate the load on the wingtip for the engine
