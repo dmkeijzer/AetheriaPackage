@@ -143,5 +143,16 @@
       "h_fuselage": 1.8,
       "w_fuselage": 1.7,
       "mach_cruise": 0.2459,
+      "material": {
+            "youngsmodulus": 70e9,
+            "poisson": 0.3,
+            "beta": 1.42,
+            "sigma_yield": 430e6,
+            "ultimate_tensile_stress": 640e6,
+            "m_crip": 0.85,
+            "pb": 2.5,
+            "rho": 2710,
+            "g": 5
+      },
       "alpha_zero_L": -0.0352
 }

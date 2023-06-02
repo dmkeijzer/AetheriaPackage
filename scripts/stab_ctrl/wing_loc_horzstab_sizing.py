@@ -155,7 +155,6 @@ def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass):
         CLaAh = CLaAhcalc(CLaw, b_f, b, S, c_root)
 
         x_ac_stab_nacelles_bar = 0  # Missing nacelles data/counteracting effect for our design
-        x_ac_stab_wing_bar = 0.24  # From graph from Torenbeek
         x_ac_stab_fus1_bar = x_ac_fus_1calc(b_f, h_f, l_fn, CLaAh, S, MAC)
         x_ac_stab_fus2_bar = x_ac_fus_2calc(b_f, S, b, Lambdac4, taper, MAC)
 
@@ -168,6 +167,7 @@ def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass):
         m_stab, q_stab = stab_formula_coefs(CLah, CLaAh, depsda, l_h, MAC, Vh_V_2, x_ac_stab_bar, SM)
 
         CLh_approach = CLh_approach_estimate(A_h)
+
         Cm_ac_flaps = -0.1825#From delta CL0
         Cm_ac_fuselage = cmac_fuselage_contr(b_f, l_f, h_f, CL0_approach, S, MAC, CLaAh)  # CLaAh for ctrl is different than for stab if cruise in compressible flow
         Cm_ac_nacelles = 0  # Assumed/missing data on nacelles
