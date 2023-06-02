@@ -29,7 +29,7 @@ EngClass.load()
 
 taper = WingClass.taper
 rho = ISAClass.density() #kg/m^3 for Aluminium
-W_eng = EngClass.weight #kg
+W_eng = EngClass.mass_pertotalengine #kg
 E = MatClass.E #MPa
 poisson = MatClass.poisson
 pb=2.5 #post-buckling ratio
@@ -44,7 +44,7 @@ n_max=const.n_max_req
 x0=np.array([7, 1.5, 0.003, 0.003, 0.12, 0.07, 0.003,0.003,0.004,0.0022])
 
 
-res = wingbox_optimization(x0, MatClass)
+res = wingbox_optimization(x0, MatClass, WingClass, EngClass)
 
 
 print(res)
