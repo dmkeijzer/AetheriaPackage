@@ -1,6 +1,6 @@
 import numpy as np
 
-def prop_lift_slipstream(mach, sweep_half, T, S_W, n_e, D, b_W, V_0, angle_of_attack, CL_wing, i_cs, rho, delta_alpha_zero_f, alpha_0):
+def prop_lift_slipstream(mach, sweep_half, T, S_W, n_e, D, b_W, V_0, CL_wing, i_cs, rho, delta_alpha_zero_f, alpha_0):
     """_summary_
     :param T: thrust -> weight of the aircraft
     :type T: _type_
@@ -41,14 +41,17 @@ def prop_lift_slipstream(mach, sweep_half, T, S_W, n_e, D, b_W, V_0, angle_of_at
     A_s = n_e*D*D/b_W   # from wigeon, needs verification, couldnt find explanation for this...
     A_s_eff = A_s + (A_w - A_s)*((V_0/(V_0+V_delta))**(A_w-A_s))
 
+    # datcom
+    beta = np.sqrt(1 - mach**2)
+    CL_alpha_s_eff =  (2*np.pi*A_s_eff)/(2 + np.sqrt(4 + ((A_s_eff*beta)/0.95)**2*(1 + (np.tan(sweep_half)**2)/(beta**2))))
+
     #angle-of-attack of this section
+    angle_of_attack = (CL_wing/CL_alpha_s_eff) + alpha_0
     alpha_star = np.arctan2((V_0*np.sin(angle_of_attack)),(V_0*np.cos(angle_of_attack) + (V_delta/2)))
     alpha_s = alpha_star + i_cs - alpha_0 - delta_alpha_zero_f
     
     #downwash due to slipstream
-    beta = np.sqrt(1 - mach**2)
-    CL_alpha_s_eff =  (2*np.pi*A_s_eff)/(2 + np.sqrt(4 + ((A_s_eff*beta)/0.95)**2*(1 + (np.tan(sweep_half)**2)/(beta**2))))
-
+    
     sin_epsilon_s = (2*CL_alpha_s_eff * np.sin(alpha_s))/(np.pi*A_s_eff)
     sin_epsilon = (2*CL_wing)/(np.pi*A_w)
 
@@ -62,7 +65,7 @@ def prop_lift_slipstream(mach, sweep_half, T, S_W, n_e, D, b_W, V_0, angle_of_at
     CL_slipstream = CL_ws - CL_wing
 
     #total CL slipstream
-    return CL_slipstream, CL_ws
+    return CL_slipstream, CL_ws, angle_of_attack
 
 
 

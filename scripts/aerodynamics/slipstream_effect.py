@@ -33,19 +33,19 @@ diameter_propellers = 2*np.sqrt(data['diskarea']/(np.pi*6))
 drag_cruise = 0.5*rho_cr*data['S']*const.v_cr*const.v_cr*data['cd']
 print(drag_cruise)
 
-slipstream_lift_var = prop_lift_slipstream(mach=data['mach_cruise'], sweep_half=-data['sweep_le'], T=drag_cruise, S_W=data['S'], n_e=4, D=diameter_propellers, b_W=data['b'], V_0=const.v_cr, angle_of_attack=0.03, CL_wing=data['cL_cruise'], i_cs=0, rho=rho_cr, delta_alpha_zero_f=0, alpha_0=data['alpha_zero_L'])[1]
-prop_lift_var = prop_lift_thrust(T=drag_cruise, rho=rho_cr, V_0=const.v_cr, S_W=data['S'], angle_of_attack=0.03)
-CL_total_cruise = slipstream_lift_var + prop_lift_var
-print(CL_total)
+slipstream_lift_var = prop_lift_slipstream(mach=data['mach_cruise'], sweep_half=-data['sweep_le'], T=drag_cruise, S_W=data['S'], n_e=4, D=diameter_propellers, b_W=data['b'], V_0=const.v_cr, CL_wing=data['cL_cruise'], i_cs=0, rho=rho_cr, delta_alpha_zero_f=0, alpha_0=data['alpha_zero_L'])
+prop_lift_var = prop_lift_thrust(T=drag_cruise, rho=rho_cr, V_0=const.v_cr, S_W=data['S'], angle_of_attack= slipstream_lift_var[2])
+CL_total_cruise = slipstream_lift_var[1] + prop_lift_var
+print(CL_total_cruise)
 
 
-# ----------- CLmax (stall)---------
-drag_clmax = 0.5*rho_sl*data['S']*40*40*data['cd']
-print(drag_clmax)
+# # ----------- CLmax ---------
+# drag_clmax = 0.5*rho_sl*data['S']*40*data['cd']
+# print(drag_clmax)
 
-slipstream_lift_var = prop_lift_slipstream(mach=data['mach_cruise'], sweep_half=-data['sweep_le'], T=drag_cruise, S_W=data['S'], n_e=4, D=diameter_propellers, b_W=data['b'], V_0=const.v_cr, angle_of_attack=0.03, CL_wing=data['cL_cruise'], i_cs=0, rho=rho_cr, delta_alpha_zero_f=0, alpha_0=data['alpha_zero_L'])[1]
-prop_lift_var = prop_lift_thrust(T=drag_cruise, rho=rho_cr, V_0=const.v_cr, S_W=data['S'], angle_of_attack=0.03)
-CL_total_cruise = slipstream_lift_var + prop_lift_var
-print(CL_total)
+# slipstream_lift_var = prop_lift_slipstream(mach=data['mach_cruise'], sweep_half=-data['sweep_le'], T=drag_cruise, S_W=data['S'], n_e=4, D=diameter_propellers, b_W=data['b'], V_0=const.v_cr, angle_of_attack=0.03, CL_wing=data['cL_cruise'], i_cs=0, rho=rho_cr, delta_alpha_zero_f=0, alpha_0=data['alpha_zero_L'])[1]
+# prop_lift_var = prop_lift_thrust(T=drag_cruise, rho=rho_cr, V_0=const.v_cr, S_W=data['S'], angle_of_attack=0.03)
+# CL_total = slipstream_lift_var + prop_lift_var
+# print(CL_total)
 
 
