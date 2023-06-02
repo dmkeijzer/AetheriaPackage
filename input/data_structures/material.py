@@ -17,6 +17,7 @@ class Material():
     m_crip: float = None #  Upsweep of the fuselage
     rho: float = None #  Density of material
     pb: float = None #  Density of material
+    g: float = None #  Density of material
 
     def load(self):
         """ Initializes the class automatically from the JSON file
@@ -31,3 +32,4 @@ class Material():
         self.m_crip = data["m_crip"]
         self.rho = data["rho"]
         self.pb = data["pb"]
+        self.g = data["g"]

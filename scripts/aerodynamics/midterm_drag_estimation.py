@@ -6,8 +6,8 @@ import os
 import numpy as np
 
 # Import from modules and input folder
-import input.GeneralConstants  as const
-from  modules.aero.clean_class2drag  import *
+import input.data_structures.GeneralConstants as const
+from  modules.aero.clean_class2drag import *
 from input.data_structures.ISA_tool import ISA
 
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
