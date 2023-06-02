@@ -7,6 +7,8 @@ import pathlib as pl
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
+from input.data_structures.GeneralConstants import *
+
 @dataclass
 class Wing():
     surface: float = None
@@ -17,7 +19,7 @@ class Wing():
     chord_tip: float = None
     chord_mac: float = None
     y_mac: float = None
-    tan_sweep_LE: float = None
+    sweep_LE: float = None
     quarterchord_sweep: float = None
     X_lemac: float = None
     effective_aspectratio: float = None
@@ -28,9 +30,9 @@ class Wing():
     cd0: float = None
     cL_alpha: float = None
     cL_cruise: float = None
-    cm: float = None
+    cm_ac: float = None
     e: float = None
-    #cm_alpha: float = None
+    cm_alpha: float = None
     cL_approach: float = None
     cL_alpha0: float = None
     mach_cruise: float = None
@@ -40,31 +42,31 @@ class Wing():
         with open(r"input/data_structures/aetheria_constants.json") as jsonFile:
             data = json.load(jsonFile)
 
-        self.surface =  data["S"]
-        self.taper =  data["taper"]
-        self.aspectratio =  data["A"]
-        self.span =  data["b"]
-        self.chord_root =  data["c_root"]
-        self.chord_tip =  data["c_tip"]
-        self.chord_mac =  data["mac"]
-        self.y_mac =  data["y_mac"]
-        self.tan_sweep_LE =  data["sweep_le"]
-        self.quarterchord_sweep =  data["sweep_le"]
-        self.X_lemac =  data["x_lemac"]
-        self.cd =  data["cd"]
-        self.cd0 =  data["cd0"]
-        self.cL_alpha =  data["clalpha"]
-        self.cL_cruise =  data["cL_cruise"]
-        self.cm  =  data["cm"]
-        self.e  =  data["e"]
-        #self.cm_alpha = data["cm_alpha"]
+        self.surface = data["S"]
+        self.taper = data["taper"]
+        self.aspectratio = data["A"]
+        self.span = data["b"]
+        self.chord_root = data["c_root"]
+        self.chord_tip = data["c_tip"]
+        self.chord_mac = data["mac"]
+        self.y_mac = data["y_mac"]
+        self.sweep_LE = data["sweep_le"]
+        self.quarterchord_sweep = data["sweep_le"]
+        self.X_lemac = data["x_lemac"]
+        self.cd = data["cd"]
+        self.cd0 = data["cd0"]
+        self.cL_alpha = data["clalpha"]
+        self.cL_cruise = data["cL_cruise"]
+        self.cm_ac = data["cm_ac"]
+        self.e = data["e"]
+        self.cm_alpha = data["cm_alpha"]
         self.cL_approach = data["cLmax_flaps60"]
         self.cL_alpha0 = data["cL0"]
-        self.mach_cruise = data["mach_cruise"]
+        self.mach_cruise = v_cr / a_cr
         self.cL_alpha0_approach = data["cL0_approach"]
         # self.effective_aspectratio =  data[""] # Left out for now since it is not implemented yet
         # self.effective_span =  data[""] # Left out for now since it is not implemented yet
-    
+
     def dump(self):
         data = {
             "S": self.surface,
@@ -91,5 +93,3 @@ if __name__ == "__main__":
 
     print(WingClass.surface)
     print(WingClass.chord_tip)
-
-
