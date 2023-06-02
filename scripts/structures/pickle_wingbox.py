@@ -5,7 +5,7 @@ with open(r"C:\Users\damie\OneDrive\Desktop\Damien\DSE\AetheriaPackage\output\st
     res = pickle.load(f)
  
 
-str = ["span", "chord root", "t spar", "t rib", "Rib pitch", 
+str = [ "t spar", "t rib", "Rib pitch", 
         "Pitch stringer", "Height Stringer", "t stringer", "Stringer Flange Width", "thickness"]
 vec_res = res.x
 
@@ -22,4 +22,4 @@ for str_ele, res_ele  in zip(str, vec_res):
     if i > 2:
         print(f"{str_ele} = {np.round(res_ele*1000, 4)} [mm]")
     else:     
-        print(f"{str_ele} = {np.round(res_ele, 4)} [m]")
+        print(f"{str_ele} = {np.round(res_ele*1000, 4)} [mm]")
