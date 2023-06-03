@@ -8,6 +8,7 @@ import sys
 import pathlib as pl
 import os
 
+
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
@@ -28,6 +29,7 @@ sigma_yield = None
 m_crip = None
 sigma_uts = None
 n_max= None
+penalty_multiplier = None
 
 
     
@@ -187,18 +189,26 @@ def panel_weight(b, c_r,t_sp, L, b_st, h_st,t_st,w_st,t):
 
 
 
-def wing_weight(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
-    b=abs(b)
-    c_r=abs(c_r)
-    t_sp=abs(t_sp)
-    t_rib=abs(t_rib)
-    L=abs(L)
-    b_st=abs(b_st)
-    h_st=abs(h_st)
-    t_st=abs(t_st)
-    w_st=abs(w_st)
-    for i in range(len(t)):
-        t[i]=abs(t[i])
+def wing_weight(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, penalty_counter):
+    # b=abs(b)
+    # c_r=abs(c_r)
+    # t_sp=abs(t_sp)
+    # t_rib=abs(t_rib)
+    # L=abs(L)
+    # b_st=abs(b_st)
+    # h_st=abs(h_st)
+    # t_st=abs(t_st)
+    # w_st=abs(w_st)
+    # for i in range(len(t)):
+    #     t[i]=abs(t[i])
+
+    penalty_arr = [b, c_r, t_sp, t_rib, L, b_st, h_st, t_st, w_st]
+
+    # Penalize negative values such that the optimizers will avoid going in this region
+    if (np.array(penalty_arr) < 0).any() or (np.array(t) < 0).any():
+        penalty_counter +=1
+        return penalty_counter*1e6
+
     stations = rib_coordinates(b, L)
     skin_weight = panel_weight(b, c_r, t_sp, L, b_st, h_st,t_st,w_st,t)
     cumsum = np.sum(skin_weight)
@@ -680,7 +690,7 @@ def create_bounds(wing):
     """    
     return ((wing.span/2 - 1e-8, wing.span/2 + 1e-8), (wing.chord_root - 1e-8, wing.chord_root + 1e-8), (0.001, 0.005), (0.001, 0.005), (0.007, 0.05), (0.001, 0.01),(0.001, 0.01),(0.001, 0.003),(0.004, 0.005),(0.001, 0.003))
 
-def wingbox_optimization(x0, bounds, wing):
+def wingbox_optimization(x0, bounds, wing, penalty_counter):
     """ TODO note down assumption that we simulate the load on the wingtip for the engine
 
     :param x0: Initial estimate Design vector X = [b, cr, tsp, trib, L, bst, hst, tst, wst, t]
@@ -702,7 +712,7 @@ def wingbox_optimization(x0, bounds, wing):
     #         {'type': 'ineq', 'fun': lambda x: crippling(x[0],  x[4],  x[6], x[7], x[8], [x[9]], material.beta, material.sigma_yield, material.E, material.m_crip, material.g)}, #TODO add beta, sigma yield, E, m_crip
     #         {'type': 'ineq', 'fun': lambda x: web_flange(x[0], x[1], x[4], x[5], x[6], x[7], [x[9]], material.E, material.poisson)})
 
-    fun = lambda x: wing_weight(wing.span, wing.chord_root,x[0],x[1], x[2], x[3], x[4], x[5],x[6],[x[7]])
+    fun = lambda x: wing_weight(wing.span, wing.chord_root,x[0],x[1], x[2], x[3], x[4], x[5],x[6],[x[7]], penalty_counter)
     cons = ({'type': 'ineq', 'fun': lambda x: global_local(wing.span, wing.chord_root, x[2], x[3], x[4], x[5],[x[7]])},
             {'type': 'ineq', 'fun': lambda x: post_buckling(wing.span, wing.chord_root, x[0], x[1],  x[2], x[3], x[4], x[5], x[6], [x[7]])},
             {'type': 'ineq', 'fun': lambda x: von_Mises(wing.span, wing.chord_root, x[0], x[1], x[2], x[3], x[4], x[5],x[6],[x[7]])},
@@ -714,6 +724,6 @@ def wingbox_optimization(x0, bounds, wing):
 
     # bnds = ((5, 9), (1, 4), (0.001, 0.005), (0.001, 0.005), (0.007, 0.05), (0.001, 0.01),(0.001, 0.01),(0.001, 0.003),(0.004, 0.005),(0.001, 0.003))
     bnds = bounds
-    rez = minimize(fun, x0, method='trust-constr',bounds=bnds, constraints=cons)
+    rez = minimize(fun, x0, method='COBYLA',bounds=bnds, constraints=cons)
     return rez
 
