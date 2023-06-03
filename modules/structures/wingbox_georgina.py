@@ -164,7 +164,6 @@ vol_func_vec = np.vectorize(vol_func)
 
 
 
-# @profile
 def panel_weight(b, c_r,t_sp, L, b_st, h_st,t_st,w_st,t):
     t_sk = t_arr(b, L,t)
     c = chord(b, c_r)
@@ -175,7 +174,7 @@ def panel_weight(b, c_r,t_sp, L, b_st, h_st,t_st,w_st,t):
     A = area_st(h_st, t_st,w_st)
 
 
-    vol_at_stations = vol_func_vec(stations, np.insert(t_sk, 0, t_sk[0]), t_sp, h, c, A, nst)
+    vol_at_stations = vol_func_vec(stations, np.resize(t_sk, np.size(stations)), t_sp, h, c, A, nst)
     w_alternative = cumulative_trapezoid(vol_at_stations, stations)
     w_res = np.append(np.insert(np.diff(w_alternative), 0 , w_alternative[0]), 0)
     
@@ -213,7 +212,6 @@ def wing_weight(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
 
 
 
-# @profile
 def skin_interpolation(b, c_r, t_sp, L, b_st, h_st,t_st,w_st,t):
     skin_weight = panel_weight(b, c_r, t_sp, L, b_st, h_st,t_st,w_st,t)
     skin_weight = np.flip(skin_weight)
@@ -225,7 +223,6 @@ def skin_interpolation(b, c_r, t_sp, L, b_st, h_st,t_st,w_st,t):
 
 
 
-# @profile
 def rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
     f = skin_interpolation(b, c_r, t_sp, L, b_st, h_st,t_st,w_st,t)
     rbw = rib_weight(b, c_r, t_rib)
@@ -252,7 +249,6 @@ def rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
 
 
 
-@profile
 def shear_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
     x,y = rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)
     # y = rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)[1]
@@ -298,7 +294,6 @@ def shear_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
 
 
 
-# @profile
 def m(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
     f = skin_interpolation(b, c_r, t_sp, L, b_st, h_st,t_st,w_st,t)
     sta = rib_coordinates(b, L)
@@ -329,7 +324,6 @@ def m(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
 
 
 
-# @profile
 def m_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
     moment = m(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)
     x = rib_coordinates(b, L)
@@ -378,7 +372,6 @@ def m_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
 
 
 
-# @profile
 def N_x(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
     sta = rib_coordinates(b, L)
     x_sort, moment = m_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)
