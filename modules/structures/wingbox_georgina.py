@@ -1,7 +1,7 @@
 from math import *
 import numpy as np
 from scipy.interpolate import interp1d
-from scipy.integrate import trapz
+from scipy.integrate import trapz, cumulative_trapezoid
 from scipy.optimize import minimize
 import matplotlib.pyplot as plt
 import sys
@@ -157,8 +157,14 @@ def rib_weight(b, c_r, t_rib):
 
 
 
+def vol_func(z, th_sk, t_sp, h, c, A, nst):
+    return rho * (2 * h(z) * t_sp + (pi * (3 * (0.5 * h(z) + 0.15 * c(z)) - sqrt((3 * 0.5 * h(z) + 0.15 * c(z)) * (0.5 * h(z) + 3 * 0.15 * c(z)))) + 2 * 0.6 * c(z) + sqrt(h(z) ** 2 / 4 + (0.25 * c(z)) ** 2)) *th_sk + A * 2 * nst)
+
+vol_func_vec = np.vectorize(vol_func)
 
 
+
+# @profile
 def panel_weight(b, c_r,t_sp, L, b_st, h_st,t_st,w_st,t):
     t_sk = t_arr(b, L,t)
     c = chord(b, c_r)
@@ -169,11 +175,16 @@ def panel_weight(b, c_r,t_sp, L, b_st, h_st,t_st,w_st,t):
     A = area_st(h_st, t_st,w_st)
 
 
+    vol_at_stations = vol_func_vec(stations, np.insert(t_sk, 0, t_sk[0]), t_sp, h, c, A, nst)
+    w_alternative = cumulative_trapezoid(vol_at_stations, stations)
+    w_res = np.append(np.insert(np.diff(w_alternative), 0 , w_alternative[0]), 0)
+    
 
-    for i in range(len(t_sk)):
-        vol = lambda z:  rho * (2 * h(z) * t_sp + (pi * (3 * (0.5 * h(z) + 0.15 * c(z)) - sqrt((3 * 0.5 * h(z) + 0.15 * c(z)) * (0.5 * h(z) + 3 * 0.15 * c(z)))) + 2 * 0.6 * c(z) + sqrt(h(z) ** 2 / 4 + (0.25 * c(z)) ** 2)) *t_sk[i] + A * 2 * nst)
-        w[i]=trapz([vol(stations[i]),vol(stations[i+1])],[stations[i],stations[i+1]])
-    return w
+
+    # for i in range(len(t_sk)):
+    #     vol = lambda z:  rho * (2 * h(z) * t_sp + (pi * (3 * (0.5 * h(z) + 0.15 * c(z)) - sqrt((3 * 0.5 * h(z) + 0.15 * c(z)) * (0.5 * h(z) + 3 * 0.15 * c(z)))) + 2 * 0.6 * c(z) + sqrt(h(z) ** 2 / 4 + (0.25 * c(z)) ** 2)) *t_sk[i] + A * 2 * nst)
+    #     w[i]=trapz([vol(stations[i]),vol(stations[i+1])],[stations[i],stations[i+1]])
+    return w_res
 
 
 
@@ -202,6 +213,7 @@ def wing_weight(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
 
 
 
+# @profile
 def skin_interpolation(b, c_r, t_sp, L, b_st, h_st,t_st,w_st,t):
     skin_weight = panel_weight(b, c_r, t_sp, L, b_st, h_st,t_st,w_st,t)
     skin_weight = np.flip(skin_weight)
@@ -213,6 +225,7 @@ def skin_interpolation(b, c_r, t_sp, L, b_st, h_st,t_st,w_st,t):
 
 
 
+# @profile
 def rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
     f = skin_interpolation(b, c_r, t_sp, L, b_st, h_st,t_st,w_st,t)
     rbw = rib_weight(b, c_r, t_rib)
@@ -239,9 +252,10 @@ def rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
 
 
 
+@profile
 def shear_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
-    x = rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)[0]
-    y = rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)[1]
+    x,y = rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)
+    # y = rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)[1]
     f2 = interp1d(x, y)
     x_engine = np.array([0.5 * b / 4, 0.5 * b / 2, 0.5 * 3 * b / 4])
     x_combi = np.concatenate((x, x_engine))
@@ -284,6 +298,7 @@ def shear_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
 
 
 
+# @profile
 def m(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
     f = skin_interpolation(b, c_r, t_sp, L, b_st, h_st,t_st,w_st,t)
     sta = rib_coordinates(b, L)
@@ -314,6 +329,7 @@ def m(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
 
 
 
+# @profile
 def m_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
     moment = m(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)
     x = rib_coordinates(b, L)
@@ -362,10 +378,11 @@ def m_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
 
 
 
+# @profile
 def N_x(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
     sta = rib_coordinates(b, L)
-    moment = m_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)[1]
-    x_sort = m_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)[0]
+    x_sort, moment = m_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)
+    # x_sort = m_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)[0]
     h = height(b, c_r)
     tarr = t_arr(b,L,t)
     Nx = np.zeros(len(tarr))
