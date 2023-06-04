@@ -1,3 +1,6 @@
+from input.data_structures.ISA_tool import ISA
+from modules.aero.prop_wing_interaction import *
+import input.data_structures.GeneralConstants as const
 import pytest
 import os
 import sys
@@ -7,9 +10,6 @@ import numpy as np
 sys.path.append(str(list(pl.Path(__file__).parents)[1]))
 os.chdir(str(list(pl.Path(__file__).parents)[1]))
 
-import input.data_structures.GeneralConstants  as const
-from modules.aero.prop_wing_interaction  import *
-from input.data_structures.ISA_tool import ISA
 
 @pytest.fixture
 def example_values():
@@ -28,8 +28,9 @@ def example_values():
         "prop_lift_thrust": {"T": 1500, "rho": 1.220, "V_0": 80, "S_W": 10, "angle_of_attack": 0.05}
     }
 
+
 def test_mass_calculation(example_values):
-    thrust_coef = C_T(**example_values["C_T"])    
+    thrust_coef = C_T(**example_values["C_T"])
     V_delta = V_delta(**example_values["V_delta"])
     D_star = D_star(**example_values["D_star"])
     effective_aspect = A_s_eff(**example_values["A_s_eff"])
@@ -42,6 +43,15 @@ def test_mass_calculation(example_values):
     CL_ws = CL_ws(**example_values["CL_ws"])
     prop_l_thrust = prop_lift_thrust(**example_values["prop_lift_thrust"])
 
-
-    assert np.isclose(af2wing, 3.54822585)
-    assert np.isclose(dwk, 2.97411154)
+    assert np.isclose(thrust_coef, 0)
+    assert np.isclose(V_delta, 0)
+    assert np.isclose(D_star, 0)
+    assert np.isclose(effective_aspect, 0)
+    assert np.isclose(CL_effective, 0)
+    assert np.isclose(alpha_s, 0)
+    assert np.isclose(angle_of_attack, 0)
+    assert np.isclose(i_cs, 0)
+    assert np.isclose(sin_eps, 0)
+    assert np.isclose(sin_eps_s, 0)
+    assert np.isclose(CL_ws, 0)
+    assert np.isclose(prop_l_thrust, 0)
