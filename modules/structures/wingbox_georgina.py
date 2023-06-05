@@ -807,25 +807,23 @@ class WingboxOptimizer():
             self.design_lst.append(x)
             new_x = x + np.array([-5e-4,-1e-4, -1e-2, -5e-3, -5-3, -1e-4, -5e-3, -1e-3 ])
         elif not bool_array[0]:   
-            pass
+            new_x = x + np.array([1e-3,0, 5e-3, 1e-3, 5e-4 , 5e-4, 5e-4, 1e-4 ])
         elif not bool_array[1]:   
-            pass
+            new_x = x + np.array([1e-3,0, 5e-3, 1e-3, 5e-4 , 5e-4, 5e-4, 1e-4 ])
         elif not bool_array[2]:   
-            pass
+            new_x = x + np.array([1e-3,1e-3, 5e-3, 1e-3, 5e-4 , 1e-4, 1e-4, 1e-4 ])
         elif not bool_array[3]:   
-            pass
+            new_x = x + np.array([1e-3,1e-3, 5e-3, 1e-3, 0, 0, 0, 0])
         elif not bool_array[4]:   
-            pass
+            new_x = x + np.array([0,0, 0, 0, 1e-3, 1e-3, 1e-3, 0])
         elif not bool_array[5]:   
-            pass
+            new_x = x + np.array([0,0, 0, 0, 0, 0, 1e-3, 0])
         elif not bool_array[6]:   
-            pass
+            new_x = x + np.array([0,0, 0, 0, 0, 1e-3, 0, 0])
         elif not bool_array[7]:   
-            pass
+            new_x = x + np.array([0,0, 0, 0, 0, 1e-3, 0, 0])
         else: 
             raise Exception("Error has been raised, code should not have reached this line.")
-
-    
 
         return new_x
 
@@ -844,7 +842,7 @@ class WingboxOptimizer():
         :type wing: wing class
         """    
 
-        x = x0
+        x = self.x0
 
         for iter in range(self.max_iter):
             constr = self.check_constraints(x)
