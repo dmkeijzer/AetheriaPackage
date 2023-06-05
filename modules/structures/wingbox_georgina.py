@@ -1,7 +1,7 @@
 from math import *
 import numpy as np
 from scipy.interpolate import interp1d
-from scipy.integrate import trapz
+from scipy.integrate import trapz, cumulative_trapezoid
 from scipy.optimize import minimize
 import matplotlib.pyplot as plt
 import sys
@@ -28,7 +28,6 @@ sigma_yield = None
 m_crip = None
 sigma_uts = None
 n_max= None
-y_rotor_loc = None
 
 
     
@@ -158,6 +157,11 @@ def rib_weight(b, c_r, t_rib):
 
 
 
+def vol_func(z, th_sk, t_sp, h, c, A, nst):
+    return rho * (2 * h(z) * t_sp + (pi * (3 * (0.5 * h(z) + 0.15 * c(z)) - sqrt((3 * 0.5 * h(z) + 0.15 * c(z)) * (0.5 * h(z) + 3 * 0.15 * c(z)))) + 2 * 0.6 * c(z) + sqrt(h(z) ** 2 / 4 + (0.25 * c(z)) ** 2)) *th_sk + A * 2 * nst)
+
+vol_func_vec = np.vectorize(vol_func)
+
 
 
 def panel_weight(b, c_r,t_sp, L, b_st, h_st,t_st,w_st,t):
@@ -170,11 +174,16 @@ def panel_weight(b, c_r,t_sp, L, b_st, h_st,t_st,w_st,t):
     A = area_st(h_st, t_st,w_st)
 
 
+    vol_at_stations = vol_func_vec(stations, np.resize(t_sk, np.size(stations)), t_sp, h, c, A, nst)
+    w_alternative = cumulative_trapezoid(vol_at_stations, stations)
+    w_res = np.append(np.insert(np.diff(w_alternative), 0 , w_alternative[0]), 0)
+    
 
-    for i in range(len(t_sk)):
-        vol = lambda z:  rho * (2 * h(z) * t_sp + (pi * (3 * (0.5 * h(z) + 0.15 * c(z)) - sqrt((3 * 0.5 * h(z) + 0.15 * c(z)) * (0.5 * h(z) + 3 * 0.15 * c(z)))) + 2 * 0.6 * c(z) + sqrt(h(z) ** 2 / 4 + (0.25 * c(z)) ** 2)) *t_sk[i] + A * 2 * nst)
-        w[i]=trapz([vol(stations[i]),vol(stations[i+1])],[stations[i],stations[i+1]])
-    return w
+
+    # for i in range(len(t_sk)):
+    #     vol = lambda z:  rho * (2 * h(z) * t_sp + (pi * (3 * (0.5 * h(z) + 0.15 * c(z)) - sqrt((3 * 0.5 * h(z) + 0.15 * c(z)) * (0.5 * h(z) + 3 * 0.15 * c(z)))) + 2 * 0.6 * c(z) + sqrt(h(z) ** 2 / 4 + (0.25 * c(z)) ** 2)) *t_sk[i] + A * 2 * nst)
+    #     w[i]=trapz([vol(stations[i]),vol(stations[i+1])],[stations[i],stations[i+1]])
+    return w_res
 
 
 
@@ -238,29 +247,38 @@ def rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
 
 
 
-def shear_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, W_eng, y_rotor_loc):
-    x = rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, taper, rho)[0]
-    y = rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, taper, rho)[1]
+
+
+def shear_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
+    x,y = rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)
+    # y = rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)[1]
     f2 = interp1d(x, y)
-    x_engine = np.array([y_rotor_loc[0],y_rotor_loc[2]])
+    x_engine = np.array([0.5 * b / 4, 0.5 * b / 2, 0.5 * 3 * b / 4])
     x_combi = np.concatenate((x, x_engine))
     x_sort = np.sort(x_combi)
 
-    index1 = np.where(x_sort == y_rotor_loc[0])
+    index1 = np.where(x_sort == 0.5 * 3 * b / 4)
     if len(index1[0]) == 1:
         index1 = int(index1[0])
     else:
         index1 = int(index1[0][0])
     y_new1 = f2(x_sort[index1]) + 9.81 * W_eng
 
-    index2 = np.where(x_sort == y_rotor_loc[2])
+    index2 = np.where(x_sort == 0.5 * b / 2)
     if len(index2[0]) == 1:
         index2 = int(index2[0])
     else:
         index2 = int(index2[0][0])
     y_new2 = f2(x_sort[index2]) + 9.81 * W_eng
 
-    y_engine = np.ndarray.flatten(np.array([y_new1, y_new2]))
+    index3 = np.where(x_sort == 0.5 * b / 4)
+    if len(index3[0]) == 1:
+        index3 = int(index3[0])
+    else:
+        index3 = int(index3[0][0])
+    y_new3 = f2(x_sort[index3]) + 9.81 * W_eng
+
+    y_engine = np.ndarray.flatten(np.array([y_new1, y_new2, y_new3]))
     y_combi = np.concatenate((y, y_engine))
     y_sort = np.sort(y_combi)
     y_sort = np.flip(y_sort)
@@ -269,53 +287,10 @@ def shear_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, W_eng, y_rotor_loc
         y_sort[i] = y_sort[i] + 9.81 * W_eng
     for i in range(int(index2)):
         y_sort[i] = y_sort[i] + 9.81 * W_eng
+    for i in range(int(index3)):
+        y_sort[i] = y_sort[i] + 9.81 * W_eng
 
-    return x_sort, y_sort, index1, index2
-
-
-
-# def shear_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
-#     x = rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)[0]
-#     y = rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)[1]
-#     f2 = interp1d(x, y)
-#     x_engine = np.array([0.5 * b / 4, 0.5 * b / 2, 0.5 * 3 * b / 4])
-#     x_combi = np.concatenate((x, x_engine))
-#     x_sort = np.sort(x_combi)
-
-#     index1 = np.where(x_sort == 0.5 * 3 * b / 4)
-#     if len(index1[0]) == 1:
-#         index1 = int(index1[0])
-#     else:
-#         index1 = int(index1[0][0])
-#     y_new1 = f2(x_sort[index1]) + 9.81 * W_eng
-
-#     index2 = np.where(x_sort == 0.5 * b / 2)
-#     if len(index2[0]) == 1:
-#         index2 = int(index2[0])
-#     else:
-#         index2 = int(index2[0][0])
-#     y_new2 = f2(x_sort[index2]) + 9.81 * W_eng
-
-#     index3 = np.where(x_sort == 0.5 * b / 4)
-#     if len(index3[0]) == 1:
-#         index3 = int(index3[0])
-#     else:
-#         index3 = int(index3[0][0])
-#     y_new3 = f2(x_sort[index3]) + 9.81 * W_eng
-
-#     y_engine = np.ndarray.flatten(np.array([y_new1, y_new2, y_new3]))
-#     y_combi = np.concatenate((y, y_engine))
-#     y_sort = np.sort(y_combi)
-#     y_sort = np.flip(y_sort)
-
-#     for i in range(int(index1)):
-#         y_sort[i] = y_sort[i] + 9.81 * W_eng
-#     for i in range(int(index2)):
-#         y_sort[i] = y_sort[i] + 9.81 * W_eng
-#     for i in range(int(index3)):
-#         y_sort[i] = y_sort[i] + 9.81 * W_eng
-
-#     return x_sort, y_sort, index1, index2, index3
+    return x_sort, y_sort, index1, index2, index3
 
 
 
@@ -334,7 +309,7 @@ def m(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
     for i in range(1, len(sta)):
         cursor = sta[i] * np.ones(len(sta))
         diff = np.subtract(cursor, sta)
-        d = [diff > 0]
+        d = diff > 0
         diff = diff[d]
         rib_w = np.flip(rib_w)
         l = len(diff)
@@ -399,8 +374,8 @@ def m_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
 
 def N_x(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
     sta = rib_coordinates(b, L)
-    moment = m_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)[1]
-    x_sort = m_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)[0]
+    x_sort, moment = m_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)
+    # x_sort = m_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)[0]
     h = height(b, c_r)
     tarr = t_arr(b,L,t)
     Nx = np.zeros(len(tarr))
@@ -731,5 +706,5 @@ def wingbox_optimization(x0,  wing):
     # bnds = ((5, 9), (1, 4), (0.001, 0.005), (0.001, 0.005), (0.007, 0.05), (0.001, 0.01),(0.001, 0.01),(0.001, 0.003),(0.004, 0.005),(0.001, 0.003))
     # bnds = bounds
     # rez = minimize(fun, x0, method='trust-constr',bounds=bnds, constraints=cons)
-    return rez
+    # return rez
 
