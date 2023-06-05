@@ -7,7 +7,7 @@ import numpy as np
 sys.path.append(str(list(pl.Path(__file__).parents)[1]))
 os.chdir(str(list(pl.Path(__file__).parents)[1]))
 
-from scripts.stab_ctrl.wing_loc_horzstab_sizing import stabcg, ctrlcg, CLaAhcalc, x_ac_fus_1calc, x_ac_fus_2calc, betacalc, CLahcalc, stab_formula_coefs, CLh_approach_estimate, cmac_fuselage_contr, ctrl_formula_coefs
+from modules.stab_ctrl.wing_loc_horzstab_sizing import stabcg, ctrlcg, CLaAhcalc, x_ac_fus_1calc, x_ac_fus_2calc, betacalc, CLahcalc, stab_formula_coefs, CLh_approach_estimate, cmac_fuselage_contr, ctrl_formula_coefs
 
 @pytest.fixture
 def example_values():

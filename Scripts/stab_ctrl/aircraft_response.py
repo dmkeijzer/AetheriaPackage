@@ -101,6 +101,19 @@ def symmetric_motion(t,P, V, alpha, pitch,pitch_rate,tstart,tend):
     return y, eigen, As, u#, y1, y2, y3, y4
 
 
+def symmetric_eigvals():
+    C1=np.array([[-2 * muc * c/V0**2, 0, 0, 0],
+                [0, (CZadot-2*muc)*c/V0, 0, 0],
+                [0, 0, -c/V0, 0],
+                [0,Cmadot*c/V0, 0, -2* muc * (KY2)*(c/V0)**2]])
+    C2=np.array([[CXu/V0, CXa, CZ0, CXq*c/V0],
+                [-0.28209/V0, CZa, -CX0, (CZq+2*muc)*c/V0],
+                [0, 0, 0, c/V0],
+                [Cmu/V0, Cma, 0, Cmq*c/V0]])
+
+    As=-np.matmul(np.linalg.inv(C1), C2)
+
+    eigen = np.linalg.eigvals(As)#*P.c/P.V0
 
 #t = truncateData(dat, tstart, tend)[4]
 # =============================================================================
