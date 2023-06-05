@@ -150,7 +150,7 @@
       },
       "alpha_zero_L": -0.0352,
       "delta_alpha_zero_L_flaps20": -0.1027196,
-      "alpha_zero_L_flaps60": -0.1332698,
+      "delta_alpha_zero_L_flaps60": -0.1332698,
       "ld_stall": 9.524226592413127,
       "cd_stall": 0.2110407580602019,
       "cd0_stall": 0.01954671455847806,
