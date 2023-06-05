@@ -8,7 +8,7 @@ def C_T(T, rho, V_0, S_W):
     return C_T
 
 def V_delta(C_T, S_W, n_e, D, V_0):
-    V_delta_over_V_0 = np.sqrt(1+(C_T*S_W*4/(n_e*D*D)))-1
+    V_delta_over_V_0 = np.sqrt(1+(C_T*S_W*4/(n_e*np.pi*D*D)))-1
     V_delta = V_delta_over_V_0 * V_0
     return V_delta
 
@@ -59,7 +59,7 @@ def CL_ws(S_W, b_W, n_e, D_star, sin_epsilon, V_0, V_delta, sin_epsilon_s, CL_wi
 
 
 def prop_lift_thrust(T, rho, V_0, S_W, angle_of_attack):
-    C_T = 2*T/(rho*V_0*V_0*S_W*np.cos(angle_of_attack))
+    C_T = 2*T/(rho*V_0*V_0*S_W)
     CL_T = C_T * np.sin(angle_of_attack)
     return CL_T
 
