@@ -36,7 +36,8 @@ D = diameter_propellers
 
 i_cs_var = 0.0549661449027131 # calculated from lift at cruise
 
-angle_of_attack_stall = 0.178 - i_cs_var
+angle_of_attack_stall = 10.1*np.pi/180
+angle_of_attack_prop  = angle_of_attack_stall + i_cs_var
 
 # ---------- CRUISE ---------
 drag_stall = 0.5*rho_stall*data['S']*const.v_stall*const.v_stall*data['cd']
@@ -45,12 +46,12 @@ drag_stall = 0.5*rho_stall*data['S']*const.v_stall*const.v_stall*data['cd']
 C_T_var = C_T(T=drag_stall, rho=rho_stall, V_0=const.v_stall, S_W=data["S"])
 
 #change in V
-V_delta_var = V_delta(C_T=C_T_var, S_W=data['S'], n_e=4, D=diameter_propellers, V_0=const.v_stall)
+V_delta_var = V_delta(C_T=C_T_var, S_W=data['S'], n_e=3, D=diameter_propellers, V_0=const.v_stall)
 
 # effective Diameter
 D_star_var = D_star(D=diameter_propellers, V_0=const.v_stall, V_delta=V_delta_var)
 
-A_eff_var = A_s_eff(b_W=data["b"], S_W=data['S'], n_e=4, D=diameter_propellers, V_0=const.v_stall, V_delta=V_delta_var)[0]
+A_eff_var = A_s_eff(b_W=data["b"], S_W=data['S'], n_e=3, D=diameter_propellers, V_0=const.v_stall, V_delta=V_delta_var)[0]
 
 # DATCOM
 CL_eff_alpha_var = CL_effective_alpha(mach=data["mach_stall"], A_s_eff= A_eff_var, sweep_half=-data["sweep_le"])
@@ -61,13 +62,13 @@ alpha_s_var = angles[0]
 sin_epsilon = sin_epsilon_angles(CL_alpha_s_eff=CL_eff_alpha_var, alpha_s=alpha_s_var, A_s_eff=A_eff_var, CL_wing=data["cLmax_flaps60"], A_w=data["A"])[0]
 sin_epsilon_s = sin_epsilon_angles(CL_alpha_s_eff=CL_eff_alpha_var, alpha_s=alpha_s_var, A_s_eff=A_eff_var, CL_wing=data["cLmax_flaps60"], A_w=data["A"])[1]
 
-CL_slipstream_final = CL_ws(S_W=data["S"], b_W=data["b"], n_e=4, D_star=D_star_var, sin_epsilon=sin_epsilon, V_0=const.v_stall, V_delta=V_delta_var, sin_epsilon_s=sin_epsilon_s, CL_wing=data["cLmax_flaps60"])[0]
+CL_slipstream_final = CL_ws(S_W=data["S"], b_W=data["b"], n_e=3, D_star=D_star_var, sin_epsilon=sin_epsilon, V_0=const.v_stall, V_delta=V_delta_var, sin_epsilon_s=sin_epsilon_s, CL_wing=data["cLmax_flaps60"])[0]
 CL_old = data["cLmax_flaps60"]
-CL_ws_var = CL_ws(S_W=data["S"], b_W=data["b"], n_e=4, D_star=D_star_var, sin_epsilon=sin_epsilon, V_0=const.v_stall, V_delta=V_delta_var, sin_epsilon_s=sin_epsilon_s, CL_wing=data["cLmax_flaps60"])[1]
-CL_wing_section = CL_ws(S_W=data["S"], b_W=data["b"], n_e=4, D_star=D_star_var, sin_epsilon=sin_epsilon, V_0=const.v_stall, V_delta=V_delta_var, sin_epsilon_s=sin_epsilon_s, CL_wing=data["cLmax_flaps60"])[2]
-CL_s_section = CL_ws(S_W=data["S"], b_W=data["b"], n_e=4, D_star=D_star_var, sin_epsilon=sin_epsilon, V_0=const.v_stall, V_delta=V_delta_var, sin_epsilon_s=sin_epsilon_s, CL_wing=data["cLmax_flaps60"])[3]
+CL_ws_var = CL_ws(S_W=data["S"], b_W=data["b"], n_e=3, D_star=D_star_var, sin_epsilon=sin_epsilon, V_0=const.v_stall, V_delta=V_delta_var, sin_epsilon_s=sin_epsilon_s, CL_wing=data["cLmax_flaps60"])[1]
+CL_wing_section = CL_ws(S_W=data["S"], b_W=data["b"], n_e=3, D_star=D_star_var, sin_epsilon=sin_epsilon, V_0=const.v_stall, V_delta=V_delta_var, sin_epsilon_s=sin_epsilon_s, CL_wing=data["cLmax_flaps60"])[2]
+CL_s_section = CL_ws(S_W=data["S"], b_W=data["b"], n_e=3, D_star=D_star_var, sin_epsilon=sin_epsilon, V_0=const.v_stall, V_delta=V_delta_var, sin_epsilon_s=sin_epsilon_s, CL_wing=data["cLmax_flaps60"])[3]
 
-prop_lift_var = prop_lift_thrust(T=drag_stall, rho=rho_stall, V_0=const.v_stall, S_W=data['S'], angle_of_attack=(angle_of_attack_stall+i_cs_var))
+prop_lift_var = prop_lift_thrust(T=drag_stall, rho=rho_stall, V_0=const.v_stall, S_W=data['S'], angle_of_attack=(angle_of_attack_stall))
 
 CL_total_cruise = CL_ws_var + prop_lift_var
 
