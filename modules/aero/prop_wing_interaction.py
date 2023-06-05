@@ -32,7 +32,7 @@ def CL_effective_alpha(mach, A_s_eff, sweep_half):
     #angle-of-attack of this section
 def alpha_s(CL_wing, CL_alpha_s_eff, alpha_0, V_0, V_delta, delta_alpha_zero_f):
     i_cs = (CL_wing/CL_alpha_s_eff) + alpha_0
-    angle_of_attack = np.pi/180
+    angle_of_attack = 0*np.pi/180
     alpha_star = np.arctan2((V_0*np.sin(angle_of_attack)),(V_0*np.cos(angle_of_attack) + (V_delta/2)))
     alpha_s = alpha_star + i_cs - alpha_0 - delta_alpha_zero_f
     return alpha_s, angle_of_attack, i_cs
