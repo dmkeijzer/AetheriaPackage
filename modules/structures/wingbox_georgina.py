@@ -1,7 +1,7 @@
 from math import *
 import numpy as np
 from scipy.interpolate import interp1d
-from scipy.integrate import trapz
+from scipy.integrate import trapz, cumulative_trapezoid
 from scipy.optimize import minimize
 import matplotlib.pyplot as plt
 import sys
@@ -28,6 +28,7 @@ sigma_yield = None
 m_crip = None
 sigma_uts = None
 n_max= None
+y_rotor_loc = None
 
 G = 26e9
 
@@ -158,6 +159,11 @@ def rib_weight(b, c_r, t_rib):
 
 
 
+def vol_func(z, th_sk, t_sp, h, c, A, nst):
+    return rho * (2 * h(z) * t_sp + (pi * (3 * (0.5 * h(z) + 0.15 * c(z)) - sqrt((3 * 0.5 * h(z) + 0.15 * c(z)) * (0.5 * h(z) + 3 * 0.15 * c(z)))) + 2 * 0.6 * c(z) + sqrt(h(z) ** 2 / 4 + (0.25 * c(z)) ** 2)) *th_sk + A * 2 * nst)
+
+vol_func_vec = np.vectorize(vol_func)
+
 
 
 def panel_weight(b, c_r,t_sp, L, b_st, h_st,t_st,w_st,t):
@@ -170,11 +176,16 @@ def panel_weight(b, c_r,t_sp, L, b_st, h_st,t_st,w_st,t):
     A = area_st(h_st, t_st,w_st)
 
 
+    vol_at_stations = vol_func_vec(stations, np.resize(t_sk, np.size(stations)), t_sp, h, c, A, nst)
+    w_alternative = cumulative_trapezoid(vol_at_stations, stations)
+    w_res = np.append(np.insert(np.diff(w_alternative), 0 , w_alternative[0]), 0)
+    
 
-    for i in range(len(t_sk)):
-        vol = lambda z:  rho * (2 * h(z) * t_sp + (pi * (3 * (0.5 * h(z) + 0.15 * c(z)) - sqrt((3 * 0.5 * h(z) + 0.15 * c(z)) * (0.5 * h(z) + 3 * 0.15 * c(z)))) + 2 * 0.6 * c(z) + sqrt(h(z) ** 2 / 4 + (0.25 * c(z)) ** 2)) *t_sk[i] + A * 2 * nst)
-        w[i]=trapz([vol(stations[i]),vol(stations[i+1])],[stations[i],stations[i+1]])
-    return w
+
+    # for i in range(len(t_sk)):
+    #     vol = lambda z:  rho * (2 * h(z) * t_sp + (pi * (3 * (0.5 * h(z) + 0.15 * c(z)) - sqrt((3 * 0.5 * h(z) + 0.15 * c(z)) * (0.5 * h(z) + 3 * 0.15 * c(z)))) + 2 * 0.6 * c(z) + sqrt(h(z) ** 2 / 4 + (0.25 * c(z)) ** 2)) *t_sk[i] + A * 2 * nst)
+    #     w[i]=trapz([vol(stations[i]),vol(stations[i+1])],[stations[i],stations[i+1]])
+    return w_res
 
 
 
@@ -237,39 +248,29 @@ def rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
     return sta2, f2
 
 
-
-
-
 def shear_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
-    x = rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)[0]
-    y = rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)[1]
+    x,y = rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)
+    # y = rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, taper, rho)[1]
     f2 = interp1d(x, y)
-    x_engine = np.array([0.5 * b / 4, 0.5 * b / 2, 0.5 * 3 * b / 4])
+    x_engine = np.array([y_rotor_loc[0],y_rotor_loc[2]])
     x_combi = np.concatenate((x, x_engine))
     x_sort = np.sort(x_combi)
 
-    index1 = np.where(x_sort == 0.5 * 3 * b / 4)
+    index1 = np.where(x_sort == y_rotor_loc[0])
     if len(index1[0]) == 1:
         index1 = int(index1[0])
     else:
         index1 = int(index1[0][0])
     y_new1 = f2(x_sort[index1]) + 9.81 * W_eng
 
-    index2 = np.where(x_sort == 0.5 * b / 2)
+    index2 = np.where(x_sort == y_rotor_loc[2])
     if len(index2[0]) == 1:
         index2 = int(index2[0])
     else:
         index2 = int(index2[0][0])
     y_new2 = f2(x_sort[index2]) + 9.81 * W_eng
 
-    index3 = np.where(x_sort == 0.5 * b / 4)
-    if len(index3[0]) == 1:
-        index3 = int(index3[0])
-    else:
-        index3 = int(index3[0][0])
-    y_new3 = f2(x_sort[index3]) + 9.81 * W_eng
-
-    y_engine = np.ndarray.flatten(np.array([y_new1, y_new2, y_new3]))
+    y_engine = np.ndarray.flatten(np.array([y_new1, y_new2]))
     y_combi = np.concatenate((y, y_engine))
     y_sort = np.sort(y_combi)
     y_sort = np.flip(y_sort)
@@ -278,10 +279,53 @@ def shear_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
         y_sort[i] = y_sort[i] + 9.81 * W_eng
     for i in range(int(index2)):
         y_sort[i] = y_sort[i] + 9.81 * W_eng
-    for i in range(int(index3)):
-        y_sort[i] = y_sort[i] + 9.81 * W_eng
 
-    return x_sort, y_sort, index1, index2, index3
+    return x_sort, y_sort, index1, index2
+
+
+
+# def shear_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
+#     x = rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)[0]
+#     y = rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)[1]
+#     f2 = interp1d(x, y)
+#     x_engine = np.array([0.5 * b / 4, 0.5 * b / 2, 0.5 * 3 * b / 4])
+#     x_combi = np.concatenate((x, x_engine))
+#     x_sort = np.sort(x_combi)
+
+#     index1 = np.where(x_sort == 0.5 * 3 * b / 4)
+#     if len(index1[0]) == 1:
+#         index1 = int(index1[0])
+#     else:
+#         index1 = int(index1[0][0])
+#     y_new1 = f2(x_sort[index1]) + 9.81 * W_eng
+
+#     index2 = np.where(x_sort == 0.5 * b / 2)
+#     if len(index2[0]) == 1:
+#         index2 = int(index2[0])
+#     else:
+#         index2 = int(index2[0][0])
+#     y_new2 = f2(x_sort[index2]) + 9.81 * W_eng
+
+#     index3 = np.where(x_sort == 0.5 * b / 4)
+#     if len(index3[0]) == 1:
+#         index3 = int(index3[0])
+#     else:
+#         index3 = int(index3[0][0])
+#     y_new3 = f2(x_sort[index3]) + 9.81 * W_eng
+
+#     y_engine = np.ndarray.flatten(np.array([y_new1, y_new2, y_new3]))
+#     y_combi = np.concatenate((y, y_engine))
+#     y_sort = np.sort(y_combi)
+#     y_sort = np.flip(y_sort)
+
+#     for i in range(int(index1)):
+#         y_sort[i] = y_sort[i] + 9.81 * W_eng
+#     for i in range(int(index2)):
+#         y_sort[i] = y_sort[i] + 9.81 * W_eng
+#     for i in range(int(index3)):
+#         y_sort[i] = y_sort[i] + 9.81 * W_eng
+
+#     return x_sort, y_sort, index1, index2, index3
 
 
 
@@ -365,8 +409,8 @@ def m_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
 
 def N_x(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
     sta = rib_coordinates(b, L)
-    moment = m_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)[1]
-    x_sort = m_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)[0]
+    x_sort, moment = m_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)
+    # x_sort = m_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)[0]
     h = height(b, c_r)
     tarr = t_arr(b,L,t)
     Nx = np.zeros(len(tarr))
@@ -776,15 +820,18 @@ def web_flange(b,c_r, L,b_st, h_st,t_st,t):
         diff[i] =web-loc
     return diff[0]
 
+
 def von_Mises(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t,Engine,Wing):
     tarr = t_arr(b, L,t)
     vm = np.zeros(len(tarr))
     Nxy=N_xy(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t,Engine,Wing)
     bend_stress=N_x(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)[1]
-    for i in range(len(tarr)):
-        tau_shear= Nxy[i] / tarr[i]
-        vm[i]=sigma_yield-sqrt(0.5 * (3 * tau_shear ** 2+bend_stress[i]**2))
-    return vm[0]
+    tau_shear_arr = Nxy/tarr
+    vm_lst = sigma_yield - np.sqrt(0.5 * (3 * tau_shear_arr ** 2+bend_stress**2))
+    # for i in range(len(tarr)):
+    #     tau_shear= Nxy[i] / tarr[i]
+    #     vm[i]=sigma_yield-sqrt(0.5 * (3 * tau_shear ** 2+bend_stress[i]**2))
+    return vm_lst[0]
 
 
 
@@ -807,53 +854,151 @@ def post_buckling(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st, t):
 
 
 
+# def wingbox_optimization(x0, bounds, wing):
+#     """ TODO note down assumption that we simulate the load on the wingtip for the engine
+
+#     :param x0: Initial estimate Design vector X = [b, cr, tsp, trib, L, bst, hst, tst, wst, t]
+#     :type x0: 
+#     :param bounds: Boundareies
+#     :type: tuple with tuples with 2 elements min and max
+#     :param material: The material class created in input/data_structures
+#     :type: Bespoke Material class
+#     :param wing: the material class created in input/data_structures
+#     :type: bespoke  wing class
+#     """    
+#     # fun = lambda x: wing_weight(x[0], x[1],x[2],x[3], x[4], x[5], x[6], x[7],x[8],[x[9]], material.rho, wing.taper)
+#     # cons = ({'type': 'ineq', 'fun': lambda x: global_local(x[0], x[1], x[4], x[5], x[6], x[7],[x[9]], material.E, material.poisson)},
+#     #         {'type': 'ineq', 'fun': lambda x: post_buckling(x[0], x[1], x[2], x[3],  x[4], x[5], x[6], x[7], x[8], [x[9]], const.n_max_req, material.sigma_uts, wing.taper, material.pb, engine.mass_pertotalengine, material.rho,engine.y_rotor_loc)}, #TODO N_max has to badded
+#     #         {'type': 'ineq', 'fun': lambda x: von_Mises(x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7],x[8],[x[9]], material.sigma_yield, wing.taper, material.rho, engine.mass_pertotalengine,engine.y_rotor_loc)}, # TODO Add sigma yield
+#     #         {'type': 'ineq', 'fun': lambda x: buckling_constr(x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7],x[8],[x[9]], wing.taper, material.rho, engine.mass_pertotalengine, material.E, material.poisson,engine.y_rotor_loc)},
+#     #         {'type': 'ineq', 'fun': lambda x: flange_loc_loc(x[0], x[1], x[4], x[5],x[7],x[8],[x[9]], material.E, material.poisson)},
+#     #         {'type': 'ineq', 'fun': lambda x: local_column(x[0], x[1], x[4], x[5],x[6],x[7],x[8],[x[9]], material.E, material.poisson)},
+#     #         {'type': 'ineq', 'fun': lambda x: crippling(x[0],  x[4],  x[6], x[7], x[8], [x[9]], material.beta, material.sigma_yield, material.E, material.m_crip, material.g)}, #TODO add beta, sigma yield, E, m_crip
+#     #         {'type': 'ineq', 'fun': lambda x: web_flange(x[0], x[1], x[4], x[5], x[6], x[7], [x[9]], material.E, material.poisson)})
+
+#     fun = lambda x: wing_weight(wing.span, wing.chord_root,x[0],x[1], x[2], x[3], x[4], x[5],x[6],[x[7]])
+#     cons = ({'type': 'ineq', 'fun': lambda x: global_local(wing.span, wing.chord_root, x[2], x[3], x[4], x[5],[x[7]])},
+#             {'type': 'ineq', 'fun': lambda x: post_buckling(wing.span, wing.chord_root, x[0], x[1],  x[2], x[3], x[4], x[5], x[6], [x[7]])},
+#             {'type': 'ineq', 'fun': lambda x: von_Mises(wing.span, wing.chord_root, x[0], x[1], x[2], x[3], x[4], x[5],x[6],[x[7]])},
+#             {'type': 'ineq', 'fun': lambda x: buckling_constr(wing.span, wing.chord_root, x[0], x[1], x[2], x[3], x[4], x[5],x[6],[x[7]])},
+#             {'type': 'ineq', 'fun': lambda x: flange_loc_loc(wing.span, wing.chord_root, x[2], x[3],x[5],x[6],[x[7]])},
+#             {'type': 'ineq', 'fun': lambda x: local_column(wing.span, wing.chord_root, x[2], x[3],x[4],x[5],x[6],[x[7]])},
+#             {'type': 'ineq', 'fun': lambda x: crippling(wing.span,  x[2],  x[4], x[5], x[6], [x[7]])}, #ONLY b
+#             {'type': 'ineq', 'fun': lambda x: web_flange(wing.span, wing.chord_root, x[2], x[3], x[4], x[5], [x[7]])})
+
+#     # bnds = ((5, 9), (1, 4), (0.001, 0.005), (0.001, 0.005), (0.007, 0.05), (0.001, 0.01),(0.001, 0.01),(0.001, 0.003),(0.004, 0.005),(0.001, 0.003))
+#     bnds = bounds
+#     rez = minimize(fun, x0, method='trust-constr',bounds=bnds, constraints=cons)
+#     return rez
 
 
 
-def create_bounds(wing):
-    """ Returns the bounds for the wingbox_optimization
+class WingboxOptimizer():
+    def __init__(self, x0, wing, max_iter= 500):
+        """Initialisze the wingbox optimization
 
-    :param wing: Wing class from data structures
-    :type wing: Wing class
-    :return: tuple of tuple with 2 elements
-    :rtype: tuple
-    """    
-    return ((wing.span/2 - 1e-8, wing.span/2 + 1e-8), (wing.chord_root - 1e-8, wing.chord_root + 1e-8), (0.001, 0.005), (0.001, 0.005), (0.007, 0.05), (0.001, 0.01),(0.001, 0.01),(0.001, 0.003),(0.004, 0.005),(0.001, 0.003))
+        :param x0:  [ tsp, trib, L, bst, hst, tst, wst, t]
+        :type x0: list type
+        :param wing: Wingclass from data structures
+        :type wing: Wing class
+        :param max_iter: The maximum amount of iterations that will be applied, defaults to 500
+        :type max_iter: int, optional
+        """        
+        #enforce equal stringer size (this was an assumption made to simplify our process)
+        x0[6] = x0[4]
+        self.x0 = np.array(x0)
+        self.wing =  wing
+        self.max_iter = max_iter
+        self.design_lst = []
+        self.multiplier_lst = np.linspace(1,0,max_iter)
+    
+    def check_constraints(self,x):
 
-def wingbox_optimization(x0, bounds):
-    """ TODO note down assumption that we simulate the load on the wingtip for the engine
+        constr = [
+        global_local(self.wing.span, self.wing.chord_root, x[2], x[3], x[4], x[5],[x[7]]),
+        post_buckling(self.wing.span, self.wing.chord_root, x[0], x[1],  x[2], x[3], x[4], x[5], x[6], [x[7]]),
+        von_Mises(self.wing.span, self.wing.chord_root, x[0], x[1], x[2], x[3], x[4], x[5],x[6],[x[7]]),
+        buckling_constr(self.wing.span, self.wing.chord_root, x[0], x[1], x[2], x[3], x[4], x[5],x[6],[x[7]]),
+        flange_loc_loc(self.wing.span, self.wing.chord_root, x[2], x[3],x[5],x[6],[x[7]]),
+        local_column(self.wing.span, self.wing.chord_root, x[2], x[3],x[4],x[5],x[6],[x[7]]),
+        crippling(self.wing.span,  x[2],  x[4], x[5], x[6], [x[7]]), #ONLY
+        web_flange(self.wing.span, self.wing.chord_root, x[2], x[3], x[4], x[5], [x[7]])
+        ]
 
-    :param x0: Initial estimate Design vector X = [b, cr, tsp, trib, L, bst, hst, tst, wst, t]
-    :type x0: 
-    :param bounds: Boundareies
-    :type: tuple with tuples with 2 elements min and max
-    :param material: The material class created in input/data_structures
-    :type: Bespoke Material class
-    :param wing: the material class created in input/data_structures
-    :type: bespoke  wing class
-    """    
-    # fun = lambda x: wing_weight(x[0], x[1],x[2],x[3], x[4], x[5], x[6], x[7],x[8],[x[9]], material.rho, wing.taper)
-    # cons = ({'type': 'ineq', 'fun': lambda x: global_local(x[0], x[1], x[4], x[5], x[6], x[7],[x[9]], material.E, material.poisson)},
-    #         {'type': 'ineq', 'fun': lambda x: post_buckling(x[0], x[1], x[2], x[3],  x[4], x[5], x[6], x[7], x[8], [x[9]], const.n_max_req, material.sigma_uts, wing.taper, material.pb, engine.mass_pertotalengine, material.rho,engine.y_rotor_loc)}, #TODO N_max has to badded
-    #         {'type': 'ineq', 'fun': lambda x: von_Mises(x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7],x[8],[x[9]], material.sigma_yield, wing.taper, material.rho, engine.mass_pertotalengine,engine.y_rotor_loc)}, # TODO Add sigma yield
-    #         {'type': 'ineq', 'fun': lambda x: buckling_constr(x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7],x[8],[x[9]], wing.taper, material.rho, engine.mass_pertotalengine, material.E, material.poisson,engine.y_rotor_loc)},
-    #         {'type': 'ineq', 'fun': lambda x: flange_loc_loc(x[0], x[1], x[4], x[5],x[7],x[8],[x[9]], material.E, material.poisson)},
-    #         {'type': 'ineq', 'fun': lambda x: local_column(x[0], x[1], x[4], x[5],x[6],x[7],x[8],[x[9]], material.E, material.poisson)},
-    #         {'type': 'ineq', 'fun': lambda x: crippling(x[0],  x[4],  x[6], x[7], x[8], [x[9]], material.beta, material.sigma_yield, material.E, material.m_crip, material.g)}, #TODO add beta, sigma yield, E, m_crip
-    #         {'type': 'ineq', 'fun': lambda x: web_flange(x[0], x[1], x[4], x[5], x[6], x[7], [x[9]], material.E, material.poisson)})
+        return np.array(constr) > 0
+    
+    def multiplier(self, iter, increase_bool):
+        """Creates a multiplier coefficient based on your current iteration and whether you want to increase or decrease the value, becoming
+        more refined the closer one gets to the maximum amount of iterations
 
-    fun = lambda x: wing_weight(x[0], x[1],x[2],x[3], x[4], x[5], x[6], x[7],x[8],[x[9]])
-    cons = ({'type': 'ineq', 'fun': lambda x: global_local(x[0], x[1], x[4], x[5], x[6], x[7],[x[9]])},
-            {'type': 'ineq', 'fun': lambda x: post_buckling(x[0], x[1], x[2], x[3],  x[4], x[5], x[6], x[7], x[8], [x[9]])},
-            {'type': 'ineq', 'fun': lambda x: von_Mises(x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7],x[8],[x[9]])},
-            {'type': 'ineq', 'fun': lambda x: buckling_constr(x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7],x[8],[x[9]])},
-            {'type': 'ineq', 'fun': lambda x: flange_loc_loc(x[0], x[1], x[4], x[5],x[7],x[8],[x[9]])},
-            {'type': 'ineq', 'fun': lambda x: local_column(x[0], x[1], x[4], x[5],x[6],x[7],x[8],[x[9]])},
-            {'type': 'ineq', 'fun': lambda x: crippling(x[0],  x[4],  x[6], x[7], x[8], [x[9]])},
-            {'type': 'ineq', 'fun': lambda x: web_flange(x[0], x[1], x[4], x[5], x[6], x[7], [x[9]])})
+        :param iter: current iteration
+        :type iter: integer
+        :return: multiplier
+        :rtype: float 
+        """
 
-    # bnds = ((5, 9), (1, 4), (0.001, 0.005), (0.001, 0.005), (0.007, 0.05), (0.001, 0.01),(0.001, 0.01),(0.001, 0.003),(0.004, 0.005),(0.001, 0.003))
-    bnds = bounds
-    rez = minimize(fun, x0, method='trust-constr',bounds=bnds, constraints=cons)
-    return rez
+        return self.multiplier_lst[iter]
+
+
+    
+    def compute_weight(self, x):
+        return wing_weight(self.wing.span, self.wing.chord_root,x[0],x[1], x[2], x[3], x[4], x[5],x[6],[x[7]])
+
+    def edit_design(self,x, bool_array, iter):
+        """Function edits the design based on the failure of design.
+
+        :param bool_array: Output from constraints method
+        :type bool_array: array with booleans only
+        :return: _description_
+        :rtype: _type_
+        """        
+
+        if bool_array.all():
+            self.design_lst.append(x)
+            new_x = x + np.array([-5e-4,-1e-4, -1e-2, -5e-3, -5-3, -1e-4, -5e-3, -1e-3 ])
+        elif not bool_array[0]:   
+            pass
+        elif not bool_array[1]:   
+            pass
+        elif not bool_array[2]:   
+            pass
+        elif not bool_array[3]:   
+            pass
+        elif not bool_array[4]:   
+            pass
+        elif not bool_array[5]:   
+            pass
+        elif not bool_array[6]:   
+            pass
+        elif not bool_array[7]:   
+            pass
+        else: 
+            raise Exception("Error has been raised, code should not have reached this line.")
+
+    
+
+        return new_x
+
+
+    def optimize(self):
+        """Optimizes the wing weight in a rough fashion using our own crude optimizer
+        Assumptions
+
+        - stringer width and height are equal
+        - Only wing torsion and lift forces are used
+        - wingbox is symmetric
+
+        :param x0: Initial estimate X = [tsp, trib, L, bst, hst, tst, wst, t]
+        :type x0: array type
+        :param wing: wing class from data structures
+        :type wing: wing class
+        """    
+
+        x = x0
+
+        for iter in range(self.max_iter):
+            constr = self.check_constraints(x)
+            new_x = self.edit_design()
+
+        return  Ellipsis
 
