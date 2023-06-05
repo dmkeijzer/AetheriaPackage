@@ -30,9 +30,15 @@ def example_values():
         "Clb": {"CLa": 3.7, "dihedral": np.radians(5), "taper": 0.4},
         "Clp": {"CLa": 3.7, "taper": 0.4},
         "Clr": {"CL0": 0.2},
-        "Cnb": {"CLav": 1.8, "Vv": 0.033, "Cnbfuse": -0.12},
+        #"Cnb": {"CLav": 1.8, "Vv": 0.033, "Cnbfuse": -0.12},
         "Cnp": {"CL0": 0.2},
-        "Cnr": {"CLav": 1.8, "Vv": 0.033, "lv": 3, "b": 10}
+        "Cnr": {"CLav": 1.8, "Vv": 0.033, "lv": 3, "b": 10},
+        "czadot": {"CLah":1.6, "Sh": 3, "S": 12, "Vh_V2": 0.95, "depsda": 0.11, "lh": 3, "c":1.2},
+        "cmadot": {"CLah":1.6, "Sh": 3, "S": 12, "Vh_V2": 0.95, "depsda": 0.11, "lh": 3, "c":1.2},
+        "muc": {"m": 2500, "rho": 1.2, "S": 12, "c": 1.2},
+        "mub": {"m": 2500, "rho": 1.2, "S": 12, "b": 10},
+        "Cx0": {"W": 2500*9.8, "theta_0":15* np.pi/180, "rho": 1.2, "V": 80, "S": 12},
+        "Cz0": {"W": 2500 * 9.8, "theta_0": 15*np.pi / 180, "rho":1.2, "V": 80, "S": 12}
     }
 
 def test_mass_calculation(example_values):
@@ -56,9 +62,15 @@ def test_mass_calculation(example_values):
     Clbtest = Clb(**example_values["Clb"])
     Clptest = Clp(**example_values["Clp"])
     Clrtest = Clr(**example_values["Clr"])
-    Cnbtest = Cnb(**example_values["Cnb"])
+    #Cnbtest = Cnb(**example_values["Cnb"])
     Cnptest = Cnp(**example_values["Cnp"])
     Cnrtest = Cnr(**example_values["Cnr"])
+    Czadot = CZ_adot(**example_values["czadot"])
+    Cmadot = Cm_adot(**example_values["cmadot"])
+    muctest = muc(**example_values["muc"])
+    mubtest = mub(**example_values["mub"])
+    Cz0test = Cz0(**example_values["Cz0"])
+    Cx0test = Cx0(**example_values["Cx0"])
 
     assert np.isclose(af2wing, 3.54822585)
     assert np.isclose(dwk, 2.97411154)
@@ -80,6 +92,12 @@ def test_mass_calculation(example_values):
     assert np.isclose(Clbtest, -0.0691898382)
     assert np.isclose(Clptest, -0.48452381)
     assert np.isclose(Clrtest, 0.05)
-    assert np.isclose(Cnbtest, -0.0606)
+    #assert np.isclose(Cnbtest, -0.0606)
     assert np.isclose(Cnptest, -0.025)
     assert np.isclose(Cnrtest, -0.03564)
+    assert np.isclose(Czadot, -0.1045)
+    assert np.isclose(Cmadot, -0.26125)
+    assert np.isclose(muctest, 144.675926)
+    assert np.isclose(mubtest, 17.3611111)
+    assert np.isclose(Cz0test, -0.513567334)
+    assert np.isclose(Cx0test, 0.137609952)

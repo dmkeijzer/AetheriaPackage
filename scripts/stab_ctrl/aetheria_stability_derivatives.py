@@ -1,16 +1,16 @@
 import numpy as np
 
 
-def CZ_adot(CLah,Sh,S,V,Vh_V_ratio,depsda,lh,c):
+def CZ_adot(CLah,Sh,S,Vh_V2,depsda,lh,c):
 
-    CZ_adot=-CLah*Sh/S*V*Vh_V_ratio**2*depsda*lh/c
+    CZ_adot=-CLah*Sh/S*Vh_V2*depsda*lh/c
 
     return CZ_adot
 
 
-def Cm_adot(CLah,Sh,S,V,Vh_V_ratio,depsda,lh,c):
+def Cm_adot(CLah,Sh,S,Vh_V2,depsda,lh,c):
 
-    Cm_adot=CLah*Sh/S*V*Vh_V_ratio**2*depsda*(lh/c)**2
+    Cm_adot=-CLah*Sh/S*Vh_V2*depsda*(lh/c)**2
 
     return Cm_adot
 
@@ -289,19 +289,19 @@ def Cnr(CLav, Vv, lv, b):
     Cnr = -2 * CLav * Vv * lv / b
     return (Cnr)
 
-def muc(W,rho,S,c,g):
+def muc(m,rho,S,c):
         """
         Computes dimensionless mass for symmetric motion mu_c
         :return: mu_c
         """
-        return W/(rho*g*S*c)
+        return m/(rho*S*c)
 
-def mub(W,rho,S,b,g):
+def mub(m,rho,S,b):
         """
         Computes dimensionless mass for asymmetric motion mu_b
         :return: mu_b
         """
-        return W/(rho*g*S*b)
+        return m/(rho*S*b)
 
 def Cz0(W,theta_0,rho,V,S):
     Cz0= -W*np.cos(theta_0)/(0.5*rho*V**2*S)
