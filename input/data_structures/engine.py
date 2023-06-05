@@ -23,8 +23,8 @@ class Engine:
     mass_perpowertrain: float = None
     mass_pernacelle: float = None
     mass_pertotalengine: float = None
-    x_rotor_loc: list = None
-    y_rotor_loc: list = None
+    x_rotor_loc: float = None
+    y_rotor_loc: float = None
 
 
     def load(self):
