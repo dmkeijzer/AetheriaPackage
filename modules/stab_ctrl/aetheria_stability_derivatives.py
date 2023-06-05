@@ -312,7 +312,7 @@ def Cx0(W,theta_0,rho,V,S):
     return Cx0
 
 
-def longitudinal_derivatives(CD, CL, W,rho,S, g, c, lh, CL0, CD0, lcg, Vh_V_ratio, theta_0, V, Cmafuse=None, Cmqfuse=0, CLa=None, CLah=None, depsda=None,
+def longitudinal_derivatives(CD, CL, W,rho,S, m, c, lh, CL0, CD0, lcg, Vh_V2, theta_0, V, Cmafuse=None, Cmqfuse=None, CLa=None, CLah=None, depsda=None,
                              CDa=None, Vh=None, Vfuse=None, cla=None, A=None, clah=None,
                              Ah=None, b=None, k=None, Sh=None):
     """
@@ -382,12 +382,12 @@ def longitudinal_derivatives(CD, CL, W,rho,S, g, c, lh, CL0, CD0, lcg, Vh_V_rati
     dict["Czq"] = Czq(CLah, Vh)
     dict["Cma"] = Cma(CLa, lcg, c, CLah, Vh, depsda, Cmafuse)
     dict["Cmq"] = Cmq(CLah, Vh, lh, c, Cmqfuse)
-    dict["Cz_adot"]=CZ_adot(CLah,Sh,S,V,Vh_V_ratio,depsda,lh,c)
-    dict["Cm_adot"]=Cm_adot(CLah,Sh,S,V,Vh_V_ratio,depsda,lh,c)
-    dict["muc"]=muc(W,rho,S,c,g)
+    dict["Cz_adot"]=CZ_adot(CLah,Sh,S,Vh_V2,depsda,lh,c)
+    dict["Cm_adot"]=Cm_adot(CLah,Sh,S,Vh_V2,depsda,lh,c)
+    dict["muc"]=muc(m, rho,S,c)
     dict["Cxu"]=-2*CD
     dict["Czu"]=-2*CL
-    dict["Cx0"]=-CL
+    #dict["Cx0"]=-CL
     dict["Cx0"]=Cx0(W,theta_0,rho,V,S)
     dict["Cz0"]=Cz0(W,theta_0,rho,V,S)
     dict["Cmu"]=0  #Because the derivative of CL and Ct with respect to the Mach number is essentially 0. 
@@ -396,8 +396,8 @@ def longitudinal_derivatives(CD, CL, W,rho,S, g, c, lh, CL0, CD0, lcg, Vh_V_rati
 
 
 
-def lateral_derivatives(Cnb,W,rho,g, Sv, lv, S, b, dihedral, taper, CL0, CLav=None, Vv=None, CLa=None, Cnbfuse=None, clav=None,
-                        Av=None, cla=None, A=None, Vfuse=None, Cn_beta_dot=None,CY_beta_dot=None):
+def lateral_derivatives(Cnb,m,rho, Sv, lv, S, b, dihedral, taper, CL0, CLav=None, Vv=None, CLa=None, clav=None,
+                        Av=None, cla=None, A=None, Cn_beta_dot=None,CY_beta_dot=None): #Cnbfuse=None, Vfuse=None
     """
     Cnb: this is the derivative the yaw moment coefficient with respect to sideslip angle beta- [-]
     theta_0: initial pitch angle [rad]
@@ -436,9 +436,9 @@ def lateral_derivatives(Cnb,W,rho,g, Sv, lv, S, b, dihedral, taper, CL0, CLav=No
         assert cla != None, "Missing input: cla"
         assert A != None, "Missing input: A"
         CLa = airfoil_to_wing_CLa(cla, A)
-    if Cnbfuse == None:
-        assert Vfuse != None, "Missing input: Vfuse"
-        Cnbfuse = Cnb_fuse(Vfuse, S, b)
+    # if Cnbfuse == None:
+    #     assert Vfuse != None, "Missing input: Vfuse"
+    #     Cnbfuse = Cnb_fuse(Vfuse, S, b)
     if Cn_beta_dot == None:
         Cn_beta_dot=0
     if CY_beta_dot == None:
@@ -457,7 +457,7 @@ def lateral_derivatives(Cnb,W,rho,g, Sv, lv, S, b, dihedral, taper, CL0, CLav=No
 
     dict["Cy_beta_dot"] = CY_beta_dot
     dict["Cn_beta_dot"] = Cn_beta_dot
-    dict["mub"]=mub(W,rho,S,b,g)
+    dict["mub"]=mub(m,rho,S,b)
     dict["Cnb"]=Cnb
     return dict
 
@@ -512,7 +512,7 @@ def eigval_finder_asymm(Ixx, Izz, Ixz, m, b, CL, lat_stab_dervs):   #Ixx = 10437
     """
     CYb = lat_stab_dervs["Cyb"]
     CYp = lat_stab_dervs["Cyp"]
-    CYr = lat_stab_dervs["CYr"]
+    CYr = lat_stab_dervs["Cyr"]
     Clb = lat_stab_dervs["Clb"]
     Clp = lat_stab_dervs["Clp"]
     Clr = lat_stab_dervs["Clr"]
@@ -540,3 +540,23 @@ def eigval_finder_asymm(Ixx, Izz, Ixz, m, b, CL, lat_stab_dervs):   #Ixx = 10437
                           Clp * Cnb - Cnp * Clb)
     Eeigval = CL * (Clb * Cnr - Cnb * Clr)
     return np.roots(np.array([Aeigval, Beigval, Ceigval, Deigval, Eeigval]))
+
+if __name__ == "__main__":
+    a = longitudinal_derivatives(0.04, 0.6, 2500 * 9.8, 1.2, 12, 2500, 1.2, 3, 0.1, 0.02, 0.1, 0.95, np.radians(3), 80,
+                             Cmafuse=None, Cmqfuse=0, CLa=3.7, CLah=1.6, depsda=0.11,
+                             CDa=None, Vh=None, Vfuse=7, cla=None, A=7, clah=None,
+                             Ah=4, b=10, k=None, Sh=3)
+
+    c = {"symm": {"Iyy": 12080, "m": 2500, "c": 1.2,
+                 "long_stab_dervs": longitudinal_derivatives(0.04, 0.6, 2500 * 9.8, 1.2, 12, 2500, 1.2, 3, 0.1, 0.02,
+                                                             0.1, 0.95, np.radians(3), 80, Cmafuse=None, Cmqfuse=0,
+                                                             CLa=3.7, CLah=1.6, depsda=0.11,
+                                                             CDa=None, Vh=None, Vfuse=7, cla=None, A=7, clah=None,
+                                                             Ah=4, b=10, k=None, Sh=3)},
+        "asymm": {"Ixx": 10440, "Izz": 21720, "Ixz": 500, "m": 2500, "b": 10, "CL": 0.6,
+                  "lat_stab_dervs": lateral_derivatives(0.08, 2500, 1.2, 2, 3, 12, 10, np.radians(2), 0.4, 0.1,
+                                                        CLav=1.8, Vv=None, CLa=3.7, clav=None,
+                                                        Av=3, cla=None, A=7, Cn_beta_dot=None, CY_beta_dot=None)}}
+
+    b = eigval_finder_sym(**c['symm'])
+    print(c)
