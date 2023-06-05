@@ -46,7 +46,7 @@ class Battery:
         """
         :return: Mass of the battery [kg]
         """
-        return Energy/ self.EnergyDensity /self.Efficiency
+        return Energy/ self.EnergyDensity /self.Efficiency / self.End_of_life
     
     def powermass(self, Power):
         """
