@@ -463,7 +463,7 @@ def lateral_derivatives(Cnb,W,rho,g, Sv, lv, S, b, dihedral, taper, CL0, CLav=No
 
 
 
-def eigval_finder_sym(Iyy, m, c, long_stab_dervs):      #Ixx = 12081.83972
+def eigval_finder_sym(Iyy, m, c, long_stab_dervs):      #Iyy = 12081.83972
     """
     Iyy: moment of inertia around Y-axis
     m: MTOM
@@ -496,7 +496,8 @@ def eigval_finder_sym(Iyy, m, c, long_stab_dervs):      #Ixx = 12081.83972
     return np.roots(np.array([Aeigval, Beigval, Ceigval, Deigval, Eeigval]))
 
 
-def eigval_finder_asymm(Ixx, Izz, Ixz, m, b, CL, lat_stab_dervs):
+def eigval_finder_asymm(Ixx, Izz, Ixz, m, b, CL, lat_stab_dervs):   #Ixx = 10437.12494 Izz = 21722.48912
+
     """
     Ixx: moment of inertia around X-axis
     Izz: moment of inertia around Z-axis
