@@ -6,6 +6,7 @@ import numpy as np
 import pickle
 
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
+os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
 import  modules.structures.wingbox_georgina as wb
 import input.data_structures.GeneralConstants as const
@@ -58,6 +59,7 @@ ub = [12, 4, 0.009, 0.003, 0.015, 0.02, 0.10, 0.004, 0.005, 0.003]
 # lcons = LinearConstraint(A, lb=lb, ub=ub, keep_feasible=True)
 bnds = Bounds(lb, ub, keep_feasible= True)
 # Res = minimize(RosenbrockN, x0, method = 'trust-constr', constraints=lcons) 
+print("Started on optimization")
 res = wb.wingbox_optimization(x0, bnds, WingClass)
 
 with open(r"output/structures/wingbox_output.pkl", "wb") as f:

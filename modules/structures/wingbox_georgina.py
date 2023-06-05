@@ -309,7 +309,7 @@ def m(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
     for i in range(1, len(sta)):
         cursor = sta[i] * np.ones(len(sta))
         diff = np.subtract(cursor, sta)
-        d = [diff > 0]
+        d = diff > 0
         diff = diff[d]
         rib_w = np.flip(rib_w)
         l = len(diff)
