@@ -7,7 +7,7 @@ import numpy as np
 sys.path.append(str(list(pl.Path(__file__).parents)[1]))
 os.chdir(str(list(pl.Path(__file__).parents)[1]))
 
-from scripts.stab_ctrl.aetheria_stability_derivatives import *
+from modules.stab_ctrl.aetheria_stability_derivatives import *
 
 @pytest.fixture
 def example_values():
