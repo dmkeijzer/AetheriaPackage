@@ -26,20 +26,18 @@ Cd0= WingClass.cd0
 c_r=WingClass.chord_root
 CLa=WingClass.cL_alpha
 V=PerformanceClass.cruise_velocity
+Cla=AeroClass.cl_alpha
 
-###MY INPUTS:
+###HARDCODED VALUES:
 step=0.01
-roll_rate=60*np.pi/(180*3)
+roll_rate=60*np.pi/(180*1.3)
 aileron_max=20*np.pi/180
-
-###Create Inputs:
-Cla=2*np.pi ###of the wing airfoil
-ca_c_ratio=0.2
+ca_c_ratio=0.25
 
 ##########Aileron Sizing###########
-####The outer side of the aileron starts at the tip to impart maximum roll with minimum surface.
+####The outer side of the aileron starts at the tip to impart maximum roll moment with minimum surface.
 
-def size_aileron(b,V,aileron_max,roll_rate,S,Cla,Cd0,c_r,taper,CLa,ca_c_ratio,step,S):  ##Aileron_max is the maximum allowable deflection
+def size_aileron(S,b,V,Cla,Cd0,c_r,taper,CLa,ca_c_ratio=0.25,step=0.01,aileron_max=20*np.pi/180,roll_rate=60*np.pi/(180*1.3)):  ##Aileron_max is the maximum allowable deflection
     y_outer=b/2
     y_inner=b/2-step
     Cl_da=1   #JUST FOR INITIALIZATION to make while condition true
@@ -53,7 +51,6 @@ def size_aileron(b,V,aileron_max,roll_rate,S,Cla,Cd0,c_r,taper,CLa,ca_c_ratio,st
         Cl_da=-CLa*tau_a*c_r/(S*b)*((y_inner**2/2+2/3*y_inner**3*(taper-1)/b)-((y_outer**2/2+2/3*y_outer**3*(taper-1)/b)))
         ###http://docsdrive.com/pdfs/medwelljournals/jeasci/2018/3458-3462.pdf
         y_inner=y_inner-step
-        print(y_inner)
     return y_inner
 
 
