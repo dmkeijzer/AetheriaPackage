@@ -16,8 +16,9 @@ class Material():
     sigma_uts: float = None # Ultimate tensile strength
     m_crip: float = None #  Upsweep of the fuselage
     rho: float = None #  Density of material
-    pb: float = None #  Density of material
+    pb: float = None #  post buckling ratio
     g: float = None #  Density of material
+    shear_modulus: float = None #Shear modulus
 
     def load(self):
         """ Initializes the class automatically from the JSON file
