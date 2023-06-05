@@ -54,6 +54,7 @@ sin_epsilon = sin_epsilon_angles(CL_alpha_s_eff=CL_eff_alpha_var, alpha_s=alpha_
 sin_epsilon_s = sin_epsilon_angles(CL_alpha_s_eff=CL_eff_alpha_var, alpha_s=alpha_s_var, A_s_eff=A_eff_var, CL_wing=data["cL_cruise"], A_w=data["A"])[1]
 
 CL_slipstream_final = CL_ws(S_W=data["S"], b_W=data["b"], n_e=4, D_star=D_star_var, sin_epsilon=sin_epsilon, V_0=const.v_cr, V_delta=V_delta_var, sin_epsilon_s=sin_epsilon_s, CL_wing=data["cL_cruise"])[0]
+CL_old = data["cL_cruise"]
 CL_ws_var = CL_ws(S_W=data["S"], b_W=data["b"], n_e=4, D_star=D_star_var, sin_epsilon=sin_epsilon, V_0=const.v_cr, V_delta=V_delta_var, sin_epsilon_s=sin_epsilon_s, CL_wing=data["cL_cruise"])[1]
 CL_wing_section = CL_ws(S_W=data["S"], b_W=data["b"], n_e=4, D_star=D_star_var, sin_epsilon=sin_epsilon, V_0=const.v_cr, V_delta=V_delta_var, sin_epsilon_s=sin_epsilon_s, CL_wing=data["cL_cruise"])[2]
 CL_s_section = CL_ws(S_W=data["S"], b_W=data["b"], n_e=4, D_star=D_star_var, sin_epsilon=sin_epsilon, V_0=const.v_cr, V_delta=V_delta_var, sin_epsilon_s=sin_epsilon_s, CL_wing=data["cL_cruise"])[3]
@@ -66,6 +67,7 @@ print("CL_tot:", CL_total_cruise)
 print("CL_S:", CL_s_section)
 print("CL_wing_section:", CL_wing_section)
 print("CL_prop:", prop_lift_var)
+print("CL percentage increase:", 100*(CL_total_cruise-CL_old)/CL_old)
 
 
 # ----------- CLmax ---------
