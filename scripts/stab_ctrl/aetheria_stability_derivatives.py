@@ -1,6 +1,22 @@
 import numpy as np
 
 
+def CZ_adot(CLah,Sh,S,V,Vh_V_ratio,despda,lh,c):
+
+    CZ_adot=-CLah*Sh/S*V*Vh_V_ratio**2*depsda*lh/c
+
+    return CZ_adot
+
+
+def Cm_adot(CLah,Sh,S,V,Vh_V_ratio,despda,lh,c):
+
+    Cm_adot=CLah*Sh/S*V*Vh_V_ratio**2*depsda*(lh/c)**2
+
+    return Cm_adot
+
+
+
+
 def airfoil_to_wing_CLa(cla, A):
     """
     cla: airfoil cl_alpha [rad^-1]
@@ -250,19 +266,6 @@ def Clr(CL0):
     return CL0 / 4
 
 
-def Cnb(CLav, Vv, Cnbfuse):
-    """
-    CLav: vertical tail CL_alpha [rad^-1]
-    Vv: vertical tail volume coefficient [-]
-    Cnbfuse: fuselage contribution to Cnb [rad^-1]
-
-    returns
-    Cnb: yaw-moment coefficient derivative wrt sideslip angle [rad^-1]
-    """
-    Cnb = CLav * Vv + Cnbfuse
-    return Cnb
-
-
 def Cnp(CL0):
     """
     CL0: wing CL at 0 angle of attack [-]
@@ -286,11 +289,35 @@ def Cnr(CLav, Vv, lv, b):
     Cnr = -2 * CLav * Vv * lv / b
     return (Cnr)
 
+def muc(W,rho,S,c,g):
+        """
+        Computes dimensionless mass for symmetric motion mu_c
+        :return: mu_c
+        """
+        return W/(rho*g*S*c)
 
-def longitudinal_derivatives(c, lh, CL0, CD0, lcg, Cmafuse=None, Cmqfuse=0, CLa=None, CLah=None, depsda=None,
-                             CDa=None, Vh=None, Vfuse=None, S=None, cla=None, A=None, clah=None,
+def mub(W,rho,S,b,g):
+        """
+        Computes dimensionless mass for asymmetric motion mu_b
+        :return: mu_b
+        """
+        return W/(rho*g*S*b)
+
+def Cz0(W,theta_0,rho,W,V,S):
+    Cz0= -W*cos(theta_0)/(0.5*rho*V**2*S)
+    return Cz0
+
+def Cx0(W,theta_0,rho,W,V,S):
+    Cx0= W*sin(theta_0)/(0.5*rho*V**2*S)
+    return Cx0
+
+
+def longitudinal_derivatives(CD, CL, W,rho,S, g, c, lh, CL0, CD0, lcg, Vh_V_ratio, Cmafuse=None, Cmqfuse=0, CLa=None, CLah=None, depsda=None,
+                             CDa=None, Vh=None, Vfuse=None, cla=None, A=None, clah=None,
                              Ah=None, b=None, k=None, Sh=None):
     """
+    CD: aircraft drag coefficient[-]
+    CL: aircraft lift coefficient [-]
     c: mean aerodynamic chord [m]
     lh: distance from wing ac to horizontal tail [m]
     CL0: Wing CL at angle of attack 0 [-]
@@ -313,7 +340,10 @@ def longitudinal_derivatives(c, lh, CL0, CD0, lcg, Cmafuse=None, Cmqfuse=0, CLa=
     b: wingspan [m]
     k: factor for downwash gradient
     Sh: horizontal tail surface area [m^2]
-
+    Vh_V_ratio: Horizontal tail speed to freestream speed ratio [-]
+    W: aircraft weight [N]
+    rho= air density [kg/m^3]
+    g = gravitational acceleration [m/s^2]
     returns
     dict: dictionary containing longitudinal stability derivatives
     """
@@ -352,12 +382,25 @@ def longitudinal_derivatives(c, lh, CL0, CD0, lcg, Cmafuse=None, Cmqfuse=0, CLa=
     dict["Czq"] = Czq(CLah, Vh)
     dict["Cma"] = Cma(CLa, lcg, c, CLah, Vh, depsda, Cmafuse)
     dict["Cmq"] = Cmq(CLah, Vh, lh, c, Cmqfuse)
+    dict["CZ_adot"]=CZ_adot(CLah,Sh,S,V,Vh_V_ratio,despda,lh,c)
+    dict["Cm_adot"]=Cm_adot(CLah,Sh,S,V,Vh_V_ratio,despda,lh,c)
+    dict["muc"]=muc(W,rho,S,c,g)
+    dict["Cxu"]=-2*CD
+    dict["Czu"]=-2*CL
+    dict["Cx0"]=-CL
+    dict["Cx0"]=Cx0(W,theta_0,rho,W,V,S)
+    dict["Cz0"]=Cz0(W,theta_0,rho,W,V,S)
+    dict["Cmu"]=0  #Because the derivative of CL and Ct with respect to the Mach number is essentially 0. 
+
     return dict
 
 
-def lateral_derivatives(Sv, lv, S, b, dihedral, taper, CL0, CLav=None, Vv=None, CLa=None, Cnbfuse=None, clav=None,
-                        Av=None, cla=None, A=None, Vfuse=None):
+
+def lateral_derivatives(Cnb, theta_0,W,rho,g, Sv, lv, S, b, dihedral, taper, CL0, CLav=None, Vv=None, CLa=None, Cnbfuse=None, clav=None,
+                        Av=None, cla=None, A=None, Vfuse=None, Cn_beta_dot=None,CY_beta_dot=None):
     """
+    Cnb: this is the derivative the yaw moment coefficient with respect to sideslip angle beta- [-]
+    theta_0: initial pitch angle [rad]
     Sv: vertical tail surface area [m^2]
     lv: distance from wing ac to vertical tail [m]
     S: wing surface area [m^2]
@@ -375,6 +418,9 @@ def lateral_derivatives(Sv, lv, S, b, dihedral, taper, CL0, CLav=None, Vv=None, 
     cla:wing airfoil cl_alpha [rad^-1]
     A: wing aspect ratio [-]
     Vfuse: fuselage volume [m^3]
+    W: aircraft weight [N]
+    rho= air density [kg/m^3]
+    g = gravitational acceleration [m/s^2]
 
     returns
     dict: dictionary containing lateral stability derivatives
@@ -393,6 +439,10 @@ def lateral_derivatives(Sv, lv, S, b, dihedral, taper, CL0, CLav=None, Vv=None, 
     if Cnbfuse == None:
         assert Vfuse != None, "Missing input: Vfuse"
         Cnbfuse = Cnb_fuse(Vfuse, S, b)
+    if Cn_beta_dot == None:
+        Cn_beta_dot=0
+    if CY_beta_dot == None:
+        CY_beta_dot=0
 
     dict = {}
     dict["Cyb"] = Cyb(Sv, S, CLav)
@@ -404,4 +454,9 @@ def lateral_derivatives(Sv, lv, S, b, dihedral, taper, CL0, CLav=None, Vv=None, 
     dict["Cnb"] = Cnb(CLav, Vv, Cnbfuse)
     dict["Cnp"] = Cnp(CL0)
     dict["Cnr"] = Cnr(CLav, Vv, lv, b)
+    dict["CY_beta_dot"] = CY_beta_dot
+    dict["Cn_beta_dot"] = Cn_beta_dot
+    dict["mub"]=mub(W,rho,S,b,g)
+    dict["Cnb"]=Cnb
     return dict
+
