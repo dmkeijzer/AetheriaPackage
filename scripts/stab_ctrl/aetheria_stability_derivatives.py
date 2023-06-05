@@ -1,14 +1,14 @@
 import numpy as np
 
 
-def CZ_adot(CLah,Sh,S,V,Vh_V_ratio,despda,lh,c):
+def CZ_adot(CLah,Sh,S,V,Vh_V_ratio,depsda,lh,c):
 
     CZ_adot=-CLah*Sh/S*V*Vh_V_ratio**2*depsda*lh/c
 
     return CZ_adot
 
 
-def Cm_adot(CLah,Sh,S,V,Vh_V_ratio,despda,lh,c):
+def Cm_adot(CLah,Sh,S,V,Vh_V_ratio,depsda,lh,c):
 
     Cm_adot=CLah*Sh/S*V*Vh_V_ratio**2*depsda*(lh/c)**2
 
@@ -303,16 +303,16 @@ def mub(W,rho,S,b,g):
         """
         return W/(rho*g*S*b)
 
-def Cz0(W,theta_0,rho,W,V,S):
-    Cz0= -W*cos(theta_0)/(0.5*rho*V**2*S)
+def Cz0(W,theta_0,rho,V,S):
+    Cz0= -W*np.cos(theta_0)/(0.5*rho*V**2*S)
     return Cz0
 
-def Cx0(W,theta_0,rho,W,V,S):
-    Cx0= W*sin(theta_0)/(0.5*rho*V**2*S)
+def Cx0(W,theta_0,rho,V,S):
+    Cx0= W*np.sin(theta_0)/(0.5*rho*V**2*S)
     return Cx0
 
 
-def longitudinal_derivatives(CD, CL, W,rho,S, g, c, lh, CL0, CD0, lcg, Vh_V_ratio, Cmafuse=None, Cmqfuse=0, CLa=None, CLah=None, depsda=None,
+def longitudinal_derivatives(CD, CL, W,rho,S, g, c, lh, CL0, CD0, lcg, Vh_V_ratio, theta_0, V, Cmafuse=None, Cmqfuse=0, CLa=None, CLah=None, depsda=None,
                              CDa=None, Vh=None, Vfuse=None, cla=None, A=None, clah=None,
                              Ah=None, b=None, k=None, Sh=None):
     """
@@ -382,21 +382,21 @@ def longitudinal_derivatives(CD, CL, W,rho,S, g, c, lh, CL0, CD0, lcg, Vh_V_rati
     dict["Czq"] = Czq(CLah, Vh)
     dict["Cma"] = Cma(CLa, lcg, c, CLah, Vh, depsda, Cmafuse)
     dict["Cmq"] = Cmq(CLah, Vh, lh, c, Cmqfuse)
-    dict["CZ_adot"]=CZ_adot(CLah,Sh,S,V,Vh_V_ratio,despda,lh,c)
-    dict["Cm_adot"]=Cm_adot(CLah,Sh,S,V,Vh_V_ratio,despda,lh,c)
+    dict["Cz_adot"]=CZ_adot(CLah,Sh,S,V,Vh_V_ratio,depsda,lh,c)
+    dict["Cm_adot"]=Cm_adot(CLah,Sh,S,V,Vh_V_ratio,depsda,lh,c)
     dict["muc"]=muc(W,rho,S,c,g)
     dict["Cxu"]=-2*CD
     dict["Czu"]=-2*CL
     dict["Cx0"]=-CL
-    dict["Cx0"]=Cx0(W,theta_0,rho,W,V,S)
-    dict["Cz0"]=Cz0(W,theta_0,rho,W,V,S)
+    dict["Cx0"]=Cx0(W,theta_0,rho,V,S)
+    dict["Cz0"]=Cz0(W,theta_0,rho,V,S)
     dict["Cmu"]=0  #Because the derivative of CL and Ct with respect to the Mach number is essentially 0. 
 
     return dict
 
 
 
-def lateral_derivatives(Cnb, theta_0,W,rho,g, Sv, lv, S, b, dihedral, taper, CL0, CLav=None, Vv=None, CLa=None, Cnbfuse=None, clav=None,
+def lateral_derivatives(Cnb,W,rho,g, Sv, lv, S, b, dihedral, taper, CL0, CLav=None, Vv=None, CLa=None, Cnbfuse=None, clav=None,
                         Av=None, cla=None, A=None, Vfuse=None, Cn_beta_dot=None,CY_beta_dot=None):
     """
     Cnb: this is the derivative the yaw moment coefficient with respect to sideslip angle beta- [-]
@@ -451,12 +451,91 @@ def lateral_derivatives(Cnb, theta_0,W,rho,g, Sv, lv, S, b, dihedral, taper, CL0
     dict["Clb"] = Clb(CLa, dihedral, taper)
     dict["Clp"] = Clp(CLa, taper)
     dict["Clr"] = Clr(CL0)
-    dict["Cnb"] = Cnb(CLav, Vv, Cnbfuse)
+    #dict["Cnb"] = Cnb(CLav, Vv, Cnbfuse)
     dict["Cnp"] = Cnp(CL0)
     dict["Cnr"] = Cnr(CLav, Vv, lv, b)
-    dict["CY_beta_dot"] = CY_beta_dot
+
+    dict["Cy_beta_dot"] = CY_beta_dot
     dict["Cn_beta_dot"] = Cn_beta_dot
     dict["mub"]=mub(W,rho,S,b,g)
     dict["Cnb"]=Cnb
     return dict
 
+
+
+def eigval_finder_sym(Iyy, m, c, long_stab_dervs):      #Ixx = 12081.83972
+    """
+    Iyy: moment of inertia around Y-axis
+    m: MTOM
+    c: MAC
+    long_stab_dervs: dictionary containing all longitudinal stability derivatives + muc
+
+    returns
+    array with eigenvalues
+    """
+    CX0 = long_stab_dervs["Cx0"]
+    CXa = long_stab_dervs["Cxa"]
+    CXu = long_stab_dervs["Cxu"]
+    CZ0 = long_stab_dervs["Cz0"]
+    CZa = long_stab_dervs["Cza"]
+    CZu = long_stab_dervs["Czu"]
+    CZq = long_stab_dervs["Czq"]
+    CZadot = long_stab_dervs["Cz_adot"]
+    Cma = long_stab_dervs["Cma"]
+    Cmq = long_stab_dervs["Cmq"]
+    Cmu = long_stab_dervs["Cmu"]
+    Cmadot = long_stab_dervs["Cm_adot"]
+    muc = long_stab_dervs["muc"]
+
+    KY2 = Iyy / (m*c**2)
+    Aeigval = 4 * muc **2 * KY2 * (CZadot - 2 * muc)
+    Beigval = Cmadot * 2 * muc * (CZq + 2 * muc) - Cmq * 2 * muc * (CZadot - 2 * muc) - 2 * muc * KY2 * (CXu * (CZadot - 2*muc) - 2 * muc * CZa)
+    Ceigval = Cma * 2 * muc * (CZq + 2*muc) - Cmadot * (2 * muc * CX0 + CXu * (CZq + 2*muc)) + Cmq * (CXu * (CZadot - 2*muc) - 2*muc*CZa) + 2 * muc*KY2*(CXa*CZu - CZa * CXu)
+    Deigval = Cmu * (CXa*(CZq + 2*muc) - CZ0 * (CZadot - 2 * muc)) - Cma * (2*muc*CX0 + CXu * (CZq + 2*muc)) + Cmadot * (CX0*CXu - CZ0*CZu) + Cmq*(CXu * CZa - CZu * CXa)
+    Eeigval = -Cmu * (CX0 * CXa + CZ0 * CZa) + Cma * (CX0 * CXu + CZ0 * CZu)
+    return np.roots(np.array([Aeigval, Beigval, Ceigval, Deigval, Eeigval]))
+
+
+def eigval_finder_asymm(Ixx, Izz, Ixz, m, b, CL, lat_stab_dervs):
+    """
+    Ixx: moment of inertia around X-axis
+    Izz: moment of inertia around Z-axis
+    Ixz: moment of gyration around X-Z
+    m: MTOM
+    b: wingspan
+    CL: cruise CL
+    lat_stab_dervs: dictionary containing all lateral stability derivatives + mub
+
+    returns
+    array with eigenvalues
+    """
+    CYb = lat_stab_dervs["Cyb"]
+    CYp = lat_stab_dervs["Cyp"]
+    CYr = lat_stab_dervs["CYr"]
+    Clb = lat_stab_dervs["Clb"]
+    Clp = lat_stab_dervs["Clp"]
+    Clr = lat_stab_dervs["Clr"]
+    Cnb = lat_stab_dervs["Cnb"]
+    Cnp = lat_stab_dervs["Cnp"]
+    Cnr = lat_stab_dervs["Cnr"]
+    mub = lat_stab_dervs["mub"]
+
+
+    KX2 = Ixx / (m*b**2)
+    KZ2 = Izz / (m*b**2)
+    KXZ = Ixz / (m*b**2)
+    Aeigval = 16 * mub ** 3 * (KX2 * KZ2 - KXZ ** 2)
+    Beigval = -4 * mub ** 2 * (
+                2 * CYb * (KX2 * KZ2 - KXZ ** 2) + Cnr * KX2 + Clp * KZ2 + (
+                    Clr + Cnp) * KXZ)
+    Ceigval = 2 * mub * ((CYb * Cnr - CYr * Cnb) * KX2 + (
+                CYb * Clp - Clb * CYp) * KZ2 + ((CYb * Cnp - Cnb * CYp) + (
+                CYb * Clr - Clb * CYr)) * KXZ + 4 * mub * Cnb * KX2 + 4 * mub * Clb * KXZ + 0.5 * (
+                                     Clp * Cnr - Cnp * Clr))
+    Deigval = -4 * mub * CL * (Clb * KZ2 + Cnb * KXZ) + 2 * mub * (
+                Clb * Cnp - Cnb * Clp) + 0.5 * CYb * (
+                          Clr * Cnp - Cnr * Clp) + 0.5 * CYp * (
+                          Clb * Cnr - Cnb * Clr) + 0.5 * CYr * (
+                          Clp * Cnb - Cnp * Clb)
+    Eeigval = CL * (Clb * Cnr - Cnb * Clr)
+    return np.roots(np.array([Aeigval, Beigval, Ceigval, Deigval, Eeigval]))
