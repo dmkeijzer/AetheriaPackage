@@ -40,6 +40,7 @@ wb.sigma_yield = MatClass.sigma_yield
 wb.m_crip = MatClass.m_crip
 wb.sigma_uts = MatClass.sigma_uts
 wb.n_max= const.n_max_req
+wb.y_rotor_loc = Engine.y_rotor_loc
 
 
 #------------------------------- Run script and save----------------------------------------------

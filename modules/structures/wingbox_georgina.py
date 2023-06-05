@@ -28,6 +28,7 @@ sigma_yield = None
 m_crip = None
 sigma_uts = None
 n_max= None
+y_rotor_loc = None
 
 
     
@@ -237,38 +238,29 @@ def rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
 
 
 
-
-
-def shear_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
-    x = rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)[0]
-    y = rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)[1]
+def shear_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, W_eng, y_rotor_loc):
+    x = rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, taper, rho)[0]
+    y = rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t, taper, rho)[1]
     f2 = interp1d(x, y)
-    x_engine = np.array([0.5 * b / 4, 0.5 * b / 2, 0.5 * 3 * b / 4])
+    x_engine = np.array([y_rotor_loc[0],y_rotor_loc[2]])
     x_combi = np.concatenate((x, x_engine))
     x_sort = np.sort(x_combi)
 
-    index1 = np.where(x_sort == 0.5 * 3 * b / 4)
+    index1 = np.where(x_sort == y_rotor_loc[0])
     if len(index1[0]) == 1:
         index1 = int(index1[0])
     else:
         index1 = int(index1[0][0])
     y_new1 = f2(x_sort[index1]) + 9.81 * W_eng
 
-    index2 = np.where(x_sort == 0.5 * b / 2)
+    index2 = np.where(x_sort == y_rotor_loc[2])
     if len(index2[0]) == 1:
         index2 = int(index2[0])
     else:
         index2 = int(index2[0][0])
     y_new2 = f2(x_sort[index2]) + 9.81 * W_eng
 
-    index3 = np.where(x_sort == 0.5 * b / 4)
-    if len(index3[0]) == 1:
-        index3 = int(index3[0])
-    else:
-        index3 = int(index3[0][0])
-    y_new3 = f2(x_sort[index3]) + 9.81 * W_eng
-
-    y_engine = np.ndarray.flatten(np.array([y_new1, y_new2, y_new3]))
+    y_engine = np.ndarray.flatten(np.array([y_new1, y_new2]))
     y_combi = np.concatenate((y, y_engine))
     y_sort = np.sort(y_combi)
     y_sort = np.flip(y_sort)
@@ -277,10 +269,53 @@ def shear_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
         y_sort[i] = y_sort[i] + 9.81 * W_eng
     for i in range(int(index2)):
         y_sort[i] = y_sort[i] + 9.81 * W_eng
-    for i in range(int(index3)):
-        y_sort[i] = y_sort[i] + 9.81 * W_eng
 
-    return x_sort, y_sort, index1, index2, index3
+    return x_sort, y_sort, index1, index2
+
+
+
+# def shear_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
+#     x = rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)[0]
+#     y = rib_interpolation(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)[1]
+#     f2 = interp1d(x, y)
+#     x_engine = np.array([0.5 * b / 4, 0.5 * b / 2, 0.5 * 3 * b / 4])
+#     x_combi = np.concatenate((x, x_engine))
+#     x_sort = np.sort(x_combi)
+
+#     index1 = np.where(x_sort == 0.5 * 3 * b / 4)
+#     if len(index1[0]) == 1:
+#         index1 = int(index1[0])
+#     else:
+#         index1 = int(index1[0][0])
+#     y_new1 = f2(x_sort[index1]) + 9.81 * W_eng
+
+#     index2 = np.where(x_sort == 0.5 * b / 2)
+#     if len(index2[0]) == 1:
+#         index2 = int(index2[0])
+#     else:
+#         index2 = int(index2[0][0])
+#     y_new2 = f2(x_sort[index2]) + 9.81 * W_eng
+
+#     index3 = np.where(x_sort == 0.5 * b / 4)
+#     if len(index3[0]) == 1:
+#         index3 = int(index3[0])
+#     else:
+#         index3 = int(index3[0][0])
+#     y_new3 = f2(x_sort[index3]) + 9.81 * W_eng
+
+#     y_engine = np.ndarray.flatten(np.array([y_new1, y_new2, y_new3]))
+#     y_combi = np.concatenate((y, y_engine))
+#     y_sort = np.sort(y_combi)
+#     y_sort = np.flip(y_sort)
+
+#     for i in range(int(index1)):
+#         y_sort[i] = y_sort[i] + 9.81 * W_eng
+#     for i in range(int(index2)):
+#         y_sort[i] = y_sort[i] + 9.81 * W_eng
+#     for i in range(int(index3)):
+#         y_sort[i] = y_sort[i] + 9.81 * W_eng
+
+#     return x_sort, y_sort, index1, index2, index3
 
 
 
@@ -670,27 +705,18 @@ def create_bounds(wing):
     """    
     return ((wing.span/2 - 1e-8, wing.span/2 + 1e-8), (wing.chord_root - 1e-8, wing.chord_root + 1e-8), (0.001, 0.005), (0.001, 0.005), (0.007, 0.05), (0.001, 0.01),(0.001, 0.01),(0.001, 0.003),(0.004, 0.005),(0.001, 0.003))
 
-def wingbox_optimization(x0, bounds, wing):
+def wingbox_optimization(x0,  wing):
     """ TODO note down assumption that we simulate the load on the wingtip for the engine
 
-    :param x0: Initial estimate Design vector X = [b, cr, tsp, trib, L, bst, hst, tst, wst, t]
+    :param x0: Initial estimate Design vector X = [ tsp, trib, L, bst, hst, tst, wst, t]
     :type x0: 
     :param bounds: Boundareies
     :type: tuple with tuples with 2 elements min and max
-    :param material: The material class created in input/data_structures
-    :type: Bespoke Material class
     :param wing: the material class created in input/data_structures
     :type: bespoke  wing class
     """    
-    # fun = lambda x: wing_weight(x[0], x[1],x[2],x[3], x[4], x[5], x[6], x[7],x[8],[x[9]], material.rho, wing.taper)
-    # cons = ({'type': 'ineq', 'fun': lambda x: global_local(x[0], x[1], x[4], x[5], x[6], x[7],[x[9]], material.E, material.poisson)},
-    #         {'type': 'ineq', 'fun': lambda x: post_buckling(x[0], x[1], x[2], x[3],  x[4], x[5], x[6], x[7], x[8], [x[9]], const.n_max_req, material.sigma_uts, wing.taper, material.pb, engine.mass_pertotalengine, material.rho,engine.y_rotor_loc)}, #TODO N_max has to badded
-    #         {'type': 'ineq', 'fun': lambda x: von_Mises(x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7],x[8],[x[9]], material.sigma_yield, wing.taper, material.rho, engine.mass_pertotalengine,engine.y_rotor_loc)}, # TODO Add sigma yield
-    #         {'type': 'ineq', 'fun': lambda x: buckling_constr(x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7],x[8],[x[9]], wing.taper, material.rho, engine.mass_pertotalengine, material.E, material.poisson,engine.y_rotor_loc)},
-    #         {'type': 'ineq', 'fun': lambda x: flange_loc_loc(x[0], x[1], x[4], x[5],x[7],x[8],[x[9]], material.E, material.poisson)},
-    #         {'type': 'ineq', 'fun': lambda x: local_column(x[0], x[1], x[4], x[5],x[6],x[7],x[8],[x[9]], material.E, material.poisson)},
-    #         {'type': 'ineq', 'fun': lambda x: crippling(x[0],  x[4],  x[6], x[7], x[8], [x[9]], material.beta, material.sigma_yield, material.E, material.m_crip, material.g)}, #TODO add beta, sigma yield, E, m_crip
-    #         {'type': 'ineq', 'fun': lambda x: web_flange(x[0], x[1], x[4], x[5], x[6], x[7], [x[9]], material.E, material.poisson)})
+
+    
 
     fun = lambda x: wing_weight(wing.span, wing.chord_root,x[0],x[1], x[2], x[3], x[4], x[5],x[6],[x[7]])
     cons = ({'type': 'ineq', 'fun': lambda x: global_local(wing.span, wing.chord_root, x[2], x[3], x[4], x[5],[x[7]])},
@@ -703,7 +729,7 @@ def wingbox_optimization(x0, bounds, wing):
             {'type': 'ineq', 'fun': lambda x: web_flange(wing.span, wing.chord_root, x[2], x[3], x[4], x[5], [x[7]])})
 
     # bnds = ((5, 9), (1, 4), (0.001, 0.005), (0.001, 0.005), (0.007, 0.05), (0.001, 0.01),(0.001, 0.01),(0.001, 0.003),(0.004, 0.005),(0.001, 0.003))
-    bnds = bounds
-    rez = minimize(fun, x0, method='trust-constr',bounds=bnds, constraints=cons)
+    # bnds = bounds
+    # rez = minimize(fun, x0, method='trust-constr',bounds=bnds, constraints=cons)
     return rez
 
