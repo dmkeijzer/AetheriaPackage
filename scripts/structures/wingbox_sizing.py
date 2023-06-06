@@ -90,3 +90,4 @@ print(constraints.all())
 print(optimizertest.compute_weight(x0))
 a = np.linspace(1,0,400)
 print(a)
+
