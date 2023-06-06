@@ -1,3 +1,4 @@
+import numpy.testing
 import pytest
 import os
 import sys
@@ -50,6 +51,7 @@ def find_eigval_symm():
                   [0,0,0,-1],
                   [-Cmu, -Cma, 0, -Cmq]])
     A = np.linalg.inv(P)@Q
+    A = A * c / v
     return np.linalg.eigvals(A)
 
 def find_eigval_asymm():
@@ -82,14 +84,22 @@ def find_eigval_asymm():
                   [-Clb, 0, -Clp, -Clr],
                   [-Cnb, 0, -Cnp, -Cnr]])
     A = np.linalg.inv(P)@Q
+    A = A * b/v
     return np.linalg.eigvals(A)
 
 def test_dynamic_model(example_values):
-    eigvalslong = eigval_finder_sym(**example_values["symm"]).sort()
-    eigvalslat = eigval_finder_asymm(**example_values["asymm"]).sort()
-    eigvalslong_ver = find_eigval_symm().sort()
-    eigvalslat_ver = find_eigval_asymm().sort()
+    eigvalslong = eigval_finder_sym(**example_values["symm"])
+    eigvalslat = eigval_finder_asymm(**example_values["asymm"])
+    eigvalslong_ver = find_eigval_symm()
+    eigvalslat_ver = find_eigval_asymm()
+
+    eigvalslong = np.sort_complex(eigvalslong)
+    eigvalslat = np.sort_complex(eigvalslat)
+    eigvalslong_ver = np.sort_complex(eigvalslong_ver)
+    eigvalslat_ver = np.sort_complex(eigvalslat_ver)
+
     for i in range(len(eigvalslong)):
-        assert np.isclose(eigvalslong[i], eigvalslong_ver[i])
+        #assert np.allclose(eigvalslong[i], eigvalslong_ver[i])
+        numpy.testing.assert_almost_equal(eigvalslong[i], eigvalslong_ver[i], 5)
     for i in range(len(eigvalslat)):
-        assert (np.isclose(eigvalslat[i], eigvalslat_ver[i]))
+        numpy.testing.assert_almost_equal(eigvalslat[i], eigvalslat_ver[i], 5)
