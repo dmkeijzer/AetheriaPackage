@@ -1,4 +1,3 @@
-from modules.avlwrapper import Geometry, Surface, Section, NacaAirfoil, Control, Point, Spacing, Session, Case, Parameter
 import os
 import json
 import sys
@@ -6,6 +5,7 @@ import numpy as np
 import sys
 import pathlib as pl
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
+from modules.avlwrapper import Geometry, Surface, Section, NacaAirfoil, Control, Point, Spacing, Session, Case, Parameter
 
 from input.data_structures.wing import Wing
 from input.data_structures.aero import Aero
@@ -55,8 +55,8 @@ if __name__ == '__main__':
 
     # Cases (multiple cases can be defined)
     # Case defined by one angle-of-attack which is i_cs, calculated before convergence
-    cruise_case = Case(name='Cruise', alpha=3.1493, e=data["e"], mass=data["mtom"], Mach=data["mach_cruise"],
-                       CL=Aeroclass.cL_cruise, CDo=Aeroclass.cd0, CD=Aeroclass.cd)
+    cruise_case = Case(name='Cruise', alpha=3.14, mass=data["mtom"], Mach=data["mach_cruise"],
+                       CDo=Aeroclass.cd0, CD=Aeroclass.cd, constaint=Aeroclass.cL_cruise)
 
     # More elaborate case, angle-of-attack of 4deg, elevator parameter which sets Cm (pitching moment) to 0.0
     cruise_trim_case = Case(name='Trimmed',
