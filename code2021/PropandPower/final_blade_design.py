@@ -4,9 +4,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import BEM as BEM
 import Blade_plotter as BP
-import Aero_tools as at
+import code2021.Final_optimization.Aero_tools as at
 import engine_sizing_positioning as esp
-import Final_optimization.constants_final as const
+import code2021.Final_optimization.constants_final as const
 
 
 # Constants from optimisation

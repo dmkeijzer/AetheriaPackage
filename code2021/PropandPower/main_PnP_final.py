@@ -1,8 +1,9 @@
 import numpy as np
-import BEM as BEM
-import Aero_tools as at
+import Scripts.propellersizing.BEM2023 as BEM
+import code2021.Final_optimization.Aero_tools as at
 import Blade_plotter as BP
 import matplotlib.pyplot as plt
+
 
 # ISA = at.ISA(1000)
 ISA = at.ISA(1000)
@@ -86,7 +87,7 @@ propeller = BEM.BEM(B, R, rpm, xi_0, rho, dyn_visc, V_cruise, N_stations, a, RN_
 
 # Zeta init
 zeta_init = 0
-zeta, design, V_e, coefs = propeller.optimise_blade(zeta_init)
+zeta, design, V_e, coefs, solidity = propeller.optimise_blade(zeta_init)
 
 print("Displacement velocity ratio (zeta):", zeta)
 print("")
@@ -116,6 +117,8 @@ print("")
 print("Propulsive efficiency:", 2/(1 + np.average(V_e)/V_cruise))
 print("")
 print("Cls, Cds", coefs)
+print("")
+print("Solidity:", solidity)
 print("")
 print("T_cr", T_cr_per_eng)
 

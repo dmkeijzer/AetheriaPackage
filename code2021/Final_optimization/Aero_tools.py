@@ -3,9 +3,9 @@ import sys
 sys.path.append(r"C:\Users\damie\OneDrive\Desktop\Damien\Honours\Wigeon_code\DSE2021")
 
 import numpy as np
-from constants import*
+from code2021.Final_optimization.constants import*
 import warnings
-import Preliminary_Lift.Drag
+import code2021.Preliminary_Lift.Drag
 
 class ISA:
     """

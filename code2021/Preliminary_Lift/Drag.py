@@ -1,7 +1,7 @@
 import numpy as np
 from math import *
-from Airfoil_analysis import Cd
-from Wing_design import winglet_dAR, winglet_factor
+from code2021.Preliminary_Lift.Airfoil_analysis import Cd
+from code2021.Preliminary_Lift.Wing_design import winglet_dAR, winglet_factor
 import matplotlib.pyplot as plt
 from scipy.interpolate import interp1d
 #
