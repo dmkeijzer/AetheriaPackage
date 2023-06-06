@@ -14,6 +14,7 @@ print(f"\nExited succesfully = {res.success} [kg]")
 print(f"\nExecution time = {np.round(res.execution_time, 1)} [s] = {np.round(res.execution_time/60, 1)} [min]")
 print(f"\nRequired iterations = {res.nit} ")
 print(f"\nWing weight = {res.fun} [kg]\n")
+print(vec_res)
 
 i = 0
 
