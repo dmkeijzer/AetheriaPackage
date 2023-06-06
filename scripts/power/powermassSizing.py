@@ -52,8 +52,8 @@ PowerDensityFuellCell = 3 #kW/kg
 effiencyFuellCell = 0.55
 
 #Tank input
-VolumeDensityTank = 0.8#1.3 #kWh/l
-EnergyDensityTank = 1.85 # kWh/kg
+VolumeDensityTank = 0.6  #kWh/l
+EnergyDensityTank = 1.8 # kWh/kg
 
 
 
