@@ -265,7 +265,9 @@ class BEM:
 
         # Optimise each station for min D/L
         for station in stations:
+
             station -= 1
+
             eps_min = 1
             optim_vals = [1, 1, 1, 1]
 
@@ -390,7 +392,7 @@ class BEM:
             local_eps = optim_vals[3]
             Wc = optim_vals[4]
 
-        # Smooth the Cl distribution and recalculate the lift coefficient: Polinomial regression for smooth distribution
+        # Smooth the Cl distribution and recalculate the lift coefficient: Polynomial regression for smooth distribution
         coef_cl = np.polynomial.polynomial.polyfit(stations_r, Cl, 1)
         cl_fun = np.polynomial.polynomial.Polynomial(coef_cl)
 
