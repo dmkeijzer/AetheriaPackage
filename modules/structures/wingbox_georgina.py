@@ -464,14 +464,17 @@ def perimiter_ellipse(a,b):
 def torsion_sections(b,c_r,L,t,engine,wing):
     ch = chord(b, c_r)
     tarr = t_arr(b, L,t)
+    sta = rib_coordinates(b, L)
     T = np.zeros(len(tarr))
     engine_weight = engine.mass_pertotalengine
     x_centre_wb = lambda x_w: wing.X_lemac + c_r*0.25* + ch(x_w)*0.20
     for i in range(len(tarr)):
-        if tarr[i]> float(engine.y_rotor_loc[0]):
-            T[i] = engine_weight * (x_centre_wb(tarr[i])-engine.x_rotor_loc[0]) + engine_weight*(x_centre_wb-x_rotor_loc[2])
+        if sta[i]< float(engine.y_rotor_loc[0]):
+            T[i] = engine_weight * 9.81 * (x_centre_wb(engine.x_rotor_loc[0])-engine.x_rotor_loc[0]) + engine_weight * 9.81 * (x_centre_wb(engine.x_rotor_loc[2])-engine.x_rotor_loc[2])
         else:
-            T[i] = engine_weight * (x_centre_wb(tarr[i])-engine.x_rotor_loc[0])
+            T[i] = engine_weight * 9.81 * (x_centre_wb(engine.x_rotor_loc[0])-engine.x_rotor_loc[0])
+        print(sta[i],y_rotor_loc[0],x_centre_wb(engine.x_rotor_loc[0]))
+    print(f"\n\nT = {T}\n\n")
     return T
 
 def N_xy(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t,Engine,Wing):
@@ -879,7 +882,7 @@ class WingboxOptimizer():
         self.design_lst = []
         self.multiplier_lst = np.linspace(1,0,max_iter)
     
-    def check_constraints(self,x):
+    def check_constraints(self,x,engine,wing):
 
         constr = [
         global_local(self.wing.span, self.wing.chord_root, x[2], x[3], x[4], x[5],[x[7]]),
