@@ -471,7 +471,7 @@ def eigval_finder_sym(Iyy, m, c, long_stab_dervs):      #Iyy = 12081.83972
     long_stab_dervs: dictionary containing all longitudinal stability derivatives + muc
 
     returns
-    array with eigenvalues
+    array with eigenvalues NON-DIMENSIONALISED
     """
     CX0 = long_stab_dervs["Cx0"]
     CXa = long_stab_dervs["Cxa"]
@@ -508,7 +508,7 @@ def eigval_finder_asymm(Ixx, Izz, Ixz, m, b, CL, lat_stab_dervs):   #Ixx = 10437
     lat_stab_dervs: dictionary containing all lateral stability derivatives + mub
 
     returns
-    array with eigenvalues
+    array with eigenvalues NON-DIMENSIONALISED
     """
     CYb = lat_stab_dervs["Cyb"]
     CYp = lat_stab_dervs["Cyp"]
@@ -540,6 +540,7 @@ def eigval_finder_asymm(Ixx, Izz, Ixz, m, b, CL, lat_stab_dervs):   #Ixx = 10437
                           Clp * Cnb - Cnp * Clb)
     Eeigval = CL * (Clb * Cnr - Cnb * Clr)
     return np.roots(np.array([Aeigval, Beigval, Ceigval, Deigval, Eeigval]))
+
 
 if __name__ == "__main__":
     a = longitudinal_derivatives(0.04, 0.6, 2500 * 9.8, 1.2, 12, 2500, 1.2, 3, 0.1, 0.02, 0.1, 0.95, np.radians(3), 80,
