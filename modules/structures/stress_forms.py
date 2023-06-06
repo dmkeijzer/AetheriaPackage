@@ -25,8 +25,8 @@ def normal_stress(force,area):
     
 
 """SHEAR STRESS"""
-def torsion_circular_section(torque,dens,j_z):
-    return torque*dens/j_z
+def torsion_circular_section(torque,dist,j_z):
+    return torque*dist/j_z
 
 def torsion_thinwalled_closed(torque,thickness,enclosed_area):
     return torque/(2*thickness*enclosed_area)
@@ -142,7 +142,7 @@ def shear_thin_walled_rectangular_section(width,height,thickness,i_xx,i_zz,Vx,Vz
     tau_bc = q_bc(y)/(thickness)
     tau_cd = q_cd(x)/(thickness)
     tau_da = q_da(y)/(thickness)
-
+    print(tau_ab)#,tau_bc,tau_cd,tau_da)
     return tau_ab,tau_bc,tau_cd,tau_da
 
 
