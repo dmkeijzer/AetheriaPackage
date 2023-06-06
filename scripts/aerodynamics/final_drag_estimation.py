@@ -38,7 +38,7 @@ mac = data["mac"]
 re_var = Reynolds(rho_cr, const.v_cr, mac, mhu, const.k)
 M_var = Mach_cruise(const.v_cr, const.gamma, const.R, t_cr)
 Oswald_eff_var = Oswald_eff(data["A"])
-0
+
 
 # Writing to JSON file
 data["e"] = Oswald_eff_var

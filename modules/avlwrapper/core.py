@@ -350,14 +350,14 @@ class Session(object):
         run = "load {0}\n".format(self.model_file)
         run += "oper\ng\n"
 
-        process = self._get_avl_process()
+        # process = self._get_avl_process()
 
-        tk_root = tk.Tk()
-        app = CloseWindow(on_open=lambda: process.stdin.write(run.encode()),
-                          on_close=lambda: process.stdin.write("\n\nquit\n".encode()),
-                          master=tk_root)
-        app.mainloop()
-
+        # tk_root = tk.Tk()
+        # app = CloseWindow(on_open=lambda: process.stdin.write(run.encode()),
+        #                   on_close=lambda: process.stdin.write("\n\nquit\n".encode()),
+        #                   master=tk_root)
+        # app.mainloop()
+ # __________ CHANGED BY LUCAS ______________
 
 class OutputReader(object):
     """Reads AVL output files. Filetype is determined based on file extension"""

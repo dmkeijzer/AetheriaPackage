@@ -35,7 +35,7 @@ class Symmetry(Enum):
 class Geometry(Input):
     """Geometry object, represents the content of an AVL geometry input file"""
     def __init__(self, name, reference_area, reference_chord, reference_span, reference_point,
-                 mach=0.0, cd_p=None, y_symmetry=Symmetry.none, z_symmetry=Symmetry.none, z_symmetry_plane=0.0,
+                 mach, cd_p=None, y_symmetry=Symmetry.none, z_symmetry=Symmetry.none, z_symmetry_plane=0.0,
                  surfaces=None, bodies=None):
         self.name = name
         self.area = reference_area
