@@ -1,8 +1,9 @@
 import numpy as np
-import BEM as BEM
+import Scripts.propellersizing.BEM2023 as BEM
 import code2021.Final_optimization.Aero_tools as at
 import Blade_plotter as BP
 import matplotlib.pyplot as plt
+
 
 # ISA = at.ISA(1000)
 ISA = at.ISA(1000)
