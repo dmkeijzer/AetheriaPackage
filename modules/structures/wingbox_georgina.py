@@ -921,12 +921,13 @@ class WingboxOptimizer():
         print(x)
         #TODO increase whatever influences them see check constraints
         #TODO bit more thought into what to increment
+                # :param x0:  [ tsp, trib, L, bst, hst, tst, wst, t]
 
         if bool_array.all():
             self.design_lst.append(x)
             new_x = x + np.array([-5e-4,-1e-4, 1e-2, 5e-3, -5-3, -1e-4, -5e-3, -1e-3 ])*self.multiplier(iter)
         elif not bool_array[0]:   
-            new_x = x + np.array([1e-3,0, 5e-3, -1e-3, -5e-4 , 5e-4, 5e-4, 1e-4 ])*self.multiplier(iter)
+            new_x = x + np.array([0,0, 0, -1e-3, 5e-4 , 5e-4, 5e-4, 0 ])*self.multiplier(iter)
         elif not bool_array[1]:   
             new_x = x + np.array([1e-3,0, -5e-3, -1e-3, 5e-4 , 5e-4, 5e-4, 1e-4 ])*self.multiplier(iter)
         elif not bool_array[2]:   
