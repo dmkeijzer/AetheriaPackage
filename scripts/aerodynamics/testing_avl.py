@@ -55,9 +55,9 @@ if __name__ == '__main__':
 
     # Cases (multiple cases can be defined)
     # Case defined by one angle-of-attack which is i_cs, calculated before convergence
-    cruise_case = Case(name='Cruise', alpha=3.14, mass=data["mtom"], Mach=data["mach_cruise"],
-                       CDo=Aeroclass.cd0, CD=Aeroclass.cd, constaint=Aeroclass.cL_cruise)
-
+    cruise_case = Case(name='Cruise', mass=data["mtom"], Mach=data["mach_cruise"],
+                       CL=Aeroclass.cL_cruise)
+    
     # More elaborate case, angle-of-attack of 4deg, elevator parameter which sets Cm (pitching moment) to 0.0
     cruise_trim_case = Case(name='Trimmed',
                             alpha=4.0,
@@ -80,4 +80,6 @@ if __name__ == '__main__':
         CL = avl["Cruise"]["Totals"]["CLtot"]
         CD_i_wing = avl["Cruise"]["Totals"]["CDind"]
         Mach = avl["Cruise"]["Totals"]["Mach"]
-        print(Mach)
+        print("CL", CL)
+        print("CDi",CD_i_wing)
+        print("M", Mach)
