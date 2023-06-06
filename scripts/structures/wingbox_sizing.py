@@ -83,11 +83,5 @@ x0=np.array([0.003, 0.003, 0.12, 0.07, 0.003,0.003,0.004,0.0022])    # :param x0
 
     
 
-optimizertest = wb.WingboxOptimizer(x0, WingClass)
-constraints = optimizertest.check_constraints(x0,EngClass,WingClass)
-print(constraints)
-print(constraints.all())
-print(optimizertest.compute_weight(x0))
-a = np.linspace(1,0,400)
-print(a)
-
+optimizertest = wb.WingboxOptimizer(x0, WingClass, EngClass)
+print(optimizertest.optimize())
