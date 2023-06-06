@@ -8,13 +8,16 @@ import pathlib as pl
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
+from modules.aero.midterm_datcom_methods import datcom_cl_alpha
+from input.data_structures.GeneralConstants import *
+
 @dataclass
 class Aero():
     cd: float = None
     cd0: float = None
     cL_alpha: float = None
     cL_cruise: float = None
-    cm: float = None
+    cm_ac: float = None
     cm_alpha: float = None
     e: float = None
 
@@ -24,11 +27,26 @@ class Aero():
 
         self.cd =  data["cd"]
         self.cd0 =  data["cd0"]
-        self.cL_alpha =  data["clalpha"]
+        self.cL_alpha =  datcom_cl_alpha(A=data["A"], mach=v_cr/a_cr, sweep_half=-data["sweep_le"])
         self.cL_cruise =  data["cL_cruise"]
-        self.cm  =  data["cm"]
+        self.cm_ac  =  data["cm_ac"]
         self.e  =  data["e"]
         self.cm_alpha = data["cm_alpha"]
+        self.cl_alpha = data["cl_alpha"]
+
+    def dump(self):
+        data = {
+            "cd": self.cd,
+            "cd0": self.cd0,
+            "cL_cruise":self.cruise,
+            "cm_ac": self.cm_ac,
+            "e": self.e,
+            "cm_alpha": self.cm_alpha,
+            "cl_alpha": self.cl_alpha
+        }
+    
+        with open(r"output/data_structures/aetheria_constants.json", "w") as jsonFile:
+            json.dump(data, jsonFile, indent=6)
     
 
 if __name__ == "__main__":

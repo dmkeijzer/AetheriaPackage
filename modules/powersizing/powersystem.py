@@ -68,6 +68,7 @@ def power_cruise_mass(PowerRequired: float, echo: float,  FuellCell:FuellCellSiz
     
     FCmass = FuellCell.mass(echo * PowerRequired ) 
     Batterymass = PowerRequired * (1-echo) / Battery.PowerDensity / Battery.DOD
+    
     for i in range(len(Batterymass)):
         Batterymass[i] = max(0,Batterymass[i])
 
@@ -84,7 +85,7 @@ def hover_mass(PowerRequired: float ,MaxPowerFC: float, Battery: BatterySizing) 
         output:
             -Batterymass
     """
-    BatteryMass =(PowerRequired - MaxPowerFC) / Battery.PowerDensity
+    BatteryMass = (PowerRequired - MaxPowerFC) / Battery.PowerDensity /Battery.DOD / 
     return  BatteryMass
 
 def hover_energy_mass(PowerRequired: float ,MaxPowerFC: float, Battery: BatterySizing, HoverTime:float) -> float:

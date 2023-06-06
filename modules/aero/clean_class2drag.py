@@ -1,4 +1,4 @@
-from input.GeneralConstants import *
+from input.data_structures.GeneralConstants import *
 import numpy as np
 import os
 import json
@@ -7,9 +7,6 @@ import pathlib as pl
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
-
-
-###################      Move class ISA to different location, ISA is needed for T_cruise       #################
 
 
 # Define functions for all components of Class 2 drag estimations
@@ -63,6 +60,24 @@ def FF_fus(l, d):
     f = l / d
     return 1 + 60 / (f ** 3) + f / 400
 
+def sweep_m(sweep_le, loc_max_t, c_root, span, taper):
+    """_summary_
+
+        :param sweep_le: leading edge sweep angle
+        :type sweep_le: _type_
+        :param loc_max_t: location of maximum thickness of airfoil (x/c)
+        :type loc_max_t: _type_
+        :param c_root: root chord length
+        :type c_root: _type_
+        :param span: _description_
+        :type span: _type_
+        :param taper: _description_
+        :type taper: _type_
+        :return: _description_
+        :rtype: _type_
+        """
+    return np.arctan2(np.tan(sweep_le) - (1-taper)*loc_max_t*(2*c_root) / span, 1)
+
 
 def FF_wing(toc, xcm, M, sweep_m):
     """_summary_
@@ -73,11 +88,10 @@ def FF_wing(toc, xcm, M, sweep_m):
     :type xcm: _type_
     :param M: Mach number
     :type M: _type_
-    :param sweep_m: sweep angle at maximum thickness position
-    :type sweep_m: _type_
     :return: _description_
     :rtype: _type_
     """
+
     return (1 + 0.6 * toc / xcm + 100 * toc * 4) * (1.34 * (M * 0.18) * (np.cos(sweep_m)) * 0.28)
 
 

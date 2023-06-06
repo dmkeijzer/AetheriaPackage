@@ -23,6 +23,7 @@ g0 = 9.80665            #[m/s^2]    O
 
 #performance
 v_cr = 300/3.6
+v_stall = 40
 roc_cr = 5
 rod_cr = 3 # Rate of descend 
 roc_hvr = 2
@@ -40,6 +41,8 @@ atm = ISA(h_cruise)
 rho_cr = atm.density()    #[kg/m^3]   O
 p_cr = atm.pressure()           # pressure at cr O
 t_cr = atm.temperature()      # Temperature at cr O
+atm_stall = ISA(0)
+t_stall = atm.temperature()
 a_cr = atm.soundspeed()     #Speed of sound at cruise O
 R = 287                 #[J/kg*K]   O
 gamma = 1.4                  #        O
@@ -65,8 +68,8 @@ m_pl =  510  # kg
 
 
 #airfoil
-toc = 0.169 #NACA44017
-xcm = 0.293 # NACA44017
+toc = 0.12 #NACA2412
+xcm = 0.2973 # NACA2412
 A_base = 0 #Assumed 0 base area
 frac_lam_fus = 0.05
 frac_lam_wing = 0.1

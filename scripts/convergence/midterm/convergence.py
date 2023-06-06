@@ -22,7 +22,7 @@ python_files = [
     "scripts/preliminary_sizing/wing_power_loading.py",
     "scripts/structures/flight_envelope.py",
     "scripts/aerodynamics/planform_sizing.py",
-    "scripts/aerodynamics/drag_estimation.py",
+    "scripts/aerodynamics/midterm_drag_estimation.py",
     "scripts/flight_perf/midterm/mission_power_energy.py",
     "scripts/structures/class2_weight_estimation.py"
 ]
@@ -33,6 +33,7 @@ dict_names = ["J1_constants.json", "L1_constants.json", "W1_constants.json"]
 output_dir = "output/midterm_convergence"
 # Specify the number of times to loop
 loop_count = 10
+
 
 # Loop through the Python files multiple times
 for i in range(1, loop_count+1):
