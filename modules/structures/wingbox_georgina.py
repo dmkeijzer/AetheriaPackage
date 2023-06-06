@@ -603,7 +603,6 @@ def N_xy(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t,Engine,Wing):
         max_region4 = max(q4)
         determine = max(max_region2, max_region3, max_region4)
         Nxy[i] = determine
-        print(f"Ran loop for {tarr[i]}")
     return Nxy
 
 '''
@@ -841,7 +840,7 @@ def crippling(b,L, h_st,t_st,w_st,t):
     A = area_st(h_st, t_st, w_st)
     for i in range(len(tarr)):
         col = column_st(b, L,h_st,t_st,w_st,tarr[i])
-        crip[i] = t_st* beta *sigma_yield* ((g * t_st ** 2 / A) * sqrt(E / sigma_yield)) ** m_crip-col
+        crip[i] = t_st* beta *sigma_yield* ((g * t_st ** 2 / A) * sqrt(E / sigma_yield)) ** m_crip - col
     return crip[0]
 
 
@@ -853,48 +852,15 @@ def post_buckling(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st, t):
     return diff[0]
 
 
+def compute_volume():
+    pass
 
-# def wingbox_optimization(x0, bounds, wing):
-#     """ TODO note down assumption that we simulate the load on the wingtip for the engine
 
-#     :param x0: Initial estimate Design vector X = [b, cr, tsp, trib, L, bst, hst, tst, wst, t]
-#     :type x0: 
-#     :param bounds: Boundareies
-#     :type: tuple with tuples with 2 elements min and max
-#     :param material: The material class created in input/data_structures
-#     :type: Bespoke Material class
-#     :param wing: the material class created in input/data_structures
-#     :type: bespoke  wing class
-#     """    
-#     # fun = lambda x: wing_weight(x[0], x[1],x[2],x[3], x[4], x[5], x[6], x[7],x[8],[x[9]], material.rho, wing.taper)
-#     # cons = ({'type': 'ineq', 'fun': lambda x: global_local(x[0], x[1], x[4], x[5], x[6], x[7],[x[9]], material.E, material.poisson)},
-#     #         {'type': 'ineq', 'fun': lambda x: post_buckling(x[0], x[1], x[2], x[3],  x[4], x[5], x[6], x[7], x[8], [x[9]], const.n_max_req, material.sigma_uts, wing.taper, material.pb, engine.mass_pertotalengine, material.rho,engine.y_rotor_loc)}, #TODO N_max has to badded
-#     #         {'type': 'ineq', 'fun': lambda x: von_Mises(x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7],x[8],[x[9]], material.sigma_yield, wing.taper, material.rho, engine.mass_pertotalengine,engine.y_rotor_loc)}, # TODO Add sigma yield
-#     #         {'type': 'ineq', 'fun': lambda x: buckling_constr(x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7],x[8],[x[9]], wing.taper, material.rho, engine.mass_pertotalengine, material.E, material.poisson,engine.y_rotor_loc)},
-#     #         {'type': 'ineq', 'fun': lambda x: flange_loc_loc(x[0], x[1], x[4], x[5],x[7],x[8],[x[9]], material.E, material.poisson)},
-#     #         {'type': 'ineq', 'fun': lambda x: local_column(x[0], x[1], x[4], x[5],x[6],x[7],x[8],[x[9]], material.E, material.poisson)},
-#     #         {'type': 'ineq', 'fun': lambda x: crippling(x[0],  x[4],  x[6], x[7], x[8], [x[9]], material.beta, material.sigma_yield, material.E, material.m_crip, material.g)}, #TODO add beta, sigma yield, E, m_crip
-#     #         {'type': 'ineq', 'fun': lambda x: web_flange(x[0], x[1], x[4], x[5], x[6], x[7], [x[9]], material.E, material.poisson)})
-
-#     fun = lambda x: wing_weight(wing.span, wing.chord_root,x[0],x[1], x[2], x[3], x[4], x[5],x[6],[x[7]])
-#     cons = ({'type': 'ineq', 'fun': lambda x: global_local(wing.span, wing.chord_root, x[2], x[3], x[4], x[5],[x[7]])},
-#             {'type': 'ineq', 'fun': lambda x: post_buckling(wing.span, wing.chord_root, x[0], x[1],  x[2], x[3], x[4], x[5], x[6], [x[7]])},
-#             {'type': 'ineq', 'fun': lambda x: von_Mises(wing.span, wing.chord_root, x[0], x[1], x[2], x[3], x[4], x[5],x[6],[x[7]])},
-#             {'type': 'ineq', 'fun': lambda x: buckling_constr(wing.span, wing.chord_root, x[0], x[1], x[2], x[3], x[4], x[5],x[6],[x[7]])},
-#             {'type': 'ineq', 'fun': lambda x: flange_loc_loc(wing.span, wing.chord_root, x[2], x[3],x[5],x[6],[x[7]])},
-#             {'type': 'ineq', 'fun': lambda x: local_column(wing.span, wing.chord_root, x[2], x[3],x[4],x[5],x[6],[x[7]])},
-#             {'type': 'ineq', 'fun': lambda x: crippling(wing.span,  x[2],  x[4], x[5], x[6], [x[7]])}, #ONLY b
-#             {'type': 'ineq', 'fun': lambda x: web_flange(wing.span, wing.chord_root, x[2], x[3], x[4], x[5], [x[7]])})
-
-#     # bnds = ((5, 9), (1, 4), (0.001, 0.005), (0.001, 0.005), (0.007, 0.05), (0.001, 0.01),(0.001, 0.01),(0.001, 0.003),(0.004, 0.005),(0.001, 0.003))
-#     bnds = bounds
-#     rez = minimize(fun, x0, method='trust-constr',bounds=bnds, constraints=cons)
-#     return rez
 
 
 
 class WingboxOptimizer():
-    def __init__(self, x0, wing, max_iter= 500):
+    def __init__(self, x0, wing, engine,  max_iter= 500):
         """Initialisze the wingbox optimization
 
         :param x0:  [ tsp, trib, L, bst, hst, tst, wst, t]
@@ -908,6 +874,7 @@ class WingboxOptimizer():
         x0[6] = x0[4]
         self.x0 = np.array(x0)
         self.wing =  wing
+        self.engine = engine
         self.max_iter = max_iter
         self.design_lst = []
         self.multiplier_lst = np.linspace(1,0,max_iter)
@@ -917,8 +884,8 @@ class WingboxOptimizer():
         constr = [
         global_local(self.wing.span, self.wing.chord_root, x[2], x[3], x[4], x[5],[x[7]]),
         post_buckling(self.wing.span, self.wing.chord_root, x[0], x[1],  x[2], x[3], x[4], x[5], x[6], [x[7]]),
-        von_Mises(self.wing.span, self.wing.chord_root, x[0], x[1], x[2], x[3], x[4], x[5],x[6],[x[7]]),
-        buckling_constr(self.wing.span, self.wing.chord_root, x[0], x[1], x[2], x[3], x[4], x[5],x[6],[x[7]]),
+        von_Mises(self.wing.span, self.wing.chord_root, x[0], x[1], x[2], x[3], x[4], x[5],x[6],[x[7]], self.engine, self.wing),
+        buckling_constr(self.wing.span, self.wing.chord_root, x[0], x[1], x[2], x[3], x[4], x[5],x[6],[x[7]], self.engine, self.wing),
         flange_loc_loc(self.wing.span, self.wing.chord_root, x[2], x[3],x[5],x[6],[x[7]]),
         local_column(self.wing.span, self.wing.chord_root, x[2], x[3],x[4],x[5],x[6],[x[7]]),
         crippling(self.wing.span,  x[2],  x[4], x[5], x[6], [x[7]]), #ONLY
@@ -927,7 +894,7 @@ class WingboxOptimizer():
 
         return np.array(constr) > 0
     
-    def multiplier(self, iter, increase_bool):
+    def multiplier(self, iter):
         """Creates a multiplier coefficient based on your current iteration and whether you want to increase or decrease the value, becoming
         more refined the closer one gets to the maximum amount of iterations
 
@@ -938,8 +905,6 @@ class WingboxOptimizer():
         """
 
         return self.multiplier_lst[iter]
-
-
     
     def compute_weight(self, x):
         return wing_weight(self.wing.span, self.wing.chord_root,x[0],x[1], x[2], x[3], x[4], x[5],x[6],[x[7]])
@@ -952,26 +917,30 @@ class WingboxOptimizer():
         :return: _description_
         :rtype: _type_
         """        
+        print(bool_array)
+        print(x)
+        #TODO increase whatever influences them see check constraints
+        #TODO bit more thought into what to increment
 
         if bool_array.all():
             self.design_lst.append(x)
-            new_x = x + np.array([-5e-4,-1e-4, -1e-2, -5e-3, -5-3, -1e-4, -5e-3, -1e-3 ])
+            new_x = x + np.array([-5e-4,-1e-4, 1e-2, 5e-3, -5-3, -1e-4, -5e-3, -1e-3 ])*self.multiplier(iter)
         elif not bool_array[0]:   
-            new_x = x + np.array([1e-3,0, 5e-3, 1e-3, 5e-4 , 5e-4, 5e-4, 1e-4 ])
+            new_x = x + np.array([1e-3,0, 5e-3, -1e-3, -5e-4 , 5e-4, 5e-4, 1e-4 ])*self.multiplier(iter)
         elif not bool_array[1]:   
-            new_x = x + np.array([1e-3,0, 5e-3, 1e-3, 5e-4 , 5e-4, 5e-4, 1e-4 ])
+            new_x = x + np.array([1e-3,0, -5e-3, -1e-3, 5e-4 , 5e-4, 5e-4, 1e-4 ])*self.multiplier(iter)
         elif not bool_array[2]:   
-            new_x = x + np.array([1e-3,1e-3, 5e-3, 1e-3, 5e-4 , 1e-4, 1e-4, 1e-4 ])
+            new_x = x + np.array([1e-3,1e-3, -5e-3, -1e-3, 5e-4 , 1e-4, 1e-4, 1e-4 ])*self.multiplier(iter)
         elif not bool_array[3]:   
-            new_x = x + np.array([1e-3,1e-3, 5e-3, 1e-3, 0, 0, 0, 0])
+            new_x = x + np.array([1e-3,1e-3, -5e-3, -1e-3, 0, 0, 0, 0])*self.multiplier(iter)
         elif not bool_array[4]:   
-            new_x = x + np.array([0,0, 0, 0, 1e-3, 1e-3, 1e-3, 0])
+            new_x = x + np.array([0,0, 0, 0, 1e-3, 1e-3, 1e-3, 0])*self.multiplier(iter)
         elif not bool_array[5]:   
-            new_x = x + np.array([0,0, 0, 0, 0, 0, 1e-3, 0])
+            new_x = x + np.array([1e-3,0, -5e-3, -2e-3, 0, 0, 1e-3, 1e-3])*self.multiplier(iter) #TODO increase spar and shiz as well
         elif not bool_array[6]:   
-            new_x = x + np.array([0,0, 0, 0, 0, 1e-3, 0, 0])
+            new_x = x + np.array([0,0, 1e-3, 0, 0, 0, 0, 0])*self.multiplier(iter)
         elif not bool_array[7]:   
-            new_x = x + np.array([0,0, 0, 0, 0, 1e-3, 0, 0])
+            new_x = x + np.array([0,0, 0, 0, 0, 1e-3, 0, 0])*self.multiplier(iter)
         else: 
             raise Exception("Error has been raised, code should not have reached this line.")
 
@@ -996,7 +965,15 @@ class WingboxOptimizer():
 
         for iter in range(self.max_iter):
             constr = self.check_constraints(x)
-            new_x = self.edit_design()
+            new_x = self.edit_design(x, constr, iter)
+            x = new_x
 
-        return  Ellipsis
+        weight_lst = [] 
+        for design in self.design_lst:
+            weight_lst.append(self.compute_weight(design))
+        weight_lst = np.array(weight_lst)
+        idx = np.where(weight_lst == np.min(weight_lst))[0]
+        optimum_design = self.design_lst[idx[0]]
+
+        return  optimum_design, weight_lst[idx]
 
