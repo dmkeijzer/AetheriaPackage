@@ -40,14 +40,14 @@ class HorTail():
 
 
     def dump(self):
+        with open(r"input/data_structures/aetheria_constants.json") as jsonFile:
+            data = json.load(jsonFile)
         """Dumps values into json file"""
-        data = {
-        "S_h": self.surface,
-        "A_h": self.aspect_ratio,
-        "t_r_h": self.t_r_h,
-        "hortailsurf_wingsurf": self.hortailsurf_wingsurf
-        # "b_h": self.b_h
-        }
+
+        data["S_h"] = self.surface
+        data["A_h"] = self.aspect_ratio
+        data["t_r_h"] = self.t_r_h
+        data["hortailsurf_wingsurf"] = self.hortailsurf_wingsurf
 
         with open(r"input/data_structures/aetheria_constants.json", "w") as jsonFile:
             json.dump(data, jsonFile, indent=6)

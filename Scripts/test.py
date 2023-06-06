@@ -26,8 +26,9 @@ WingClass.load()
 FuseClass.load()
 HorClass.load()
 
+print(np.tan(0))
 
-print(WingClass.x_lewing)
-print(wing_location_horizontalstab_size(WingClass, FuseClass, HorClass, False)[0][0])
-print()
-print('done')
+#print(WingClass.x_lewing)
+#print(wing_location_horizontalstab_size(WingClass, FuseClass, HorClass, False))
+#print()
+#print('done')
