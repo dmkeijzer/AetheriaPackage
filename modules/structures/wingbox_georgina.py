@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import sys
 import pathlib as pl
 import os
+import openmdao.api as om
 
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
@@ -473,8 +474,8 @@ def torsion_sections(b,c_r,L,t,engine,wing):
             T[i] = engine_weight * 9.81 * (x_centre_wb(engine.x_rotor_loc[0])-engine.x_rotor_loc[0]) + engine_weight * 9.81 * (x_centre_wb(engine.x_rotor_loc[2])-engine.x_rotor_loc[2])
         else:
             T[i] = engine_weight * 9.81 * (x_centre_wb(engine.x_rotor_loc[0])-engine.x_rotor_loc[0])
-        print(sta[i],y_rotor_loc[0],x_centre_wb(engine.x_rotor_loc[0]))
-    print(f"\n\nT = {T}\n\n")
+    #     print(sta[i],y_rotor_loc[0],x_centre_wb(engine.x_rotor_loc[0]))
+    # print(f"\n\nT = {T}\n\n")
     return T
 
 def N_xy(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t,Engine,Wing):
@@ -862,7 +863,9 @@ def compute_volume():
 
 
 
-class WingboxOptimizer():
+class WingboxOptimizerDeprecated():
+    """OUTDATED
+    """    
     def __init__(self, x0, wing, engine,  max_iter= 500):
         """Initialisze the wingbox optimization
 
@@ -874,7 +877,7 @@ class WingboxOptimizer():
         :type max_iter: int, optional
         """        
         #enforce equal stringer size (this was an assumption made to simplify our process)
-        x0[6] = x0[4]
+        # x0[6] = x0[4]
         self.x0 = np.array(x0)
         self.wing =  wing
         self.engine = engine
@@ -882,7 +885,7 @@ class WingboxOptimizer():
         self.design_lst = []
         self.multiplier_lst = np.linspace(1,0,max_iter)
     
-    def check_constraints(self,x,engine,wing):
+    def check_constraints(self,x):
 
         constr = [
         global_local(self.wing.span, self.wing.chord_root, x[2], x[3], x[4], x[5],[x[7]]),
@@ -927,22 +930,22 @@ class WingboxOptimizer():
                 # :param x0:  [ tsp, trib, L, bst, hst, tst, wst, t]
 
         if bool_array.all():
-            self.design_lst.append(x)
+            self.design_lst.append((x,iter))
             new_x = x + np.array([-5e-4,-1e-4, 1e-2, 5e-3, -5-3, -1e-4, -5e-3, -1e-3 ])*self.multiplier(iter)
         elif not bool_array[0]:   
             new_x = x + np.array([0,0, 0, -1e-3, 5e-4 , 5e-4, 5e-4, 0 ])*self.multiplier(iter)
         elif not bool_array[1]:   
-            new_x = x + np.array([1e-3,0, -5e-3, -1e-3, 5e-4 , 5e-4, 5e-4, 1e-4 ])*self.multiplier(iter)
+            new_x = x + np.array([1e-3,0, 0, -1e-3, 5e-4 , 5e-4, 5e-4, 0 ])*self.multiplier(iter)
         elif not bool_array[2]:   
             new_x = x + np.array([1e-3,1e-3, -5e-3, -1e-3, 5e-4 , 1e-4, 1e-4, 1e-4 ])*self.multiplier(iter)
         elif not bool_array[3]:   
-            new_x = x + np.array([1e-3,1e-3, -5e-3, -1e-3, 0, 0, 0, 0])*self.multiplier(iter)
+            new_x = x + np.array([1e-3,1e-3, -5e-3, -1e-3, 1e-3, 5e-4, 1e-3, 0])*self.multiplier(iter)
         elif not bool_array[4]:   
-            new_x = x + np.array([0,0, 0, 0, 1e-3, 1e-3, 1e-3, 0])*self.multiplier(iter)
+            new_x = x + np.array([0,0, 0, 0, 0, 1e-3, 1e-3, 0])*self.multiplier(iter)
         elif not bool_array[5]:   
-            new_x = x + np.array([1e-3,0, -5e-3, -2e-3, 0, 0, 1e-3, 1e-3])*self.multiplier(iter) #TODO increase spar and shiz as well
+            new_x = x + np.array([0,0, 0, 1e-3, 0, 0, 0, -5e-4])*self.multiplier(iter) #TODO increase spar and shiz as well
         elif not bool_array[6]:   
-            new_x = x + np.array([0,0, 1e-3, 0, 0, 0, 0, 0])*self.multiplier(iter)
+            new_x = x + np.array([0,0, 1e-2, 0, 0, 0, 0, 0])*self.multiplier(iter)
         elif not bool_array[7]:   
             new_x = x + np.array([0,0, 0, 0, 0, 1e-3, 0, 0])*self.multiplier(iter)
         else: 
@@ -974,10 +977,198 @@ class WingboxOptimizer():
 
         weight_lst = [] 
         for design in self.design_lst:
-            weight_lst.append(self.compute_weight(design))
+            weight_lst.append(self.compute_weight(design[0]))
         weight_lst = np.array(weight_lst)
         idx = np.where(weight_lst == np.min(weight_lst))[0]
-        optimum_design = self.design_lst[idx[0]]
+        optimum_design = self.design_lst[idx[0]][0]
+
+        print(f"Iteration = {self.design_lst[idx[0]][1]}")
+        print(f"thickness spar= {optimum_design[0]*1000} [mm]")
+        print(f"thickness rib= {optimum_design[1]*1000} [mm]")
+        print(f"rib pitch= {optimum_design[2]*1000} [mm]")
+        print(f"stringer pitch= {optimum_design[3]*1000} [mm]")
+        print(f"stringer height= {optimum_design[4]*1000} [mm]")
+        print(f"stringer thcikness= {optimum_design[5]*1000} [mm]")
+        print(f"stringer width= {optimum_design[6]*1000} [mm]")
+        print(f"skin thickness= {optimum_design[7]*1000} [mm]")
 
         return  optimum_design, weight_lst[idx]
+
+
+class Wingbox_optimization(om.ExplicitComponent):
+
+    def setup(self):
+
+        # Design variables
+        self.add_input('tsp')
+        self.add_input('trib')
+        self.add_input('L')
+        self.add_input('bst')
+        self.add_input('hst')
+        self.add_input('tst')
+        self.add_input('wst')
+        self.add_input('t')
+
+        # Constant inputs
+        self.add_input('b')
+        self.add_input('c_r')
+        self.add_input('engine')
+        self.add_input('wing')
+        
+        #Outputs used as constraints
+        self.add_output('wing_weight')
+        self.add_output('global_local')
+        self.add_output('post_buckling')
+        self.add_output('von_mises')
+        self.add_output('buckling_constr')
+        self.add_output('flange_loc_loc')
+        self.add_output('local_column')
+        self.add_output('crippling')
+        self.add_output("web_flange")
+
+
+    # def setup_partials(self):
+
+    #     # Partial derivatives are done using finite difference
+    #     self.declare_partials('*', '*', 'fd')
+
+    def compute(self, inputs, outputs):
+
+        # Design variables
+        tsp = inputs['tsp'][0]
+        trib = inputs['trib'][0]
+        L = inputs['L'][0]
+        bst = inputs['bst'][0]
+        hst = inputs['hst'][0]
+        tst = inputs['tst'][0]
+        wst = inputs['wst'][0]
+        t = inputs['t'][0]
+
+        # Constants
+        span = inputs['b'][0]
+        chord_root = inputs['c_r'][0]
+        EngClass = inputs['engine'][0]
+        WingClass = inputs['wing'][0]
+
+        wing_weight = wing_weight(span, chord_root,tsp,trib, L, bst, hst, tst,wst,[t])
+
+        constr = [
+        global_local(span, chord_root, L, bst, hst, tst,[t]),
+        post_buckling(span, chord_root, tsp, trib,  L, bst, hst, tst, wst, [t]),
+        von_Mises(span, chord_root, tsp, trib, L, bst, hst, tst,wst,[t], EngClass, WingClass),
+        buckling_constr(span, chord_root, tsp, trib, L, bst, hst, tst,wst,[t], EngClass, WingClass),
+        flange_loc_loc(span, chord_root, L, bst,tst,wst,[t]),
+        local_column(span, chord_root, L, bst,hst,tst,wst,[t]),
+        crippling(span,  L,  hst, tst, wst, [t]), #ONLY
+        web_flange(span, chord_root, L, bst, hst, tst, [t])
+        ]
+
+
+
+
+        outputs['wing_weight'] = wing_weight
+        outputs['global_local'] = constr[0]
+        outputs['post_buckling'] = constr[1]
+        outputs['von_mises'] = constr[2]
+        outputs['buckling_constr'] = constr[3]
+        outputs['flange_loc_loc'] = constr[4]
+        outputs['local_column'] = constr[5]
+        outputs['crippling'] = constr[6]
+        outputs['web_flange'] = constr[7]
+
+        str_lst =  ["Global local", "Post buckling", "Von Mises", 
+                    "Buckling", "Flange loc loc", "Local column",
+                    "Crippling", "Web flange"]
+
+        print('===== Progress update =====')
+        print(f"Current weight = {wing_weight} [kg]")
+        print(f"The failing constraints were {str_lst[np.logical_not(np.array(constr))]}")
+
+
+
+def WingboxOptimizer(x, wing, engine):
+    """ sets up optimziation procedure and runs the driver
+
+    :param x: Initial estimate X = [tsp, trib, L, bst, hst, tst, wst, t]
+    :type x: nd.array
+    :param wing: wing class from data structure
+    :type wing: wing class
+    :param engine: engine class from data structures
+    :type engine: engine class
+    """    
+
+    prob = om.Problem()
+    prob.model.add_subsystem('wingbox_design', Wingbox_optimization())#, promotes_inputs=['AR1',
+                                                                                        # 'AR2',
+
+    # Initial values for the optimization 
+
+    #Constants
+    prob.model.set_input_defaults('Integrated_design.b', wing.span)
+    prob.model.set_input_defaults('Integrated_design.c_r', wing.chord_root)
+    prob.model.set_input_defaults('Integrated_design.engine', engine)
+    prob.model.set_input_defaults('Integrated_design.wing', wing)
+
+    # Initial estimate for the design variables
+    prob.model.set_input_defaults('Integrated_design.tsp', x[0])
+    prob.model.set_input_defaults('Integrated_design.trib', x[1])
+    prob.model.set_input_defaults('Integrated_design.L', x[2])
+    prob.model.set_input_defaults('Integrated_design.bst', x[3])
+    prob.model.set_input_defaults('Integrated_design.hst', x[4])
+    prob.model.set_input_defaults('Integrated_design.tst', x[5])
+    prob.model.set_input_defaults('Integrated_design.wst', x[6])
+    prob.model.set_input_defaults('Integrated_design.t', x[7])
+
+
+    # Define constraints 
+    prob.model.add_constraint('Integrated_design.global_local', lower=0)
+    prob.model.add_constraint('Integrated_design.post_buckling', lower=0)
+    prob.model.add_constraint('Integrated_design.von_mises', lower=0)
+    prob.model.add_constraint('Integrated_design.buckling_constr', lower=0)
+    prob.model.add_constraint('Integrated_design.flange_loc_loc', lower=0)
+    prob.model.add_constraint('Integrated_design.local_column', lower=0)
+    prob.model.add_constraint('Integrated_design.crippling', lower=0)
+    prob.model.add_constraint('Integrated_design.web_flange', lower=0)
+
+    prob.driver = om.ScipyOptimizeDriver()
+    prob.driver.options['optimizer'] = 'COBYLA'
+
+    prob.model.add_design_var('Integrated_design.tsp', lower = 0, upper= 0.1)
+    prob.model.add_design_var('Integrated_design.trib', lower = 0, upper= 0.1)
+    prob.model.add_design_var('Integrated_design.L', lower = 0, upper= 2)
+    prob.model.add_design_var('Integrated_design.bst',  lower = 0, upper= 0.5)
+    prob.model.add_design_var('Integrated_design.hst', lower = 0. , upper= 0.4)
+    prob.model.add_design_var('Integrated_design.tst', lower = 0., upper= 0.1)
+    prob.model.add_design_var('Integrated_design.wst', lower = 0., upper= 0.4 )
+    prob.model.add_design_var('Integrated_design.t', lower = 0., upper= 0.1)
+
+    prob.model.add_objective('Integrated_design.wing_weight')
+
+    prob.setup()
+    prob.run_driver()
+
+    print(f"thickness spar= {prob.get_val('tsp')*1000} [mm]")
+    print(f"thickness rib= {prob.get_val('trib')*1000} [mm]")
+    print(f"rib pitch= {prob.get_val('L')*1000} [mm]")
+    print(f"stringer pitch= {prob.get_val('bst')*1000} [mm]")
+    print(f"stringer height= {prob.get_val('hst')*1000} [mm]")
+    print(f"stringer thickness= {prob.get_val('tst')*1000} [mm]")
+    print(f"stringer width= {prob.get_val('wst')*1000} [mm]")
+    print(f"skin thickness= {prob.get_val('t')*1000} [mm]")
+
+
+    output_lst =  np.array([
+    prob.get_val('tsp'),
+    prob.get_val('trib'),
+    prob.get_val('L'),
+    prob.get_val('bst'),
+    prob.get_val('hst'),
+    prob.get_val('tst'),
+    prob.get_val('wst'),
+    prob.get_val('t')
+    ])
+
+    return output_lst
+
+
 

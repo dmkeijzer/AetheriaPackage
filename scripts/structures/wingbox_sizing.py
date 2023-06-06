@@ -84,4 +84,3 @@ x0=np.array([0.003, 0.003, 0.12, 0.07, 0.003,0.003,0.004,0.0022])    # :param x0
     
 
 optimizertest = wb.WingboxOptimizer(x0, WingClass, EngClass)
-print(optimizertest.optimize())
