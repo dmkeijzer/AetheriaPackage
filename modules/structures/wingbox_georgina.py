@@ -473,8 +473,6 @@ def torsion_sections(b,c_r,L,t,engine,wing):
             T[i] = engine_weight * 9.81 * (x_centre_wb(engine.x_rotor_loc[0])-engine.x_rotor_loc[0]) + engine_weight * 9.81 * (x_centre_wb(engine.x_rotor_loc[2])-engine.x_rotor_loc[2])
         else:
             T[i] = engine_weight * 9.81 * (x_centre_wb(engine.x_rotor_loc[0])-engine.x_rotor_loc[0])
-        print(sta[i],y_rotor_loc[0],x_centre_wb(engine.x_rotor_loc[0]))
-    print(f"\n\nT = {T}\n\n")
     return T
 
 def N_xy(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t,Engine,Wing):
@@ -882,7 +880,7 @@ class WingboxOptimizer():
         self.design_lst = []
         self.multiplier_lst = np.linspace(1,0,max_iter)
     
-    def check_constraints(self,x,engine,wing):
+    def check_constraints(self,x):
 
         constr = [
         global_local(self.wing.span, self.wing.chord_root, x[2], x[3], x[4], x[5],[x[7]]),
@@ -942,7 +940,7 @@ class WingboxOptimizer():
         elif not bool_array[5]:   
             new_x = x + np.array([1e-3,0, -5e-3, -2e-3, 0, 0, 1e-3, 1e-3])*self.multiplier(iter) #TODO increase spar and shiz as well
         elif not bool_array[6]:   
-            new_x = x + np.array([0,0, 1e-3, 0, 0, 0, 0, 0])*self.multiplier(iter)
+            new_x = x + np.array([0,0, 1e-2, 0, 0, 0, 0, 0])*self.multiplier(iter)
         elif not bool_array[7]:   
             new_x = x + np.array([0,0, 0, 0, 0, 1e-3, 0, 0])*self.multiplier(iter)
         else: 

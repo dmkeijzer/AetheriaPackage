@@ -37,6 +37,7 @@ class Wing():
     cL_alpha0: float = None
     mach_cruise: float = None
     cL_alpha0_approach: float = None
+    x_lewing: float = None
 
     def load(self):
         with open(r"input/data_structures/aetheria_constants.json") as jsonFile:
@@ -51,7 +52,7 @@ class Wing():
         self.chord_mac = data["mac"]
         self.y_mac = data["y_mac"]
         self.sweep_LE = data["sweep_le"]
-        self.quarterchord_sweep = data["sweep_le"]
+        self.quarterchord_sweep = 0
         self.X_lemac = data["x_lemac"]
         self.cd = data["cd"]
         self.cd0 = data["cd0"]
@@ -64,6 +65,7 @@ class Wing():
         self.cL_alpha0 = data["cL0"]
         self.mach_cruise = v_cr / a_cr
         self.cL_alpha0_approach = data["cL0_approach"]
+        self.x_lewing = data["x_lewing"]
         # self.effective_aspectratio =  data[""] # Left out for now since it is not implemented yet
         # self.effective_span =  data[""] # Left out for now since it is not implemented yet
 
@@ -77,13 +79,14 @@ class Wing():
             "c_tip": self.chord_tip,
             "mac": self.chord_mac,
             "y_mac": self.y_mac,
-            "sweep_le": self.tan_sweep_LE,
+            "sweep_le": self.sweep_LE,
             "quarterchord_sweep": self.quarterchord_sweep,
             "x_lemac": self.X_lemac,
-            "cd": self.cd
+            "cd": self.cd,
+            "x_lewing": self.x_lewing
         }
 
-        with open(r"output/data_structures/aetheria_constants.json", "w") as jsonFile:
+        with open(r"input/data_structures/aetheria_constants.json", "w") as jsonFile:
             json.dump(data, jsonFile, indent=4)
 
 

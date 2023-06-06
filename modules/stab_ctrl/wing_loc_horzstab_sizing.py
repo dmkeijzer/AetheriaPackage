@@ -138,7 +138,7 @@ def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, plot=F
     c_root = WingClass.chord_root
     l_f = FuseClass.length_fuselage
     CL0_approach = WingClass.cL_alpha0_approach
-    Cm_ac_wing = WingClass.cm
+    Cm_ac_wing = WingClass.cm_ac
     CLAh_approach = WingClass.cL_approach  # Assumes fuselage contribution negligible
     x_lemac_x_rootc = WingClass.X_lemac
     SM = 0.05  # Stability margin, standard
@@ -193,6 +193,16 @@ def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, plot=F
     if plot:
         plt.plot(log_final[:,0], log_final[:,1])
         plt.show()
+
+
+    WingClass.x_lewing = log_final[np.where(log_final[:,1] == np.min(log_final[:,1]))[0], 0:2][0][0] *FuseClass.length_fuselage - 0.24 * WingClass.chord_mac - WingClass.X_lemac
+    HorTailClass.hortailsurf_wingsurf =  log_final[np.where(log_final[:,1] == np.min(log_final[:,1]))[0], 0:2][0][1]
+    HorTailClass.surface = log_final[np.where(log_final[:,1] == np.min(log_final[:,1]))[0], 0:2][0][1] * WingClass.surface
+    #Update all values
+    WingClass.dump()
+    #FuseClass.dump()
+    HorTailClass.dump()
+
     return log_final[np.where(log_final[:,1] == np.min(log_final[:,1]))[0], 0:2]
 
 if __name__ == "__main__":
