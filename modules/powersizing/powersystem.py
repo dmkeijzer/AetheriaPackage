@@ -85,7 +85,7 @@ def hover_mass(PowerRequired: float ,MaxPowerFC: float, Battery: BatterySizing) 
         output:
             -Batterymass
     """
-    BatteryMass = (PowerRequired - MaxPowerFC) / Battery.PowerDensity /Battery.DOD / 
+    BatteryMass = (PowerRequired - MaxPowerFC) / Battery.PowerDensity /Battery.DOD 
     return  BatteryMass
 
 def hover_energy_mass(PowerRequired: float ,MaxPowerFC: float, Battery: BatterySizing, HoverTime:float) -> float:
