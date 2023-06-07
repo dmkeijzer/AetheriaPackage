@@ -164,5 +164,8 @@
       "cd0_stall": 0.01954671455847806,
       "shear_modulus": 26000000000.0,
       "hortailsurf_wingsurf": 0.12077294795413113,
-      "quarterchord_sweep": 0
+      "quarterchord_sweep": 0,
+      "alpha_climb_clean": 0.0873,
+      "cl_climb_clean": 0.592,
+      "cdi_climb_clean": 0.013
 }
