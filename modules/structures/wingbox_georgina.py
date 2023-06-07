@@ -91,6 +91,9 @@ def n_ribs(b, L):
 
 
 def new_L(b, L):
+    """ FIx this function
+
+    """    
     nr_sect = n_ribs(b, L) - 1
     new_pitch = 0.5 * b / nr_sect
     return new_pitch
@@ -99,6 +102,9 @@ def new_L(b, L):
 
 
 def new_bst(c_r, b_st):
+    """ Fix this function as well
+
+    """    
     nr_sect = n_st(c_r, b_st) - 1
     new_pitch = c_r / nr_sect
     return new_pitch
@@ -108,6 +114,9 @@ def new_bst(c_r, b_st):
 
 
 def rib_coordinates(b, L):
+    """ This functions will become an innput
+
+    """    
     L_new = new_L(b, L)
     stations = np.arange(0, b / 2 + L_new, L_new)
     return stations
@@ -130,6 +139,11 @@ def I_xx(b,c_r,t_sp,b_st, h_st,t_st,w_st,t_sk):
 
 
 def t_arr(b, L,t):
+    """ Replace function by our design variables, simplifies our process. List of thicknesses compatible with our sections. 
+    #TODO
+    - compatible with L
+
+    """    
     b=abs(b)
     L=abs(L)
     nr_ribs = n_ribs(b, L)
@@ -409,6 +423,9 @@ def m_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
 
 
 def N_x(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
+    """ Check this function thoroughly
+
+    """    
     sta = rib_coordinates(b, L)
     x_sort, moment = m_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)
     # x_sort = m_eng(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)[0]
@@ -439,8 +456,8 @@ def N_x(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
     for i in range(len(tarr)):
         Ixx = I_xx(b,c_r,t_sp,b_st, h_st,t_st,w_st,tarr[i])(sta[i])
         bend_stress[i] = moment[i] * 0.5 * h(sta[i]) / Ixx
-        Nx[i] = bend_stress[i] * tarr[i]
-    return Nx, bend_stress
+        # Nx[i] = bend_stress[i] * tarr[i]
+    return  bend_stress
 
 
 
@@ -756,16 +773,16 @@ def column_st(b, L,h_st,t_st,w_st,t_sk):
     return i
 
 
-def f_ult(b,c_r,L,b_st,h_st,t_st,w_st,t):
+def f_ult(b,c_r,L,b_st,h_st,t_st,w_st,tarr):
     A_st = area_st(h_st,t_st,w_st)
     n=n_st(c_r,b_st)
-    tarr=t_arr(b,L,t)
+    tarr=t_arr(b,L,tarr)
     c=chord(b,c_r)
     h=height(b,c_r)
-    stations=rib_coordinates(b,L)
+    stations=rib_coordinates(b,L) #FIXME change this to an input 
     f_uts=np.zeros(len(tarr))
     for i in range(len(tarr)):
-        A=n*A_st+0.6*c(stations[i])*tarr[i]
+        A=n*A_st+0.6*c(stations[i])*tarr
         f_uts[i]=sigma_uts*A
     return f_uts
 
@@ -781,14 +798,16 @@ def buckling_constr(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
     return vector[0]
 
 
-def global_local(b, c_r, L, b_st, h_st,t_st,t):
-    tarr = t_arr(b, L,t)
+def global_local(b, c_r, L, b_st, h_st,t_st,tarr):
+    tarr = t_arr(b, L,t) #FIXME t will become the array of thickness for each sectino
     diff = np.zeros(len(tarr))
-    for i in range(len(tarr)):
-        glob = global_buckling(c_r, b_st, h_st,t_st,tarr[i])
-        loc = local_buckling(c_r, b_st,tarr[i])
-        diff[i] = glob - loc
-    return diff[0]
+    # for i in range(len(tarr)):
+    #     glob = global_buckling(c_r, b_st, h_st,t_st,tarr[i])
+    #     loc = local_buckling(c_r, b_st,tarr[i])
+    #     diff[i] = glob - loc #FIXEM glob
+    diff = global_buckling(c_r, b_st, h_st,t_st,tarr)  - local_buckling(c_r, b_st,tarr)
+
+    return diff
 
 
 
@@ -822,11 +841,10 @@ def web_flange(b,c_r, L,b_st, h_st,t_st,t):
     return diff[0]
 
 
-def von_Mises(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
-    tarr = t_arr(b, L,t)
-    vm = np.zeros(len(tarr))
-    Nxy=N_xy(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)
-    bend_stress=N_x(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)[1]
+def von_Mises(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,tarr):
+    # vm = np.zeros(len(tarr))
+    Nxy=N_xy(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,tarr)
+    bend_stress=N_x(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,tarr)[1] #
     tau_shear_arr = Nxy/tarr
     vm_lst = sigma_yield - np.sqrt(0.5 * (3 * tau_shear_arr ** 2+bend_stress**2))
     # for i in range(len(tarr)):
@@ -994,6 +1012,12 @@ class WingboxOptimizerDeprecated():
 
 
 class Wingbox_optimization(om.ExplicitComponent):
+    def __init__(self, wing, engine):
+        super().__init__(self)
+        self.wing =  wing
+        self.engine = engine
+
+
 
     def setup(self):
 
@@ -1010,8 +1034,6 @@ class Wingbox_optimization(om.ExplicitComponent):
         # Constant inputs
         self.add_input('b')
         self.add_input('c_r')
-        # self.add_input('engine')
-        # self.add_input('wing')
         
         #Outputs used as constraints
         self.add_output('wing_weight')
@@ -1035,8 +1057,8 @@ class Wingbox_optimization(om.ExplicitComponent):
         # Design variables
         tsp = inputs['tsp'][0]
         trib = inputs['trib'][0]
-        L = inputs['L'][0]
-        bst = inputs['bst'][0]
+        L = inputs['L'][0] #FIXME Use a fixed rib pitch
+        bst = inputs['bst'][0] #FIXME 
         hst = inputs['hst'][0]
         tst = inputs['tst'][0]
         wst = inputs['wst'][0]
@@ -1045,8 +1067,6 @@ class Wingbox_optimization(om.ExplicitComponent):
         # Constants
         span = inputs['b'][0]
         chord_root = inputs['c_r'][0]
-        # EngClass = inputs['engine'][0]
-        # WingClass = inputs['wing'][0]
 
         weight = wing_weight(span, chord_root,tsp,trib, L, bst, hst, tst,wst,[t])
 
@@ -1095,6 +1115,7 @@ def WingboxOptimizer(x, wing, engine):
     :type engine: engine class
     """    
 
+
     prob = om.Problem()
     prob.model.add_subsystem('wingbox_design', Wingbox_optimization())#, promotes_inputs=['AR1',
                                                                                         # 'AR2',
@@ -1129,7 +1150,7 @@ def WingboxOptimizer(x, wing, engine):
     prob.model.add_constraint('wingbox_design.web_flange', lower=0.)
 
     prob.driver = om.ScipyOptimizeDriver()
-    prob.driver.options['optimizer'] = 'COBYLA'
+    prob.driver.options['optimizer'] = 'SLSQP'
     prob.driver.opt_settings['maxiter'] = 1000
 
     prob.model.add_design_var('wingbox_design.tsp', lower = 0., upper= 0.1)
