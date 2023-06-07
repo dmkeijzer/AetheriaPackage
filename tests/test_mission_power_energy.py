@@ -5,12 +5,12 @@ import pathlib as pl
 import numpy as np
 
 # Path handling
-sys.path.append(str(list(pl.Path(__file__).parents)[2]))
-os.chdir(str(list(pl.Path(__file__).parents)[2]))
+sys.path.append(str(list(pl.Path(__file__).parents)[1]))
+os.chdir(str(list(pl.Path(__file__).parents)[1]))
 #sys.path.append(str(list(pl.Path(__file__).parents)[1]))
 #os.chdir(str(list(pl.Path(__file__).parents)[1]))
 
-from modules.midterm_aero.clean_class2drag import Reynolds, Mach_cruise, FF_fus, FF_wing, S_wet_fus, CD_upsweep, CD_base, C_fe_fus, C_fe_wing, CD_fus, CD_wing, CD0, CDi, CD, lift_over_drag, Oswald_eff, Oswald_eff_tandem
+from modules.aero.clean_class2drag  import Reynolds, Mach_cruise, FF_fus, FF_wing, S_wet_fus, CD_upsweep, CD_base, C_fe_fus, C_fe_wing, CD_fus, CD_wing, CD0, CDi, CD, lift_over_drag, Oswald_eff, Oswald_eff_tandem
 
 @pytest.fixture
 def example_values():

@@ -11,7 +11,7 @@ from modules.powersizing.fuellCell import FuellCellSizing
 from modules.powersizing.hydrogenTank import HydrogenTankSizing
 from modules.powersizing.energypowerrequirement import MissionRequirements
 from modules.powersizing.powersystem import PropulsionSystem, onlyFuelCellSizing
-import input.GeneralConstants as  const
+import input.data_structures.GeneralConstants as  const
 
 
 

@@ -16,7 +16,7 @@ from input.data_structures.wing import Wing
 from input.data_structures.aero import Aero
 import input.data_structures.GeneralConstants as const
 
-def get_lift_distr(wing, aero, plot= False):
+def get_lift_distr(wing, aero, plot= False, test= False):
     """ Returns the lift distribution as a function of the span using an AVLWrapper, see refs below.
 
     ref: https://github.com/jbussemaker/AVLWrapper.git
@@ -27,6 +27,8 @@ def get_lift_distr(wing, aero, plot= False):
     :type aero: wing structure
     :param plot: Plot the lift distribution and the avl model which is used, defaults to False
     :type plot: bool, optional
+    :param test: bool used for the test, returns parameters required for the assert statements, defaults to False
+    :type test: bool, optional
     :return: Lift distribution as a function of the span
     :rtype: function
     """    
@@ -95,6 +97,8 @@ def get_lift_distr(wing, aero, plot= False):
         plt.grid(alpha=0.8, lw= 0.7)
         plt.show()
 
+    if test:
+        return lift_func, results
 
     return lift_func
         
