@@ -9,15 +9,15 @@ import pathlib as pl
 import os
 import json
 
-sys.path.append(str(list(pl.Path(__file__).parents)[3]))
-os.chdir(str(list(pl.Path(__file__).parents)[3]))
+sys.path.append(str(list(pl.Path(__file__).parents)[2]))
+os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
 from modules.flight_perf.EnergyPower import *
 import input.data_structures.GeneralConstants as const
     
 TEST = int(input("\n\nType 1 if you want to write the JSON data to your download folder instead of the repo, type 0 otherwise:\n")) # Set to true if you want to write to your downloads folders instead of rep0
-dict_directory = "input"
-dict_names = ["J1_constants.json", "L1_constants.json", "W1_constants.json"]
+dict_directory = "input/data_structures"
+dict_names = ["aetheria_constants.json"]
 download_dir = os.path.join(os.path.expanduser("~"), "Downloads")
 
 # Loop through the JSON files
