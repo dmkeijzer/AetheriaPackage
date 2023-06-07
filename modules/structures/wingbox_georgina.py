@@ -33,7 +33,53 @@ y_rotor_loc = None
 
 G = 26e9
 
-    
+
+class Wingbox():
+    def __init__(self, engine, material, pitch_st) -> None:
+        #Material
+        self.n_st = n_st
+        self.poisson = material.poisson
+        self.rho = material.rho
+        self.E = material.E
+        self.pb = material.pb
+        self.beta = material.beta
+        self.g = material.g
+        self.sigma_yield = material.sigma_yield
+        self.m_crip = material.m_crip
+        self.sigma_uts = material.sigma_uts
+        self.shear_modulus = material.shear_modulus
+        #Wing
+        self.taper = taper
+        self.n_max = n_max_req
+
+        #Engine
+        self.engine_weight = engine.mass_pertotalengine
+        self.y_rotor_loc = engine.y_rotor_loc
+        self.nacelle_w = engine.nacelle_w #TODO Check if it gets updated
+        
+        
+        #Set number of ribs in inboard and outboard section
+        self.n_ribs_sec0 = 1 #Number of ribs inboard of inboard engine
+        self.n_ribs_sec1 = 4 #Number of ribs inboard and outboard engines
+
+        #Set number of stringers in top and bottom
+        self.n_str = 20
+
+    #Determine rib positions in spanwise direction (y)
+    def get_y_rib_loc(self):
+        y_rib_0 = self.y_rotor_loc[0] - 0.5 * self.nacelle_w
+        y_rib_1 = self.y_rotor_loc[0] + 0.5 * self.nacelle_w
+
+        y_rib_3 = self.y_rotr_loc[1] - 0.5 * self.nacelle_w
+        y_rib_2 = y_rib_3 - 0.15
+        y_rib_sec0 = np.arange(0,y_rib_0,y_rib_0/self.n_ribs_sec0)
+        y_rib_sec1 = np.arange(y_rib_1,y_rib_2, (y_rib_2-y_rib_1)/self.n_ribs_sec1)
+
+        y_rib_loc = np.array([y_rib_0,y_rib_1,y_rib_2,y_rib_3],y_rib_sec0,y_rib_sec1)
+        y_rib_loc = np.sort(y_rib_loc)
+        return y_rib_loc
+
+
 
 
 def chord(b, c_r):
