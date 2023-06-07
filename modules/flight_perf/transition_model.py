@@ -113,6 +113,7 @@ def numerical_simulation(vx_start, y_start, mass, g0, S, CL_max, alpha_climb, CD
         if t > t_end:
             running = False
     acc_lst = np.array(acc_lst)
+    print(E/3.6e6)
     # Create a figure and subplots
     fig, axs = plt.subplots(2, 2, figsize=(10, 8))
 
@@ -138,8 +139,8 @@ def numerical_simulation(vx_start, y_start, mass, g0, S, CL_max, alpha_climb, CD
     return y_lst, x_lst, vy_lst, vx_lst, t_lst, alpha_T_lst, P_lst
 
 
-#print(np.max(numerical_simulation(vx_start=0, y_start=30.5,
-#      mass=data["mtom"], g0=const.g0, S=data['S'], CL_max=data['cl_climb_clean'], alpha_climb=data['alpha_climb_clean'], CD=data["cdi_climb_clean"]+data["cd0"], Adisk= data["diskarea"], lod_climb=data['ld_climb'], eff_climb=data['eff'])[6]))
+print(np.max(numerical_simulation(vx_start=0, y_start=const.h_transition,
+      mass=data["mtom"], g0=const.g0, S=data['S'], CL_max=Aeroclass.cl_climb_clean, alpha_climb=Aeroclass.alpha_climb_clean, CD=Aeroclass.cdi_climb_clean+Aeroclass.cd0, Adisk= data["diskarea"], lod_climb=Aeroclass.ld_climb, eff_climb=data['eff'])[6]))
 
 
 
@@ -245,6 +246,7 @@ def numerical_simulation_landing(vx_start, descend_slope, y_start, mass, g0, S, 
         if t>t_end or vx<0:
             running = False
     acc_lst = np.array(acc_lst)
+    print(E/3.6e6)
     # Create a figure and subplots
     fig, axs = plt.subplots(2, 2, figsize=(10, 8))
 
@@ -267,8 +269,8 @@ def numerical_simulation_landing(vx_start, descend_slope, y_start, mass, g0, S, 
     # Display the figure
     plt.show()
 
-    return y_lst, x_lst, vy_lst, vx_lst, t_lst, alpha_T_lst, P_lst
+    return y_lst, x_lst, vy_lst, vx_lst, t_lst, alpha_T_lst, P_lst, E
 
-
+print('Energy for transition descent:')
 print(numerical_simulation_landing(vx_start=45, descend_slope=-0.125, y_start= 40,
-      mass=data["mtom"], g0=const.g0, S=data['S'], CL_max=2.5, alpha_stall=0.3, CD=data["cd_stall"], Adisk= data["diskarea"], lod_climb=data['ld_stall'], eff_climb=data['eff'])[6])
+      mass=data["mtom"], g0=const.g0, S=Wing.surface, CL_max=2.5, alpha_stall=0.3, CD=data["cd_stall"], Adisk= data["diskarea"], lod_climb=data['ld_stall'], eff_climb=data['eff'])[7])
