@@ -10,7 +10,7 @@ from modules.avlwrapper import Geometry, Surface, Section, NacaAirfoil, Control,
 from input.data_structures.wing import Wing
 from input.data_structures.aero import Aero
 import input.data_structures.GeneralConstants as const
-from modules.aero.func_wing_loading import get_lift_distr
+from modules.aero.avl_access import get_lift_distr
 
 
 dict_directory = "input/data_structures"

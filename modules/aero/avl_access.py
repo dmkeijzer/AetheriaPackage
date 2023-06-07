@@ -65,8 +65,6 @@ def get_lift_distr(wing, aero, plot= False):
     # create session with the geometry object and the cases
     session = Session(geometry=geometry, cases=[cruise_case])
 
-
-
     # get results and write the resulting dict to a JSON-file
     results = session.get_results()
     if plot:
