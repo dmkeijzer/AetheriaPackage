@@ -47,12 +47,13 @@ class PerformanceParameters:
 
     
     def dump(self):
-        data = {
-            "power_hover": self.hoverPower,
-            "power_cruise": self.cruisePower,
-            "mission_energy": self.energyRequired,
-            "power_climb": self.climbPower
-        }
+        with open(r"input/data_structures/aetheria_constants.json") as jsonFile:
+            data = json.load(jsonFile)
+            data["power_hover"] = self.hoverPower
+            data["power_cruise"] = self.cruisePower
+            data["mission_energy"] = self.energyRequired
+            data["power_climb"] = self.climbPower
+        
     
         with open(r"output/data_structures/aetheria_constants.json", "w") as jsonFile:
             json.dump(data, jsonFile, indent=6)

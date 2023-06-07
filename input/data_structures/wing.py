@@ -52,7 +52,7 @@ class Wing():
         self.chord_mac = data["mac"]
         self.y_mac = data["y_mac"]
         self.sweep_LE = data["sweep_le"]
-        self.quarterchord_sweep = 0
+        self.quarterchord_sweep = data["quarterchord_sweep"]
         self.X_lemac = data["x_lemac"]
         self.cd = data["cd"]
         self.cd0 = data["cd0"]
@@ -84,10 +84,11 @@ class Wing():
         data["c_tip"] = self.chord_tip
         data["mac"] = self.chord_mac
         data["y_mac"] = self.y_mac
-        data["sweep_le"] = self.tan_sweep_LE
+        data["sweep_le"] = self.sweep_LE
         data["quarterchord_sweep"] = self.quarterchord_sweep
         data["x_lemac"] = self.X_lemac
         data["cd"] = self.cd
+        data["x_lewing"] = self.x_lewing
 
         with open(r"input/data_structures/aetheria_constants.json", "w") as jsonFile:
             json.dump(data, jsonFile, indent=4)

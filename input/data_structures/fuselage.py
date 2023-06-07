@@ -32,12 +32,12 @@ class Fuselage():
 
     def dump(self):
         """Dumps values into the json file"""
-        data = {
-            "l_fuse": self.length_fuselage,
-            "d_fuselage": self.diameter_fuselage,
-            "upsweep": self.upsweep,
-            "h_wings": self.h_wing
-        }
+        with open(r"input/data_structures/aetheria_constants.json") as jsonFile:
+            data = json.load(jsonFile)
+        data["l_fuse"] = self.length_fuselage
+        data["d_fuselage"] = self.diameter_fuselage
+        data["upsweep"] =  self.upsweep
+        data["h_wings"] = self.h_wing
 
         with open(r"output/data_structures/aetheria_constants.json", "w") as jsonFile:
             json.dump(data, jsonFile, indent=6)

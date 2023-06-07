@@ -35,15 +35,17 @@ class Aero():
         self.cl_alpha = data["cl_alpha"]
 
     def dump(self):
-        data = {
-            "cd": self.cd,
-            "cd0": self.cd0,
-            "cL_cruise":self.cruise,
-            "cm_ac": self.cm_ac,
-            "e": self.e,
-            "cm_alpha": self.cm_alpha,
-            "cl_alpha": self.cl_alpha
-        }
+        with open(r"input/data_structures/aetheria_constants.json") as jsonFile:
+            data = json.load(jsonFile)
+
+        data["cd"] = self.cd
+        data["cd0"] = self.cd0
+        data["cL_cruise"] = self.cruise
+        data["cm_ac"] = self.cm_ac
+        data["e"] = self.e
+        data["cm_alpha"] = self.cm_alpha
+        data["cl_alpha"] = self.cl_alpha
+
     
         with open(r"output/data_structures/aetheria_constants.json", "w") as jsonFile:
             json.dump(data, jsonFile, indent=6)
