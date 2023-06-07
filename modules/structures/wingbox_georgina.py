@@ -33,7 +33,53 @@ y_rotor_loc = None
 
 G = 26e9
 
-    
+
+class Wingbox():
+    def __init__(self, engine, material, pitch_st) -> None:
+        #Material
+        self.n_st = n_st
+        self.poisson = material.poisson
+        self.rho = material.rho
+        self.E = material.E
+        self.pb = material.pb
+        self.beta = material.beta
+        self.g = material.g
+        self.sigma_yield = material.sigma_yield
+        self.m_crip = material.m_crip
+        self.sigma_uts = material.sigma_uts
+        self.shear_modulus = material.shear_modulus
+        #Wing
+        self.taper = taper
+        self.n_max = n_max_req
+
+        #Engine
+        self.engine_weight = engine.mass_pertotalengine
+        self.y_rotor_loc = engine.y_rotor_loc
+        self.nacelle_w = engine.nacelle_w #TODO Check if it gets updated
+        
+        
+        #Set number of ribs in inboard and outboard section
+        self.n_ribs_sec0 = 1 #Number of ribs inboard of inboard engine
+        self.n_ribs_sec1 = 4 #Number of ribs inboard and outboard engines
+
+        #Set number of stringers in top and bottom
+        self.n_str = 20
+
+    #Determine rib positions in spanwise direction (y)
+    def get_y_rib_loc(self):
+        y_rib_0 = self.y_rotor_loc[0] - 0.5 * self.nacelle_w
+        y_rib_1 = self.y_rotor_loc[0] + 0.5 * self.nacelle_w
+
+        y_rib_3 = self.y_rotr_loc[1] - 0.5 * self.nacelle_w
+        y_rib_2 = y_rib_3 - 0.15
+        y_rib_sec0 = np.arange(0,y_rib_0,y_rib_0/self.n_ribs_sec0)
+        y_rib_sec1 = np.arange(y_rib_1,y_rib_2, (y_rib_2-y_rib_1)/self.n_ribs_sec1)
+
+        y_rib_loc = np.array([y_rib_0,y_rib_1,y_rib_2,y_rib_3],y_rib_sec0,y_rib_sec1)
+        y_rib_loc = np.sort(y_rib_loc)
+        return y_rib_loc
+
+
 
 
 def chord(b, c_r):
@@ -80,34 +126,34 @@ def I_sp(b, c_r,t_sp):
 
 
 
-def n_st(c_r, b_st):
-    return ceil(0.6 * c_r / b_st) + 1
+# def n_st(c_r, b_st):
+#     return ceil(0.6 * c_r / b_st) + 1
 
 
 
-def n_ribs(b, L):
-    return ceil(0.5 * b / L) + 1
+# def n_ribs(b, L):
+#     return ceil(0.5 * b / L) + 1
 
 
 
-def new_L(b, L):
-    """ FIx this function
+# def new_L(b, L):
+#     """ FIx this function
 
-    """    
-    nr_sect = n_ribs(b, L) - 1
-    new_pitch = 0.5 * b / nr_sect
-    return new_pitch
-
-
+#     """    
+#     nr_sect = n_ribs(b, L) - 1
+#     new_pitch = 0.5 * b / nr_sect
+#     return new_pitch
 
 
-def new_bst(c_r, b_st):
-    """ Fix this function as well
 
-    """    
-    nr_sect = n_st(c_r, b_st) - 1
-    new_pitch = c_r / nr_sect
-    return new_pitch
+
+# def new_bst(c_r, b_st):
+#     """ Fix this function as well
+
+#     """    
+#     nr_sect = n_st(c_r, b_st) - 1
+#     new_pitch = c_r / nr_sect
+#     return new_pitch
 
 
 
@@ -128,7 +174,7 @@ def rib_coordinates(b, L):
 
 def I_xx(b,c_r,t_sp,b_st, h_st,t_st,w_st,t_sk):
     h = height(b, c_r)
-    nst = n_st(c_r, b_st)
+    # nst = n_st(c_r, b_st)
     Ist = I_st(h_st,t_st,w_st)
     Isp = I_sp(b, c_r,t_sp)
     A = area_st(h_st,t_st,w_st)
@@ -138,31 +184,31 @@ def I_xx(b,c_r,t_sp,b_st, h_st,t_st,w_st,t_sk):
 
 
 
-def t_arr(b, L,t):
-    """ Replace function by our design variables, simplifies our process. List of thicknesses compatible with our sections. 
-    #TODO
-    - compatible with L
+# def t_arr(b, L,t):
+#     """ Replace function by our design variables, simplifies our process. List of thicknesses compatible with our sections. 
+#     #TODO
+#     - compatible with L
 
-    """    
-    b=abs(b)
-    L=abs(L)
-    nr_ribs = n_ribs(b, L)
-    sections = np.zeros(nr_ribs - 1)
+#     """    
+#     b=abs(b)
+#     L=abs(L)
+#     nr_ribs = n_ribs(b, L)
+#     sections = np.zeros(nr_ribs - 1)
 
-    inte = int((len(sections)) // len(t))
-    mod = int((len(sections)) % len(t))
-    group = int(len(t) - mod)
+#     inte = int((len(sections)) // len(t))
+#     mod = int((len(sections)) % len(t))
+#     group = int(len(t) - mod)
 
-    arr = np.arange(inte * group, len(sections), inte + 1)
+#     arr = np.arange(inte * group, len(sections), inte + 1)
 
-    for i in range(group):
-        for j in range(inte):
-            sections[inte * i + j] = t[i]
-    for i in range(len(arr)):
-        cursor = arr[i]
-        for j in range(inte + 1):
-            sections[cursor + j] = t[group + i]
-    return sections
+#     for i in range(group):
+#         for j in range(inte):
+#             sections[inte * i + j] = t[i]
+#     for i in range(len(arr)):
+#         cursor = arr[i]
+#         for j in range(inte + 1):
+#             sections[cursor + j] = t[group + i]
+#     return sections
 
 
 
@@ -185,7 +231,7 @@ def panel_weight(b, c_r,t_sp, L, b_st, h_st,t_st,w_st,t):
     t_sk = t_arr(b, L,t)
     c = chord(b, c_r)
     h = height(b, c_r)
-    nst = n_st(c_r, b_st)
+    # nst = n_st(c_r, b_st)
     stations = rib_coordinates(b, L)
     w = np.zeros(len(stations))
     A = area_st(h_st, t_st,w_st)
@@ -476,24 +522,24 @@ def shear_force(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
         Vz[i] = aero(sta[i])-shear[2 * i]
     return Vz
 
-def perimiter_ellipse(a,b):
-    return float(np.pi *  ( 3*(a+b) - np.sqrt( (3*a + b) * (a + 3*b) ) )) #Ramanujans first approximation formula
+# def perimiter_ellipse(a,b):
+#     return float(np.pi *  ( 3*(a+b) - np.sqrt( (3*a + b) * (a + 3*b) ) )) #Ramanujans first approximation formula
 
-def torsion_sections(b,c_r,L,t,engine,wing):
-    ch = chord(b, c_r)
-    tarr = t_arr(b, L,t)
-    sta = rib_coordinates(b, L)
-    T = np.zeros(len(tarr))
-    engine_weight = engine.mass_pertotalengine
-    x_centre_wb = lambda x_w: wing.X_lemac + c_r*0.25* + ch(x_w)*0.20
-    for i in range(len(tarr)):
-        if sta[i]< float(engine.y_rotor_loc[0]):
-            T[i] = engine_weight * 9.81 * (x_centre_wb(engine.x_rotor_loc[0])-engine.x_rotor_loc[0]) + engine_weight * 9.81 * (x_centre_wb(engine.x_rotor_loc[2])-engine.x_rotor_loc[2])
-        else:
-            T[i] = engine_weight * 9.81 * (x_centre_wb(engine.x_rotor_loc[0])-engine.x_rotor_loc[0])
-    #     print(sta[i],y_rotor_loc[0],x_centre_wb(engine.x_rotor_loc[0]))
-    # print(f"\n\nT = {T}\n\n")
-    return T
+# def torsion_sections(b,c_r,L,t,engine,wing):
+#     ch = chord(b, c_r)
+#     tarr = t_arr(b, L,t)
+#     sta = rib_coordinates(b, L)
+#     T = np.zeros(len(tarr))
+#     engine_weight = engine.mass_pertotalengine
+#     x_centre_wb = lambda x_w: wing.X_lemac + c_r*0.25* + ch(x_w)*0.20
+#     for i in range(len(tarr)):
+#         if sta[i]< float(engine.y_rotor_loc[0]):
+#             T[i] = engine_weight * 9.81 * (x_centre_wb(engine.x_rotor_loc[0])-engine.x_rotor_loc[0]) + engine_weight * 9.81 * (x_centre_wb(engine.x_rotor_loc[2])-engine.x_rotor_loc[2])
+#         else:
+#             T[i] = engine_weight * 9.81 * (x_centre_wb(engine.x_rotor_loc[0])-engine.x_rotor_loc[0])
+#     #     print(sta[i],y_rotor_loc[0],x_centre_wb(engine.x_rotor_loc[0]))
+#     # print(f"\n\nT = {T}\n\n")
+#     return T
 
 # def N_xy(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t,Engine,Wing):
 #     h1 = height(b, c_r)
@@ -739,7 +785,7 @@ def web_buckling(t_st, h_st):
 
 
 def global_buckling(c_r, b_st, h_st,t_st,t):
-    n = n_st(c_r, b_st)
+    # n = n_st(c_r, b_st)
     bst = new_bst(c_r, b_st)
     tsmr = (t * bst + t_st * n * (h_st - t)) / bst
     return 4 * pi ** 2 * E / (12 * (1 - poisson ** 2)) * (tsmr / bst) ** 2
@@ -775,7 +821,7 @@ def column_st(b, L,h_st,t_st,w_st,t_sk):
 
 def f_ult(b,c_r,L,b_st,h_st,t_st,w_st,tarr):
     A_st = area_st(h_st,t_st,w_st)
-    n=n_st(c_r,b_st)
+    # n=n_st(c_r,b_st)
     tarr=t_arr(b,L,tarr)
     c=chord(b,c_r)
     h=height(b,c_r)
@@ -799,8 +845,6 @@ def buckling_constr(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t):
 
 
 def global_local(b, c_r, L, b_st, h_st,t_st,tarr):
-    tarr = t_arr(b, L,t) #FIXME t will become the array of thickness for each sectino
-    diff = np.zeros(len(tarr))
     # for i in range(len(tarr)):
     #     glob = global_buckling(c_r, b_st, h_st,t_st,tarr[i])
     #     loc = local_buckling(c_r, b_st,tarr[i])
