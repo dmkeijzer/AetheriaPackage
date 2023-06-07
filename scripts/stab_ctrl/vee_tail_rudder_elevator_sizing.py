@@ -7,8 +7,6 @@ sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
 from modules.stab_ctrl.wing_loc_horzstab_sizing import CLahcalc
 
-
-
 #Cn_beta (according roskam 2) = 0.0571   1/rad  #ch11, page 25 --> Jan Roskam Part II, equation 11.9
 #Since there is no one engine inoperative condition, we size the Cn_dr to be able to maintain a non-yawing flight at a high beta:
 #0=Cn_beta*beta+Cn_dr*dr=0 with dr limited to 10 degrees due to using a V-tail. Problematic at low speeds.
@@ -21,14 +19,9 @@ from modules.stab_ctrl.wing_loc_horzstab_sizing import CLahcalc
 #https://www.easa.europa.eu/en/document-library/certification-specifications/group/cs-23-normal-utility-aerobatic-and-commuter-aeroplanes#cs-23-normal-utility-aerobatic-and-commuter-aeroplanes
 #Above is for CS23, initial issue , pdf page 300, ground loops --> no requirement
 #so take max crosswind as 10 knots as this aircraft is not meant to land normally but it shoud --> 40*1.1=44--> betamax= arctan(10/44) =0.22347
-#Cn_dr=-0.0571*0.22347/(10*pi/180)=-0.073
 
 
-######HARDCODED VALUES
-Cn_beta_req=0.0571
-Cn_dr_req=-0.073
-########################
-
+###Lower taper results more surface area but the minimum is limited by structural integrity.
 
 def get_K(taper_h, AR_h):
     taper_vee=taper_h    #####important, due to CL_alpha_t_h=CL_alpha_N
@@ -43,17 +36,18 @@ def get_K(taper_h, AR_h):
     return float(K)
 
 def get_c_control_surface_to_c_vee_ratio(tau):
-    ce_c_ratio=np.array([0.05,0.1,0.2,0.3])
-    tau_arr=np.array([0.175,0.3,0.47,0.6])
+    ce_c_ratio=np.array([0,0.15,0.3])
+    tau_arr=np.array([0,0.35,0.55])
     interp_function=interp1d(tau_arr,ce_c_ratio)
     ce_c_ratio_of_tail=interp_function(tau)
     return float(ce_c_ratio_of_tail)
 
     
-def get_tail_dihedral_and_area(S_hor,Fuselage_volume,S,b,l_v,AR_h,taper_h,Cn_beta_req=0.0571):
+def get_tail_dihedral_and_area(Lambdah2,S_hor,Fuselage_volume,S,b,l_v,AR_h,taper_h,Cn_beta_req=0.0571,beta_h=1,eta_h=0.95):
     Cn_beta_f=-2*Fuselage_volume/(S*b)    
     K=get_K(taper_h,AR_h)
-    S_ver=(Cn_beta_req-Cn_beta_f)/(np.pi/2*AR_h*K)*S*b/l_v   ###Here, the the vertical tail aspect ratio is taken as AR_vee*K = AR_h*K to calculate required vertical tail area
+    CL_alpha_N = CLahcalc(AR_h, beta_h, eta_h, Lambdah2)
+    S_ver=(Cn_beta_req-Cn_beta_f)/(K*CL_alpha_N)*S*b/l_v   ###Here, the the vertical tail aspect ratio is taken as AR_vee*K = AR_h*K to calculate required vertical tail area
     S_vee=S_ver+S_hor
     v_angle=np.arctan(np.sqrt(S_ver/S_hor))
     return v_angle, S_vee
@@ -61,23 +55,42 @@ def get_tail_dihedral_and_area(S_hor,Fuselage_volume,S,b,l_v,AR_h,taper_h,Cn_bet
 
 #YOU ONLY NEED THIS LAST FUNCTION. THE OTHERS ABOVE ARE SUBFUNCTIONS FOR THE NEXT FUNCTION.
 
-def get_control_surface_to_tail_chord_ratio(Lambdah2,b,Fuselage_volume,S_hor,downwash_angle_landing,aoa_landing,CL_h,CL_a_h,V_tail_to_V_ratio,l_v,S,c,taper_h, AR_h,Cn_dr_req=-0.073,beta_h=1,eta_h=0.95,elevator_min=-10*np.pi/180):
-    v_angle, S_vee= get_tail_dihedral_and_area(S_hor,Fuselage_volume,S,b,l_v,AR_h,taper_h)
-    ##Maximum elevator deflection implicitly limited by suggested design procedure, source 5, fig 1a. 
-    CL_tail_de_req=(CL_h-CL_a_h*(aoa_landing-downwash_angle_landing))/elevator_min ###CL_h and CL_a_h comes from the horizontal tail designed.   --> Since we use no angle here, in the next line 
-    Cm_de_req_tail=-CL_tail_de_req*(V_tail_to_V_ratio)**2*(S_hor*l_v/(S*c)) ####Get this from CL_de_required, I made this formula --> S_hor or S_vee should be used here
+def get_control_surface_to_tail_chord_ratio(V_stall,Lambdah2,b,Fuselage_volume,S_hor,downwash_angle_landing,aoa_landing,CL_h,CL_a_h,V_tail_to_V_ratio,l_v,S,c,taper_h, AR_h,Cn_beta_req=-0.0571,beta_h=1,eta_h=0.95,total_deflection=20*np.pi/180,design_cross_wind_speed=5.14,step=0.1*np.pi/180):
+    tau_from_rudder=0     ##Just to initialize loop
+    tau_from_elevator=1   ##Just to initialize loop
+    elevator_min=-1*np.pi/180
+    rudder_max=total_deflection+elevator_min
+    v_angle, S_vee= get_tail_dihedral_and_area(Lambdah2,S_hor,Fuselage_volume,S,b,l_v,AR_h,taper_h)
     K = get_K(taper_h,AR_h)
     CL_alpha_N = CLahcalc(AR_h, beta_h, eta_h, Lambdah2)
+    
+    while (tau_from_elevator>tau_from_rudder and rudder_max>1*np.pi/180):
+                
+        Cn_dr_req=Cn_beta_req*np.arctan(design_cross_wind_speed/V_stall)/(rudder_max)
+        CL_tail_de_req=(CL_h-CL_a_h*(aoa_landing-downwash_angle_landing))/elevator_min
         
-    tau_from_rudder=-Cn_dr_req/(K*CL_alpha_N*np.sin(v_angle)*S_vee/S*l_v/b*V_tail_to_V_ratio**2)   
-    tau_from_elevator_requirements=-Cm_de_req_tail/(CL_alpha_N*np.cos(v_angle)*S_vee/S*l_v/c*V_tail_to_V_ratio**2)
-    tau=max([tau_from_rudder,tau_from_elevator_requirements])
+    ###CL_h and CL_a_h comes from the horizontal tail designed.   --> Since we use no angle here, in the next line 
+        Cm_de_req_tail=-CL_tail_de_req*(V_tail_to_V_ratio)**2*(S_hor*l_v/(S*c)) ####Get this from CL_de_required, I made this formula --> S_hor or S_vee should be used here
+                
+        tau_from_rudder=-Cn_dr_req/(K*CL_alpha_N*np.sin(v_angle)*S_vee/S*l_v/b*V_tail_to_V_ratio**2)   
+        tau_from_elevator=-Cm_de_req_tail/(CL_alpha_N*np.cos(v_angle)*S_vee/S*l_v/c*V_tail_to_V_ratio**2)
+                
+        elevator_min=elevator_min-step
+        rudder_max=rudder_max-step        
+        print(tau_from_rudder,tau_from_elevator)
+
+    tau=max([tau_from_rudder,tau_from_elevator])
     ###Recalculate Cm_de or Cn_dr as one of them will now be bigger due to choosing tau as the maximum of the two.
     Cm_de=-V_tail_to_V_ratio**2*tau*l_v/c*CL_alpha_N*S_vee/S*np.cos(v_angle)
     Cn_dr=-V_tail_to_V_ratio**2*tau*l_v/b*K*CL_alpha_N*S_vee/S*np.sin(v_angle)
-    print(Cn_dr,Cm_de)
-    print(tau)
-    c_control_surface_to_c_vee_ratio=get_c_control_surface_to_c_vee_ratio(tau)
+        
+    if tau>0.55:
+        c_control_surface_to_c_vee_ratio="Not possible. Lower CLh in the horizontal tail sizing program"
+    else:
+        c_control_surface_to_c_vee_ratio=get_c_control_surface_to_c_vee_ratio(tau)
     
-    return Cm_de, Cn_dr, v_angle, S_vee, c_control_surface_to_c_vee_ratio 
+    return np.degrees(rudder_max),np.degrees(elevator_min), tau, Cm_de, Cn_dr, v_angle, S_vee, c_control_surface_to_c_vee_ratio 
     
+rudder, elevator, tau, Cm_de, Cn_dr, v_angle, S_vee, c_control_surface_to_c_vee_ratio = get_control_surface_to_tail_chord_ratio(V_stall=44,Lambdah2=0,b=10,Fuselage_volume=10,S_hor=1.8897,downwash_angle_landing=0.14,aoa_landing=0.2,CL_h=-0.5,CL_a_h=5,V_tail_to_V_ratio=0.9,l_v=5,S=12,c=1.5,taper_h=1, AR_h=6)
+print(v_angle, S_vee, tau,c_control_surface_to_c_vee_ratio, Cm_de, Cn_dr, v_angle, S_vee, c_control_surface_to_c_vee_ratio)
+ 

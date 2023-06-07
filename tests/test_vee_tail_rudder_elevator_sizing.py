@@ -15,7 +15,7 @@ def example_values():
         "get_K": {"taper_h": 0.5, "AR_h": 10},
         "get_c_control_surface_to_c_vee_ratio": {"tau": 0.2},
         "get_tail_dihedral_and_area": {"S_hor": 3, "Cn_beta_req": 0.08, "Fuselage_volume": 10, "S": 10, "b": 10,"l_v":5,"AR_h":4,"taper_h":0.4},
-        "get_control_surface_to_tail_chord_ratio": {"b"=10, "Fuselage_volume":10,"S_hor": 3,"downwash_angle_landing": 0.14, "aoa_landing": 0.2, "CL_h": -0.5, "CL_a_h":5, "V_tail_to_V_ratio": 0.9, "l_v": 5, "S": 10,"c": 1,"taper_h": 0.4, "AR_h": 4}
+        "get_control_surface_to_tail_chord_ratio": {"Lambdah2":0.1,"b"=10, "Fuselage_volume":10,"S_hor": 3,"downwash_angle_landing": 0.14, "aoa_landing": 0.2, "CL_h": -0.5, "CL_a_h":5, "V_tail_to_V_ratio": 0.9, "l_v": 5, "S": 10,"c": 1,"taper_h": 0.4, "AR_h": 4}
     }
 
 
