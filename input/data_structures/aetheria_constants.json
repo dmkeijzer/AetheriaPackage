@@ -165,5 +165,6 @@
       "shear_modulus": 26000000000.0,
       "x_lewing": 4.529430900163721,
       "hortailsurf_wingsurf": 0.12077294795413113,
-      "quarterchord_sweep": 0
+      "quarterchord_sweep": 0,
+      "nacelle_w": 0.4
 }
