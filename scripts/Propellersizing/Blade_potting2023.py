@@ -1,10 +1,17 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.interpolate as sp_int
+import os
+import sys
+import pathlib as pl
+
+
+sys.path.append(str(list(pl.Path(__file__).parents)[2]))
+os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
 
 class PlotBlade:
-    def __init__(self, chords, pitchs, radial_coords, R, xi_0, airfoil_name='naca4412', tc_ratio=0.12):
+    def __init__(self, chords, pitchs, radial_coords, R, xi_0, airfoil_name='wortman.dat', tc_ratio=0.12):
         """
         :param chords: Array with chords, from root to tip [m]
         :param pitchs: Array with pitch angles, from root to tip [rad]
@@ -23,7 +30,7 @@ class PlotBlade:
         self.tc_ratio = tc_ratio
 
     def load_airfoil(self):
-        file = open('code2021/PropandPower/'+self.airfoil_name)
+        file = open('input/Propulsion/'+self.airfoil_name)
 
         airfoil = file.readlines()
 

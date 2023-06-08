@@ -54,6 +54,7 @@ class BEM:
         # Define thrust or power coefficients, depending on input
         if T is not None:
             self.Tc = 2 * T / (rho * V_fr**2 * np.pi * R**2)
+
             self.Pc = None
 
         elif P is not None:
@@ -254,10 +255,12 @@ class BEM:
         # F and phi for each station
         # self.Xi(stations_r),
         F = self.F(stations_r, zeta)
+
         phis = self.phi(stations_r, zeta)
 
+
         # Probably trial with a different range of Cls
-        Cls_trial = np.arange(0.1, 1.2, 0.05)
+        Cls_trial = np.arange(0.1, 1.9, 0.05)
 
         # Create arrays for lift and drag coefficients, angle of attack and D/L ratio for each station
         Cl = np.ones(self.N_s)
@@ -283,6 +286,8 @@ class BEM:
 
                 # Calculate product of local speed with chord
                 Wc = self.Wc(F[station], phis[station], zeta, lift_coef)
+
+
                 # Wc = self.Wc(F[station], phis[station], zeta, lift_coef, stations_r[station])
 
                 # Calculate Reynolds number at the station to look for the correct airfoil datafile
@@ -330,7 +335,8 @@ class BEM:
                         new_line = []
                         for value in a:
                             new_line.append(float(value))
-                        format_lines.append(new_line)
+                        if len(new_line) == 12:
+                            format_lines.append(new_line)
 
                     # Protect against empty lines
                     if len(a) > 0:
@@ -349,7 +355,8 @@ class BEM:
                         new_line = []
                         for value in a:
                             new_line.append(float(value))
-                        format_lines.append(new_line)
+                        if len(new_line) == 12:
+                            format_lines.append(new_line)
 
                     if len(a) > 0:
                         if a[0].count('-') >= 1:
@@ -432,10 +439,11 @@ class BEM:
                 RN = 100000
             if RN > 5000000:
                 RN = 5000000
+            RN=RN/1000000
 
 
             # Look for corresponding airfoil data file for that RN
-            filename1 = "WORTMANN FX 63-137 AIRFOIL_T1_Re%d_M0.00_N9.0.txt" % (RN/1000000)
+            filename1 = "WORTMANN FX 63-137 AIRFOIL_T1_Re%s00_M0.00_N9.0.txt" % RN
             #filename2 = "4412_Re%d_dwn.txt" % RN
 
             file_up = open('input/Propulsion/propellerairfoil/up/' + filename1, "r")
@@ -463,7 +471,8 @@ class BEM:
                     new_line = []
                     for value in a:
                         new_line.append(float(value))
-                    format_lines.append(new_line)
+                    if len(new_line) == 12:
+                        format_lines.append(new_line)
 
                 # Protect against empty lines
                 if len(a) > 0:
@@ -482,7 +491,8 @@ class BEM:
                     new_line = []
                     for value in a:
                         new_line.append(float(value))
-                    format_lines.append(new_line)
+                    if len(new_line) == 12:
+                        format_lines.append(new_line)
 
                 if len(a) > 0:
                     if a[0].count('-') >= 1:
@@ -532,6 +542,7 @@ class BEM:
 
         # Calculate required chord of the station and save to array
         c = Wc/W
+
         cs = c
 
         # Calculate blade pitch angle as AoA+phi and save to array
@@ -579,6 +590,7 @@ class BEM:
 
         # Calculate new speed ratio and Tc or Pc as required
         if self.Tc is not None:
+
             zeta_new = (I1/(2*I2)) - ((I1/(2*I2))**2 - self.Tc/I2)**(1/2)
             Pc = J1*zeta_new + J2*zeta_new**2
 
@@ -602,8 +614,10 @@ class BEM:
         # Optimisation converges for difference in zeta below 0.1%
         while convergence > 0.001:
             # Run BEM design procedure and retrieve new zeta
+
             design = self.run_BEM(zeta)
             zeta_new = design[0]
+
 
             # Check convergence
             if zeta == 0:
@@ -654,6 +668,7 @@ class OffDesignAnalysisBEM:
         self.dyn_vis = dyn_vis
         self.a = a
         self.RN_init = RN
+
 
         self.RN_spacing = RN_spacing
 
@@ -861,6 +876,9 @@ class OffDesignAnalysisBEM:
         Start
         """
         Reyn = self.RN_init
+        if type(Reyn) == 'numpy.float64':
+            print('hi')
+
 
         for station in range(len(Reyn)):
 
@@ -871,13 +889,14 @@ class OffDesignAnalysisBEM:
                 RN = 100000
             if RN > 5000000:
                 RN = 5000000
+            RN = RN / 1000000
 
             # Look for corresponding airfoil data file for that RN
-            filename1 = "4412_Re%d_up.txt" % RN
-            filename2 = "4412_Re%d_dwn.txt" % RN
+            filename1 = "WORTMANN FX 63-137 AIRFOIL_T1_Re%s00_M0.00_N9.0.txt" % RN
+            # filename2 = "4412_Re%d_dwn.txt" % RN
 
-            file_up = open('../PropandPower/Airfoil_Data/' + filename1, "r")
-            file_down = open('../PropandPower/Airfoil_Data/' + filename2, "r")
+            file_up = open('input/Propulsion/propellerairfoil/up/' + filename1, "r")
+            file_down = open('input/Propulsion/propellerairfoil/down/' + filename1, "r")
 
             # Read lines
             lines_up = file_up.readlines()
@@ -901,7 +920,8 @@ class OffDesignAnalysisBEM:
                     new_line = []
                     for value in a:
                         new_line.append(float(value))
-                    format_lines.append(new_line)
+                    if len(new_line) == 12:
+                        format_lines.append(new_line)
 
                 # Protect against empty lines
                 if len(a) > 0:
@@ -920,7 +940,8 @@ class OffDesignAnalysisBEM:
                     new_line = []
                     for value in a:
                         new_line.append(float(value))
-                    format_lines.append(new_line)
+                    if len(new_line) == 12:
+                        format_lines.append(new_line)
 
                 if len(a) > 0:
                     if a[0].count('-') >= 1:
@@ -992,13 +1013,14 @@ class OffDesignAnalysisBEM:
                     RN = 100000
                 if RN>5000000:
                     RN = 5000000
+                RN = RN / 1000000
 
                 # Look for corresponding airfoil data file for that RN
-                filename1 = "4412_Re%d_up.txt" % RN
-                filename2 = "4412_Re%d_dwn.txt" % RN
+                filename1 = "WORTMANN FX 63-137 AIRFOIL_T1_Re%s00_M0.00_N9.0.txt" % RN
+                # filename2 = "4412_Re%d_dwn.txt" % RN
 
-                file_up = open('../PropandPower/Airfoil_Data/'+filename1, "r")
-                file_down = open('../PropandPower/Airfoil_Data/'+filename2, "r")
+                file_up = open('input/Propulsion/propellerairfoil/up/' + filename1, "r")
+                file_down = open('input/Propulsion/propellerairfoil/down/' + filename1, "r")
 
                 # Read lines
                 lines_up = file_up.readlines()
@@ -1022,7 +1044,8 @@ class OffDesignAnalysisBEM:
                         new_line = []
                         for value in a:
                             new_line.append(float(value))
-                        format_lines.append(new_line)
+                        if len(new_line) == 12:
+                            format_lines.append(new_line)
 
                     # Protect against empty lines
                     if len(a) > 0:
@@ -1041,7 +1064,8 @@ class OffDesignAnalysisBEM:
                         new_line = []
                         for value in a:
                             new_line.append(float(value))
-                        format_lines.append(new_line)
+                        if len(new_line) == 12:
+                            format_lines.append(new_line)
 
                     if len(a) > 0:
                         if a[0].count('-') >= 1:
@@ -1160,7 +1184,7 @@ class OffDesignAnalysisBEM:
 
 
 class Optiblade:
-    def __init__(self, B, R, rpm_cr, xi_0, rho_cr, dyn_vis_cr, V_cr, N_stations, a_cr, RN_spacing, max_M_tip, rho_h,
+    def __init__(self, B, R, rpm_cr, xi_0, rho_cr, dyn_vis_cr, V_cr, N_stations, a_cr, RN_spacing,max_M_tip, rho_h,
                  dyn_vis_h, V_h, a_h, rpm_h, delta_pitch, T_cr, T_h):
         """
         This file is for the blade shape optimisation. It optimises the blade for cruise, and checks if the blade can
@@ -1221,6 +1245,7 @@ class Optiblade:
         self.rpm_h = rpm_h
         self.delta_pitch = delta_pitch
 
+
     def blade_design(self, design_thrust_factor):
         # Design the propeller for given conditions
         propeller = BEM(self.B, self.R, self.rpm_cr, self.xi_0, self.rho_cr, self.dyn_vis_cr, self.V_cr, self.N_s,
@@ -1228,30 +1253,31 @@ class Optiblade:
 
         # Zeta to initialise the procedure
         zeta_init = 0
-        zeta, design, V_e, coefs = propeller.optimise_blade(zeta_init)
 
-        return zeta, design, V_e, coefs
+        zeta, design, V_e, coefs,solidity = propeller.optimise_blade(zeta_init)
 
-    # Check the max thrust a certain design can produce
-    # def max_T_check(self, blade):
-        # # Get the blade design
-        # # Out: zeta_new, [cs, betas, alpha, stations_r, E, eff, self.Tc, Pc], Ves, [Cl, Cd]
-        # design_blade = blade
-        #
-        # # Max tip speed and corresponding rpm
-        # omega_max = self.max_M_tip*self.a_h/self.R
-        # rpm_max = omega_max/0.10472
-        #
-        # # T, Q, eff
-        # # TODO: implement max pitch for highest thrust: self.delta_pitch
-        # blade_hover = OffDesignAnalysisBEM(self.V_h, self.B, self.R, design_blade[1][0],
-        #                                    design_blade[1][1] - design_blade[1][1][-1],
-        #                                    design_blade[1][3], design_blade[3][0], design_blade[3][1], rpm_max,
-        #                                    design_blade[0], self.rho_h, self.dyn_vis_h, self.a_h).analyse_propeller()
-        # # Return max thrust
-        # return blade_hover[0]
+        return zeta, design, V_e, coefs, solidity
 
-        # return self.T_h+1
+    #Check the max thrust a certain design can produce
+    def max_T_check(self, blade):
+        # Get the blade design
+        # Out: zeta_new, [cs, betas, alpha, stations_r, E, eff, self.Tc, Pc], Ves, [Cl, Cd]
+        design_blade = blade
+
+        # Max tip speed and corresponding rpm
+        omega_max = self.max_M_tip*self.a_h/self.R
+        rpm_max = omega_max/0.10472
+
+        # T, Q, eff
+        # TODO: implement max pitch for highest thrust: self.delta_pitch
+        blade_hover = OffDesignAnalysisBEM(self.V_h, self.B, self.R, design_blade[1][0],
+                                           design_blade[1][1] - design_blade[1][1][-1],
+                                           design_blade[1][3], design_blade[3][0], design_blade[3][1], rpm_max,
+                                           design_blade[0], self.rho_h, self.dyn_vis_h, self.a_h).analyse_propeller()
+        # Return max thrust
+        return blade_hover[0]
+
+        return self.T_h+1
 
     def optimised_blade(self):
         # Multiply design (cruise) drag times factor

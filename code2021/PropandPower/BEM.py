@@ -48,6 +48,7 @@ class BEM:
         # Define thrust or power coefficients, depending on input
         if T is not None:
             self.Tc = 2 * T / (rho * V_fr**2 * np.pi * R**2)
+
             self.Pc = None
 
         elif P is not None:
@@ -248,7 +249,9 @@ class BEM:
         # F and phi for each station
         # self.Xi(stations_r),
         F = self.F(stations_r, zeta)
+
         phis = self.phi(stations_r, zeta)
+
 
         # Probably trial with a different range of Cls
         Cls_trial = np.arange(0.1, 1.2, 0.05)
@@ -261,6 +264,7 @@ class BEM:
         cs = np.ones(self.N_s)
         betas = np.ones(self.N_s)
         # Ves = np.ones(self.N_s)
+
         Ves = zeta*self.V + self.V
 
         # Optimise each station for min D/L
@@ -277,6 +281,7 @@ class BEM:
 
                 # Calculate product of local speed with chord
                 Wc = self.Wc(F[station], phis[station], zeta, lift_coef)
+
                 # Wc = self.Wc(F[station], phis[station], zeta, lift_coef, stations_r[station])
 
                 # Calculate Reynolds number at the station to look for the correct airfoil datafile
@@ -295,8 +300,8 @@ class BEM:
                 filename1 = "4412_Re%d_up.txt" % RN
                 filename2 = "4412_Re%d_dwn.txt" % RN
 
-                file_up = open('../PropandPower/Airfoil_Data/' + filename1, "r")
-                file_down = open('../PropandPower/Airfoil_Data/' + filename2, "r")
+                file_up = open('code2021/PropandPower/Airfoil_Data/' + filename1, "r")
+                file_down = open('code2021/PropandPower/Airfoil_Data/' + filename2, "r")
 
 
                 # Read lines
@@ -345,6 +350,7 @@ class BEM:
                     if len(a) > 0:
                         if a[0].count('-') >= 1:
                             save_lines = True
+
 
 
                 # Convert to numpy array with airfoil data
@@ -402,6 +408,7 @@ class BEM:
 
         # Calculate product of local speed with chord
         Wc = self.Wc(F, phis, zeta, Cl)
+
         # Wc = self.Wc(F, phis, zeta, Cl, stations_r)
 
         # After smoothing the Cl, get new AoA and E corresponding to such Cls
@@ -429,8 +436,8 @@ class BEM:
             filename1 = "4412_Re%d_up.txt" % RN
             filename2 = "4412_Re%d_dwn.txt" % RN
 
-            file_up = open('../PropandPower/Airfoil_Data/' + filename1, "r")
-            file_down = open('../PropandPower/Airfoil_Data/' + filename2, "r")
+            file_up = open('code2021/PropandPower/Airfoil_Data/' + filename1, "r")
+            file_down = open('code2021/PropandPower/Airfoil_Data/' + filename2, "r")
 
             # Read lines
             lines_up = file_up.readlines()
@@ -523,6 +530,7 @@ class BEM:
 
         # Calculate required chord of the station and save to array
         c = Wc/W
+
         cs = c
 
         # Calculate blade pitch angle as AoA+phi and save to array
@@ -570,6 +578,7 @@ class BEM:
 
         # Calculate new speed ratio and Tc or Pc as required
         if self.Tc is not None:
+
             zeta_new = (I1/(2*I2)) - ((I1/(2*I2))**2 - self.Tc/I2)**(1/2)
             Pc = J1*zeta_new + J2*zeta_new**2
 
@@ -590,11 +599,15 @@ class BEM:
     def optimise_blade(self, zeta_init):
         convergence = 1
         zeta = zeta_init
+
         # Optimisation converges for difference in zeta below 0.1%
         while convergence > 0.001:
             # Run BEM design procedure and retrieve new zeta
+
             design = self.run_BEM(zeta)
+
             zeta_new = design[0]
+
 
             # Check convergence
             if zeta == 0:
@@ -867,8 +880,8 @@ class OffDesignAnalysisBEM:
             filename1 = "4412_Re%d_up.txt" % RN
             filename2 = "4412_Re%d_dwn.txt" % RN
 
-            file_up = open('../PropandPower/Airfoil_Data/' + filename1, "r")
-            file_down = open('../PropandPower/Airfoil_Data/' + filename2, "r")
+            file_up = open('code2021/PropandPower/Airfoil_Data/' + filename1, "r")
+            file_down = open('code2021/PropandPower/Airfoil_Data/' + filename2, "r")
 
             # Read lines
             lines_up = file_up.readlines()
@@ -988,8 +1001,8 @@ class OffDesignAnalysisBEM:
                 filename1 = "4412_Re%d_up.txt" % RN
                 filename2 = "4412_Re%d_dwn.txt" % RN
 
-                file_up = open('../PropandPower/Airfoil_Data/'+filename1, "r")
-                file_down = open('../PropandPower/Airfoil_Data/'+filename2, "r")
+                file_up = open('code2021/PropandPower/Airfoil_Data/'+filename1, "r")
+                file_down = open('code2021/PropandPower/Airfoil_Data/'+filename2, "r")
 
                 # Read lines
                 lines_up = file_up.readlines()
@@ -1219,30 +1232,30 @@ class Optiblade:
 
         # Zeta to initialise the procedure
         zeta_init = 0
-        zeta, design, V_e, coefs = propeller.optimise_blade(zeta_init)
+        zeta, design, V_e, coefs,solidity = propeller.optimise_blade(zeta_init)
 
-        return zeta, design, V_e, coefs
+        return zeta, design, V_e, coefs,solidity
 
-    # Check the max thrust a certain design can produce
-    # def max_T_check(self, blade):
-        # # Get the blade design
-        # # Out: zeta_new, [cs, betas, alpha, stations_r, E, eff, self.Tc, Pc], Ves, [Cl, Cd]
-        # design_blade = blade
-        #
-        # # Max tip speed and corresponding rpm
-        # omega_max = self.max_M_tip*self.a_h/self.R
-        # rpm_max = omega_max/0.10472
-        #
-        # # T, Q, eff
-        # # TODO: implement max pitch for highest thrust: self.delta_pitch
-        # blade_hover = OffDesignAnalysisBEM(self.V_h, self.B, self.R, design_blade[1][0],
-        #                                    design_blade[1][1] - design_blade[1][1][-1],
-        #                                    design_blade[1][3], design_blade[3][0], design_blade[3][1], rpm_max,
-        #                                    design_blade[0], self.rho_h, self.dyn_vis_h, self.a_h).analyse_propeller()
-        # # Return max thrust
-        # return blade_hover[0]
+    #Check the max thrust a certain design can produce
+    def max_T_check(self, blade):
+        # Get the blade design
+        # Out: zeta_new, [cs, betas, alpha, stations_r, E, eff, self.Tc, Pc], Ves, [Cl, Cd]
+        design_blade = blade
 
-        # return self.T_h+1
+        # Max tip speed and corresponding rpm
+        omega_max = self.max_M_tip*self.a_h/self.R
+        rpm_max = omega_max/0.10472
+
+        # T, Q, eff
+        # TODO: implement max pitch for highest thrust: self.delta_pitch
+        blade_hover = OffDesignAnalysisBEM(self.V_h, self.B, self.R, design_blade[1][0],
+                                           design_blade[1][1] - design_blade[1][1][-1],
+                                           design_blade[1][3], design_blade[3][0], design_blade[3][1], rpm_max,
+                                           design_blade[0], self.rho_h, self.dyn_vis_h, self.a_h).analyse_propeller()
+        # Return max thrust
+        return blade_hover[0]
+
+        return self.T_h+1
 
     def optimised_blade(self):
         # Multiply design (cruise) drag times factor
@@ -1551,8 +1564,8 @@ class Optiblade:
 #                 filename1 = "4412_Re%d_up.txt" % RN
 #                 filename2 = "4412_Re%d_dwn.txt" % RN
 #
-#                 file_up = open('../PropandPower/Airfoil_Data/'+filename1, "r")
-#                 file_down = open('../PropandPower/Airfoil_Data/'+filename2, "r")
+#                 file_up = open('code2021/PropandPower/Airfoil_Data/'+filename1, "r")
+#                 file_down = open('code2021/PropandPower/Airfoil_Data/'+filename2, "r")
 #
 #                 # Read lines
 #                 lines_up = file_up.readlines()
@@ -2034,8 +2047,8 @@ class Optiblade:
 #                 filename1 = "4412_Re%d_up.txt" % RN
 #                 filename2 = "4412_Re%d_dwn.txt" % RN
 #
-#                 file_up = open('../PropandPower/Airfoil_Data/'+filename1, "r")
-#                 file_down = open('../PropandPower/Airfoil_Data/'+filename2, "r")
+#                 file_up = open('code2021/PropandPower/Airfoil_Data/'+filename1, "r")
+#                 file_down = open('code2021/PropandPower/Airfoil_Data/'+filename2, "r")
 #
 #                 # Read lines
 #                 lines_up = file_up.readlines()
@@ -2167,8 +2180,8 @@ class Optiblade:
 #             filename1_2 = "4412_Re%d_up.txt" % RN_2
 #             filename2_2 = "4412_Re%d_dwn.txt" % RN_2
 #
-#             file_up = open('../PropandPower/Airfoil_Data/' + filename1_2, "r")
-#             file_down = open('../PropandPower/Airfoil_Data/' + filename2_2, "r")
+#             file_up = open('code2021/PropandPower/Airfoil_Data/' + filename1_2, "r")
+#             file_down = open('code2021/PropandPower/Airfoil_Data/' + filename2_2, "r")
 #
 #             # Read lines
 #             lines_up = file_up.readlines()
