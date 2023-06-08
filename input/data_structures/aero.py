@@ -26,7 +26,7 @@ class Aero():
     cl_climb_clean: float = None
     alpha_climb_clean: float = None
     ld_climb: float = None
-
+    ld_cruise: float = None
 
     def load(self):
         with open(r"input/data_structures/aetheria_constants.json") as jsonFile:
@@ -44,6 +44,8 @@ class Aero():
         self.cl_climb_clean = data["cl_climb_clean"]
         self.alpha_climb_clean = data["alpha_climb_clean"] 
         self.ld_climb  = data["ld_climb"] 
+        self.v_stall = data['v_stall']
+        self.ld_cruise = data['ld_cr']
         
 
     def dump(self):
@@ -61,7 +63,8 @@ class Aero():
         data["cl_climb_clean"] = self.cl_climb_clean
         data["alpha_climb_clean"] = self.alpha_climb_clean
         data["ld_climb"] = self.ld_climb
-    
+        data['v_stall'] = self.v_stall
+        data['ld_cr'] = self.ld_cruise
         with open(r"output/data_structures/aetheria_constants.json", "w") as jsonFile:
             json.dump(data, jsonFile, indent=6)
     

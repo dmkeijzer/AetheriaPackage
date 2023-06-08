@@ -27,7 +27,7 @@ v_stall = 40
 roc_cr = 5
 rod_cr = 3 # Rate of descend 
 roc_hvr = 2
-h_cruise = 400          #[m]        O
+h_cruise = 1000          #[m]        O
 mission_dist = 400e3  # m
 h_transition = 30 # meter PLACEHOLDER
 npax = 4                # Amount of passengers O
@@ -77,8 +77,8 @@ k = 0.634 * 10**(-5) # Surface smoothness parameter
 
 # Time constants for midterm
 t_takeoff = 15.3
-t_trans = 10 #PLACEHOLDER
 t_loiter = 20*60
+t_landing = 15
 
 #fuelcell input
 VolumeDensityFuellCell = 3.25 #kW /l
