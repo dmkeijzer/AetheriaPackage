@@ -50,5 +50,7 @@ x0=np.array([0.01, 0.003, 0.07, 0.003,0.009,0.006, 0.003])    # :param x0: Initi
 
 
     
+Optclass = wb.Wingbox(WingClass, EngClass, MatClass, AeroClass)
+print(np.sum(Optclass.post_buckling(1e-3,1e-3,1e-3,1e-3,1e-3,1e-3,1e-3)))
 
 optimizertest = wb.WingboxOptimizer(x0,WingClass, EngClass, MatClass, AeroClass)

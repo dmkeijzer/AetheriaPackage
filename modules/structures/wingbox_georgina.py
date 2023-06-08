@@ -778,8 +778,8 @@ class Wingbox_optimization(om.ExplicitComponent):
         self.add_input("tmin")
 
         # Constant inputs
-        self.add_input('b')
-        self.add_input('c_r')
+        # self.add_input('b')
+        # self.add_input('c_r')
         
         #Outputs used as constraints
         self.add_output('wing_weight')
@@ -791,12 +791,13 @@ class Wingbox_optimization(om.ExplicitComponent):
         self.add_output('local_column',shape = (8,))
         self.add_output('crippling',shape = (8,))
         self.add_output("web_flange",shape = (8,))
+        self.declare_partials('*', '*', method= 'fd')
 
 
-    def setup_partials(self):
+    # def setup_partials(self):
 
-        # Partial derivatives are done using finite difference
-        self.declare_partials('*', '*', 'fd')
+    #     # Partial derivatives are done using finite difference
+    #     self.declare_partials('*', '*', 'fd')
 
     def compute(self, inputs, outputs):
 
@@ -810,12 +811,12 @@ class Wingbox_optimization(om.ExplicitComponent):
         t_min = inputs['tmin'][0]
 
         # Constants
-        span = inputs['b'][0]
-        chord_root = inputs['c_r'][0]
+        # span = inputs['b'][0]
+        # chord_root = inputs['c_r'][0]
 
 
         weight = self.WingboxClass.wing_weight(tsp,trib, hst, tst,wst,t_max, t_min)
-
+        print(f"tsp = {tsp}")
         constr = [
         self.WingboxClass.global_local( hst, tst,t_max, t_min),
         self.WingboxClass.post_buckling(tsp, trib, hst,tst,wst, t_max,t_min),
@@ -826,6 +827,7 @@ class Wingbox_optimization(om.ExplicitComponent):
         self.WingboxClass.crippling(hst, tst, wst, t_max, t_min), #ONLY
         self.WingboxClass.web_flange(hst,tst,t_max,t_min)
         ]
+        print(constr)
 
 
 
@@ -840,9 +842,7 @@ class Wingbox_optimization(om.ExplicitComponent):
         outputs['crippling'][:] = constr[6]
         outputs['web_flange'][:] = constr[7]
 
-        str_lst =  np.array(["Global local", "Post buckling", "Von Mises", 
-                    "Buckling", "Flange loc loc", "Local column",
-                    "Crippling", "Web flange"])
+    
 
         print('===== Progress update =====')
         print(f"Current weight = {weight} [kg]")
@@ -869,37 +869,30 @@ def WingboxOptimizer(x, wing, engine, material, aero):
     # Initial values for the optimization 
 
     #Constants
-    prob.model.set_input_defaults('wingbox_design.b', wing.span)
-    prob.model.set_input_defaults('wingbox_design.c_r', wing.chord_root)
+    # prob.model.set_input_defaults('wingbox_design.b', wing.span)
+    # prob.model.set_input_defaults('wingbox_design.c_r', wing.chord_root)
     # prob.model.set_input_defaults('wingbox_design.engine', engine)
     # prob.model.set_input_defaults('wingbox_design.wing', wing)
 
-    # Initial estimate for the design variables
-    prob.model.set_input_defaults('wingbox_design.tsp', x[0])
-    prob.model.set_input_defaults('wingbox_design.trib', x[1])
-    prob.model.set_input_defaults('wingbox_design.hst', x[2])
-    prob.model.set_input_defaults('wingbox_design.tst', x[3])
-    prob.model.set_input_defaults('wingbox_design.wst', x[4])
-    prob.model.set_input_defaults('wingbox_design.tmax', x[5])
-    prob.model.set_input_defaults('wingbox_design.tmin', x[6])
+   
 
-    prob.model.add_design_var('wingbox_design.tsp', lower = 0., upper= 0.1)
-    prob.model.add_design_var('wingbox_design.trib', lower = 0., upper= 0.1)
-    prob.model.add_design_var('wingbox_design.hst', lower = 0. , upper= 0.4)
-    prob.model.add_design_var('wingbox_design.tst', lower = 0., upper= 0.1)
-    prob.model.add_design_var('wingbox_design.wst', lower = 0., upper= 0.4 )
-    prob.model.add_design_var('wingbox_design.tmax', lower = 0., upper= 0.1)
-    prob.model.add_design_var('wingbox_design.tmin', lower = 0., upper= 0.1)
+    prob.model.add_design_var('wingbox_design.tsp', lower = 0.001, upper= 0.1)
+    prob.model.add_design_var('wingbox_design.trib', lower = 0.001, upper= 0.1)
+    prob.model.add_design_var('wingbox_design.hst', lower = 0.001 , upper= 0.4)
+    prob.model.add_design_var('wingbox_design.tst', lower = 0.001, upper= 0.1)
+    prob.model.add_design_var('wingbox_design.wst', lower = 0.001, upper= 0.4 )
+    prob.model.add_design_var('wingbox_design.tmax', lower = 0.001, upper= 0.1)
+    prob.model.add_design_var('wingbox_design.tmin', lower = 0.001, upper= 0.1)
 
     # # Define constraints 
-    # prob.model.add_constraint('wingbox_design.global_local')
-    # prob.model.add_constraint('wingbox_design.post_buckling')
+    prob.model.add_constraint('wingbox_design.global_local')
+    prob.model.add_constraint('wingbox_design.post_buckling')
     prob.model.add_constraint('wingbox_design.von_mises')
-    # prob.model.add_constraint('wingbox_design.buckling_constr')
-    # prob.model.add_constraint('wingbox_design.flange_loc_loc')
-    # prob.model.add_constraint('wingbox_design.local_column')
-    # prob.model.add_constraint('wingbox_design.crippling')
-    # prob.model.add_constraint('wingbox_design.web_flange')
+    prob.model.add_constraint('wingbox_design.buckling_constr')
+    prob.model.add_constraint('wingbox_design.flange_loc_loc')
+    prob.model.add_constraint('wingbox_design.local_column')
+    prob.model.add_constraint('wingbox_design.crippling')
+    prob.model.add_constraint('wingbox_design.web_flange')
 
     prob.driver = om.ScipyOptimizeDriver()
     prob.driver.options['optimizer'] = 'SLSQP'
@@ -908,8 +901,22 @@ def WingboxOptimizer(x, wing, engine, material, aero):
     prob.model.add_objective('wingbox_design.wing_weight')
 
     prob.setup()
+
+     # Initial estimate for the design variables
+    prob.set_val('wingbox_design.tsp', x[0])
+    prob.set_val('wingbox_design.trib', x[1])
+    prob.set_val('wingbox_design.hst', x[2])
+    prob.set_val('wingbox_design.tst', x[3])
+    prob.set_val('wingbox_design.wst', x[4])
+    prob.set_val('wingbox_design.tmax', x[5])
+    prob.set_val('wingbox_design.tmin', x[6])
+
+    prob.model.list_inputs(True)
+
     prob.run_driver()
-    prob.model.list_inputs()
+    # prob.check_partials()
+    prob.check_totals()
+
     prob.model.list_outputs()
 
     print(f"thickness spar= {prob.get_val('wingbox_design.tsp')*1000} [mm]")
