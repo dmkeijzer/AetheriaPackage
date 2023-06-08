@@ -674,7 +674,7 @@ class Wingbox():
         return vector[0]
 
 
-    def global_local(self, h_st,t_st,tarr,tmax,tmin):
+    def global_local(self, h_st,t_st,tmax,tmin):
         tarr = self.t_arr(tmax,tmin)
         diff = np.zeros(len(tarr))
         for i in range(len(tarr)):
@@ -823,14 +823,14 @@ class Wingbox_optimization(om.ExplicitComponent):
         weight = self.WingboxClass.wing_weight(tsp,trib, hst, tst,wst,t_max, t_min)
 
         constr = [
-        self.WingboxClass.global_local(   bst, hst, tst,t_max, t_min),
+        self.WingboxClass.global_local(hst,tst,t_max,t_min),
         self.WingboxClass.post_buckling(tsp, trib, hst,tst,wst, t_max,t_min),
         self.WingboxClass.von_Mises(tsp, trib, hst,tst,wst,t_max,t_min),
-        self.WingboxClass.buckling_constr(  tsp, trib,  bst, hst, tst,wst,t_max, t_min),
-        self.WingboxClass.flange_loc_loc(   bst,tst,wst,t_max, t_min),
-        self.WingboxClass.local_column(   bst,hst,tst,wst,t_max, t_min),
-        self.WingboxClass.crippling(    hst, tst, wst, t_max, t_min), #ONLY
-        self.WingboxClass.web_flange(   bst, hst, tst, t_max, t_min)
+        self.WingboxClass.buckling_constr(tsp, trib,  bst, hst, tst,wst,t_max, t_min),
+        self.WingboxClass.flange_loc_loc(bst,tst,wst,t_max, t_min),
+        self.WingboxClass.local_column(bst,hst,tst,wst,t_max, t_min),
+        self.WingboxClass.crippling(hst,tst,wst,t_max,t_min), #ONLY
+        self.WingboxClass.web_flange(hst,tst,t_max,t_min)
         ]
 
 
