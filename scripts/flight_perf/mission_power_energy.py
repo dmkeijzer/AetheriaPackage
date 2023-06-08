@@ -13,7 +13,17 @@ sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
 from modules.flight_perf.EnergyPower import *
+from modules.flight_perf.transition_model import *
 import input.data_structures.GeneralConstants as const
+from  ISA_tool import ISA
+from input.data_structures import *
+WingClass = Wing()
+AeroClass = Aero()
+PerformanceClass = PerformanceParameters()
+
+WingClass.load()
+AeroClass.load()
+PerformanceClass.load()
     
 TEST = int(input("\n\nType 1 if you want to write the JSON data to your download folder instead of the repo, type 0 otherwise:\n")) # Set to true if you want to write to your downloads folders instead of rep0
 dict_directory = "input/data_structures"
@@ -29,57 +39,79 @@ for dict_name in dict_names:
     #==========================Energy calculation ================================= 
 
     #----------------------- Take-off-----------------------
-    # if data["name"] == "L1":
-    #     P_loit_land = hoverstuffduct(data["mtom"]*1.1*const.g0, const.rho_sl, data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)[0]
-    # else:
-    #     P_loit_land = hoverstuffopen(data["mtom"]*1.1*const.g0, const.rho_sl, data["mtom"]/data["diskloading"],data["TW"]*data["mtom"]*const.g0)[0]
-
-   # P_takeoff = data["mtom"]*const.g0*const.roc_hvr + 1.2*data["mtom"]*const.g0*((-const.roc_hvr/2) + np.sqrt((const.roc_hvr**2/4)+(data["mtom"]*const.g0/(2*const.rho_cr*data["diskarea"]))))
+    print("---------------- Take-off")
     P_takeoff = powertakeoff(data["mtom"], const.g0, const.roc_hvr, data["diskarea"], const.rho_sl)
     E_to = P_takeoff * const.t_takeoff
-    
+    print("t", const.t_takeoff)
+
+    #-----------------------Transition to climb-----------------------
+    print(" ------------ transition to climb")
+    transition_simulation = numerical_simulation(vx_start=0, y_start=const.h_transition,
+      mass=data["mtom"], g0=const.g0, S=WingClass.surface, CL_max=Aeroclass.cl_climb_clean, alpha_climb=Aeroclass.alpha_climb_clean, CD=Aeroclass.cdi_climb_clean+Aeroclass.cd0, Adisk= data["diskarea"], lod_climb=Aeroclass.ld_climb, eff_climb=data['eff'])
+    E_trans_ver2hor = transition_simulation[1]
+    transition_power_max = np.max(transition_simulation[0])
+    final_trans_distance = transition_simulation[3][-1]
+    final_trans_altitude = transition_simulation[2][-1]
+    t_trans_climb = transition_simulation[4][-1]
+    print('t', t_trans_climb)
+
     #----------------------- Horizontal Climb --------------------------------------------------------------------
+    print("-------- horizontal climb")
     v_aft= v_exhaust(data["mtom"], const.g0, const.rho_cr, data["mtom"]/data["diskloading"], const.v_cr)
     prop_eff_var = propeff(v_aft, const.v_cr)
-    climb_power_var = powerclimb(data["mtom"], const.g0, data["S"], const.rho_sl, data["ld_climb"], prop_eff_var, const.roc_cr)
-    t_climb = (const.h_cruise  - const.h_transition) / const.roc_cr
+    average_h_climb = (const.h_cruise  - final_trans_altitude)/2
+    rho_climb = ISA(average_h_climb).density()
+    climb_power_var = powerclimb(data["mtom"], const.g0, data["S"], rho_climb, AeroClass.ld_climb, prop_eff_var, const.roc_cr)
+    t_climb = (const.h_cruise  - final_trans_altitude) / const.roc_cr
+    print('t', t_climb)
     E_climb = climb_power_var * t_climb
+    print('E', E_climb)
     
-    #-----------------------Transition (after climb because it needs the power)-----------------------
-    E_trans_ver2hor = (P_takeoff + climb_power_var)*const.t_trans / 2
-
-    #-----------------------------Cruise-----------------------
-    P_cr = powercruise(data["mtom"], const.g0, const.v_cr, data["ld_cr"], prop_eff_var)
-    d_climb = (const.h_cruise - const.h_transition)/np.tan(data["G"])
-    d_desc = (const.h_cruise - const.h_transition)/np.tan(data['G'])
-    t_cr = (const.mission_dist-d_desc-d_climb)/const.v_cr
-    E_cr = P_cr * t_cr
-
-    # -----------------------Descend-----------------------
-    P_desc = powerdescend(data["mtom"], const.g0, data["S"], const.rho_cr, data["ld_climb"], prop_eff_var, const.rod_cr)
-    t_desc = (const.h_cruise - const.h_transition)/const.rod_cr # Equal descend as ascend
+    #----------------------- Transition (from horizontal to vertical)-----------------------
+    print("--------------- transition to vertical")
+    transition_simulation_landing = numerical_simulation_landing(vx_start=aero.v_stall, y_start=145,
+      mass=data["mtom"], g0=const.g0, S=WingClass.surface, CL_max=Aeroclass.cl_climb_clean, alpha_stall=Aeroclass.alpha_climb_clean, CD=Aeroclass.cdi_climb_clean+Aeroclass.cd0, Adisk= data["diskarea"], lod_climb=Aeroclass.ld_climb, eff_climb=data['eff'])
+    E_trans_hor2vert = transition_simulation_landing[1]
+    transition_power_max_landing = np.max(transition_simulation_landing[0])
+    final_trans_distance_landing = transition_simulation_landing[3][0]
+    final_trans_altitude_landing = transition_simulation_landing[2][-1]  
+    t_trans_landing = transition_simulation_landing[4]
+    print('t', t_trans_landing)
+        # ----------------------- Horizontal Descend-----------------------
+    P_desc = powerdescend(data["mtom"], const.g0, WingClass.surface, const.rho_cr, aero.ld_climb, prop_eff_var, const.rod_cr)
+    t_desc = (const.h_cruise - final_trans_altitude_landing)/const.rod_cr # Equal descend as ascend
     E_desc = P_desc* t_desc
 
+
+
+    #-----------------------------Cruise-----------------------
+    print('-------- cruise')
+    P_cr = powercruise(data["mtom"], const.g0, const.v_cr, AeroClass.ld_cruise, prop_eff_var)
+    d_climb = final_trans_distance + (const.h_cruise  - final_trans_altitude)/np.tan(data["G"]) #check if G is correct
+    d_desc = (const.h_cruise - const.h_transition)/np.tan(data['G'])
+    t_cr = (const.mission_dist - d_desc - d_climb - final_trans_distance - final_trans_distance_landing)/const.v_cr
+    E_cr = P_cr * t_cr
+    print('t', t_cr)
+    print('distance', (const.mission_dist - d_desc - d_climb - final_trans_distance - final_trans_distance_landing))
+
     #----------------------- Loiter cruise-----------------------
-    P_loit_cr = powerloiter(data["mtom"], const.g0, data["S"], const.rho_cr, data["ld_climb"], prop_eff_var)
+    print('--------- loiter cruise')
+    P_loit_cr = powerloiter(data["mtom"], const.g0, WingClass.surface, const.rho_cr, aero.ld_climb, prop_eff_var)
     E_loit_hor = P_loit_cr * const.t_loiter
+    print('t', const.t_loiter)
 
     #----------------------- Loiter vertically-----------------------
-    if data["name"] == "L1":
-        P_loit_land = hoverstuffduct(data["mtom"]*const.g0, const.rho_sl, data["mtom"]/data["diskloading"],data["TW"])[1]
-    else:
-        P_loit_land = hoverstuffopen(data["mtom"]*const.g0, const.rho_sl, data["mtom"]/data["diskloading"],data["TW"])[1]
+    print('------ loiter vertically')
+    P_loit_land = hoverstuffopen(data["mtom"]*const.g0, const.rho_sl, data["mtom"]/data["diskloading"],data["TW"])[1]
     E_loit_vert = P_loit_land * 30 # 30 sec for hovering vertically
+    print('t', 30)
 
     #----------------------- Landing----------------------- 
-    if data["name"] == "L1":
-        landing_power_var = hoverstuffduct(data["mtom"]*const.g0, const.rho_sl, data["mtom"]/data["diskloading"],data["TW"])[1]
-    else:
-        landing_power_var = hoverstuffopen(data["mtom"]*const.g0, const.rho_sl, data["mtom"]/data["diskloading"],data["TW"])[1]
-    energy_landing_var = P_loit_land * const.t_takeoff
+    print('----------- landing')
+    landing_power_var = hoverstuffopen(data["mtom"]*const.g0, const.rho_sl, data["mtom"]/data["diskloading"],data["TW"])[1]
+    energy_landing_var = P_loit_land * const.t_landing
 
-    #----------------------- Transition (from horizontal to vertical)-----------------------
-    E_trans_hor2ver = (landing_power_var + P_desc)*const.t_trans / 2
+
 
     #---------------------------- TOTAL ENERGY CONSUMPTION ----------------------------
     E_total = E_to + E_trans_ver2hor + E_climb + E_cr + E_desc + E_loit_hor + E_loit_vert + E_trans_hor2ver + energy_landing_var

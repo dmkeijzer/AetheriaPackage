@@ -21,7 +21,7 @@ class Wing():
     y_mac: float = None
     sweep_LE: float = None
     quarterchord_sweep: float = None
-    X_lemac: float = None
+    x_lemac: float = None
     effective_aspectratio: float = None
     effective_span: float = None
 
@@ -55,7 +55,7 @@ class Wing():
         self.y_mac = data["y_mac"]
         self.sweep_LE = data["sweep_le"]
         self.quarterchord_sweep = data["quarterchord_sweep"]
-        self.X_lemac = data["x_lemac"]
+        self.x_lemac = data["x_lemac"]
         self.cd = data["cd"]
         self.cd0 = data["cd0"]
         self.cL_alpha = data["clalpha"]
@@ -91,7 +91,7 @@ class Wing():
         data["y_mac"] = self.y_mac
         data["sweep_le"] = self.sweep_LE
         data["quarterchord_sweep"] = self.quarterchord_sweep
-        data["x_lemac"] = self.X_lemac
+        data["x_lemac"] = self.x_lemac
         data["cd"] = self.cd
         data["x_lewing"] = self.x_lewing
 
