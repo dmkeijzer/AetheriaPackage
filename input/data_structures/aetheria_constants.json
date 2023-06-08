@@ -141,8 +141,10 @@
       "cL0": 0.171,
       "cL0_approach": 0.798,
       "cL_approach": 1.638,
-      "h_fuselage": 1.8,
-      "w_fuselage": 1.7,
+      "h_fuselage_inner": 1.8,
+      "h_fuselage_outer": 2,
+      "w_fuselage_inner": 1.6,
+      "w_fuselage_outer": 1.8,
       "mach_cruise": 0.2459,
       "mach_stall": 0.11809022304116654,
       "material": {
@@ -171,7 +173,7 @@
       "cdi_climb_clean": 0.013,
       "nacelle_width": 0.4,
       "sweep_halfchord_h": 0,
-      "volume_fuselage": 7,
+      "volume_fuselage": 0.5,
       "downwash_angle": 0.14,
       "v_stall_flaps20": 42,
       "cl_descent_trans": 1,
@@ -182,7 +184,6 @@
       "alpha_climb_flaps20": 0.2,
       "cl_descent_trans_flaps20": 1.83,
       "cdi_descent_trans_flaps20": 0.091,
-      "alpha_descent_trans_flaps20":0.2119
-      "downwash_angle": 0.14,
+      "alpha_descent_trans_flaps20":0.2119,
       "alpha_approach": 0.2
 }

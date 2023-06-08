@@ -672,7 +672,7 @@ class Wingbox():
         vector = np.zeros(len(tarr))
         for i in range(len(tarr)):
             vector[i] = -1 * (buck[i] - 1)
-        return vector[0]
+        return vector
 
 
     def global_local(self, h_st,t_st,tmax,tmin):
@@ -684,7 +684,7 @@ class Wingbox():
             diff[i] = glob - loc #FIXEM glob
         #diff = self.global_buckling(h_st,t_st,tarr)  - self.local_buckling(tarr,b_st)
 
-        return diff[0]
+        return diff
 
 
 
@@ -695,7 +695,7 @@ class Wingbox():
             col=self.column_st(h_st,t_st,w_st, tarr[i])
             loc = self.local_buckling(tarr[i])*tarr[i]
             diff[i] = col - loc
-        return diff[0]
+        return diff
 
 
     def flange_loc_loc(self, t_st,w_st,tmax,tmin):
@@ -705,7 +705,7 @@ class Wingbox():
         for i in range(len(tarr)):
             loc = self.local_buckling(tarr[i])
             diff[i] = flange - loc
-        return diff[0]
+        return diff
 
 
     def web_flange(self, h_st,t_st,tmax,tmin):
@@ -715,7 +715,7 @@ class Wingbox():
         for i in range(len(tarr)):
             loc = self.local_buckling(tarr[i])
             diff[i] =web-loc
-        return diff[0]
+        return diff
 
 
     def von_Mises(self, t_sp, t_rib, h_st,t_st,w_st,tmax,tmin):
@@ -728,7 +728,7 @@ class Wingbox():
         # for i in range(len(tarr)):
         #     tau_shear= Nxy[i] / tarr[i]
         #     vm[i]=sigma_yield-sqrt(0.5 * (3 * tau_shear ** 2+bend_stress[i]**2))
-        return vm_lst[0]
+        return vm_lst
 
 
 
@@ -739,7 +739,7 @@ class Wingbox():
         for i in range(len(tarr)):
             col = self.column_st( h_st,t_st,w_st,tarr[i])
             crip[i] = t_st * self.beta * self.sigma_yield* ((self.g * t_st ** 2 / A) * sqrt(self.E / self.sigma_yield)) ** self.m_crip - col
-        return crip[0]
+        return crip
 
 
     def post_buckling(self, t_sp, t_rib, h_st,t_st,w_st, tmax,tmin):
@@ -747,7 +747,7 @@ class Wingbox():
         ratio=2/(2+1.3*(1-1/self.pb))
         px= self.n_max*self.shear_force(t_sp, t_rib, h_st,t_st,w_st,tmax,tmin)
         diff=np.subtract(ratio*f,px)
-        return diff[0]
+        return diff
 
 
     # def compute_volume():
@@ -889,16 +889,16 @@ def WingboxOptimizer(x, wing, engine, material, aero):
 
     # Define constraints 
     prob.model.add_constraint('wingbox_design.global_local', lower=0.)
-    prob.model.add_constraint('wingbox_design.post_buckling', lower=0.)
-    prob.model.add_constraint('wingbox_design.von_mises', lower=0.)
-    prob.model.add_constraint('wingbox_design.buckling_constr', lower=0.)
-    prob.model.add_constraint('wingbox_design.flange_loc_loc', lower=0.)
-    prob.model.add_constraint('wingbox_design.local_column', lower=0.)
-    prob.model.add_constraint('wingbox_design.crippling', lower=0.)
-    prob.model.add_constraint('wingbox_design.web_flange', lower=0.)
+    # prob.model.add_constraint('wingbox_design.post_buckling', lower=0.)
+    # prob.model.add_constraint('wingbox_design.von_mises', lower=0.)
+    # prob.model.add_constraint('wingbox_design.buckling_constr', lower=1.)
+    # prob.model.add_constraint('wingbox_design.flange_loc_loc', lower=0.)
+    # prob.model.add_constraint('wingbox_design.local_column', lower=0.) #FIXME Causing exit mode 8
+    # prob.model.add_constraint('wingbox_design.crippling', lower=0.)
+    # prob.model.add_constraint('wingbox_design.web_flange', lower=0.)
 
     prob.driver = om.ScipyOptimizeDriver()
-    prob.driver.options['optimizer'] = 'trust-constr'
+    prob.driver.options['optimizer'] = 'SLSQP'
     prob.driver.opt_settings['maxiter'] = 1000
 
     prob.model.add_design_var('wingbox_design.tsp', lower = 0., upper= 0.1)

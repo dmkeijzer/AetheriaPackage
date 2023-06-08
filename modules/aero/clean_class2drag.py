@@ -105,7 +105,7 @@ def S_wet_fus(d, l1, l2, l3):
     :param l2: length cylindrical section
     :type l2: _type_
     :param l3: length conical section
-    :type l3: _type_
+    :type l3: 
     :return: _description_
     :rtype: _type_
     """
