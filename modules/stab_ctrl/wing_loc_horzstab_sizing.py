@@ -119,7 +119,7 @@ def ctrl_formula_coefs(CLh_approach, CLAh_approach, l_h, MAC, Vh_V_2, Cm_ac, x_a
     q_ctrl = ((Cm_ac / CLAh_approach) - x_ac_stab_bar) / ((CLh_approach / CLAh_approach) * (l_h / MAC) * Vh_V_2)
     return m_ctrl, q_ctrl
 
-def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, plot=False):
+def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, plot=False, CLh_approach = None):
     log_final = np.zeros((0,6))
     depsda = HorTailClass.downwash
     MAC = WingClass.chord_mac
@@ -142,6 +142,9 @@ def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, plot=F
     CLAh_approach = WingClass.cL_approach  # Assumes fuselage contribution negligible
     x_lemac_x_rootc = WingClass.X_lemac
     SM = 0.05  # Stability margin, standard
+
+    if CLh_approach == None:
+        CLh_approach = CLh_approach_estimate(A_h)
 
     for wing_loc in np.linspace(0.3, 0.65, np.size(np.arange(-1,2,0.002))):
         log_stab = np.zeros((0, 2))
@@ -166,8 +169,6 @@ def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, plot=F
         CLah = CLahcalc(A_h, beta, eta, Lambdah2)
 
         m_stab, q_stab = stab_formula_coefs(CLah, CLaAh, depsda, l_h, MAC, Vh_V_2, x_ac_stab_bar, SM)
-
-        CLh_approach = CLh_approach_estimate(A_h)
 
         Cm_ac_flaps = -0.1825#From delta CL0
         Cm_ac_fuselage = cmac_fuselage_contr(b_f, l_f, h_f, CL0_approach, S, MAC, CLaAh)  # CLaAh for ctrl is different than for stab if cruise in compressible flow
