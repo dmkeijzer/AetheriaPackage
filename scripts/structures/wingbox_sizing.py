@@ -46,7 +46,7 @@ AeroClass.load()
 # wb.y_rotor_loc = EngClass.y_rotor_loc
 
 
-x0=np.array([0.004, 0.003, 0.07, 0.003,0.009,0.006, 0.003])    # :param x0: Initial estimate Design vector X = [b, cr, tsp, trib, L, bst, hst, tst, wst, t]
+x0=np.array([0.01, 0.003, 0.07, 0.003,0.009,0.006, 0.003])    # :param x0: Initial estimate Design vector X = [b, cr, tsp, trib, L, bst, hst, tst, wst, t]
 
 
     
