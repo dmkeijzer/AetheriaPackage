@@ -21,7 +21,7 @@ WingClass.load()
 HorTailClass.load()
 FuseClass.load()
 CLh = -0.4
-log = np.zeros((0,3))
+log = np.zeros((0,4))
 
 while True:
     wingloc_ShS, delta_cg_ac = wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, CLh_approach=CLh)
