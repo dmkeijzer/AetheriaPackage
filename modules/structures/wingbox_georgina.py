@@ -453,7 +453,7 @@ class Wingbox():
     def perimiter_ellipse(self,a,b):
         return float(np.pi *  ( 3*(a+b) - np.sqrt( (3*a + b) * (a + 3*b) ) )) #Ramanujans first approximation formula
 
-    def torsion_sections(self,tmax,tmin,engine,wing):
+    def torsion_sections(self,tmax,tmin,wing,engine):
         ch = self.chord()
         tarr = self.t_arr(tmax,tmin)
         sta = self.get_y_rib_loc()
@@ -475,7 +475,7 @@ class Wingbox():
         tarr = self.t_arr(tmax,tmin)
         sta = self.get_y_rib_loc()
         Vz=self.shear_force(t_sp, t_rib, h_st,t_st,w_st,tmax,tmin)
-        T =self.torsion_sections(tmax,tmin,engine,wing)
+        T =self.torsion_sections(tmax,tmin,wing,engine)
         Nxy = np.zeros(len(tarr))
 
         for i in range(len(tarr)):
@@ -844,8 +844,8 @@ class Wingbox():
         return diff[0]
 
 
-    def compute_volume():
-        pass
+    # def compute_volume():
+    #     pass
 
 
         # def __init__(self, **kwargs):
