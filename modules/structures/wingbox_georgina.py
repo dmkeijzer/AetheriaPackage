@@ -67,15 +67,16 @@ class Wingbox():
 
     #Determine rib positions in spanwise direction (y)
     def get_y_rib_loc(self):
-        y_rib_0 = self.y_rotor_loc[0] - 0.5 * self.nacelle_w
-        y_rib_1 = self.y_rotor_loc[0] + 0.5 * self.nacelle_w
+        y_rib_0 = np.array([self.y_rotor_loc[0] - 0.5 * self.nacelle_w])
+        y_rib_1 = np.array([self.y_rotor_loc[0] + 0.5 * self.nacelle_w])
 
-        y_rib_3 = self.y_rotor_loc[1] - 0.5 * self.nacelle_w
-        y_rib_2 = y_rib_3 - 0.15
+        y_rib_3 = np.array([self.y_rotor_loc[1] - 0.5 * self.nacelle_w])
+        y_rib_2 = np.array(y_rib_3 - 0.15)
         y_rib_sec0 = np.arange(0,y_rib_0,y_rib_0/self.n_ribs_sec0)
         y_rib_sec1 = np.arange(y_rib_1,y_rib_2, (y_rib_2-y_rib_1)/self.n_ribs_sec1)
 
-        y_rib_loc = np.array([y_rib_0,y_rib_1,y_rib_2,y_rib_3],y_rib_sec0,y_rib_sec1)
+        y_rib_loc = np.concatenate((y_rib_0, y_rib_1 ,y_rib_2, y_rib_3,y_rib_sec0,y_rib_sec1))
+
         y_rib_loc = np.sort(y_rib_loc)
         return y_rib_loc
 
@@ -167,19 +168,15 @@ class Wingbox():
         stations = self.get_y_rib_loc()
         w = np.zeros(len(stations))
         A = self.area_st(h_st, t_st,w_st)
-
-
         #TODO check this still
-        vol_at_stations = np.vectorize(stations, np.resize(t_sk, np.size(stations)), t_sp, h, c, A, self.n_st)
-        w_alternative = cumulative_trapezoid(vol_at_stations, stations)
-        w_res = np.append(np.insert(np.diff(w_alternative), 0 , w_alternative[0]), 0)
-        
+        # vol_at_stations = np.vectorize(stations, np.resize(t_sk, np.size(stations)), t_sp, h, c, A, self.n_st)
+        # w_alternative = cumulative_trapezoid(vol_at_stations, stations)
+        # w_res = np.append(np.insert(np.diff(w_alternative), 0 , w_alternative[0]), 0)
 
-
-        # for i in range(len(t_sk)):
-        #     vol = lambda z:  rho * (2 * h(z) * t_sp + (pi * (3 * (0.5 * h(z) + 0.15 * c(z)) - sqrt((3 * 0.5 * h(z) + 0.15 * c(z)) * (0.5 * h(z) + 3 * 0.15 * c(z)))) + 2 * 0.6 * c(z) + sqrt(h(z) ** 2 / 4 + (0.25 * c(z)) ** 2)) *t_sk[i] + A * 2 * nst)
-        #     w[i]=trapz([vol(stations[i]),vol(stations[i+1])],[stations[i],stations[i+1]])
-        return w_res
+        for i in range(len(t_sk)):
+            vol = lambda z:  self.rho * (2 * h(z) * t_sp + (pi * (3 * (0.5 * h(z) + 0.15 * c(z)) - sqrt((3 * 0.5 * h(z) + 0.15 * c(z)) * (0.5 * h(z) + 3 * 0.15 * c(z)))) + 2 * 0.6 * c(z) + sqrt(h(z) ** 2 / 4 + (0.25 * c(z)) ** 2)) *t_sk[i] + A * 2 * self.n_st)
+            w[i]=trapz([vol(stations[i]),vol(stations[i+1])],[stations[i],stations[i+1]])
+        return w
 
 
 
@@ -188,8 +185,6 @@ class Wingbox():
         # c_r=abs(self.chord_root) #NOT USED
         t_sp=abs(t_sp)
         t_rib=abs(t_rib)
-        L=abs(L)
-        b_st=abs(b_st)
         h_st=abs(h_st)
         t_st=abs(t_st)
         w_st=abs(w_st)
@@ -858,7 +853,7 @@ class Wingbox_optimization(om.ExplicitComponent):
         self.wing =  wing
         self.engine = engine
         self.material = material
-        self.WingboxClass = Wingbox( engine,material, wing, aero)
+        self.WingboxClass = Wingbox(wing,engine , material, aero)
 
 
 
@@ -873,7 +868,8 @@ class Wingbox_optimization(om.ExplicitComponent):
         self.add_input('hst')
         self.add_input('tst')
         self.add_input('wst')
-        self.add_input('t')
+        self.add_input('tmax')
+        self.add_input("tmin")
 
         # Constant inputs
         self.add_input('b')
@@ -906,24 +902,25 @@ class Wingbox_optimization(om.ExplicitComponent):
         hst = inputs['hst'][0]
         tst = inputs['tst'][0]
         wst = inputs['wst'][0]
-        t = inputs['t'][0]
+        t_max = inputs['tmax'][0]
+        t_min = inputs['tmin'][0]
 
         # Constants
         span = inputs['b'][0]
         chord_root = inputs['c_r'][0]
 
 
-        weight = self.WingboxClass.wing_weight(span, chord_root,tsp,trib, L, bst, hst, tst,wst,[t])
+        weight = self.WingboxClass.wing_weight(tsp,trib, hst, tst,wst,t_max, t_min)
 
         constr = [
-        self.WingboxClass.global_local(span, chord_root, L, bst, hst, tst,[t]),
-        self.WingboxClass.post_buckling(span, chord_root, tsp, trib,  L, bst, hst, tst, wst, [t]),
-        self.WingboxClass.von_Mises(span, chord_root, tsp, trib, L, bst, hst, tst,wst,[t]),
-        self.WingboxClass.buckling_constr(span, chord_root, tsp, trib, L, bst, hst, tst,wst,[t]),
-        self.WingboxClass.flange_loc_loc(span, chord_root, L, bst,tst,wst,[t]),
-        self.WingboxClass.local_column(span, chord_root, L, bst,hst,tst,wst,[t]),
-        self.WingboxClass.crippling(span,  L,  hst, tst, wst, [t]), #ONLY
-        self.WingboxClass.web_flange(span, chord_root, L, bst, hst, tst, [t])
+        self.WingboxClass.global_local(   bst, hst, tst,t_max, t_min),
+        self.WingboxClass.post_buckling(  tsp, trib,   bst, hst, tst, wst, t_max, t_min),
+        self.WingboxClass.von_Mises(  tsp, trib,  bst, hst, tst,wst,t_max, t_min),
+        self.WingboxClass.buckling_constr(  tsp, trib,  bst, hst, tst,wst,t_max, t_min),
+        self.WingboxClass.flange_loc_loc(   bst,tst,wst,t_max, t_min),
+        self.WingboxClass.local_column(   bst,hst,tst,wst,t_max, t_min),
+        self.WingboxClass.crippling(    hst, tst, wst, t_max, t_min), #ONLY
+        self.WingboxClass.web_flange(   bst, hst, tst, t_max, t_min)
         ]
 
 
@@ -976,12 +973,11 @@ def WingboxOptimizer(x, wing, engine, material, aero):
     # Initial estimate for the design variables
     prob.model.set_input_defaults('wingbox_design.tsp', x[0])
     prob.model.set_input_defaults('wingbox_design.trib', x[1])
-    prob.model.set_input_defaults('wingbox_design.L', x[2])
-    prob.model.set_input_defaults('wingbox_design.bst', x[3])
-    prob.model.set_input_defaults('wingbox_design.hst', x[4])
-    prob.model.set_input_defaults('wingbox_design.tst', x[5])
-    prob.model.set_input_defaults('wingbox_design.wst', x[6])
-    prob.model.set_input_defaults('wingbox_design.t', x[7])
+    prob.model.set_input_defaults('wingbox_design.hst', x[2])
+    prob.model.set_input_defaults('wingbox_design.tst', x[3])
+    prob.model.set_input_defaults('wingbox_design.wst', x[4])
+    prob.model.set_input_defaults('wingbox_design.tmax', x[5])
+    prob.model.set_input_defaults('wingbox_design.tmin', x[6])
 
 
     # Define constraints 
@@ -1000,12 +996,12 @@ def WingboxOptimizer(x, wing, engine, material, aero):
 
     prob.model.add_design_var('wingbox_design.tsp', lower = 0., upper= 0.1)
     prob.model.add_design_var('wingbox_design.trib', lower = 0., upper= 0.1)
-    prob.model.add_design_var('wingbox_design.L', lower = 0., upper=   1)
-    prob.model.add_design_var('wingbox_design.bst',  lower = 0., upper= 0.5)
     prob.model.add_design_var('wingbox_design.hst', lower = 0. , upper= 0.4)
     prob.model.add_design_var('wingbox_design.tst', lower = 0., upper= 0.1)
     prob.model.add_design_var('wingbox_design.wst', lower = 0., upper= 0.4 )
-    prob.model.add_design_var('wingbox_design.t', lower = 0., upper= 0.1)
+    prob.model.add_design_var('wingbox_design.tmax', lower = 0., upper= 0.1)
+    prob.model.add_design_var('wingbox_design.tmin', lower = 0., upper= 0.1)
+
 
     prob.model.add_objective('wingbox_design.wing_weight')
 
