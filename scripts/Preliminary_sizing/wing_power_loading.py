@@ -72,14 +72,12 @@ def plot_wing_power_loading_graphs(dict_directory,dict_name,i):
     plt.fill_between(lowest_area_x,lowest_area_y, color = "Green", alpha = 0.3)
     plt.fill_between(lowest_area_x,lowest_area_y_novf, color = "Green", alpha = 0.2)
 
-
-
     #PLOT LIMITING DESIGN POINTS AND WRITE THE VALUES
     plt.plot(WS_max,WP_cruise,marker = "o",color = "green")
-    plt.annotate((str(int(WS_max))+", "+str(round(WP_cruise,8))),(WS_max,WP_cruise+0.005))
+    plt.annotate((str(int(WS_max))+", "+str(round(WP_cruise,4))),(STALLSPEED,lowest_area_y_novf[-1]+0.005))
     if lowest_area_y_novf[-1] != lowest_area_y[-1]:
         plt.plot(WS_max,WP_hover,marker = "o",color = "red")
-        plt.annotate((str(int(WS_max))+", "+str(round(WP_hover,8))),(WS_max,WP_hover+0.005))
+        plt.annotate((str(int(WS_max))+", "+str(round(WP_hover,4))),(STALLSPEED,lowest_area_y[-1]+0.005))
     
     #GRAPH MAKE-UP
     plt.legend(loc='upper right')
@@ -93,11 +91,11 @@ def plot_wing_power_loading_graphs(dict_directory,dict_name,i):
     
     #PRINT VALUES
     print(data['name'])
-    print("\n\n\n")
+    print("\n")
     print("WS = ",str(WS_max))
-    print("WP = ",str(round(WP_hover,8)))
-    print("WP_noverticalflight = ",str(round(WP_cruise,8)))
-    print("TW = ", str(round(TW_max,8))),'\n'
+    print("WP = ",str(round(WP_hover,4)))
+    print("WP_noverticalflight = ",str(round(WP_cruise,4)))
+    print("TW = ", str(round(TW_max,4))),'\n'
     print("Power required  = ", data["mtom"]*const.g0/WP_hover/1000,"[kW]")
     print("Wing surface = ", data["mtom"]*const.g0/WS_max,'[m^2]')
 
