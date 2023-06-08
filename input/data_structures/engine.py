@@ -38,7 +38,7 @@ class Engine:
         self.mass_pertotalengine = self.totalmass/self.no_engines
         self.x_rotor_loc = data["x_rotor_loc"]
         self.y_rotor_loc = data["y_rotor_loc"]
-        self.nacelle_width = data["nacelle_w"]
+        self.nacelle_width = data["nacelle_width"]
 
     def dump(self):
 
