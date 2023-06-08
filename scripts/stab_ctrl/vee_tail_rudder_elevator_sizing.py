@@ -91,7 +91,7 @@ def get_control_surface_to_tail_chord_ratio(Wing, Fuse, HorTail, CL_h,l_v,Cn_bet
                 
         elevator_min=elevator_min-step
         rudder_max=rudder_max-step        
-        print(tau_from_rudder,tau_from_elevator)
+        #print(tau_from_rudder,tau_from_elevator)
 
     tau=max([tau_from_rudder,tau_from_elevator])
     ###Recalculate Cm_de or Cn_dr as one of them will now be bigger due to choosing tau as the maximum of the two.

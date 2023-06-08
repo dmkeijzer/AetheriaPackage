@@ -9,20 +9,25 @@ import matplotlib.pyplot as plt
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
-from modules.stab_crtl.wing_loc_horzstab_sizing import wing_location_horizontalstab_size
+from modules.stab_ctrl.wing_loc_horzstab_sizing import wing_location_horizontalstab_size
 from scripts.stab_ctrl.vee_tail_rudder_elevator_sizing import *
 from input.data_structures import *
 
-WingClass = Wing().load()
-FuseClass = Fuselage().load()
-HorTailClass = HorTail().load()
+WingClass = Wing()
+FuseClass = Fuselage()
+HorTailClass = HorTail()
 
-
-CLh = -0.05
+WingClass.load()
+HorTailClass.load()
+FuseClass.load()
+CLh = -0.3
 log = np.zeros((0,3))
 
 while True:
     wingloc_ShS, delta_cg_ac = wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, CLh_approach=CLh)
+    WingClass.load()
+    FuseClass.load()
+    HorTailClass.load()
     wingloc = wingloc_ShS[0,0]
     ShS = wingloc_ShS[0,1]
     l_v = FuseClass.length_fuselage * (1 - wingloc)
@@ -32,7 +37,9 @@ while True:
     if type(v_tail[-1]) == "str":
         break
     log = np.vstack((log, np.array([CLh, HorTailClass.surface, CLh_cr ** 2])))
-    CLh = CLh - 0.005
+    CLh = CLh - 0.02
+    print(log)
+    print(v_tail)
 
 print(log[-1,:])
 plt.subplot(121)

@@ -140,7 +140,7 @@ def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, plot=F
     CL0_approach = WingClass.cL_alpha0_approach
     Cm_ac_wing = WingClass.cm_ac
     CLAh_approach = WingClass.cL_approach  # Assumes fuselage contribution negligible
-    x_lemac_x_rootc = WingClass.X_lemac
+    x_lemac_x_rootc = WingClass.x_lemac
     SM = 0.05  # Stability margin, standard
 
     if CLh_approach == None:
@@ -196,7 +196,7 @@ def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, plot=F
         plt.show()
 
 
-    WingClass.x_lewing = log_final[np.where(log_final[:,1] == np.min(log_final[:,1]))[0], 0:2][0][0] *FuseClass.length_fuselage - 0.24 * WingClass.chord_mac - WingClass.X_lemac
+    WingClass.x_lewing = log_final[np.where(log_final[:,1] == np.min(log_final[:,1]))[0], 0:2][0][0] *FuseClass.length_fuselage - 0.24 * WingClass.chord_mac - WingClass.x_lemac
     HorTailClass.hortailsurf_wingsurf =  log_final[np.where(log_final[:,1] == np.min(log_final[:,1]))[0], 0:2][0][1]
     HorTailClass.surface = log_final[np.where(log_final[:,1] == np.min(log_final[:,1]))[0], 0:2][0][1] * WingClass.surface
     #Update all values
@@ -204,7 +204,7 @@ def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, plot=F
     #FuseClass.dump()
     HorTailClass.dump()
 
-    return log_final[np.where(log_final[:,1] == np.min(log_final[:,1]))[0], 0:2], log_final[np.where(log_final[:,1] == np.min(log_final[:,1]))[0], -1] - x_ac_stab_bar
+    return log_final[np.where(log_final[:,1] == np.min(log_final[:,1]))[0], 0:2], log_final[np.where(log_final[:,1] == np.min(log_final[:,1]))[0], -1][0] - x_ac_stab_bar
 
 if __name__ == "__main__":
     from input.data_structures import *
