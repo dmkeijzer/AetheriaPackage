@@ -148,7 +148,7 @@
       "material": {
             "youngsmodulus": 70000000000.0,
             "poisson": 0.3,
-            "shear_modulus": 26e9,
+            "shear_modulus": 26000000000.0,
             "beta": 1.42,
             "sigma_yield": 430000000.0,
             "ultimate_tensile_stress": 640000000.0,
@@ -173,7 +173,9 @@
       "nacelle_width": 0.4,
       "sweep_halfchord_h": 0,
       "volume_fuselage": 7,
-      "downwash_angle": 0.14,
+      "downwash_angle": 0.16177854114717813,
+      "downwash_angle_wing": 0.120211603003049,
+      "downwash_angle_prop": 0.19134305991593323,
       "v_stall_flaps20": 42,
       "cl_descent_trans": 1,
       "alpha_descent_trans": 2,
@@ -181,6 +183,6 @@
       "alpha_climb_flaps20": 0.2,
       "cl_descent_trans_flaps20": 1.83,
       "cdi_descent_trans_flaps20": 0.091,
-      "alpha_descent_trans_flaps20":0.2119,
+      "alpha_descent_trans_flaps20": 0.2119,
       "alpha_approach": 0.2
 }
