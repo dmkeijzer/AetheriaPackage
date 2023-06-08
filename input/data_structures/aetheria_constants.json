@@ -167,5 +167,6 @@
       "quarterchord_sweep": 0,
       "alpha_climb_clean": 0.0873,
       "cl_climb_clean": 0.592,
-      "cdi_climb_clean": 0.013
+      "cdi_climb_clean": 0.013,
+      "nacelle_width": 0.4
 }

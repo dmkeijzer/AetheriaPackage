@@ -38,7 +38,7 @@ from input.data_structures.GeneralConstants import *
 
 
 class Wingbox():
-    def __init__(self, engine, material, wing,pitch_st, t_max, t_min) -> None:
+    def __init__(self, engine, material, wing,pitch_st) -> None:
         #Material
         self.poisson = material.poisson
         self.rho = material.rho
@@ -61,7 +61,7 @@ class Wingbox():
         #Engine
         self.engine_weight = engine.mass_pertotalengine
         self.y_rotor_loc = engine.y_rotor_loc
-        self.nacelle_w = engine.nacelle_w #TODO Check if it gets updated
+        self.nacelle_w = engine.nacelle_width #TODO Check if it gets updated
 
         #GEOMETRY
         self.width = 0.6*self.chord_root
@@ -1118,7 +1118,7 @@ class Wingbox_optimization(om.ExplicitComponent):
         span = inputs['b'][0]
         chord_root = inputs['c_r'][0]
 
-        weight = wing_weight(span, chord_root,tsp,trib, L, bst, hst, tst,wst,[t])
+        weight = Wingbox.wing_weight(span,chord_root,tsp,trib, L, bst, hst, tst,wst,[t])
 
         constr = [
         Wingbox.global_local(span, chord_root, L, bst, hst, tst,[t]),
@@ -1126,9 +1126,9 @@ class Wingbox_optimization(om.ExplicitComponent):
         Wingbox.von_Mises(span, chord_root, tsp, trib, L, bst, hst, tst,wst,[t]),
         Wingbox.buckling_constr(span, chord_root, tsp, trib, L, bst, hst, tst,wst,[t]),
         Wingbox.flange_loc_loc(span, chord_root, L, bst,tst,wst,[t]),
-        local_column(span, chord_root, L, bst,hst,tst,wst,[t]),
-        crippling(span,  L,  hst, tst, wst, [t]), #ONLY
-        web_flange(span, chord_root, L, bst, hst, tst, [t])
+        Wingbox.local_column(span, chord_root, L, bst,hst,tst,wst,[t]),
+        Wingbox.crippling(span,  L,  hst, tst, wst, [t]), #ONLY
+        Wingbox.web_flange(span, chord_root, L, bst, hst, tst, [t])
         ]
 
 
