@@ -69,7 +69,8 @@ class Wingbox():
         c = lambda y: self.chord_root - self.chord_root * (1 - self.taper) * y * 2 / self.span
         return c
 
-    #Determine rib positions in spanwise direction (y)
+    #Determine rib positions in
+    #  spanwise direction (y)
     def get_y_rib_loc(self):
         y_rib_0 = np.array([self.y_rotor_loc[0] - 0.5 * self.nacelle_w])
         y_rib_1 = np.array([self.y_rotor_loc[0] + 0.5 * self.nacelle_w])
@@ -186,11 +187,7 @@ class Wingbox():
     def wing_weight(self, t_sp, t_rib, h_st,t_st,w_st,tmax,tmin):
         # b=abs(self.span)
         # c_r=abs(self.chord_root) #NOT USED
-        t_sp=abs(t_sp)
-        t_rib=abs(t_rib)
-        h_st=abs(h_st)
-        t_st=abs(t_st)
-        w_st=abs(w_st)
+
         stations = self.get_y_rib_loc()
         skin_weight = self.panel_weight(t_sp, h_st,t_st,w_st,tmax,tmin)
         cumsum = np.sum(skin_weight)
@@ -672,7 +669,7 @@ class Wingbox():
         vector = np.zeros(len(tarr))
         for i in range(len(tarr)):
             vector[i] = -1 * (buck[i] - 1)
-        return vector[0]
+        return vector
 
 
     def global_local(self, h_st,t_st,tmax,tmin):
@@ -684,7 +681,7 @@ class Wingbox():
             diff[i] = glob - loc #FIXEM glob
         #diff = self.global_buckling(h_st,t_st,tarr)  - self.local_buckling(tarr,b_st)
 
-        return diff[0]
+        return diff
 
 
 
@@ -695,7 +692,7 @@ class Wingbox():
             col=self.column_st(h_st,t_st,w_st, tarr[i])
             loc = self.local_buckling(tarr[i])*tarr[i]
             diff[i] = col - loc
-        return diff[0]
+        return diff
 
 
     def flange_loc_loc(self, t_st,w_st,tmax,tmin):
@@ -705,7 +702,7 @@ class Wingbox():
         for i in range(len(tarr)):
             loc = self.local_buckling(tarr[i])
             diff[i] = flange - loc
-        return diff[0]
+        return diff
 
 
     def web_flange(self, h_st,t_st,tmax,tmin):
@@ -715,7 +712,7 @@ class Wingbox():
         for i in range(len(tarr)):
             loc = self.local_buckling(tarr[i])
             diff[i] =web-loc
-        return diff[0]
+        return diff
 
 
     def von_Mises(self, t_sp, t_rib, h_st,t_st,w_st,tmax,tmin):
@@ -728,7 +725,7 @@ class Wingbox():
         # for i in range(len(tarr)):
         #     tau_shear= Nxy[i] / tarr[i]
         #     vm[i]=sigma_yield-sqrt(0.5 * (3 * tau_shear ** 2+bend_stress[i]**2))
-        return vm_lst[0]
+        return vm_lst
 
 
 
@@ -739,7 +736,7 @@ class Wingbox():
         for i in range(len(tarr)):
             col = self.column_st( h_st,t_st,w_st,tarr[i])
             crip[i] = t_st * self.beta * self.sigma_yield* ((self.g * t_st ** 2 / A) * sqrt(self.E / self.sigma_yield)) ** self.m_crip - col
-        return crip[0]
+        return crip
 
 
     def post_buckling(self, t_sp, t_rib, h_st,t_st,w_st, tmax,tmin):
@@ -747,7 +744,7 @@ class Wingbox():
         ratio=2/(2+1.3*(1-1/self.pb))
         px= self.n_max*self.shear_force(t_sp, t_rib, h_st,t_st,w_st,tmax,tmin)
         diff=np.subtract(ratio*f,px)
-        return diff[0]
+        return diff
 
 
     # def compute_volume():
@@ -786,14 +783,14 @@ class Wingbox_optimization(om.ExplicitComponent):
         
         #Outputs used as constraints
         self.add_output('wing_weight')
-        self.add_output('global_local')
-        self.add_output('post_buckling')
-        self.add_output('von_mises')
-        self.add_output('buckling_constr')
-        self.add_output('flange_loc_loc')
-        self.add_output('local_column')
-        self.add_output('crippling')
-        self.add_output("web_flange")
+        self.add_output('global_local',shape = (8,))
+        self.add_output('post_buckling',shape = (8,))
+        self.add_output('von_mises',shape = (8,))
+        self.add_output('buckling_constr',shape = (8,))
+        self.add_output('flange_loc_loc',shape = (8,))
+        self.add_output('local_column',shape = (8,))
+        self.add_output('crippling',shape = (8,))
+        self.add_output("web_flange",shape = (8,))
 
 
     def setup_partials(self):
@@ -834,14 +831,14 @@ class Wingbox_optimization(om.ExplicitComponent):
 
 
         outputs['wing_weight'] = weight
-        outputs['global_local'] = constr[0]
-        outputs['post_buckling'] = constr[1]
-        outputs['von_mises'] = constr[2]
-        outputs['buckling_constr'] = constr[3]
-        outputs['flange_loc_loc'] = constr[4]
-        outputs['local_column'] = constr[5]
-        outputs['crippling'] = constr[6]
-        outputs['web_flange'] = constr[7]
+        outputs['global_local'][:] = constr[0]
+        outputs['post_buckling'][:] = constr[1]
+        outputs['von_mises'][:] = constr[2]
+        outputs['buckling_constr'][:] = constr[3]
+        outputs['flange_loc_loc'][:] = constr[4]
+        outputs['local_column'][:] = constr[5]
+        outputs['crippling'][:] = constr[6]
+        outputs['web_flange'][:] = constr[7]
 
         str_lst =  np.array(["Global local", "Post buckling", "Von Mises", 
                     "Buckling", "Flange loc loc", "Local column",
@@ -849,14 +846,14 @@ class Wingbox_optimization(om.ExplicitComponent):
 
         print('===== Progress update =====')
         print(f"Current weight = {weight} [kg]")
-        print(f"The failing constraints were {str_lst[np.array(constr) < 0]}")
+        #print(f"The failing constraints were {str_lst[np.array(constr) < 0]}")
 
 
 
 def WingboxOptimizer(x, wing, engine, material, aero):
     """ sets up optimziation procedure and runs the driver
 
-    :param x: Initial estimate X = [tsp, trib, L, bst, hst, tst, wst, t]
+    :param x: Initial estimate X = [tsp, trib, hst, tst, wst, tmax, tmin]
     :type x: nd.array
     :param wing: wing class from data structure
     :type wing: wing class
@@ -886,21 +883,6 @@ def WingboxOptimizer(x, wing, engine, material, aero):
     prob.model.set_input_defaults('wingbox_design.tmax', x[5])
     prob.model.set_input_defaults('wingbox_design.tmin', x[6])
 
-
-    # Define constraints 
-    prob.model.add_constraint('wingbox_design.global_local', lower=0.)
-    prob.model.add_constraint('wingbox_design.post_buckling', lower=0.)
-    prob.model.add_constraint('wingbox_design.von_mises', lower=0.)
-    prob.model.add_constraint('wingbox_design.buckling_constr', lower=0.)
-    prob.model.add_constraint('wingbox_design.flange_loc_loc', lower=0.)
-    prob.model.add_constraint('wingbox_design.local_column', lower=0.)
-    prob.model.add_constraint('wingbox_design.crippling', lower=0.)
-    prob.model.add_constraint('wingbox_design.web_flange', lower=0.)
-
-    prob.driver = om.ScipyOptimizeDriver()
-    prob.driver.options['optimizer'] = 'trust-constr'
-    prob.driver.opt_settings['maxiter'] = 1000
-
     prob.model.add_design_var('wingbox_design.tsp', lower = 0., upper= 0.1)
     prob.model.add_design_var('wingbox_design.trib', lower = 0., upper= 0.1)
     prob.model.add_design_var('wingbox_design.hst', lower = 0. , upper= 0.4)
@@ -909,11 +891,26 @@ def WingboxOptimizer(x, wing, engine, material, aero):
     prob.model.add_design_var('wingbox_design.tmax', lower = 0., upper= 0.1)
     prob.model.add_design_var('wingbox_design.tmin', lower = 0., upper= 0.1)
 
+    # # Define constraints 
+    # prob.model.add_constraint('wingbox_design.global_local')
+    # prob.model.add_constraint('wingbox_design.post_buckling')
+    prob.model.add_constraint('wingbox_design.von_mises')
+    # prob.model.add_constraint('wingbox_design.buckling_constr')
+    # prob.model.add_constraint('wingbox_design.flange_loc_loc')
+    # prob.model.add_constraint('wingbox_design.local_column')
+    # prob.model.add_constraint('wingbox_design.crippling')
+    # prob.model.add_constraint('wingbox_design.web_flange')
+
+    prob.driver = om.ScipyOptimizeDriver()
+    prob.driver.options['optimizer'] = 'SLSQP'
+    prob.driver.opt_settings['maxiter'] = 1000
 
     prob.model.add_objective('wingbox_design.wing_weight')
 
     prob.setup()
     prob.run_driver()
+    prob.model.list_inputs()
+    prob.model.list_outputs()
 
     print(f"thickness spar= {prob.get_val('wingbox_design.tsp')*1000} [mm]")
     print(f"thickness rib= {prob.get_val('wingbox_design.trib')*1000} [mm]")
