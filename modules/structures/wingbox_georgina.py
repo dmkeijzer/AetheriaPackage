@@ -47,10 +47,10 @@ class Wingbox():
         self.engine_weight = engine.mass_pertotalengine
         self.y_rotor_loc = engine.y_rotor_loc
         self.nacelle_w = engine.nacelle_width #TODO Check if it gets updated
-
+        self.n_str = 10 
         #GEOMETRY
         self.width = 0.6*self.chord_root
-        self.str_pitch = 0.02
+        self.str_pitch = 0.6*self.str_pitch/self.n_str
         
         
         #Set number of ribs in inboard and outboard section
@@ -448,7 +448,7 @@ class Wingbox():
     def perimiter_ellipse(self,a,b):
         return float(np.pi *  ( 3*(a+b) - np.sqrt( (3*a + b) * (a + 3*b) ) )) #Ramanujans first approximation formula
 
-    def torsion_sections(self,tmax,tmin,engine,wing):
+    def torsion_sections(self,tmax,tmin,wing,engine):
         ch = self.chord()
         tarr = self.t_arr(tmax,tmin)
         sta = self.get_y_rib_loc()
@@ -470,7 +470,7 @@ class Wingbox():
         tarr = self.t_arr(tmax,tmin)
         sta = self.get_y_rib_loc()
         Vz=self.shear_force(t_sp, t_rib, h_st,t_st,w_st,tmax,tmin)
-        T =self.torsion_sections(tmax,tmin,engine,wing)
+        T =self.torsion_sections(tmax,tmin,wing,engine)
         Nxy = np.zeros(len(tarr))
 
         for i in range(len(tarr)):
@@ -595,104 +595,8 @@ class Wingbox():
             Nxy[i] = determine
         return Nxy
 
-    def N_xy(self, t_sp, t_rib, h_st,t_st,w_st,tmax,tmin):
-        h1 = self.height()
-        ch = self.chord()
-        tarr = self.t_arr(tmax,tmin)
-        sta = self.get_y_rib_loc()
-        Vz= self.shear_force(t_sp, t_rib, h_st,t_st,w_st)
-        Nxy = np.zeros(len(tarr))
-
-        for i in range(len(tarr)):
-            Ixx1 = self.I_xx(t_sp,h_st,t_st,w_st,tarr[i])
-            Ixx = Ixx1(sta[i])
-            h = h1(sta[i])
-            l_sk = sqrt(h ** 2 + (0.25 * self.chord_root) ** 2)
-            c = ch(sta[i])
-
-            # Base region 1
-            qb1 = lambda z: Vz[i] * tarr[i] * (0.5 * h) ** 2 * (np.cos(z) - 1) / Ixx
-            I1 = qb1(pi / 2)
-
-            # Base region 2
-            qb2 = lambda z: -Vz[i] * t_sp * z ** 2 / (2 * Ixx)
-            I2 = qb2(h)
-            s2 = np.arange(0, h+ 0.1, 0.1)
-
-            # Base region 3
-            qb3 = lambda z: - Vz[i] * tarr[i] * (0.5 * h) * z / Ixx + I1 + I2
-            I3 = qb3(0.6 * c)
-            s3 = np.arange(0, 0.6*c+ 0.1, 0.1)
-
-            # Base region 4
-            qb4 = lambda z: -Vz[i] * t_sp * z ** 2 / (2 * Ixx)
-            I4 = qb4(h)
-            s4=np.arange(0, h+ 0.1, 0.1)
-
-            # Base region 5
-            qb5 = lambda z: -Vz[i] * tarr[i] / Ixx * (0.5 * h * z - 0.5 * 0.5 * h * z ** 2 / l_sk) + I3 + I4
-            I5 = qb5(l_sk)
-
-            # Base region 6
-            qb6 = lambda z: Vz[i] * tarr[i] / Ixx * 0.5 * 0.5 * h / l_sk * z ** 2 + I5
-            I6 = qb6(l_sk)
-
-            # Base region 7
-            qb7 = lambda z: -Vz[i] * t_sp * 0.5 * z ** 2 / Ixx
-            I7 = qb7(-h)
-
-
-            # Base region 8
-            qb8 = lambda z: -Vz[i] * 0.5 * h * t_sp * z / Ixx + I6 - I7
-            I8 = qb8(0.6 * c)
-
-            # Base region 9
-            qb9 = lambda z: -Vz[i] * 0.5 * t_sp * z ** 2 / Ixx
-            I9 = qb9(-h)
-
-            # Base region 10
-            qb10 = lambda z: -Vz[i] * tarr[i] * (0.5 * h) ** 2 * (np.cos(z) - 1) / Ixx + I8 - I9
-
-            # Redundant shear flow
-            A11 = pi * (0.5 * h) / tarr[i] + h / t_sp
-            A12 = -h / t_sp
-            A21 = - h / t_sp
-            A22 = 1.2 * c / tarr[i]
-            A23 = -h / t_sp
-            A32 = - h / t_sp
-            A33 = 2 * l_sk / tarr[i] + h / t_sp
-
-
-
-            B1 = 0.5 * h / tarr[i] * trapz([qb1(0),qb1(pi/2)], [0, pi / 2]) + trapz([qb2(0),qb2(0.5*h)], [0, 0.5 * h]) / t_sp - trapz([qb9(-0.5*h),qb9(0)], [-0.5 * h, 0])/ t_sp + trapz([qb10(-pi/2),qb10(0)], [-pi / 2, 0]) * 0.5 * h / tarr[i]
-            B2 = trapz([qb2(0),qb2(0.5*h)], [0, 0.5 * h]) / t_sp + trapz([qb3(0),qb3(0.6*c)], [0, 0.6 * c]) / tarr[i] - trapz([qb7(-0.5*h),qb7(0)], [-0.5 * h, 0]) / t_sp + \
-                trapz([qb4(0),qb4(0.5*h)], [0, 0.5 * h]) / t_sp + trapz([qb8(0),qb8(0.6*c)], [0, 0.6 * c]) / tarr[i] - trapz([qb9(-0.5*h),qb9(0)], [-0.5 * h, 0]) / t_sp
-            B3 = trapz([qb5(0),qb5(l_sk)], [0, l_sk]) / tarr[i] + trapz([qb6(0),qb6(l_sk)], [0, l_sk]) / tarr[i] + trapz([qb4(0),qb4(0.5*h)], [0, 0.5 * h]) / t_sp - \
-                trapz([qb9(-0.5*h),qb9(0)], [-0.5 * h, 0]) / t_sp
-
-            A = np.array([[A11, A12, 0], [A21, A22, A23], [0, A32, A33]])
-            B = -np.array([[B1], [B2], [B3]])
-            X = np.linalg.solve(A, B)
-
-            q01 = float(X[0])
-            q02 = float(X[1])
-            q03 = float(X[2])
-
-            # Compute final shear flow
-            q2 = qb2(s2) - q01 + q02
-            q3 = qb3(s3) + q02
-            q4 = qb4(s4) + q03 - q02
-
-            max_region2 = max(q2)
-            max_region3 = max(q3)
-            max_region4 = max(q4)
-            determine = max(max_region2, max_region3, max_region4)
-            Nxy[i] = determine
-        return Nxy
-
-
-    def local_buckling(self,t,b_st):#TODO
-        buck = 4* pi ** 2 * self.E / (12 * (1 - self.poisson ** 2)) * (t / b_st) ** 2
+    def local_buckling(self,t):#TODO
+        buck = 4* pi ** 2 * self.E / (12 * (1 - self.poisson ** 2)) * (t / self.str_pitch) ** 2
         return buck
 
 
@@ -706,28 +610,29 @@ class Wingbox():
         return buck
 
 
-    def global_buckling(self, h_st,t_st,t,b_st):#TODO
+    def global_buckling(self, h_st,t_st,t):#TODO
         # n = n_st(c_r, b_st)
-        tsmr = (t * b_st + t_st * self.n_max * (h_st - t)) / b_st
-        return 4 * pi ** 2 * self.E / (12 * (1 - self.poisson ** 2)) * (tsmr / b_st) ** 2
+        tsmr = (t * self.str_pitch + t_st * self.n_max * (h_st - t)) / self.str_pitch
+        return 4 * pi ** 2 * self.E / (12 * (1 - self.poisson ** 2)) * (tsmr / self.str_pitch) ** 2
 
 
-    def shear_buckling(self,t,b_st):#TODO
-        buck = 5.35 * pi ** 2 * self.E / (12 * (1 - self.poisson)) * (t / b_st) ** 2
+    def shear_buckling(self,t):#TODO
+        buck = 5.35 * pi ** 2 * self.E / (12 * (1 - self.poisson)) * (t / self.str_pitch) ** 2
         return buck
 
 
 
-    def buckling(self, t_sp, t_rib, h_st,t_st,w_st,tmax,tmin,b_st):#TODO
+    def buckling(self, t_sp, t_rib, h_st,t_st,w_st,tmax,tmin):#TODO
         Nxy = self.N_xy(t_sp, t_rib, h_st,t_st,w_st,tmax,tmin)
         Nx = self.N_x(t_sp, t_rib, h_st,t_st,w_st,tmax,tmin)[0]
         tarr = self.t_arr(tmax,tmin)
         buck = np.zeros(len(tarr))
         for i in range(len(tarr)):
-            Nx_crit = self.local_buckling(tarr[i],b_st)*tarr[i]
-            Nxy_crit = self.shear_buckling(tarr[i],b_st)*tarr[i]
+            Nx_crit = self.local_buckling(tarr[i])*tarr[i]
+            Nxy_crit = self.shear_buckling(tarr[i])*tarr[i]
             buck[i] = Nx[i] / Nx_crit + (Nxy[i] / Nxy_crit) ** 2
         return buck
+    
 
 
 
@@ -755,8 +660,8 @@ class Wingbox():
 
 
 
-    def buckling_constr(self, t_sp, t_rib, h_st,t_st,w_st,tmax,tmin,b_st):
-        buck = self.buckling(t_sp, t_rib, h_st,t_st,w_st,tmax,tmin,b_st)#TODO
+    def buckling_constr(self, t_sp, t_rib, h_st,t_st,w_st,tmax,tmin):
+        buck = self.buckling(t_sp, t_rib, h_st,t_st,w_st,tmax,tmin)#TODO
         tarr = self.t_arr(tmax,tmin)
         vector = np.zeros(len(tarr))
         for i in range(len(tarr)):
@@ -764,12 +669,12 @@ class Wingbox():
         return vector[0]
 
 
-    def global_local(self, h_st,t_st,tarr,b_st,tmax,tmin):
+    def global_local(self, h_st,t_st,tarr,tmax,tmin):
         tarr = self.t_arr(tmax,tmin)
         diff = np.zeros(len(tarr))
         for i in range(len(tarr)):
-            glob = self.global_buckling(h_st,t_st,tarr[i],b_st)
-            loc = self.local_buckling(tarr[i],b_st)
+            glob = self.global_buckling(h_st,t_st,tarr[i])
+            loc = self.local_buckling(tarr[i])
             diff[i] = glob - loc #FIXEM glob
         #diff = self.global_buckling(h_st,t_st,tarr)  - self.local_buckling(tarr,b_st)
 
@@ -777,32 +682,32 @@ class Wingbox():
 
 
 
-    def local_column(self, h_st,t_st,w_st,b_st,tmax,tmin):
+    def local_column(self, h_st,t_st,w_st,tmax,tmin):
         tarr = self.t_arr(tmax,tmin)
         diff = np.zeros(len(tarr))
         for i in range(len(tarr)):
             col=self.column_st(h_st,t_st,w_st, tarr[i])
-            loc = self.local_buckling(tarr[i],b_st)*tarr[i]
+            loc = self.local_buckling(tarr[i])*tarr[i]
             diff[i] = col - loc
         return diff[0]
 
 
-    def flange_loc_loc(self, b_st, t_st,w_st,tmax,tmin):
+    def flange_loc_loc(self, t_st,w_st,tmax,tmin):
         tarr = self.t_arr(tmax,tmin)
         diff = np.zeros(len(tarr))
         flange = self.flange_buckling(t_st, w_st)
         for i in range(len(tarr)):
-            loc = self.local_buckling(tarr[i],b_st)
+            loc = self.local_buckling(tarr[i])
             diff[i] = flange - loc
         return diff[0]
 
 
-    def web_flange(self, b_st, h_st,t_st,tmax,tmin):
+    def web_flange(self, h_st,t_st,tmax,tmin):
         tarr = self.t_arr(tmax,tmin)
         diff = np.zeros(len(tarr))
         web = self.web_buckling(t_st, h_st)
         for i in range(len(tarr)):
-            loc = self.local_buckling(tarr[i],b_st)
+            loc = self.local_buckling(tarr[i])
             diff[i] =web-loc
         return diff[0]
 
@@ -839,8 +744,8 @@ class Wingbox():
         return diff[0]
 
 
-    def compute_volume():
-        pass
+    # def compute_volume():
+    #     pass
 
 
         # def __init__(self, **kwargs):
