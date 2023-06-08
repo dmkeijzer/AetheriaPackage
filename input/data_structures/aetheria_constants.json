@@ -184,5 +184,6 @@
       "cl_descent_trans_flaps20": 1.83,
       "cdi_descent_trans_flaps20": 0.091,
       "alpha_descent_trans_flaps20": 0.2119,
-      "alpha_approach": 0.2
+      "alpha_approach": 0.2,
+      "CD0_vtail": 0.008684
 }
