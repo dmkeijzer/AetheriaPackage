@@ -1121,11 +1121,11 @@ class Wingbox_optimization(om.ExplicitComponent):
         weight = wing_weight(span, chord_root,tsp,trib, L, bst, hst, tst,wst,[t])
 
         constr = [
-        global_local(span, chord_root, L, bst, hst, tst,[t]),
-        post_buckling(span, chord_root, tsp, trib,  L, bst, hst, tst, wst, [t]),
-        von_Mises(span, chord_root, tsp, trib, L, bst, hst, tst,wst,[t]),
-        buckling_constr(span, chord_root, tsp, trib, L, bst, hst, tst,wst,[t]),
-        flange_loc_loc(span, chord_root, L, bst,tst,wst,[t]),
+        Wingbox.global_local(span, chord_root, L, bst, hst, tst,[t]),
+        Wingbox.post_buckling(span, chord_root, tsp, trib,  L, bst, hst, tst, wst, [t]),
+        Wingbox.von_Mises(span, chord_root, tsp, trib, L, bst, hst, tst,wst,[t]),
+        Wingbox.buckling_constr(span, chord_root, tsp, trib, L, bst, hst, tst,wst,[t]),
+        Wingbox.flange_loc_loc(span, chord_root, L, bst,tst,wst,[t]),
         local_column(span, chord_root, L, bst,hst,tst,wst,[t]),
         crippling(span,  L,  hst, tst, wst, [t]), #ONLY
         web_flange(span, chord_root, L, bst, hst, tst, [t])
