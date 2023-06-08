@@ -54,11 +54,12 @@ class Wingbox():
         self.width = 0.6*self.chord_root
         self.str_pitch = 0.6*self.chord_root/(self.n_str+2)
         
-        
         #Set number of ribs in inboard and outboard section
         self.n_ribs_sec0 = 1 #Number of ribs inboard of inboard engine
         self.n_ribs_sec1 = 4 #Number of ribs inboard and outboard engines
         self.n_sections = self.n_ribs_sec0 + self.n_ribs_sec1 + 4
+        #self.max_rib_pitch = np.max(np.diff(self.get_y_rib_loc()))
+        self.max_rib_pitch = 1.05
 
     def aero(self, y):
         return  self.lift_func(y)
@@ -645,7 +646,7 @@ class Wingbox():
     def column_st(self, h_st,t_st,w_st,t_sk):#TODO
         #Lnew=new_L(b,L)
         Ist = t_st * h_st ** 3 / 12 + (w_st - t_st) * t_st ** 3 / 12 + t_sk**3*w_st/12+t_sk*w_st*(0.5*h_st)**2
-        i= pi ** 2 * self.E * Ist / (2*w_st* self.L ** 2)   
+        i= pi ** 2 * self.E * Ist / (2*w_st* self.max_rib_pitch ** 2)   
         return i
 
 
@@ -773,8 +774,6 @@ class Wingbox_optimization(om.ExplicitComponent):
         # Design variables
         self.add_input('tsp')
         self.add_input('trib')
-        self.add_input('L')
-        self.add_input('bst')
         self.add_input('hst')
         self.add_input('tst')
         self.add_input('wst')
@@ -807,8 +806,6 @@ class Wingbox_optimization(om.ExplicitComponent):
         # Design variables
         tsp = inputs['tsp'][0]
         trib = inputs['trib'][0]
-        L = inputs['L'][0] #FIXME Use a fixed rib pitch
-        bst = inputs['bst'][0] #FIXME 
         hst = inputs['hst'][0]
         tst = inputs['tst'][0]
         wst = inputs['wst'][0]
@@ -823,13 +820,13 @@ class Wingbox_optimization(om.ExplicitComponent):
         weight = self.WingboxClass.wing_weight(tsp,trib, hst, tst,wst,t_max, t_min)
 
         constr = [
-        self.WingboxClass.global_local(hst,tst,t_max,t_min),
+        self.WingboxClass.global_local( hst, tst,t_max, t_min),
         self.WingboxClass.post_buckling(tsp, trib, hst,tst,wst, t_max,t_min),
         self.WingboxClass.von_Mises(tsp, trib, hst,tst,wst,t_max,t_min),
-        self.WingboxClass.buckling_constr(tsp, trib,  bst, hst, tst,wst,t_max, t_min),
-        self.WingboxClass.flange_loc_loc(bst,tst,wst,t_max, t_min),
-        self.WingboxClass.local_column(bst,hst,tst,wst,t_max, t_min),
-        self.WingboxClass.crippling(hst,tst,wst,t_max,t_min), #ONLY
+        self.WingboxClass.buckling_constr(  tsp, trib,  hst, tst,wst,t_max, t_min),
+        self.WingboxClass.flange_loc_loc(tst,wst,t_max, t_min),
+        self.WingboxClass.local_column(hst,tst,wst,t_max, t_min),
+        self.WingboxClass.crippling(hst, tst, wst, t_max, t_min), #ONLY
         self.WingboxClass.web_flange(hst,tst,t_max,t_min)
         ]
 
@@ -901,7 +898,7 @@ def WingboxOptimizer(x, wing, engine, material, aero):
     prob.model.add_constraint('wingbox_design.web_flange', lower=0.)
 
     prob.driver = om.ScipyOptimizeDriver()
-    prob.driver.options['optimizer'] = 'SLSQP'
+    prob.driver.options['optimizer'] = 'trust-constr'
     prob.driver.opt_settings['maxiter'] = 1000
 
     prob.model.add_design_var('wingbox_design.tsp', lower = 0., upper= 0.1)
@@ -920,24 +917,22 @@ def WingboxOptimizer(x, wing, engine, material, aero):
 
     print(f"thickness spar= {prob.get_val('wingbox_design.tsp')*1000} [mm]")
     print(f"thickness rib= {prob.get_val('wingbox_design.trib')*1000} [mm]")
-    print(f"rib pitch= {prob.get_val('wingbox_design.L')*1000} [mm]")
-    print(f"stringer pitch= {prob.get_val('wingbox_design.bst')*1000} [mm]")
     print(f"stringer height= {prob.get_val('wingbox_design.hst')*1000} [mm]")
     print(f"stringer thickness= {prob.get_val('wingbox_design.tst')*1000} [mm]")
     print(f"stringer width= {prob.get_val('wingbox_design.wst')*1000} [mm]")
-    print(f"skin thickness= {prob.get_val('wingbox_design.t')*1000} [mm]")
+    print(f"max skin thickness= {prob.get_val('wingbox_design.tmax')*1000} [mm]")
+    print(f"min skin thickness= {prob.get_val('wingbox_design.tmin')*1000} [mm]")
     print(f"Wing weight= {prob.get_val('wingbox_design.wing_weight')} [kg]")
 
 
     output_lst =  np.array([
     prob.get_val('wingbox_design.tsp'),
     prob.get_val('wingbox_design.trib'),
-    prob.get_val('wingbox_design.L'),
-    prob.get_val('wingbox_design.bst'),
     prob.get_val('wingbox_design.hst'),
     prob.get_val('wingbox_design.tst'),
     prob.get_val('wingbox_design.wst'),
-    prob.get_val('wingbox_design.t')
+    prob.get_val('wingbox_design.tmax'),
+    prob.get_val('wingbox_design.tmin')
     ])
 
     return output_lst

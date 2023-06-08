@@ -31,22 +31,22 @@ AeroClass.load()
 #--------------------------- Assign correct values to global values in wingbox_georgina -----------
 
 
-wb.taper = WingClass.taper
-wb.rho = MatClass.rho
-wb.W_eng = EngClass.mass_pertotalengine
-wb.E = MatClass.E
-wb.poisson = MatClass.poisson
-wb.pb= MatClass.pb
-wb.beta= MatClass.beta
-wb.g= MatClass.g
-wb.sigma_yield = MatClass.sigma_yield
-wb.m_crip = MatClass.m_crip
-wb.sigma_uts = MatClass.sigma_uts
-wb.n_max= const.n_max_req
-wb.y_rotor_loc = EngClass.y_rotor_loc
+# wb.taper = WingClass.taper
+# wb.rho = MatClass.rho
+# wb.W_eng = EngClass.mass_pertotalengine
+# wb.E = MatClass.E
+# wb.poisson = MatClass.poisson
+# wb.pb= MatClass.pb
+# wb.beta= MatClass.beta
+# wb.g= MatClass.g
+# wb.sigma_yield = MatClass.sigma_yield
+# wb.m_crip = MatClass.m_crip
+# wb.sigma_uts = MatClass.sigma_uts
+# wb.n_max= const.n_max_req
+# wb.y_rotor_loc = EngClass.y_rotor_loc
 
 
-x0=np.array([0.004, 0.003, 0.07, 0.003,0.009,0.006, 0.003])    # :param x0: Initial estimate Design vector X = [b, cr, tsp, trib, L, bst, hst, tst, wst, t]
+x0=np.array([0.01, 0.003, 0.07, 0.003,0.009,0.006, 0.003])    # :param x0: Initial estimate Design vector X = [b, cr, tsp, trib, L, bst, hst, tst, wst, t]
 
 
     
