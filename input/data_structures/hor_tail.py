@@ -23,6 +23,7 @@ class HorTail():
     hortailsurf_wingsurf: float = None
     sweep_halfchord_h: float = None
     downwash_angle: float = None
+    taper_h: float = None
     def load(self):
         """ Initializes the class automatically from the JSON file
         """        
@@ -41,7 +42,7 @@ class HorTail():
         self.hortailsurf_wingsurf = data["hortailsurf_wingsurf"]
         self.sweep_halfchord_h = data["sweep_halfchord_h"]
         self.downwash_angle = data["downwash_angle"]
-
+        self.taper_h = 1
 
     def dump(self):
         with open(r"input/data_structures/aetheria_constants.json") as jsonFile:

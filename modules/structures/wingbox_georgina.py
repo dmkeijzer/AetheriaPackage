@@ -65,6 +65,7 @@ class Wingbox():
 
     def chord(self):
         c = lambda y: self.chord_root - self.chord_root * (1 - self.taper) * y * 2 / self.span
+        c = lambda y: self.chord_root - self.chord_root * (1 - self.taper) * y * 2 / self.span
         return c
 
     #Determine rib positions in spanwise direction (y)

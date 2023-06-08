@@ -204,7 +204,7 @@ def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, plot=F
     #FuseClass.dump()
     HorTailClass.dump()
 
-    return log_final[np.where(log_final[:,1] == np.min(log_final[:,1]))[0], 0:2]
+    return log_final[np.where(log_final[:,1] == np.min(log_final[:,1]))[0], 0:2], log_final[np.where(log_final[:,1] == np.min(log_final[:,1]))[0], -1] - x_ac_stab_bar
 
 if __name__ == "__main__":
     from input.data_structures import *
