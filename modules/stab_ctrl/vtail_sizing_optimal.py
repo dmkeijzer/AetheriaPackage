@@ -73,12 +73,6 @@ def size_vtail_opt(WingClass, HorTailClass, FuseClass, VTailClass, StabClass, CL
     StabClass.dump()
 
 
-    #return [np.degrees(rudder_max),np.degrees(elevator_min), tau, Cm_de, Cn_dr, v_angle, S_vee, c_control_surface_to_c_vee_ratio]
-
-
-
-
-
     if plot:
         print(log[-1,:])
         plt.subplot(131)
