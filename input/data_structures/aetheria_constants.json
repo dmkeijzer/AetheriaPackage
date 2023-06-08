@@ -17,6 +17,7 @@
       "v_cruise": 83.33,
       "v_max": 104.17,
       "v_stall": 45,
+      "v_approach": 45,
       "loadfactor": 2,
       "h_hover": 30.5,
       "roc": 5,
@@ -166,7 +167,9 @@
       "hortailsurf_wingsurf": 0.12077294795413113,
       "quarterchord_sweep": 0,
       "alpha_climb_clean": 0.0873,
-      "cl_climb_clean": 0.592,
       "cdi_climb_clean": 0.013,
-      "nacelle_width": 0.4
+      "nacelle_width": 0.4,
+      "sweep_halfchord_h": 0,
+      "volume_fuselage": 7,
+      "downwash_angle": 0.14
 }
