@@ -50,7 +50,7 @@ class Wingbox():
         self.n_str = 10 
         #GEOMETRY
         self.width = 0.6*self.chord_root
-        self.str_pitch = 0.6*self.str_pitch/self.n_str
+        self.str_pitch = 0.6*self.chord_root/self.n_str
         
         
         #Set number of ribs in inboard and outboard section
@@ -62,7 +62,7 @@ class Wingbox():
         return  self.lift_func(y)
 
     def chord(self):
-        c = lambda y: self.c_r - self.c_r * (1 - self.taper) * y * 2 / self.span
+        c = lambda y: self.chord_root - self.chord_root * (1 - self.taper) * y * 2 / self.span
         return c
 
     #Determine rib positions in spanwise direction (y)
@@ -174,7 +174,7 @@ class Wingbox():
         # w_res = np.append(np.insert(np.diff(w_alternative), 0 , w_alternative[0]), 0)
 
         for i in range(len(t_sk)):
-            vol = lambda z:  self.rho * (2 * h(z) * t_sp + (pi * (3 * (0.5 * h(z) + 0.15 * c(z)) - sqrt((3 * 0.5 * h(z) + 0.15 * c(z)) * (0.5 * h(z) + 3 * 0.15 * c(z)))) + 2 * 0.6 * c(z) + sqrt(h(z) ** 2 / 4 + (0.25 * c(z)) ** 2)) *t_sk[i] + A * 2 * self.n_st)
+            vol = lambda z:  self.rho * (2 * h(z) * t_sp + (pi * (3 * (0.5 * h(z) + 0.15 * c(z)) - sqrt((3 * 0.5 * h(z) + 0.15 * c(z)) * (0.5 * h(z) + 3 * 0.15 * c(z)))) + 2 * 0.6 * c(z) + sqrt(h(z) ** 2 / 4 + (0.25 * c(z)) ** 2)) *t_sk[i] + A * 2 * self.n_str)
             w[i]=trapz([vol(stations[i]),vol(stations[i+1])],[stations[i],stations[i+1]])
         return w
 
@@ -454,7 +454,7 @@ class Wingbox():
         sta = self.get_y_rib_loc()
         T = np.zeros(len(tarr))
         engine_weight = engine.mass_pertotalengine
-        x_centre_wb = lambda x_w: wing.x_lemac + self.c_r*0.25* + ch(x_w)*0.20
+        x_centre_wb = lambda x_w: wing.x_lemac + self.chord_root*0.25* + ch(x_w)*0.20
         for i in range(len(tarr)):
             if sta[i]< float(engine.y_rotor_loc[0]):
                 T[i] = engine_weight * 9.81 * (x_centre_wb(engine.x_rotor_loc[0])-engine.x_rotor_loc[0]) + engine_weight * 9.81 * (x_centre_wb(engine.x_rotor_loc[2])-engine.x_rotor_loc[2])
@@ -477,7 +477,7 @@ class Wingbox():
             Ixx1 = self.I_xx(t_sp,h_st,t_st,w_st,tarr[i])
             Ixx = Ixx1(sta[i])
             h = h1(sta[i])
-            l_sk = sqrt(h ** 2 + (0.25 * self.c_r) ** 2)
+            l_sk = sqrt(h ** 2 + (0.25 * self.chord_root) ** 2)
             c = ch(sta[i])
 
             # Base region 1
