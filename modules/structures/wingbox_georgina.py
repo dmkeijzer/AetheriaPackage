@@ -70,7 +70,7 @@ class Wingbox():
         y_rib_0 = self.y_rotor_loc[0] - 0.5 * self.nacelle_w
         y_rib_1 = self.y_rotor_loc[0] + 0.5 * self.nacelle_w
 
-        y_rib_3 = self.y_rotr_loc[1] - 0.5 * self.nacelle_w
+        y_rib_3 = self.y_rotor_loc[1] - 0.5 * self.nacelle_w
         y_rib_2 = y_rib_3 - 0.15
         y_rib_sec0 = np.arange(0,y_rib_0,y_rib_0/self.n_ribs_sec0)
         y_rib_sec1 = np.arange(y_rib_1,y_rib_2, (y_rib_2-y_rib_1)/self.n_ribs_sec1)
@@ -450,155 +450,155 @@ class Wingbox():
             Vz[i] = self.aero(sta[i])-shear[2 * i]
         return Vz
 
-    # def perimiter_ellipse(a,b):
-    #     return float(np.pi *  ( 3*(a+b) - np.sqrt( (3*a + b) * (a + 3*b) ) )) #Ramanujans first approximation formula
+    def perimiter_ellipse(self,a,b):
+        return float(np.pi *  ( 3*(a+b) - np.sqrt( (3*a + b) * (a + 3*b) ) )) #Ramanujans first approximation formula
 
-    # def torsion_sections(b,c_r,L,t,engine,wing):
-    #     ch = chord(b, c_r)
-    #     tarr = t_arr(b, L,t)
-    #     sta = rib_coordinates(b, L)
-    #     T = np.zeros(len(tarr))
-    #     engine_weight = engine.mass_pertotalengine
-    #     x_centre_wb = lambda x_w: wing.X_lemac + c_r*0.25* + ch(x_w)*0.20
-    #     for i in range(len(tarr)):
-    #         if sta[i]< float(engine.y_rotor_loc[0]):
-    #             T[i] = engine_weight * 9.81 * (x_centre_wb(engine.x_rotor_loc[0])-engine.x_rotor_loc[0]) + engine_weight * 9.81 * (x_centre_wb(engine.x_rotor_loc[2])-engine.x_rotor_loc[2])
-    #         else:
-    #             T[i] = engine_weight * 9.81 * (x_centre_wb(engine.x_rotor_loc[0])-engine.x_rotor_loc[0])
-    #     #     print(sta[i],y_rotor_loc[0],x_centre_wb(engine.x_rotor_loc[0]))
-    #     # print(f"\n\nT = {T}\n\n")
-    #     return T
+    def torsion_sections(self,tmax,tmin,engine,wing):
+        ch = self.chord()
+        tarr = self.t_arr(tmax,tmin)
+        sta = self.get_y_rib_loc()
+        T = np.zeros(len(tarr))
+        engine_weight = engine.mass_pertotalengine
+        x_centre_wb = lambda x_w: wing.x_lemac + self.c_r*0.25* + ch(x_w)*0.20
+        for i in range(len(tarr)):
+            if sta[i]< float(engine.y_rotor_loc[0]):
+                T[i] = engine_weight * 9.81 * (x_centre_wb(engine.x_rotor_loc[0])-engine.x_rotor_loc[0]) + engine_weight * 9.81 * (x_centre_wb(engine.x_rotor_loc[2])-engine.x_rotor_loc[2])
+            else:
+                T[i] = engine_weight * 9.81 * (x_centre_wb(engine.x_rotor_loc[0])-engine.x_rotor_loc[0])
+        #     print(sta[i],y_rotor_loc[0],x_centre_wb(engine.x_rotor_loc[0]))
+        # print(f"\n\nT = {T}\n\n")
+        return T
 
-    # def N_xy(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t,Engine,Wing):
-    #     h1 = height(b, c_r)
-    #     ch = chord(b, c_r)
-    #     tarr = t_arr(b,L,t)
-    #     sta = rib_coordinates(b, L)
-    #     Vz=shear_force(b, c_r, t_sp, t_rib, L, b_st, h_st,t_st,w_st,t)
-    #     T =torsion_sections(b,c_r,L,t,Engine,Wing)
-    #     Nxy = np.zeros(len(tarr))
+    def N_xy(self, t_sp, t_rib, h_st,t_st,w_st,tmax,tmin,engine,wing):
+        h1 = self.height()
+        ch = self.chord()
+        tarr = self.t_arr(tmax,tmin)
+        sta = self.get_y_rib_loc()
+        Vz=self.shear_force(t_sp, t_rib, h_st,t_st,w_st,tmax,tmin)
+        T =self.torsion_sections(tmax,tmin,engine,wing)
+        Nxy = np.zeros(len(tarr))
 
-    #     for i in range(len(tarr)):
-    #         Ixx1 = I_xx(b,c_r,t_sp,b_st, h_st,t_st,w_st,tarr[i])
-    #         Ixx = Ixx1(sta[i])
-    #         h = h1(sta[i])
-    #         l_sk = sqrt(h ** 2 + (0.25 * c_r) ** 2)
-    #         c = ch(sta[i])
+        for i in range(len(tarr)):
+            Ixx1 = self.I_xx(t_sp,h_st,t_st,w_st,tarr[i])
+            Ixx = Ixx1(sta[i])
+            h = h1(sta[i])
+            l_sk = sqrt(h ** 2 + (0.25 * self.c_r) ** 2)
+            c = ch(sta[i])
 
-    #         # Base region 1
-    #         qb1 = lambda z: Vz[i] * tarr[i] * (0.5 * h) ** 2 * (np.cos(z) - 1) / Ixx
-    #         I1 = qb1(pi / 2)
+            # Base region 1
+            qb1 = lambda z: Vz[i] * tarr[i] * (0.5 * h) ** 2 * (np.cos(z) - 1) / Ixx
+            I1 = qb1(pi / 2)
 
-    #         # Base region 2
-    #         qb2 = lambda z: -Vz[i] * t_sp * z ** 2 / (2 * Ixx)
-    #         I2 = qb2(h)
-    #         s2 = np.arange(0, h+ 0.1, 0.1)
+            # Base region 2
+            qb2 = lambda z: -Vz[i] * t_sp * z ** 2 / (2 * Ixx)
+            I2 = qb2(h)
+            s2 = np.arange(0, h+ 0.1, 0.1)
 
-    #         # Base region 3
-    #         qb3 = lambda z: - Vz[i] * tarr[i] * (0.5 * h) * z / Ixx + I1 + I2
-    #         I3 = qb3(0.6 * c)
-    #         s3 = np.arange(0, 0.6*c+ 0.1, 0.1)
+            # Base region 3
+            qb3 = lambda z: - Vz[i] * tarr[i] * (0.5 * h) * z / Ixx + I1 + I2
+            I3 = qb3(0.6 * c)
+            s3 = np.arange(0, 0.6*c+ 0.1, 0.1)
 
-    #         # Base region 4
-    #         qb4 = lambda z: -Vz[i] * t_sp * z ** 2 / (2 * Ixx)
-    #         I4 = qb4(h)
-    #         s4=np.arange(0, h+ 0.1, 0.1)
+            # Base region 4
+            qb4 = lambda z: -Vz[i] * t_sp * z ** 2 / (2 * Ixx)
+            I4 = qb4(h)
+            s4=np.arange(0, h+ 0.1, 0.1)
 
-    #         # Base region 5
-    #         qb5 = lambda z: -Vz[i] * tarr[i] / Ixx * (0.5 * h * z - 0.5 * 0.5 * h * z ** 2 / l_sk) + I3 + I4
-    #         I5 = qb5(l_sk)
+            # Base region 5
+            qb5 = lambda z: -Vz[i] * tarr[i] / Ixx * (0.5 * h * z - 0.5 * 0.5 * h * z ** 2 / l_sk) + I3 + I4
+            I5 = qb5(l_sk)
 
-    #         # Base region 6
-    #         qb6 = lambda z: Vz[i] * tarr[i] / Ixx * 0.5 * 0.5 * h / l_sk * z ** 2 + I5
-    #         I6 = qb6(l_sk)
+            # Base region 6
+            qb6 = lambda z: Vz[i] * tarr[i] / Ixx * 0.5 * 0.5 * h / l_sk * z ** 2 + I5
+            I6 = qb6(l_sk)
 
-    #         # Base region 7
-    #         qb7 = lambda z: -Vz[i] * t_sp * 0.5 * z ** 2 / Ixx
-    #         I7 = qb7(-h)
-
-
-    #         # Base region 8
-    #         qb8 = lambda z: -Vz[i] * 0.5 * h * t_sp * z / Ixx + I6 - I7
-    #         I8 = qb8(0.6 * c)
-
-    #         # Base region 9
-    #         qb9 = lambda z: -Vz[i] * 0.5 * t_sp * z ** 2 / Ixx
-    #         I9 = qb9(-h)
-
-    #         # Base region 10
-    #         qb10 = lambda z: -Vz[i] * tarr[i] * (0.5 * h) ** 2 * (np.cos(z) - 1) / Ixx + I8 - I9
-
-    #         #Torsion
-    #         A1 = float(np.pi*h*c*0.15*0.5)
-    #         A2 = float(h*0.6*c)
-    #         A3 = float(h*0.25*c)
-
-    #         T_A11 = 0.5 * A1 * perimiter_ellipse(h,0.15*c) * 0.5 * tarr[i]
-    #         T_A12 = -A1 * h * t_sp
-    #         T_A13 = 0
-    #         T_A14 = -1/(0.5*G)
-
-    #         T_A21 = -A2 * h * t_sp
-    #         T_A22 = A2 * h * t_sp * 2 + c*0.6*2*A2*tarr[i]
-    #         T_A23 = -h*A2*t_sp
-    #         T_A24 = -1/(0.5*G)
-
-    #         T_A31 = 0
-    #         T_A32 = -A3 * h *t_sp
-    #         T_A33 = A3 * h * t_sp + l_sk*A3*tarr[i]*2
-    #         T_A34 = -1/(0.5*G)
-
-    #         T_A41 = 2*A1
-    #         T_A42 = 2*A2
-    #         T_A43 = 2*A3
-    #         T_A44 = 0
-
-    #         T_A = np.array([[T_A11, T_A12, T_A13, T_A14], [T_A21, T_A22, T_A23, T_A24], [T_A31, T_A32, T_A33, T_A34],[T_A41,T_A42,T_A43,T_A44]])
-    #         T_B = np.array([0,0,0,T[i]])
-    #         T_X = np.linalg.solve(T_A, T_B)
+            # Base region 7
+            qb7 = lambda z: -Vz[i] * t_sp * 0.5 * z ** 2 / Ixx
+            I7 = qb7(-h)
 
 
+            # Base region 8
+            qb8 = lambda z: -Vz[i] * 0.5 * h * t_sp * z / Ixx + I6 - I7
+            I8 = qb8(0.6 * c)
 
-    #         # Redundant shear flow
-    #         A11 = pi * (0.5 * h) / tarr[i] + h / t_sp
-    #         A12 = -h / t_sp
-    #         A21 = - h / t_sp
-    #         A22 = 1.2 * c / tarr[i]
-    #         A23 = -h / t_sp
-    #         A32 = - h / t_sp
-    #         A33 = 2 * l_sk / tarr[i] + h / t_sp
+            # Base region 9
+            qb9 = lambda z: -Vz[i] * 0.5 * t_sp * z ** 2 / Ixx
+            I9 = qb9(-h)
+
+            # Base region 10
+            qb10 = lambda z: -Vz[i] * tarr[i] * (0.5 * h) ** 2 * (np.cos(z) - 1) / Ixx + I8 - I9
+
+            #Torsion
+            A1 = float(np.pi*h*c*0.15*0.5)
+            A2 = float(h*0.6*c)
+            A3 = float(h*0.25*c)
+
+            T_A11 = 0.5 * A1 * self.perimiter_ellipse(h,0.15*c) * 0.5 * tarr[i]
+            T_A12 = -A1 * h * t_sp
+            T_A13 = 0
+            T_A14 = -1/(0.5*self.shear_modulus)
+
+            T_A21 = -A2 * h * t_sp
+            T_A22 = A2 * h * t_sp * 2 + c*0.6*2*A2*tarr[i]
+            T_A23 = -h*A2*t_sp
+            T_A24 = -1/(0.5*self.shear_modulus)
+
+            T_A31 = 0
+            T_A32 = -A3 * h *t_sp
+            T_A33 = A3 * h * t_sp + l_sk*A3*tarr[i]*2
+            T_A34 = -1/(0.5*self.shear_modulus)
+
+            T_A41 = 2*A1
+            T_A42 = 2*A2
+            T_A43 = 2*A3
+            T_A44 = 0
+
+            T_A = np.array([[T_A11, T_A12, T_A13, T_A14], [T_A21, T_A22, T_A23, T_A24], [T_A31, T_A32, T_A33, T_A34],[T_A41,T_A42,T_A43,T_A44]])
+            T_B = np.array([0,0,0,T[i]])
+            T_X = np.linalg.solve(T_A, T_B)
 
 
 
-    #         B1 = 0.5 * h / tarr[i] * trapz([qb1(0),qb1(pi/2)], [0, pi / 2]) + trapz([qb2(0),qb2(0.5*h)], [0, 0.5 * h]) / t_sp - trapz([qb9(-0.5*h),qb9(0)], [-0.5 * h, 0])/ t_sp + trapz([qb10(-pi/2),qb10(0)], [-pi / 2, 0]) * 0.5 * h / tarr[i]
-    #         B2 = trapz([qb2(0),qb2(0.5*h)], [0, 0.5 * h]) / t_sp + trapz([qb3(0),qb3(0.6*c)], [0, 0.6 * c]) / tarr[i] - trapz([qb7(-0.5*h),qb7(0)], [-0.5 * h, 0]) / t_sp + \
-    #              trapz([qb4(0),qb4(0.5*h)], [0, 0.5 * h]) / t_sp + trapz([qb8(0),qb8(0.6*c)], [0, 0.6 * c]) / tarr[i] - trapz([qb9(-0.5*h),qb9(0)], [-0.5 * h, 0]) / t_sp
-    #         B3 = trapz([qb5(0),qb5(l_sk)], [0, l_sk]) / tarr[i] + trapz([qb6(0),qb6(l_sk)], [0, l_sk]) / tarr[i] + trapz([qb4(0),qb4(0.5*h)], [0, 0.5 * h]) / t_sp - \
-    #              trapz([qb9(-0.5*h),qb9(0)], [-0.5 * h, 0]) / t_sp
+            # Redundant shear flow
+            A11 = pi * (0.5 * h) / tarr[i] + h / t_sp
+            A12 = -h / t_sp
+            A21 = - h / t_sp
+            A22 = 1.2 * c / tarr[i]
+            A23 = -h / t_sp
+            A32 = - h / t_sp
+            A33 = 2 * l_sk / tarr[i] + h / t_sp
 
-    #         A = np.array([[A11, A12, 0], [A21, A22, A23], [0, A32, A33]])
-    #         B = -np.array([[B1], [B2], [B3]])
-    #         X = np.linalg.solve(A, B)
 
-    #         q01 = float(X[0])
-    #         q02 = float(X[1])
-    #         q03 = float(X[2])
 
-    #         qT1 = float(T_X[0])
-    #         qT2 = float(T_X[1])
-    #         qT3 = float(T_X[1])
+            B1 = 0.5 * h / tarr[i] * trapz([qb1(0),qb1(pi/2)], [0, pi / 2]) + trapz([qb2(0),qb2(0.5*h)], [0, 0.5 * h]) / t_sp - trapz([qb9(-0.5*h),qb9(0)], [-0.5 * h, 0])/ t_sp + trapz([qb10(-pi/2),qb10(0)], [-pi / 2, 0]) * 0.5 * h / tarr[i]
+            B2 = trapz([qb2(0),qb2(0.5*h)], [0, 0.5 * h]) / t_sp + trapz([qb3(0),qb3(0.6*c)], [0, 0.6 * c]) / tarr[i] - trapz([qb7(-0.5*h),qb7(0)], [-0.5 * h, 0]) / t_sp + \
+                 trapz([qb4(0),qb4(0.5*h)], [0, 0.5 * h]) / t_sp + trapz([qb8(0),qb8(0.6*c)], [0, 0.6 * c]) / tarr[i] - trapz([qb9(-0.5*h),qb9(0)], [-0.5 * h, 0]) / t_sp
+            B3 = trapz([qb5(0),qb5(l_sk)], [0, l_sk]) / tarr[i] + trapz([qb6(0),qb6(l_sk)], [0, l_sk]) / tarr[i] + trapz([qb4(0),qb4(0.5*h)], [0, 0.5 * h]) / t_sp - \
+                 trapz([qb9(-0.5*h),qb9(0)], [-0.5 * h, 0]) / t_sp
 
-    #         # Compute final shear flow
-    #         q2 = qb2(s2) - q01 - qT1 + q02 + qT2
-    #         q3 = qb3(s3) + q02 + qT2
-    #         q4 = qb4(s4) + q03 +qT3 - q02 - qT2
+            A = np.array([[A11, A12, 0], [A21, A22, A23], [0, A32, A33]])
+            B = -np.array([[B1], [B2], [B3]])
+            X = np.linalg.solve(A, B)
 
-    #         max_region2 = max(q2)
-    #         max_region3 = max(q3)
-    #         max_region4 = max(q4)
-    #         determine = max(max_region2, max_region3, max_region4)
-    #         Nxy[i] = determine
-    #     return Nxy
+            q01 = float(X[0])
+            q02 = float(X[1])
+            q03 = float(X[2])
+
+            qT1 = float(T_X[0])
+            qT2 = float(T_X[1])
+            qT3 = float(T_X[1])
+
+            # Compute final shear flow
+            q2 = qb2(s2) - q01 - qT1 + q02 + qT2
+            q3 = qb3(s3) + q02 + qT2
+            q4 = qb4(s4) + q03 +qT3 - q02 - qT2
+
+            max_region2 = max(q2)
+            max_region3 = max(q3)
+            max_region4 = max(q4)
+            determine = max(max_region2, max_region3, max_region4)
+            Nxy[i] = determine
+        return Nxy
 
     def N_xy(self, t_sp, t_rib, h_st,t_st,w_st,tmax,tmin):
         h1 = self.height()
