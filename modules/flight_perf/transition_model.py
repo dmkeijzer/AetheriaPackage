@@ -192,6 +192,7 @@ def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha
     acc_lst = []
     acc_y_lst = []
     ay_lst = []
+    V_lst =[]
     level_out = False
 
     # Preliminary calculations
@@ -279,6 +280,7 @@ def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha
         P_lst.append(Ptot/1000)
         acc_lst.append(acc_g)
         acc_y_lst.append(acc_y)
+        V_lst.append(np.sqrt(vx**2+vy**2))
 
         if t > t_end or y < 0:
             running = False
@@ -288,7 +290,7 @@ def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha
     fig, axs = plt.subplots(2, 2, figsize=(10, 8))
 
     # Plot data on each subplot
-    axs[0, 0].plot(t_lst, P_lst, color='blue')
+    axs[0, 0].plot(t_lst, T_lst, color='blue')
     axs[0, 0].set_xlabel('Time [s]')
     axs[0, 0].set_ylabel('Power [kW]')
     axs[0, 0].grid()
@@ -304,7 +306,7 @@ def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha
     axs[1, 0].set_ylabel('Velocity in x-dir [m/s]')
     axs[1, 0].grid()
 
-    axs[1, 1].plot(t_lst, acc_y_lst, color='orange')
+    axs[1, 1].plot(t_lst, V_lst, color='orange')
     axs[1, 1].set_xlabel('Time [s]')
     axs[1, 1].set_ylabel('Acceleration [m/s]')
     axs[1, 1].grid()
