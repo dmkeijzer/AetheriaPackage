@@ -34,3 +34,4 @@ class Material():
         self.rho = data["rho"]
         self.pb = data["pb"]
         self.g = data["g"]
+        self.shear_modulus = data["shear_modulus"]
