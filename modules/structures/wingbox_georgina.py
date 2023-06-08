@@ -527,7 +527,7 @@ class Wingbox():
         for i in range(len(tarr)):
             Vz[i] = self.aero(sta[i])-shear[2 * i]
         return Vz
-
+"""
     def perimiter_ellipse(self,a,b):
         return float(np.pi *  ( 3*(a+b) - np.sqrt( (3*a + b) * (a + 3*b) ) )) #Ramanujans first approximation formula
 
@@ -677,7 +677,7 @@ class Wingbox():
             determine = max(max_region2, max_region3, max_region4)
             Nxy[i] = determine
         return Nxy
-
+"""
     def N_xy(self, t_sp, t_rib, h_st,t_st,w_st,tmax,tmin):
         h1 = self.height()
         ch = self.chord()
