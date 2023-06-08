@@ -47,10 +47,10 @@ class Wingbox():
         self.engine_weight = engine.mass_pertotalengine
         self.y_rotor_loc = engine.y_rotor_loc
         self.nacelle_w = engine.nacelle_width #TODO Check if it gets updated
-
+        self.n_str = 10 
         #GEOMETRY
         self.width = 0.6*self.chord_root
-        self.str_pitch = 0.02
+        self.str_pitch = 0.6*self.str_pitch/self.n_str
         
         
         #Set number of ribs in inboard and outboard section
@@ -189,7 +189,6 @@ class Wingbox():
         t_sp=abs(t_sp)
         t_rib=abs(t_rib)
         L=abs(L)
-        b_st=abs(b_st)
         h_st=abs(h_st)
         t_st=abs(t_st)
         w_st=abs(w_st)
@@ -600,8 +599,8 @@ class Wingbox():
             Nxy[i] = determine
         return Nxy
 
-    def local_buckling(self,t,b_st):#TODO
-        buck = 4* pi ** 2 * self.E / (12 * (1 - self.poisson ** 2)) * (t / b_st) ** 2
+    def local_buckling(self,t):#TODO
+        buck = 4* pi ** 2 * self.E / (12 * (1 - self.poisson ** 2)) * (t / self.str_pitch) ** 2
         return buck
 
 
@@ -615,26 +614,26 @@ class Wingbox():
         return buck
 
 
-    def global_buckling(self, h_st,t_st,t,b_st):#TODO
+    def global_buckling(self, h_st,t_st,t):#TODO
         # n = n_st(c_r, b_st)
-        tsmr = (t * b_st + t_st * self.n_max * (h_st - t)) / b_st
-        return 4 * pi ** 2 * self.E / (12 * (1 - self.poisson ** 2)) * (tsmr / b_st) ** 2
+        tsmr = (t * self.str_pitch + t_st * self.n_max * (h_st - t)) / self.str_pitch
+        return 4 * pi ** 2 * self.E / (12 * (1 - self.poisson ** 2)) * (tsmr / self.str_pitch) ** 2
 
 
-    def shear_buckling(self,t,b_st):#TODO
-        buck = 5.35 * pi ** 2 * self.E / (12 * (1 - self.poisson)) * (t / b_st) ** 2
+    def shear_buckling(self,t):#TODO
+        buck = 5.35 * pi ** 2 * self.E / (12 * (1 - self.poisson)) * (t / self.str_pitch) ** 2
         return buck
 
 
 
-    def buckling(self, t_sp, t_rib, h_st,t_st,w_st,tmax,tmin,b_st):#TODO
+    def buckling(self, t_sp, t_rib, h_st,t_st,w_st,tmax,tmin):#TODO
         Nxy = self.N_xy(t_sp, t_rib, h_st,t_st,w_st,tmax,tmin)
         Nx = self.N_x(t_sp, t_rib, h_st,t_st,w_st,tmax,tmin)[0]
         tarr = self.t_arr(tmax,tmin)
         buck = np.zeros(len(tarr))
         for i in range(len(tarr)):
-            Nx_crit = self.local_buckling(tarr[i],b_st)*tarr[i]
-            Nxy_crit = self.shear_buckling(tarr[i],b_st)*tarr[i]
+            Nx_crit = self.local_buckling(tarr[i])*tarr[i]
+            Nxy_crit = self.shear_buckling(tarr[i])*tarr[i]
             buck[i] = Nx[i] / Nx_crit + (Nxy[i] / Nxy_crit) ** 2
         return buck
     
@@ -665,8 +664,8 @@ class Wingbox():
 
 
 
-    def buckling_constr(self, t_sp, t_rib, h_st,t_st,w_st,tmax,tmin,b_st):
-        buck = self.buckling(t_sp, t_rib, h_st,t_st,w_st,tmax,tmin,b_st)#TODO
+    def buckling_constr(self, t_sp, t_rib, h_st,t_st,w_st,tmax,tmin):
+        buck = self.buckling(t_sp, t_rib, h_st,t_st,w_st,tmax,tmin)#TODO
         tarr = self.t_arr(tmax,tmin)
         vector = np.zeros(len(tarr))
         for i in range(len(tarr)):
@@ -674,12 +673,12 @@ class Wingbox():
         return vector[0]
 
 
-    def global_local(self, h_st,t_st,tarr,b_st,tmax,tmin):
+    def global_local(self, h_st,t_st,tarr,tmax,tmin):
         tarr = self.t_arr(tmax,tmin)
         diff = np.zeros(len(tarr))
         for i in range(len(tarr)):
-            glob = self.global_buckling(h_st,t_st,tarr[i],b_st)
-            loc = self.local_buckling(tarr[i],b_st)
+            glob = self.global_buckling(h_st,t_st,tarr[i])
+            loc = self.local_buckling(tarr[i])
             diff[i] = glob - loc #FIXEM glob
         #diff = self.global_buckling(h_st,t_st,tarr)  - self.local_buckling(tarr,b_st)
 
@@ -687,32 +686,32 @@ class Wingbox():
 
 
 
-    def local_column(self, h_st,t_st,w_st,b_st,tmax,tmin):
+    def local_column(self, h_st,t_st,w_st,tmax,tmin):
         tarr = self.t_arr(tmax,tmin)
         diff = np.zeros(len(tarr))
         for i in range(len(tarr)):
             col=self.column_st(h_st,t_st,w_st, tarr[i])
-            loc = self.local_buckling(tarr[i],b_st)*tarr[i]
+            loc = self.local_buckling(tarr[i])*tarr[i]
             diff[i] = col - loc
         return diff[0]
 
 
-    def flange_loc_loc(self, b_st, t_st,w_st,tmax,tmin):
+    def flange_loc_loc(self, t_st,w_st,tmax,tmin):
         tarr = self.t_arr(tmax,tmin)
         diff = np.zeros(len(tarr))
         flange = self.flange_buckling(t_st, w_st)
         for i in range(len(tarr)):
-            loc = self.local_buckling(tarr[i],b_st)
+            loc = self.local_buckling(tarr[i])
             diff[i] = flange - loc
         return diff[0]
 
 
-    def web_flange(self, b_st, h_st,t_st,tmax,tmin):
+    def web_flange(self, h_st,t_st,tmax,tmin):
         tarr = self.t_arr(tmax,tmin)
         diff = np.zeros(len(tarr))
         web = self.web_buckling(t_st, h_st)
         for i in range(len(tarr)):
-            loc = self.local_buckling(tarr[i],b_st)
+            loc = self.local_buckling(tarr[i])
             diff[i] =web-loc
         return diff[0]
 
