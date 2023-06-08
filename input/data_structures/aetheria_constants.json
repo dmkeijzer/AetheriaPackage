@@ -182,6 +182,5 @@
       "cl_descent_trans_flaps20": 1.83,
       "cdi_descent_trans_flaps20": 0.091,
       "alpha_descent_trans_flaps20":0.2119,
-      "downwash_angle": 0.14,
       "alpha_approach": 0.2
 }
