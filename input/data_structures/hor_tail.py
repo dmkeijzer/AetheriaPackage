@@ -21,6 +21,8 @@ class HorTail():
     #chord_mac_h: float = None
     downwash: float = None
     hortailsurf_wingsurf: float = None
+    sweep_halfchord_h: float = None
+    downwash_angle: float = None
     def load(self):
         """ Initializes the class automatically from the JSON file
         """        
@@ -37,6 +39,8 @@ class HorTail():
         #self.chord_mac_h = data["mac_h"]
         self.downwash = data["depsda"]
         self.hortailsurf_wingsurf = data["hortailsurf_wingsurf"]
+        self.sweep_halfchord_h = data["sweep_halfchord_h"]
+        self.downwash_angle = data["downwash_angle"]
 
 
     def dump(self):
