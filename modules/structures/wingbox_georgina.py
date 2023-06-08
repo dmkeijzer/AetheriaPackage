@@ -46,7 +46,7 @@ class Wingbox():
         #Engine
         self.engine_weight = engine.mass_pertotalengine
         self.y_rotor_loc = engine.y_rotor_loc
-        self.nacelle_w = engine.nacelle_w #TODO Check if it gets updated
+        self.nacelle_w = engine.nacelle_width #TODO Check if it gets updated
 
         #GEOMETRY
         self.width = 0.6*self.chord_root

@@ -38,6 +38,8 @@ class Wing():
     mach_cruise: float = None
     cL_alpha0_approach: float = None
     x_lewing: float = None
+    v_stall: float = None
+    v_approach: float = None
 
     def load(self):
         with open(r"input/data_structures/aetheria_constants.json") as jsonFile:
@@ -61,11 +63,14 @@ class Wing():
         self.cm_ac = data["cm_ac"]
         self.e = data["e"]
         self.cm_alpha = data["cm_alpha"]
-        self.cL_approach = data["cLmax_flaps60"]
+        self.cL_approach = data["cLmax"]
         self.cL_alpha0 = data["cL0"]
         self.mach_cruise = v_cr / a_cr
-        self.cL_alpha0_approach = data["cL0_approach"]
+        self.cL_alpha0_approach = data["cL0"]
         self.x_lewing = data["x_lewing"]
+        self.v_stall = data["v_stall"]
+        self.v_approach = data["v_approach"]
+
         # self.effective_aspectratio =  data[""] # Left out for now since it is not implemented yet
         # self.effective_span =  data[""] # Left out for now since it is not implemented yet
 
