@@ -41,7 +41,7 @@ class Aero():
         self.cm_alpha = data["cm_alpha"]
         self.cl_alpha = data["cl_alpha"]
         self.cdi_climb_clean = data["cdi_climb_clean"]
-        self.cl_climb_clean = data["cl_climb_clean"]
+        # self.cl_climb_clean = data["cl_climb_clean"]
         self.alpha_climb_clean = data["alpha_climb_clean"] 
         self.ld_climb  = data["ld_climb"] 
         self.v_stall = data['v_stall']

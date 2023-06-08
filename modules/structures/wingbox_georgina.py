@@ -22,7 +22,7 @@ from modules.aero.avl_access import get_lift_distr
 
 
 class Wingbox():
-    def __init__(self, engine, material, wing, aero):
+    def __init__(self,wing,engine,material, aero):
         #Material
         self.poisson = material.poisson
         self.rho = material.rho
@@ -56,7 +56,7 @@ class Wingbox():
         #Set number of ribs in inboard and outboard section
         self.n_ribs_sec0 = 1 #Number of ribs inboard of inboard engine
         self.n_ribs_sec1 = 4 #Number of ribs inboard and outboard engines
-        self.n_sections = len(self.n_ribs_sec0 + self.n_ribs_sec1 + 4) 
+        self.n_sections = self.n_ribs_sec0 + self.n_ribs_sec1 + 4
 
     def aero(self, y):
         return  self.lift_func(y)
@@ -858,7 +858,7 @@ class Wingbox_optimization(om.ExplicitComponent):
         self.wing =  wing
         self.engine = engine
         self.material = material
-        self.WingboxClass = Wingbox(wing, engine,material, aero)
+        self.WingboxClass = Wingbox( engine,material, wing, aero)
 
 
 
