@@ -158,6 +158,7 @@
             "g": 5
       },
       "alpha_zero_L": -0.0352,
+      "alpha_zero_L_flaps20": -0.193,
       "delta_alpha_zero_L_flaps20": -0.1027196,
       "delta_alpha_zero_L_flaps60": -0.1332698,
       "ld_stall": 9.524226592413127,
@@ -171,6 +172,17 @@
       "nacelle_width": 0.4,
       "sweep_halfchord_h": 0,
       "volume_fuselage": 7,
+      "downwash_angle": 0.14,
+      "v_stall_flaps20": 42,
+      "cl_descent_trans": 1,
+      "alpha_descent_trans": 2,
+      "cdi_descent_trans": 1,
+      "cl_climb_flaps20": 0.2,
+      "cdi_climb_flaps20": 0.02,
+      "alpha_climb_flaps20": 0.2,
+      "cl_descent_trans_flaps20": 1.83,
+      "cdi_descent_trans_flaps20": 0.091,
+      "alpha_descent_trans_flaps20":0.2119
       "downwash_angle": 0.14,
       "alpha_approach": 0.2
 }
