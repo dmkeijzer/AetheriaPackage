@@ -227,5 +227,6 @@
       "Cn_beta_dot": 0,
       "mub": 0,
       "sym_eigvals": 0,
-      "asym_eigvals": 0
+      "asym_eigvals": 0,
+      "span_vtail": 0
 }
