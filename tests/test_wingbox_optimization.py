@@ -62,5 +62,16 @@ WingboxClass.str_pitch = b_st
 
 #------------------------------------------------------------------------------------------
 
-def test_post_buckling():
-    pass
+def test_global_local():
+    assert WingboxClass.global_local(h_st,t_st,tmax,tmin) == 1212005009.6072173
+
+
+
+
+
+def test_web_flange():
+    assert 
+
+
+
+test_web_flange()
