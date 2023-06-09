@@ -41,7 +41,7 @@ def numerical_simulation(y_start, mass, g0, S, CL_climb, alpha_climb, CD_climb, 
     P_max = data['power_hover']
 
     # Choose transition time
-    t_end = 10
+    t_end = 30
 
     # Lists to store everything
     y_lst = []
@@ -55,6 +55,7 @@ def numerical_simulation(y_start, mass, g0, S, CL_climb, alpha_climb, CD_climb, 
     D_lst = []
     P_lst = []
     acc_lst = []
+    L_lst = []
 
     # Preliminary calculations
     running = True
@@ -111,6 +112,7 @@ def numerical_simulation(y_start, mass, g0, S, CL_climb, alpha_climb, CD_climb, 
         D_lst.append(D)
         P_lst.append(Ptot / 1000)
         acc_lst.append(acc_g)
+        L_lst.append(L)
 
         if t > t_end:
             running = False
@@ -121,12 +123,13 @@ def numerical_simulation(y_start, mass, g0, S, CL_climb, alpha_climb, CD_climb, 
     fig, axs = plt.subplots(2, 2, figsize=(10, 8))
 
     # Plot data on each subplot
-    axs[0, 0].plot(t_lst, P_lst, color='blue')
+    axs[0, 0].plot(t_lst, L_lst, color='blue')
     axs[0, 0].set_xlabel('Time [s]')
     axs[0, 0].set_ylabel('Power [kW]')
     axs[0, 0].grid()
 
     axs[0, 1].plot(x_lst, y_lst, color='red')
+    axs[0, 1].axis('equal')
     axs[0, 1].set_xlabel('X-position [m]')
     axs[0, 1].set_ylabel('Y-position [m]')
     axs[0, 1].grid()
@@ -145,7 +148,7 @@ def numerical_simulation(y_start, mass, g0, S, CL_climb, alpha_climb, CD_climb, 
     fig.tight_layout()
 
     # Display the figure
-    # plt.show()
+    plt.show()
 
     return E, y_lst, t_lst, x_lst
 
