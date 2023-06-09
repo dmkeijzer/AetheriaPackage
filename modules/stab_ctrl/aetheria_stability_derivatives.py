@@ -487,10 +487,11 @@ def lateral_derivatives(Perf, GeneralConst, Wing, VTail, Stab, Cnb, CLav=None, V
     Stab.Cn_beta_dot = Cn_beta_dot
     Stab.mub = mub(m, rho, S, b)
     Stab.Cnb = Cnb
+    Stab.dump()
 
 
 
-def eigval_finder_sym(Iyy, m, c, long_stab_dervs):      #Iyy = 12081.83972
+def eigval_finder_sym(Stab, Iyy, m, c):      #Iyy = 12081.83972
     """
     Iyy: moment of inertia around Y-axis
     m: MTOM
@@ -500,19 +501,20 @@ def eigval_finder_sym(Iyy, m, c, long_stab_dervs):      #Iyy = 12081.83972
     returns
     array with eigenvalues NON-DIMENSIONALISED
     """
-    CX0 = long_stab_dervs["Cx0"]
-    CXa = long_stab_dervs["Cxa"]
-    CXu = long_stab_dervs["Cxu"]
-    CZ0 = long_stab_dervs["Cz0"]
-    CZa = long_stab_dervs["Cza"]
-    CZu = long_stab_dervs["Czu"]
-    CZq = long_stab_dervs["Czq"]
-    CZadot = long_stab_dervs["Cz_adot"]
-    Cma = long_stab_dervs["Cma"]
-    Cmq = long_stab_dervs["Cmq"]
-    Cmu = long_stab_dervs["Cmu"]
-    Cmadot = long_stab_dervs["Cm_adot"]
-    muc = long_stab_dervs["muc"]
+    Stab.load
+    CX0 = Stab.Cx0
+    CXa = Stab.Cxa
+    CXu = Stab.Cxu
+    CZ0 = Stab.Cz0
+    CZa = Stab.Cza
+    CZu = Stab.Czu
+    CZq = Stab.Czq
+    CZadot = Stab.Cz_adot
+    Cma = Stab.Cma
+    Cmq = Stab.Cmq
+    Cmu = Stab.Cmu
+    Cmadot = Stab.Cm_adot
+    muc = Stab.muc
 
     KY2 = Iyy / (m*c**2)
     Aeigval = 4 * muc **2 * KY2 * (CZadot - 2 * muc)
@@ -520,10 +522,10 @@ def eigval_finder_sym(Iyy, m, c, long_stab_dervs):      #Iyy = 12081.83972
     Ceigval = Cma * 2 * muc * (CZq + 2*muc) - Cmadot * (2 * muc * CX0 + CXu * (CZq + 2*muc)) + Cmq * (CXu * (CZadot - 2*muc) - 2*muc*CZa) + 2 * muc*KY2*(CXa*CZu - CZa * CXu)
     Deigval = Cmu * (CXa*(CZq + 2*muc) - CZ0 * (CZadot - 2 * muc)) - Cma * (2*muc*CX0 + CXu * (CZq + 2*muc)) + Cmadot * (CX0*CXu - CZ0*CZu) + Cmq*(CXu * CZa - CZu * CXa)
     Eeigval = -Cmu * (CX0 * CXa + CZ0 * CZa) + Cma * (CX0 * CXu + CZ0 * CZu)
-    return np.roots(np.array([Aeigval, Beigval, Ceigval, Deigval, Eeigval]))
+    Stab.sym_eigvals = list(np.roots(np.array([Aeigval, Beigval, Ceigval, Deigval, Eeigval])))
+    Stab.dump()
 
-
-def eigval_finder_asymm(Ixx, Izz, Ixz, m, b, CL, lat_stab_dervs):   #Ixx = 10437.12494 Izz = 21722.48912
+def eigval_finder_asymm(Stab, Ixx, Izz, Ixz, m, b, CL):   #Ixx = 10437.12494 Izz = 21722.48912
 
     """
     Ixx: moment of inertia around X-axis
@@ -537,16 +539,17 @@ def eigval_finder_asymm(Ixx, Izz, Ixz, m, b, CL, lat_stab_dervs):   #Ixx = 10437
     returns
     array with eigenvalues NON-DIMENSIONALISED
     """
-    CYb = lat_stab_dervs["Cyb"]
-    CYp = lat_stab_dervs["Cyp"]
-    CYr = lat_stab_dervs["Cyr"]
-    Clb = lat_stab_dervs["Clb"]
-    Clp = lat_stab_dervs["Clp"]
-    Clr = lat_stab_dervs["Clr"]
-    Cnb = lat_stab_dervs["Cnb"]
-    Cnp = lat_stab_dervs["Cnp"]
-    Cnr = lat_stab_dervs["Cnr"]
-    mub = lat_stab_dervs["mub"]
+    Stab.load()
+    CYb = Stab.Cyb
+    CYp = Stab.Cyp
+    CYr = Stab.Cyr
+    Clb = Stab.Clb
+    Clp = Stab.Clp
+    Clr = Stab.Clr
+    Cnb = Stab.Cnb
+    Cnp = Stab.Cnp
+    Cnr = Stab.Cnr
+    mub = Stab.mub
 
 
     KX2 = Ixx / (m*b**2)
@@ -566,7 +569,8 @@ def eigval_finder_asymm(Ixx, Izz, Ixz, m, b, CL, lat_stab_dervs):   #Ixx = 10437
                           Clb * Cnr - Cnb * Clr) + 0.5 * CYr * (
                           Clp * Cnb - Cnp * Clb)
     Eeigval = CL * (Clb * Cnr - Cnb * Clr)
-    return np.roots(np.array([Aeigval, Beigval, Ceigval, Deigval, Eeigval]))
+    Stab.asym_eigvals = list(np.roots(np.array([Aeigval, Beigval, Ceigval, Deigval, Eeigval])))
+    Stab.dump()
 
 
 if __name__ == "__main__":
