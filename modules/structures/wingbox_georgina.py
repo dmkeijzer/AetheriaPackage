@@ -816,7 +816,6 @@ class Wingbox_optimization(om.ExplicitComponent):
 
 
         weight = self.WingboxClass.wing_weight(tsp,trib, hst, tst,wst,t_max, t_min)
-        print(f"tsp = {tsp}")
         constr = [
         self.WingboxClass.global_local( hst, tst,t_max, t_min),
         self.WingboxClass.post_buckling(tsp, trib, hst,tst,wst, t_max,t_min),
@@ -827,7 +826,7 @@ class Wingbox_optimization(om.ExplicitComponent):
         self.WingboxClass.crippling(hst, tst, wst, t_max, t_min), #ONLY
         self.WingboxClass.web_flange(hst,tst,t_max,t_min)
         ]
-        print(constr)
+        #print(constr)
 
 
 
@@ -916,13 +915,13 @@ def WingboxOptimizer(x, wing, engine, material, aero):
     prob.set_val('wingbox_design.tmax', x[5])
     prob.set_val('wingbox_design.tmin', x[6])
 
-    prob.model.list_inputs(True)
+    #prob.model.list_inputs(True)
 
     prob.run_driver()
     # prob.check_partials()
     # prob.check_totals()
 
-    prob.model.list_outputs()
+    #prob.model.list_outputs()
 
     print(f"thickness spar= {prob.get_val('wingbox_design.tsp')*1000} [mm]")
     print(f"thickness rib= {prob.get_val('wingbox_design.trib')*1000} [mm]")
