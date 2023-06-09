@@ -26,7 +26,7 @@ download_dir = os.path.join(os.path.expanduser("~"), "Downloads")
 
 
 def numerical_simulation(y_start, mass, g0, S, CL_climb, alpha_climb, CD_climb, Adisk, lod_climb, eff_climb, v_stall):
-    print('this is still running')
+    # print('this is still running')
     # Initialization
     vx = 0
     vy = 2.
@@ -41,7 +41,7 @@ def numerical_simulation(y_start, mass, g0, S, CL_climb, alpha_climb, CD_climb, 
     P_max = data['power_hover']
 
     # Choose transition time
-    t_end = 10
+    t_end = 30
 
     # Lists to store everything
     y_lst = []
@@ -55,6 +55,7 @@ def numerical_simulation(y_start, mass, g0, S, CL_climb, alpha_climb, CD_climb, 
     D_lst = []
     P_lst = []
     acc_lst = []
+    L_lst = []
 
     # Preliminary calculations
     running = True
@@ -111,6 +112,7 @@ def numerical_simulation(y_start, mass, g0, S, CL_climb, alpha_climb, CD_climb, 
         D_lst.append(D)
         P_lst.append(Ptot / 1000)
         acc_lst.append(acc_g)
+        L_lst.append(L)
 
         if t > t_end:
             running = False
@@ -121,12 +123,13 @@ def numerical_simulation(y_start, mass, g0, S, CL_climb, alpha_climb, CD_climb, 
     fig, axs = plt.subplots(2, 2, figsize=(10, 8))
 
     # Plot data on each subplot
-    axs[0, 0].plot(t_lst, P_lst, color='blue')
+    axs[0, 0].plot(t_lst, L_lst, color='blue')
     axs[0, 0].set_xlabel('Time [s]')
     axs[0, 0].set_ylabel('Power [kW]')
     axs[0, 0].grid()
 
     axs[0, 1].plot(x_lst, y_lst, color='red')
+    axs[0, 1].axis('equal')
     axs[0, 1].set_xlabel('X-position [m]')
     axs[0, 1].set_ylabel('Y-position [m]')
     axs[0, 1].grid()
@@ -147,17 +150,17 @@ def numerical_simulation(y_start, mass, g0, S, CL_climb, alpha_climb, CD_climb, 
     # Display the figure
     plt.show()
 
-    return y_lst, x_lst, vy_lst, vx_lst, t_lst, alpha_T_lst, P_lst
+    return E, y_lst, t_lst, x_lst
 
 
-print(np.max(numerical_simulation(y_start=30.5, mass=data["mtom"], g0=const.g0, S=data['S'], CL_climb=data['cl_climb_clean'],
-                                  alpha_climb=data['alpha_climb_clean'], CD_climb=data["cdi_climb_clean"] + data["cd0"],
-                                  Adisk=data["diskarea"], lod_climb=data['ld_climb'], eff_climb=data['eff'],
-                                  v_stall=data['v_stall'])[6]))
+# print(np.max(numerical_simulation(y_start=30.5, mass=data["mtom"], g0=const.g0, S=data['S'], CL_climb=data['cl_climb_clean'],
+#                                   alpha_climb=data['alpha_climb_clean'], CD_climb=data["cdi_climb_clean"] + data["cd0"],
+#                                   Adisk=data["diskarea"], lod_climb=data['ld_climb'], eff_climb=data['eff'],
+#                                   v_stall=data['v_stall'])[6]))
 
 
 def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha, CD, Adisk):
-    print('this is still running')
+    # print('this is still running')
     # Initialization
     vx = vx_start
     vy = vx_start*descend_slope
@@ -315,11 +318,11 @@ def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha
     fig.tight_layout()
 
     # Display the figure
-    plt.show()
+    # plt.show()
 
-    return E, ay_lst, y_lst, x_lst, vy_lst, vx_lst, t_lst, alpha_T_lst, P_lst
+    return E, y_lst, t_lst, x_lst, P_lst # Energy, y, t, x, P
 
 
-print(numerical_simulation_landing(vx_start=data['v_stall_flaps20'], descend_slope=-0.125, mass=data["mtom"], g0=const.g0,
-                                   S=data['S'], CL=data['cl_descent_trans_flaps20'], alpha=data['alpha_descent_trans_flaps20'],
-                                   CD=data["cdi_descent_trans_flaps20"]+data['cd0'], Adisk=data["diskarea"])[0])
+# print(numerical_simulation_landing(vx_start=data['v_stall_flaps20'], descend_slope=-0.125, mass=data["mtom"], g0=const.g0,
+#                                    S=data['S'], CL=data['cl_descent_trans_flaps20'], alpha=data['alpha_descent_trans_flaps20'],
+#                                    CD=data["cdi_descent_trans_flaps20"]+data['cd0'], Adisk=data["diskarea"])[0])

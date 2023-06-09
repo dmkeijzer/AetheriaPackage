@@ -30,6 +30,9 @@ class PerformanceParameters:
     rate_of_descent_cruise : float = None
     rate_of_climb_hover: float = None
     cruise_velocity : float = None
+    MTOM: float = None
+
+    #Weight
 
     def load(self):
         with open(r"input/data_structures/aetheria_constants.json") as jsonFile:
@@ -44,6 +47,7 @@ class PerformanceParameters:
         self.rate_of_descent_cruise = constants.rod_cr
         self.rate_of_climb_hover = constants.roc_hvr
         self.cruise_velocity = constants.v_cr
+        self.MTOM = data["mtom"]
 
     
     def dump(self):
@@ -53,6 +57,7 @@ class PerformanceParameters:
             data["power_cruise"] = self.cruisePower
             data["mission_energy"] = self.energyRequired
             data["power_climb"] = self.climbPower
+
         
     
         with open(r"output/data_structures/aetheria_constants.json", "w") as jsonFile:

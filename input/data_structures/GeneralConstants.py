@@ -27,7 +27,7 @@ v_stall = 40
 roc_cr = 5
 rod_cr = 3 # Rate of descend 
 roc_hvr = 2
-h_cruise = 1000          #[m]        O
+h_cruise = 2400         #[m]        O
 mission_dist = 400e3  # m
 h_transition = 30 # meter PLACEHOLDER
 npax = 4                # Amount of passengers O
@@ -73,7 +73,12 @@ xcm = 0.2973 # NACA2412
 A_base = 0 #Assumed 0 base area
 frac_lam_fus = 0.05
 frac_lam_wing = 0.1
-k = 0.634 * 10**(-5) # Surface smoothness parameter
+k = 0.634 * 10**(-5)  # Surface smoothness parameter
+
+#airfoil V-tail
+toc_tail = 0.12  # NACA 0012
+xcm_tail = 0.2903
+
 
 # Time constants for midterm
 t_takeoff = 15.3

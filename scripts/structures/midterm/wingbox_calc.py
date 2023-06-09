@@ -9,7 +9,8 @@ sys.path.append(str(list(pl.Path(__file__).parents)[3]))
 download_dir = os.path.join(os.path.expanduser("~"), "Downloads")
 import matplotlib.pyplot as plt
 
-from modules.structures import *
+from modules.structures.stress_forms import *
+from modules.structures.geometry_forms import *
 import nvm_script
 
 nvm_script
@@ -43,7 +44,7 @@ def root_wingbox_stresses(dict_directory,dict_name,i):
     #Calculate geometric properties
     data["i_xx"] = i_xx_thinwalled(w_wingbox,h_wingbox,3E-3)
     data["i_zz"] = i_zz_thinwalled(w_wingbox,h_wingbox,3E-3)
-    data["j_y"]  = j_y_thinwalled(w_wingbox,h_wingbox,3E-3)
+    # data["j_y"]  = j_y_thinwalled(w_wingbox,h_wingbox,3E-3)
     data["area_enclosed"] = enclosed_area_thinwalled(w_wingbox,h_wingbox,thickness)
     data["area"] = area_thinwalled(w_wingbox,h_wingbox,thickness)
 

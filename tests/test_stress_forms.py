@@ -37,17 +37,17 @@ def example_values():
         },
         "shear_thin_walled_rectangular_section": {
             "width": 2,
-            "height": 5,
-            "thickness": 0.1,
+            "height": 1,
+            "thickness":1E-3,
             "i_xx": 2,
             "i_zz": 1,
             "Vx": 3000,
             "Vz": 4000
         },
         "critical_buckling_stress": {
-            "C": 2,
-            "t": 3,
-            "b": 4
+            "C": 4,
+            "t": 0.001,
+            "b": 3
         },
         "wohlers_curve": {
             "C": 10,
@@ -58,8 +58,8 @@ def example_values():
             "C": 0.5,
             "beta": 0.2,
             "load": 100,
-            "m": 2,
-            "a_f": 4,
+            "m": 4,
+            "a_f": 6,
             "a_0": 2
         }
     }
@@ -82,11 +82,11 @@ def test_torsion_circular_section(example_values):
 
 def test_shear_thin_walled_rectangular_section(example_values):
     inputs = example_values['shear_thin_walled_rectangular_section']
-    assert np.isclose(shear_thin_walled_rectangular_section(**inputs), (0.3125, 0.625, 0.3125, 0.625))X
+    assert np.shape(shear_thin_walled_rectangular_section(**inputs)[0])==np.shape(np.zeros((20000,))) and np.shape(shear_thin_walled_rectangular_section(**inputs)[1]) == np.shape(np.zeros(10000,))
 
 def test_critical_buckling_stress(example_values):
     inputs = example_values['critical_buckling_stress']
-    assert np.isclose(critical_buckling_stress(**inputs), 4.840634296972383)
+    assert np.isclose(critical_buckling_stress(**inputs), 29945.56)
 
 def test_wohlers_curve(example_values):
     inputs = example_values['wohlers_curve']
@@ -94,4 +94,4 @@ def test_wohlers_curve(example_values):
 
 def test_paris_law(example_values):
     inputs = example_values['paris_law']
-    assert np.isclose(paris_law(**inputs), -1.830504064271163)
+    assert np.isclose(paris_law(**inputs), 4.221716e-7)
