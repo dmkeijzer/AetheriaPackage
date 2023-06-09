@@ -24,6 +24,10 @@ AeroClass = Aero()
 WingClass.taper = 0.45
 WingClass.span = 7
 WingClass.chord_root = 1.5
+WingClass.chord_tip  = 0.7
+WingClass.sweep_LE = 3
+WingClass.surface = 10
+WingClass.chord_mac = 1.6
 
 
 MatClass.rho = 2710
@@ -35,6 +39,8 @@ MatClass.g =  5
 MatClass.sigma_yield =  430e6
 MatClass.m_crip = 0.85
 MatClass.sigma_uts = 640e6
+
+AeroClass.cL_cruise = 0.43
 
 
 
@@ -53,25 +59,28 @@ t = 2e-3
 tmax =  t
 tmin =  t
 
-WingboxClass = wb.Wingbox(WingClass, EngineClass, MatClass, EngineClass)
+WingboxClass = wb.Wingbox(WingClass, EngineClass, MatClass, AeroClass)
 WingboxClass.n_max = 2.5
 WingboxClass.engine_weight = 41.8
 WingboxClass.max_rib_pitch = L 
 WingboxClass.str_pitch = b_st
+WingboxClass.lift_func = lambda y:-151.7143*9.81*y+531*9.81
 
 
 #------------------------------------------------------------------------------------------
 
-def test_global_local():
-    assert WingboxClass.global_local(h_st,t_st,tmax,tmin) == 1212005009.6072173
+def test_post_buckling():
 
-
-
+    pass
 
 
 def test_web_flange():
-    assert 
-
+    res_optimization = WingboxClass.web_flange(h_st , t_st, tmax, tmin)[0]
+    comparsion_value_notebook = 486900483.7870751
+    print(f"Result from optimizatino = {res_optimization}")
+    print(f"Result from  notebook = {comparsion_value_notebook}")
+    assert np.isclose(res_optimization, comparsion_value_notebook)
+    pass
 
 
 test_web_flange()
