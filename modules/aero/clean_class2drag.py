@@ -94,6 +94,20 @@ def FF_wing(toc, xcm, M, sweep_m):
 
     return (1 + 0.6 * toc / xcm + 100 * toc * 4) * (1.34 * (M * 0.18) * (np.cos(sweep_m)) * 0.28)
 
+def FF_tail(toc_tail, xcm_tail, M, sweep_m):
+    """_summary_
+
+    :param toc_tail: thickness over chord ratio
+    :type toc_tail: _type_
+    :param xcm_tail: (x/c)m, position of maximum thickness
+    :type xcm_tail: _type_
+    :param M: Mach number
+    :type M: _type_
+    :return: _description_
+    :rtype: _type_
+    """
+
+    return (1 + 0.6 * toc_tail / xcm_tail + 100 * toc_tail * 4) * (1.34 * (M * 0.18) * (np.cos(sweep_m)) * 0.28)
 
 def S_wet_fus(d, l1, l2, l3):
     """_summary_
@@ -211,7 +225,15 @@ def CD_wing(name, C_fe_wing, FF_wing, S_wet_wing, S):
         CD_wing = max(float(C_fe_wing * FF_wing * IF_wing * S_wet_wing), 0.007)
     return CD_wing
 
-def CD0(S, CD_fus, CD_wing, CD_upsweep, CD_base):
+
+def CD_tail(C_fe_wing, FF_tail, S_wet_tail):
+
+    IF_tail = 1.0
+    CD_tail = max(float(C_fe_wing * FF_tail * IF_tail * S_wet_tail), 0.005)
+    return CD_tail
+
+
+def CD0(S, S_tail, S_fus, CD_fus, CD_wing, CD_upsweep, CD_base, CD_tail):
     """_summary_
 
     :param S: wing area
@@ -227,7 +249,10 @@ def CD0(S, CD_fus, CD_wing, CD_upsweep, CD_base):
     :return: _description_
     :rtype: _type_
     """
-    return (1 / S) * (CD_fus + CD_wing) + CD_upsweep + CD_base
+
+    leakage_factor = 1.075  # accounts for leakage from propellers etc.
+
+    return ((CD_wing / S) + (CD_tail / S_tail) + (2*CD_fus / S_fus) + CD_upsweep + CD_base) * leakage_factor
 
 
 def CDi(name, CL, A, e):
@@ -243,13 +268,20 @@ def CDi(name, CL, A, e):
     :rtype: _type_
     """
     if name == "J1":
-        CDi = max(float(CL**2 / (np.pi * A * e)),0.007)
+        CDi = max(float(CL**2 / (np.pi * A * e)), 0.007)
     elif name == "L1":
-       CDi = max(float(CL**2 / (np.pi * A * e)),0.006)
+       CDi = max(float(CL**2 / (np.pi * A * e)), 0.006)
     else:
-        CDi = max(float(CL**2 / (np.pi * A * e)),0.005) 
+        CDi = max(float(CL**2 / (np.pi * A * e)), 0.005)
     return CDi
 
+
+def CD_flaps(angle_flap_deg):
+    F_flap = 0.0144         # for plain flaps
+    cf_c = 0.25             # standard value
+    S_flap_S_ref = 0.501    # from Raymer's methods
+
+    return F_flap*cf_c*S_flap_S_ref*(angle_flap_deg-10)
 
 def CD(CD0, CDi):
     """_summary_

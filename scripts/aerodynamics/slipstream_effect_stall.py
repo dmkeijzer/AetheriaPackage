@@ -10,6 +10,7 @@ import input.data_structures.GeneralConstants  as const
 from  modules.aero.prop_wing_interaction  import *
 from input.data_structures.ISA_tool import ISA
 
+sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
 # import CL_cruise from json files
 
@@ -20,7 +21,6 @@ file_name = "aetheria_constants.json"
 
 with open(os.path.join(dict_directory, file_name)) as f:
     data = json.load(f)
-download_dir = os.path.join(os.path.expanduser("~"), "Downloads")
 
 
 
@@ -78,8 +78,24 @@ print("CL_wing_section:", CL_wing_section)
 print("CL_prop:", prop_lift_var)
 print("CL_old:", CL_old)
 print("CL percentage increase:", 100*(CL_total_cruise-CL_old)/CL_old)
-print(np.sin(epsilon))
 
+
+downwash_angle_wing = np.sin(sin_epsilon)
+downwash_angle_prop = np.sin(sin_epsilon_s)
+average_downwash_angle = (downwash_angle_prop*diameter_propellers*3 + downwash_angle_wing*(data['b']-3*diameter_propellers))/data['b']
+print(downwash_angle_wing)
+print(downwash_angle_prop)
+print(average_downwash_angle)
+
+data['downwash_angle_wing'] = downwash_angle_wing 
+data['downwash_angle_prop'] = downwash_angle_prop 
+data['downwash_angle'] = average_downwash_angle 
+
+
+with open(os.path.join(dict_directory, file_name), "w") as jsonFile:
+    json.dump(data, jsonFile, indent= 6)
+
+    
 
 
 

@@ -7,12 +7,11 @@ import sys
 import pathlib as pl
 
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
-import input.data_structures.GeneralConstants as const
-from input.data_structures.aero import Aero
-from input.data_structures.wing import Wing
 from modules.avlwrapper import Geometry, Surface, Section, NacaAirfoil, Control, Point, Spacing, Session, Case, \
     Parameter
-
+from input.data_structures.wing import Wing
+from input.data_structures.aero import Aero
+import input.data_structures.GeneralConstants as const
 Wingclass = Wing()
 Wingclass.load()
 Aeroclass = Aero()
@@ -27,7 +26,7 @@ download_dir = os.path.join(os.path.expanduser("~"), "Downloads")
 
 
 def numerical_simulation(y_start, mass, g0, S, CL_climb, alpha_climb, CD_climb, Adisk, lod_climb, eff_climb, v_stall):
-    print('this is still running')
+    # print('this is still running')
     # Initialization
     vx = 0
     vy = 2.
@@ -56,6 +55,7 @@ def numerical_simulation(y_start, mass, g0, S, CL_climb, alpha_climb, CD_climb, 
     D_lst = []
     P_lst = []
     acc_lst = []
+    L_lst = []
 
     # Preliminary calculations
     running = True
@@ -78,8 +78,10 @@ def numerical_simulation(y_start, mass, g0, S, CL_climb, alpha_climb, CD_climb, 
         T = (mass * g0 - L * np.cos(alpha_climb) + mass * ay) / np.sin(alpha_T)
         V = np.sqrt(vx ** 2 + vy ** 2)
 
-        P_hover = T * vy + 1.2 * T * (-(vy / 2) + np.sqrt((vy ** 2 / 4) + (T / (2 * rho * Adisk))))
-        P_climb = mass * g0 * (np.sqrt(2 * mass * g0 * (S / rho)) * (1 / lod_climb) + vy) / eff_climb
+        P_hover = T * vy + 1.2 * T * \
+            (-(vy / 2) + np.sqrt((vy ** 2 / 4) + (T / (2 * rho * Adisk))))
+        P_climb = mass * g0 * \
+            (np.sqrt(2 * mass * g0 * (S / rho)) * (1 / lod_climb) + vy) / eff_climb
 
         Ptot = (P_hover * (t_end - t) + P_climb * t) / t_end
 
@@ -96,7 +98,7 @@ def numerical_simulation(y_start, mass, g0, S, CL_climb, alpha_climb, CD_climb, 
         E += Ptot * dt
 
         # Longitudinal acceleration in g-force
-        acc_g = ax / g0
+        acc_g = (ax)/ g0
 
         # Append lists for all parameters
         t_lst.append(t)
@@ -110,6 +112,7 @@ def numerical_simulation(y_start, mass, g0, S, CL_climb, alpha_climb, CD_climb, 
         D_lst.append(D)
         P_lst.append(Ptot / 1000)
         acc_lst.append(acc_g)
+        L_lst.append(L)
 
         if t > t_end:
             running = False
@@ -120,12 +123,13 @@ def numerical_simulation(y_start, mass, g0, S, CL_climb, alpha_climb, CD_climb, 
     fig, axs = plt.subplots(2, 2, figsize=(10, 8))
 
     # Plot data on each subplot
-    axs[0, 0].plot(t_lst, P_lst, color='blue')
+    axs[0, 0].plot(t_lst, L_lst, color='blue')
     axs[0, 0].set_xlabel('Time [s]')
     axs[0, 0].set_ylabel('Power [kW]')
     axs[0, 0].grid()
 
     axs[0, 1].plot(x_lst, y_lst, color='red')
+    axs[0, 1].axis('equal')
     axs[0, 1].set_xlabel('X-position [m]')
     axs[0, 1].set_ylabel('Y-position [m]')
     axs[0, 1].grid()
@@ -146,28 +150,28 @@ def numerical_simulation(y_start, mass, g0, S, CL_climb, alpha_climb, CD_climb, 
     # Display the figure
     plt.show()
 
-    return y_lst, x_lst, vy_lst, vx_lst, t_lst, alpha_T_lst, P_lst
+    return E, y_lst, t_lst, x_lst
 
 
-print(np.max(numerical_simulation(y_start=30.5, mass=data["mtom"], g0=const.g0, S=data['S'], CL_climb=data['cl_climb'],
-                                  alpha_climb=data['alpha_climb'], CD_climb=data["cdi_climb"] + data["cd0"],
-                                  Adisk=data["diskarea"], lod_climb=data['ld_climb'], eff_climb=data['eff'],
-                                  v_stall=data['v_stall'])[6]))
+# print(np.max(numerical_simulation(y_start=30.5, mass=data["mtom"], g0=const.g0, S=data['S'], CL_climb=data['cl_climb_clean'],
+#                                   alpha_climb=data['alpha_climb_clean'], CD_climb=data["cdi_climb_clean"] + data["cd0"],
+#                                   Adisk=data["diskarea"], lod_climb=data['ld_climb'], eff_climb=data['eff'],
+#                                   v_stall=data['v_stall'])[6]))
 
 
 def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha, CD, Adisk):
-    print('this is still running')
+    # print('this is still running')
     # Initialization
     vx = vx_start
-    vy = 0
-    vy_start = 0
+    vy = vx_start*descend_slope
+    vy_start = vx_start*descend_slope
     vy_end = -2
-    y_start = 145
-    y_end = 30.5
+    y_start = 104
+    y_end = 15
     t = 0
     x = 0
     y = y_start
-    dt = 0.1
+    dt = 0.001
     E = 0
 
     # Chosen parameters
@@ -175,7 +179,7 @@ def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha
     P_max = data['power_hover']
 
     # Choose transition time
-    t_end = 180
+    t_end = 100
 
     # Lists to store everything
     y_lst = []
@@ -189,6 +193,10 @@ def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha
     D_lst = []
     P_lst = []
     acc_lst = []
+    acc_y_lst = []
+    ay_lst = []
+    V_lst =[]
+    level_out = False
 
     # Preliminary calculations
     running = True
@@ -206,24 +214,50 @@ def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha
         # thrust and power
         alpha_T = alpha + 0.5 * np.pi
 
-        ay = (vy_end ** 2 - vy_start ** 2) / (2 * (y_end - y_start))
+        if vy > 0:
+            level_out = True
 
-        T = (-L * np.cos(alpha) + mass * g0 + mass * ay) / np.sin(alpha_T)
-        if T < 0:
+        if t < 5:
+            phase_1 = True
+            phase_2 = False
+        elif level_out == True:
+            phase_1 = False
+            phase_2 = False
+        else:
+            phase_1 = False
+            phase_2 = True
+
+        if phase_1 == True:  # phase 1 gliding and turn propellers
+            ay = (L * np.cos(alpha) - mass*g0)/mass
             T = 0
+            ax = (-L * np.sin(alpha) - D) / mass
+            vy_level_out = vy
 
-        P_hover = T * vy + 1.2 * T * (-(vy / 2) + np.sqrt((vy ** 2 / 4) + (T / (2 * rho * Adisk))))
+        elif phase_2 == True:  # leveling out
+            t_level_out = 5
+            alpha_T = np.pi*0.5
+            ay = - vy_level_out / t_level_out
+            T = (-L * np.cos(alpha) + mass * g0 + mass * ay) / np.sin(alpha_T)
+            ax = (T * np.cos(alpha_T) - L * np.sin(alpha) - D) / mass
+            y_level_out = y
+
+        elif phase_1 == False and phase_2 == False and y>y_end:  # descending and vx -> 0
+            ay = (vy_end ** 2) / (2 * (y_end - y_level_out))
+            T = (-L * np.cos(alpha) + mass * g0 + mass * ay) / np.sin(alpha_T)
+            ax = (T * np.cos(alpha_T) - L * np.sin(alpha) - D) / mass
+
+        elif y < y_end:
+            vy = -2
+            vx = 0
+            alpha_T = np.pi*0.5
+            T = mass * g0
+            ax = 0
+            ay = 0
+            
+        P_hover = T * vy + 1.2 * T * \
+            (-(vy / 2) + np.sqrt((vy ** 2 / 4) + (T / (2 * rho * Adisk))))
 
         Ptot = P_hover
-
-        # Longitudinal acceleration
-        ax = (T * np.cos(alpha_T) - L * np.sin(alpha) - D) / mass
-
-        # Set constraint on maximum deceleration
-        if np.abs(ax) > 0.4:
-            ax = -0.4
-        else:
-            ax = (T * np.cos(alpha_T) - L * np.sin(alpha) - D) / mass
 
         vx = vx + ax * dt
         vy = vy + ay * dt
@@ -234,9 +268,10 @@ def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha
         E += Ptot * dt
 
         acc_g = ax / g0
-
+        acc_y = (ay+g0)/g0
         # Append lists of parameters
         t_lst.append(t)
+        ay_lst.append(ay)
         ax_lst.append(ax)
         y_lst.append(y)
         x_lst.append(x)
@@ -247,20 +282,24 @@ def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha
         D_lst.append(D)
         P_lst.append(Ptot/1000)
         acc_lst.append(acc_g)
+        acc_y_lst.append(acc_y)
+        V_lst.append(np.sqrt(vx**2+vy**2))
 
-        if t > t_end or vx < 0:
+        if t > t_end or y < 0:
             running = False
     acc_lst = np.array(acc_lst)
+
     # Create a figure and subplots
     fig, axs = plt.subplots(2, 2, figsize=(10, 8))
 
     # Plot data on each subplot
-    axs[0, 0].plot(t_lst, P_lst, color='blue')
+    axs[0, 0].plot(t_lst, T_lst, color='blue')
     axs[0, 0].set_xlabel('Time [s]')
     axs[0, 0].set_ylabel('Power [kW]')
     axs[0, 0].grid()
 
     axs[0, 1].plot(x_lst, y_lst, color='red')
+    axs[0, 1].axis('equal')
     axs[0, 1].set_xlabel('X-position [m]')
     axs[0, 1].set_ylabel('Y-position [m]')
     axs[0, 1].grid()
@@ -270,20 +309,20 @@ def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha
     axs[1, 0].set_ylabel('Velocity in x-dir [m/s]')
     axs[1, 0].grid()
 
-    axs[1, 1].plot(t_lst, vy_lst, color='orange')
+    axs[1, 1].plot(t_lst, V_lst, color='orange')
     axs[1, 1].set_xlabel('Time [s]')
-    axs[1, 1].set_ylabel('Velocity in y-dir [m/s]')
+    axs[1, 1].set_ylabel('Acceleration [m/s]')
     axs[1, 1].grid()
 
     # Adjust spacing between subplots
     fig.tight_layout()
 
     # Display the figure
-    plt.show()
+    # plt.show()
 
-    return y_lst, x_lst, vy_lst, vx_lst, t_lst, alpha_T_lst, P_lst
+    return E, y_lst, t_lst, x_lst, P_lst # Energy, y, t, x, P
 
 
-print(numerical_simulation_landing(vx_start=data['v_stall_flaps20']+8, descend_slope=-0.125, mass=data["mtom"], g0=const.g0,
-                                   S=data['S'], CL=data['cl_descent_trans'], alpha=data['alpha_descent_trans'],
-                                   CD=data["cdi_descent_trans"]+data['cd0'], Adisk=data["diskarea"])[6])
+# print(numerical_simulation_landing(vx_start=data['v_stall_flaps20'], descend_slope=-0.125, mass=data["mtom"], g0=const.g0,
+#                                    S=data['S'], CL=data['cl_descent_trans_flaps20'], alpha=data['alpha_descent_trans_flaps20'],
+#                                    CD=data["cdi_descent_trans_flaps20"]+data['cd0'], Adisk=data["diskarea"])[0])

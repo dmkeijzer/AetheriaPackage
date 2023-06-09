@@ -46,13 +46,14 @@ for dict_name in dict_names:
 
     #-----------------------Transition to climb-----------------------
     print(" ------------ transition to climb")
-    transition_simulation = numerical_simulation(vx_start=0, y_start=const.h_transition,
-      mass=data["mtom"], g0=const.g0, S=WingClass.surface, CL_max=Aeroclass.cl_climb_clean, alpha_climb=Aeroclass.alpha_climb_clean, CD=Aeroclass.cdi_climb_clean+Aeroclass.cd0, Adisk= data["diskarea"], lod_climb=Aeroclass.ld_climb, eff_climb=data['eff'])
-    E_trans_ver2hor = transition_simulation[1]
+    transition_simulation = numerical_simulation(y_start=30.5, mass=data["mtom"], g0=const.g0, S=data['S'], CL_climb=data['cl_climb_clean'],
+                                  alpha_climb=data['alpha_climb_clean'], CD_climb=data["cdi_climb_clean"] + data["cd0"],
+                                  Adisk=data["diskarea"], lod_climb=data['ld_climb'], eff_climb=data['eff'], v_stall=data['v_stall'])
+    E_trans_ver2hor = transition_simulation[0]
     transition_power_max = np.max(transition_simulation[0])
     final_trans_distance = transition_simulation[3][-1]
-    final_trans_altitude = transition_simulation[2][-1]
-    t_trans_climb = transition_simulation[4][-1]
+    final_trans_altitude = transition_simulation[1][-1]
+    t_trans_climb = transition_simulation[2][-1]
     print('t', t_trans_climb)
 
     #----------------------- Horizontal Climb --------------------------------------------------------------------
@@ -69,16 +70,19 @@ for dict_name in dict_names:
     
     #----------------------- Transition (from horizontal to vertical)-----------------------
     print("--------------- transition to vertical")
-    transition_simulation_landing = numerical_simulation_landing(vx_start=aero.v_stall, y_start=145,
-      mass=data["mtom"], g0=const.g0, S=WingClass.surface, CL_max=Aeroclass.cl_climb_clean, alpha_stall=Aeroclass.alpha_climb_clean, CD=Aeroclass.cdi_climb_clean+Aeroclass.cd0, Adisk= data["diskarea"], lod_climb=Aeroclass.ld_climb, eff_climb=data['eff'])
-    E_trans_hor2vert = transition_simulation_landing[1]
-    transition_power_max_landing = np.max(transition_simulation_landing[0])
+    transition_simulation_landing = numerical_simulation_landing(vx_start=data['v_stall_flaps20'], descend_slope=-0.125, mass=data["mtom"], g0=const.g0,
+                                   S=data['S'], CL=data['cl_descent_trans_flaps20'], alpha=data['alpha_descent_trans_flaps20'],
+                                   CD=data["cdi_descent_trans_flaps20"]+data['cd0'], Adisk=data["diskarea"])
+    E_trans_hor2ver = transition_simulation_landing[0]
+    transition_power_max_landing = np.max(transition_simulation_landing[4])
     final_trans_distance_landing = transition_simulation_landing[3][0]
-    final_trans_altitude_landing = transition_simulation_landing[2][-1]  
-    t_trans_landing = transition_simulation_landing[4]
+    final_trans_altitude_landing = transition_simulation_landing[1][-1]  
+    t_trans_landing = transition_simulation_landing[2][-1]
     print('t', t_trans_landing)
+
+
         # ----------------------- Horizontal Descend-----------------------
-    P_desc = powerdescend(data["mtom"], const.g0, WingClass.surface, const.rho_cr, aero.ld_climb, prop_eff_var, const.rod_cr)
+    P_desc = powerdescend(data["mtom"], const.g0, WingClass.surface, const.rho_cr, AeroClass.ld_climb, prop_eff_var, const.rod_cr)
     t_desc = (const.h_cruise - final_trans_altitude_landing)/const.rod_cr # Equal descend as ascend
     E_desc = P_desc* t_desc
 
@@ -96,7 +100,7 @@ for dict_name in dict_names:
 
     #----------------------- Loiter cruise-----------------------
     print('--------- loiter cruise')
-    P_loit_cr = powerloiter(data["mtom"], const.g0, WingClass.surface, const.rho_cr, aero.ld_climb, prop_eff_var)
+    P_loit_cr = powerloiter(data["mtom"], const.g0, WingClass.surface, const.rho_cr, AeroClass.ld_climb, prop_eff_var)
     E_loit_hor = P_loit_cr * const.t_loiter
     print('t', const.t_loiter)
 
@@ -107,9 +111,9 @@ for dict_name in dict_names:
     print('t', 30)
 
     #----------------------- Landing----------------------- 
-    print('----------- landing')
-    landing_power_var = hoverstuffopen(data["mtom"]*const.g0, const.rho_sl, data["mtom"]/data["diskloading"],data["TW"])[1]
-    energy_landing_var = P_loit_land * const.t_landing
+    # print('----------- landing')
+    # landing_power_var = hoverstuffopen(data["mtom"]*const.g0, const.rho_sl, data["mtom"]/data["diskloading"],data["TW"])[1]
+    energy_landing_var = 0
 
 
 
@@ -131,16 +135,10 @@ for dict_name in dict_names:
     data["hor_loiter_energy"] = E_loit_hor
     data["trans2ver_energy"] = E_trans_hor2ver
     data["ver_loiter_energy"] = E_loit_vert
-    data["land_energy"] = energy_landing_var
     
     
-
-    if TEST:
-        with open(os.path.join(download_dir, dict_name), "w") as jsonFile:
-            json.dump(data, jsonFile, indent= 6)
-    else:
-        with open(os.path.join(dict_directory, dict_name), "w") as jsonFile:
-            json.dump(data, jsonFile, indent= 6)
+    with open(os.path.join(dict_directory, dict_name), "w") as jsonFile:
+        json.dump(data, jsonFile, indent= 6)
     
     print(f"Energy consumption {data['name']} = {round(E_total/3.6e6, 1)} [Kwh]")
     print(f"Energy consumption {data['name']} = {round(E_to/3.6e6, 1)} [Kwh]")
