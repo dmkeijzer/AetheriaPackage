@@ -57,7 +57,7 @@ class Wingbox():
         #Set number of ribs in inboard and outboard section
         self.n_ribs_sec0 = 1 #Number of ribs inboard of inboard engine
         self.n_ribs_sec1 = 4 #Number of ribs inboard and outboard engines
-        self.n_sections = self.n_ribs_sec0 + self.n_ribs_sec1 + 4
+        self.n_sections = self.n_ribs_sec0 + self.n_ribs_sec1 + 3
         #self.max_rib_pitch = np.max(np.diff(self.get_y_rib_loc()))
         self.max_rib_pitch = 1.05
 
@@ -761,8 +761,11 @@ class Wingbox_optimization(om.ExplicitComponent):
         self.wing =  wing
         self.engine = engine
         self.material = material
+        self.constr_iter_lst = []
         self.WingboxClass = Wingbox(wing,engine , material, aero)
-        self.constr_lst = ["global_local", "post_buckling", "von_mises", "buckling_constr", "flange_loc_loc", "local_column", "crippling", "web_flange"]
+        # self.constr_lst = ["global_local", "post_buckling", "von_mises", "buckling_constr", "flange_loc_loc", "local_column", "crippling", "web_flange"]
+        # self.constr_lst = ["global_local", "post_buckling", "von_mises" ,  "flange_loc_loc", "local_column"]
+        self.constr_lst = ["post_buckling"]
 
 
 
@@ -782,16 +785,25 @@ class Wingbox_optimization(om.ExplicitComponent):
         # self.add_input('b')
         # self.add_input('c_r')
         
-        #Outputs used as constraints
         self.add_output('wing_weight')
-        self.add_output('global_local',shape = (8,))
-        self.add_output('post_buckling',shape = (8,))
-        self.add_output('von_mises',shape = (8,))
-        self.add_output('buckling_constr',shape = (8,))
-        self.add_output('flange_loc_loc',shape = (8,))
-        self.add_output('local_column',shape = (8,))
-        self.add_output('crippling',shape = (8,))
-        self.add_output("web_flange",shape = (8,))
+        for constraint_str in self.constr_lst:
+            for section_num in range(self.WingboxClass.n_sections):
+                section_num = str(section_num) 
+                name =   constraint_str + section_num
+                self.add_output(name)
+
+        #Outputs used as constraints
+        # self.add_output('global_local',shape = (8,))
+        # self.add_output('post_buckling',shape = (8,))
+        # self.add_output('von_mises',shape = (8,))
+        # self.add_output('buckling_constr',shape = (8,))
+        # self.add_output('flange_loc_loc',shape = (8,))
+        # self.add_output('local_column',shape = (8,))
+        # self.add_output('crippling',shape = (8,))
+        # self.add_output("web_flange",shape = (8,))
+
+
+
         self.declare_partials('*', '*', method= 'fd')
 
 
@@ -828,6 +840,7 @@ class Wingbox_optimization(om.ExplicitComponent):
         self.WingboxClass.web_flange(hst,tst,t_max,t_min)
         ]
         #print(constr)
+        self.constr_iter_lst.append(constr)
 
 
 
@@ -835,14 +848,14 @@ class Wingbox_optimization(om.ExplicitComponent):
         outputs['wing_weight'] = weight
         for section_num in range(self.WingboxClass.n_sections):
 
-            outputs['global_local' + str(section_num)] = constr[0][section_num]
+            # outputs['global_local' + str(section_num)] = constr[0][section_num]
             outputs['post_buckling' + str(section_num)] = constr[1][section_num]
-            outputs['von_mises' + str(section_num)] = constr[2][section_num]
-            outputs['buckling_constr' + str(section_num)] = constr[3][section_num]
-            outputs['flange_loc_loc' + str(section_num)] = constr[4][section_num]
-            outputs['local_column' + str(section_num)] = constr[5][section_num]
-            outputs['crippling' + str(section_num)] = constr[6][section_num]
-            outputs['web_flange' + str(section_num)] = constr[7][section_num]
+            # outputs['von_mises' + str(section_num)] = constr[2][section_num]
+            # outputs['buckling_constr' + str(section_num)] = constr[3][section_num]
+            # outputs['flange_loc_loc' + str(section_num)] = constr[4][section_num]
+            # outputs['local_column' + str(section_num)] = constr[5][section_num]
+            # outputs['crippling' + str(section_num)] = constr[6][section_num]
+            # outputs['web_flange' + str(section_num)] = constr[7][section_num]
 
     
 
@@ -867,7 +880,7 @@ def WingboxOptimizer(x, wing, engine, material, aero):
 
 
     prob = om.Problem()
-    prob.model.add_subsystem('wingbox_design', OptClass)#, promotes_inputs=['AR1',
+    comp = prob.model.add_subsystem('wingbox_design', OptClass)#, promotes_inputs=['AR1',
                                                                                         # 'AR2',
 
     # Initial values for the optimization 
@@ -890,11 +903,11 @@ def WingboxOptimizer(x, wing, engine, material, aero):
     prob.model.add_design_var('wingbox_design.tmin', lower = 0.001, upper= 0.1)
 
     # # Define constraints 
-    for constraint_str in OptClass.WingboxClass.constr_lst:
+    for constraint_str in OptClass.constr_lst:
         for section_num in range(OptClass.WingboxClass.n_sections):
             section_num = str(section_num) 
             name = 'wingbox_design.' + constraint_str + section_num
-            prob.model.add_constraint(name)
+            prob.model.add_constraint(name, lower= 1)
 
     prob.driver = om.ScipyOptimizeDriver()
     prob.driver.options['optimizer'] = 'SLSQP'
@@ -916,8 +929,9 @@ def WingboxOptimizer(x, wing, engine, material, aero):
     #prob.model.list_inputs(True)
 
     prob.run_driver()
-    # prob.check_partials()
-    # prob.check_totals()
+    # comp.set_check_partial_options(wrt= "*", method="cs")
+    # prob.check_partials(compact_print=True)
+    prob.check_totals(compact_print=True)
 
     #prob.model.list_outputs()
 

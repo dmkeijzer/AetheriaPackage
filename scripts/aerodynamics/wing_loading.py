@@ -10,7 +10,7 @@ from modules.avlwrapper import Geometry, Surface, Section, NacaAirfoil, Control,
 from input.data_structures.wing import Wing
 from input.data_structures.aero import Aero
 import input.data_structures.GeneralConstants as const
-from modules.aero.avl_access import get_lift_distr
+from modules.aero.avl_access import get_lift_distr, get_strip_array
 
 
 dict_directory = "input/data_structures"
@@ -30,4 +30,5 @@ if __name__ == '__main__':
     AeroClass.load()
 
     res = get_lift_distr(WingClass, AeroClass, plot= True)
+    res2 = get_strip_array(WingClass, AeroClass)
 

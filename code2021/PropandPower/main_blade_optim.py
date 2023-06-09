@@ -106,23 +106,23 @@ plotter.plot_blade()
 plotter.plot_3D_blade()
 
 
-# def cost_function_blades(variables):
-#     #  Variables: [B, rpm hover, rpm cruise, delta_pitch hover]
-#     print(variables)
-#     # Inputs:   B, R, rpm_cr, xi_0, rho_cr, dyn_vis_cr, V_cr, N_stations, a_cr, RN_spacing, max_M_tip, rho_h,
-#     #           dyn_vis_h, V_h, a_h, rpm_h, delta_pitch, T_cr, T_h
-#     blade = BEM.Optiblade(int(variables[0]), R, variables[2], xi_0, rho_cr, dyn_vis_cr, V_cr, N_stations, a_cr, RN_spacing,
-#                           max_M_tip, rho_h, dyn_vis_h, V_h, a_h, variables[1], variables[3], T_cr, T_h/12)
-#
-#     blade_performance = blade.optimised_blade()
-#     # [0] -> Blade in cruise (zeta_new, [cs, betas, alpha, stations_r, E, eff, self.Tc, Pc], Ves, [Cl, Cd])
-#     # [1] -> Blade in hover (T, Q, eff)
-#     # [2] -> Thrust_factor
-#
-#     # Use % of the mission as weights for the optimisation TODO: discuss with Egon whether this or just cruise is better
-#     return np.abs((t_cr/t_tot) * (1 - blade_performance[0][1][5]) + (t_h/t_tot) * (1 - blade_performance[1][2]))
-#
-#
+def cost_function_blades(variables):
+    #  Variables: [B, rpm hover, rpm cruise, delta_pitch hover]
+    print(variables)
+    # Inputs:   B, R, rpm_cr, xi_0, rho_cr, dyn_vis_cr, V_cr, N_stations, a_cr, RN_spacing, max_M_tip, rho_h,
+    #           dyn_vis_h, V_h, a_h, rpm_h, delta_pitch, T_cr, T_h
+    blade = BEM.Optiblade(int(variables[0]), R, variables[2], xi_0, rho_cr, dyn_vis_cr, V_cr, N_stations, a_cr, RN_spacing,
+                          max_M_tip, rho_h, dyn_vis_h, V_h, a_h, variables[1], variables[3], T_cr, T_h/12)
+
+    blade_performance = blade.optimised_blade()
+    # [0] -> Blade in cruise (zeta_new, [cs, betas, alpha, stations_r, E, eff, self.Tc, Pc], Ves, [Cl, Cd])
+    # [1] -> Blade in hover (T, Q, eff)
+    # [2] -> Thrust_factor
+
+    # Use % of the mission as weights for the optimisation TODO: discuss with Egon whether this or just cruise is better
+    return np.abs((t_cr/t_tot) * (1 - blade_performance[0][1][5]) + (t_h/t_tot) * (1 - blade_performance[1][2]))
+
+
 # # Variables to optimise: B, rpm hover, rpm cruise, delta_pitch hover, maybe even thrust factor
 # #  B, rpm hover, rpm cruise, delta_pitch hover
 # # TODO: B has to be integer
