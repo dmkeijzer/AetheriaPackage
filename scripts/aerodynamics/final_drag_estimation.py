@@ -84,14 +84,17 @@ CD0_var = CD0(data["S"], VTailClass.surface, FuselageClass.length_fuselage*Fusel
 cL_tail_times_Sh = VTailClass.CL_cruise * HorTailClass.surface
 cL_wing_times_S = data["cL_cruise"]*data["S"]
 
+total_cL = (cL_wing_times_S + cL_tail_times_Sh) / (data['S'] + HorTailClass.surface)
+
 
 # Summation and L/D calculation
 CDi_var = CDi(data["name"], data["cL_cruise"], data["A"], data["e"])
 CD_var = CD(CD0_var, CDi_var)
-lift_over_drag_var = lift_over_drag(cL_wing_times_S + cL_tail_times_Sh, CD_var*(HorTailClass.surface + data['S']))
+lift_over_drag_var = lift_over_drag(total_cL, CD_var)
 
 print("CD0_wing", CD_wing_var / data["S"])
 print("CD cruise", CD_var)
+print("CL cruise", total_cL)
 print("L/D cruise", lift_over_drag_var)
 
 # Writing to JSON file
