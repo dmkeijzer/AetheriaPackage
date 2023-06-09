@@ -68,12 +68,12 @@ for dict_name in dict_names:
         # print("-------- horizontal climb")
         average_h_climb = (cruise_alt  - final_trans_altitude)/2
         rho_climb = ISA(average_h_climb).density()
-        v_climb = const.roc_cr/np.sin(const.climb_gradient)
+        v_climb = const.roc_cr/const.climb_gradient
         v_aft= v_exhaust(data["mtom"], const.g0, rho_climb, data["mtom"]/data["diskloading"], v_climb)
         prop_eff_var = propeff(v_aft, v_climb)
         climb_power_var = powerclimb(data["mtom"], const.g0, data["S"], rho_climb, AeroClass.ld_climb, prop_eff_var, const.roc_cr)
         t_climb = (cruise_alt  - final_trans_altitude) / const.roc_cr
-        # print('v', v_climb)
+        print('v', v_climb)
         E_climb = climb_power_var * t_climb
         print('E', E_climb)
         
@@ -94,8 +94,8 @@ for dict_name in dict_names:
         P_desc = powerdescend(data["mtom"], const.g0, WingClass.surface, rho_climb, AeroClass.ld_climb, prop_eff_var, const.rod_cr)
         t_desc = (cruise_alt - final_trans_altitude_landing)/const.rod_cr # Equal descend as ascend
         E_desc = P_desc* t_desc
-        d_desc = (cruise_alt - const.h_transition)/np.tan(const.descent_slope)
-        v_descend = const.rod_cr/np.sin(-const.descent_slope)
+        d_desc = (cruise_alt - final_trans_altitude_landing)/const.descent_slope
+        v_descend = const.rod_cr/const.descent_slope
         print("v_desc",v_descend)
 
         #-----------------------------Cruise-----------------------

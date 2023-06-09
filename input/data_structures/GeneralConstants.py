@@ -31,7 +31,6 @@ climb_gradient = 0.065
 descent_slope = 0.04
 h_cruise = 2400         #[m]        O
 mission_dist = 400e3  # m
-h_transition = 30 # meter PLACEHOLDER
 npax = 4                # Amount of passengers O
 ax_target_climb = 0.5*g0   # PLACEHOLDER
 ay_target_climb = 0.2*g0 # PLACEHOLDER
