@@ -915,9 +915,9 @@ def WingboxOptimizer(x, wing, engine, material, aero):
 
     prob.run_driver()
     # prob.check_partials()
-    prob.check_totals()
+    #prob.check_totals()
 
-    prob.model.list_outputs()
+    #prob.model.list_outputs()
 
     print(f"thickness spar= {prob.get_val('wingbox_design.tsp')*1000} [mm]")
     print(f"thickness rib= {prob.get_val('wingbox_design.trib')*1000} [mm]")
