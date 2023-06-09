@@ -861,9 +861,11 @@ def WingboxOptimizer(x, wing, engine, material, aero):
     :type engine: engine class
     """    
 
+    OptClass = Wingbox_optimization(wing, engine, material, aero)
+
 
     prob = om.Problem()
-    prob.model.add_subsystem('wingbox_design', Wingbox_optimization(wing, engine, material, aero))#, promotes_inputs=['AR1',
+    prob.model.add_subsystem('wingbox_design', OptClass)#, promotes_inputs=['AR1',
                                                                                         # 'AR2',
 
     # Initial values for the optimization 
@@ -876,6 +878,7 @@ def WingboxOptimizer(x, wing, engine, material, aero):
 
    
 
+
     prob.model.add_design_var('wingbox_design.tsp', lower = 0.001, upper= 0.1)
     prob.model.add_design_var('wingbox_design.trib', lower = 0.001, upper= 0.1)
     prob.model.add_design_var('wingbox_design.hst', lower = 0.001 , upper= 0.4)
@@ -885,6 +888,8 @@ def WingboxOptimizer(x, wing, engine, material, aero):
     prob.model.add_design_var('wingbox_design.tmin', lower = 0.001, upper= 0.1)
 
     # # Define constraints 
+    for i in OptClass.WingboxClass.n_sections:
+
     prob.model.add_constraint('wingbox_design.global_local')
     prob.model.add_constraint('wingbox_design.post_buckling')
     prob.model.add_constraint('wingbox_design.von_mises')
@@ -915,7 +920,7 @@ def WingboxOptimizer(x, wing, engine, material, aero):
 
     prob.run_driver()
     # prob.check_partials()
-    prob.check_totals()
+    # prob.check_totals()
 
     prob.model.list_outputs()
 
