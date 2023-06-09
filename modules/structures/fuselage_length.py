@@ -10,7 +10,7 @@ def find_tail_length(h0, b0, Beta, V, l, AR):
     bc = 4 * r # width of crashed fuselage at end of tank
     hc = bc / AR # height of crashed fuselage at end of tank
     A_f = bc ** 2 / (AR * Beta ** 2) # area of fuselage at end of tank
-    hf, bf = np.sqrt(A_f / AR) # height of fuselage at end of tank
+    hf = np.sqrt(A_f / AR) # height of fuselage at end of tank
     bf = A_f/hf # width of fuselage at end of tank
     l_t = h0 * l / (h0 - hf) # length of tail
     upsweep = np.arctan2((h0 - hf), l) # upsweep angle
@@ -18,23 +18,23 @@ def find_tail_length(h0, b0, Beta, V, l, AR):
 
 """CONVERGE TAIL LENGTH BY CONVERGING ASPECT RATIO"""
 def converge_tail_length(h0, b0, Beta, V, l, AR, ARe, AR0):
-    error, i = 1, 0
-    ARarr = []
-    while error > 0.005:
+    error, i = 1, 0 # iteration error and number
+    ARarr = [] # aspect ratio array
+    while error > 0.005: # stop when error is smaller than 0.5%
         ARarr.append(AR)
         tail_data = list(find_tail_length(h0, b0, Beta, V, l, AR))
         AR = l / tail_data[0] * (ARe - AR0) + AR0
         error = np.abs((ARarr[-1] - AR)/AR)
         i += 1
-        if i > 200:
+        if i > 200: # stop if iteration number if more than 200 (no convergence)
             error = 0
     #print("Converged after: ", i, "iterations to AR: ", AR)
     tail_data.append(AR)
-    return tail_data
+    return tail_data # returns tail length, upsweep, bc, hc, hf, bf
 
+"""MAKE 2D SENSITIVY PLOT FOR BETA AND ARe"""
 def plot_variable(h0, b0, V, l_tank, parameter, parameter_values, fixed_parameter, fixed_value):
-    # define inputs
-    AR0 = b0 / h0
+    AR0 = b0 / h0 # define inputs
 
     # initialise
     AR = AR0
