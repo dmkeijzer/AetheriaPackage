@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 @dataclass
 class Fluid:
-    """Stores coolant parameters
+    """Stores fluid paramers
     """
     viscosity: float = None
     thermal_conductivity: float = None
