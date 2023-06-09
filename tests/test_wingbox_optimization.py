@@ -62,5 +62,5 @@ WingboxClass.str_pitch = b_st
 
 #------------------------------------------------------------------------------------------
 
-def test_post_buckling()
-    asse
+def test_post_buckling():
+    pass

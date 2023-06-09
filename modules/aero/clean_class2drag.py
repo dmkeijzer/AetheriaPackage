@@ -233,7 +233,7 @@ def CD_tail(C_fe_wing, FF_tail, S_wet_tail):
     return CD_tail
 
 
-def CD0(S, S_tail, S_fus, CD_fus, CD_wing, CD_upsweep, CD_base, CD_tail):
+def CD0(S, S_tail, S_fus, CD_fus, CD_wing, CD_upsweep, CD_base, CD_tail, CD_flaps):
     """_summary_
 
     :param S: wing area
@@ -252,7 +252,7 @@ def CD0(S, S_tail, S_fus, CD_fus, CD_wing, CD_upsweep, CD_base, CD_tail):
 
     leakage_factor = 1.075  # accounts for leakage from propellers etc.
 
-    return ((CD_wing / S) + (CD_tail / S_tail) + (2*CD_fus / S_fus) + CD_upsweep + CD_base) * leakage_factor
+    return ((CD_wing / S) + (CD_tail / S_tail) + (2*CD_fus / S_fus)) * leakage_factor + CD_upsweep + CD_base + CD_flaps
 
 
 def CDi(name, CL, A, e):
