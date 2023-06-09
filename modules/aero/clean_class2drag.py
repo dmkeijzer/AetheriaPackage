@@ -252,7 +252,7 @@ def CD0(S, S_tail, S_fus, CD_fus, CD_wing, CD_upsweep, CD_base, CD_tail, CD_flap
 
     leakage_factor = 1.075  # accounts for leakage from propellers etc.
 
-    return ((CD_wing / S) + (CD_tail / S_tail) + (2*CD_fus / S_fus)) * leakage_factor + CD_upsweep + CD_base + CD_flaps
+    return ((CD_wing / S) + (CD_tail / S_tail) + (CD_fus / S_fus)) * leakage_factor + CD_upsweep + CD_base + CD_flaps
 
 
 def CDi(name, CL, A, e):
