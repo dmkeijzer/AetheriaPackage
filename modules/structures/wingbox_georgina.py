@@ -762,6 +762,7 @@ class Wingbox_optimization(om.ExplicitComponent):
         self.engine = engine
         self.material = material
         self.WingboxClass = Wingbox(wing,engine , material, aero)
+        self.constr_lst = ["global_local", "post_buckling", "von_mises", "buckling_constr", "flange_loc_loc", "local_column", "crippling", "web_flange"]
 
 
 
@@ -832,14 +833,16 @@ class Wingbox_optimization(om.ExplicitComponent):
 
 
         outputs['wing_weight'] = weight
-        outputs['global_local'][:] = constr[0]
-        outputs['post_buckling'][:] = constr[1]
-        outputs['von_mises'][:] = constr[2]
-        outputs['buckling_constr'][:] = constr[3]
-        outputs['flange_loc_loc'][:] = constr[4]
-        outputs['local_column'][:] = constr[5]
-        outputs['crippling'][:] = constr[6]
-        outputs['web_flange'][:] = constr[7]
+        for section_num in range(self.WingboxClass.n_sections):
+
+            outputs['global_local' + str(section_num)] = constr[0][section_num]
+            outputs['post_buckling' + str(section_num)] = constr[1][section_num]
+            outputs['von_mises' + str(section_num)] = constr[2][section_num]
+            outputs['buckling_constr' + str(section_num)] = constr[3][section_num]
+            outputs['flange_loc_loc' + str(section_num)] = constr[4][section_num]
+            outputs['local_column' + str(section_num)] = constr[5][section_num]
+            outputs['crippling' + str(section_num)] = constr[6][section_num]
+            outputs['web_flange' + str(section_num)] = constr[7][section_num]
 
     
 
@@ -887,16 +890,11 @@ def WingboxOptimizer(x, wing, engine, material, aero):
     prob.model.add_design_var('wingbox_design.tmin', lower = 0.001, upper= 0.1)
 
     # # Define constraints 
-    for i in OptClass.WingboxClass.n_sections:
-
-    prob.model.add_constraint('wingbox_design.global_local')
-    prob.model.add_constraint('wingbox_design.post_buckling')
-    prob.model.add_constraint('wingbox_design.von_mises')
-    prob.model.add_constraint('wingbox_design.buckling_constr')
-    prob.model.add_constraint('wingbox_design.flange_loc_loc')
-    prob.model.add_constraint('wingbox_design.local_column')
-    prob.model.add_constraint('wingbox_design.crippling')
-    prob.model.add_constraint('wingbox_design.web_flange')
+    for constraint_str in OptClass.WingboxClass.constr_lst:
+        for section_num in range(OptClass.WingboxClass.n_sections):
+            section_num = str(section_num) 
+            name = 'wingbox_design.' + constraint_str + section_num
+            prob.model.add_constraint(name)
 
     prob.driver = om.ScipyOptimizeDriver()
     prob.driver.options['optimizer'] = 'SLSQP'
