@@ -73,7 +73,12 @@ xcm = 0.2973 # NACA2412
 A_base = 0 #Assumed 0 base area
 frac_lam_fus = 0.05
 frac_lam_wing = 0.1
-k = 0.634 * 10**(-5) # Surface smoothness parameter
+k = 0.634 * 10**(-5)  # Surface smoothness parameter
+
+#airfoil V-tail
+toc_tail = 0.12  # NACA 0012
+xcm_tail = 0.2903
+
 
 # Time constants for midterm
 t_takeoff = 15.3
