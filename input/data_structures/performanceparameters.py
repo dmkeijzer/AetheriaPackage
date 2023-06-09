@@ -12,10 +12,10 @@ os.chdir(str(list(pl.Path(__file__).parents)[2]))
 @dataclass
 class PerformanceParameters:
     """Datastructure for performance parameters
-        param: energyRequired [kWh]
-        param: cruisePower [kW]
-        param: hoverPower [kW]
-        param: climPower [kW]
+        param: energyRequired [J]
+        param: cruisePower [W]
+        param: hoverPower [W]
+        param: climPower [W]
         param: rate_of_climb_cruise [m/s]
         param: rate_of_descend_cruise [m/s]
     """
@@ -31,8 +31,6 @@ class PerformanceParameters:
     rate_of_climb_hover: float = None
     cruise_velocity : float = None
     MTOM: float = None
-
-    #Weight
 
     def load(self):
         with open(r"input/data_structures/aetheria_constants.json") as jsonFile:
@@ -57,6 +55,7 @@ class PerformanceParameters:
             data["power_cruise"] = self.cruisePower
             data["mission_energy"] = self.energyRequired
             data["power_climb"] = self.climbPower
+            data["mtom"] = self.MTOM
 
         
     

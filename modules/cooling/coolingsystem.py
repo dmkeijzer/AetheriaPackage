@@ -13,9 +13,14 @@ from input.data_structures.radiator import Radiator
 from input.data_structures.fluid import Fluid
 
 class CoolingsystemPerformance:
-    """This is wrapper class for all the functions depended on the """
+    """This is wrapper class for all the functions depended on the coolingperformance """
 
     def mass_flow(heat, delta_temperature: float, heat_capacity: float ) -> float:
+        """calculates mass flow on the basis of the maximum allowable dT
+            :param: heat: [W]
+            :param: delta_temperature: maximum allowable coolant temperature rise [K]
+            :param: heat_capacity: heat capacity of liquid [J/(kg k)]
+        """
         return heat / (delta_temperature * heat_capacity)
 
     def exchange_effectiveness(Cr: float, NTU: float) -> float: 
@@ -102,7 +107,7 @@ class CoolingsystemPerformance:
 
 
 class RadiatorPerformance:
-    def hx_geometry(radiator : Radiator, Z_HX: float, H_HX: float, W_HX: float) -> Radiator:
+    def hx_geometry(radiator : Radiator) -> Radiator:
         """calculate surface areas of the radiator 
             Function based on the geometry specified in A. Scoccimarro thesis on preliminary thermal management sizing
         """
@@ -113,17 +118,18 @@ class RadiatorPerformance:
         radiator.HX_delta = radiator.t_fin / radiator.l_fin
         radiator.HX_alpha = radiator.s_fin / radiator.h_fin
 
-        radiator.N_channel = np.floor(Z_HX / (radiator.W_channel + radiator.t_channel)) * np.floor(H_HX / (radiator.h_fin + radiator.h_tube))
+        radiator.N_channel = np.floor(radiator.Z_HX / (radiator.W_channel + radiator.t_channel)) * np.floor(radiator.H_HX / (radiator.h_fin + radiator.h_tube)) 
+       
+        
+        radiator.A_hot = 2 * (radiator.W_channel +  H_channel) * radiator.W_HX * radiator.N_channel
 
-        radiator.A_hot = 2 * (radiator.W_channel +  H_channel) * W_HX * radiator.N_channel
-
-        radiator.N_fin = np.floor(W_HX / (radiator.s_fin + radiator.t_fin)) * np.floor(H_HX / (radiator.h_fin + radiator.h_tube))
+        radiator.N_fin = np.floor(radiator.W_HX / (radiator.s_fin + radiator.t_fin)) * np.floor(radiator.H_HX / (radiator.h_fin + radiator.h_tube)) * np.floor(radiator.Z_HX / radiator.l_fin)
         radiator.A_fin = 2 * radiator.h_fin * radiator.l_fin + 2 * radiator.h_fin * radiator.t_fin + radiator.s_fin * radiator.t_fin
 
         A_primary = 2 * radiator.s_fin * radiator.l_fin
 
         radiator.A_cold = radiator.N_fin * (radiator.A_fin + A_primary)
-        radiator.A_fs_cross = radiator.s_fin * radiator.h_fin * radiator.N_fin
+        radiator.A_fs_cross = radiator.s_fin * radiator.h_fin * radiator.N_fin / np.floor(radiator.Z_HX / radiator.l_fin)
         radiator.A_cross_hot = radiator.W_channel * H_channel * radiator.N_channel
 
         return radiator
@@ -146,12 +152,12 @@ class RadiatorPerformance:
         """ function that calculates surface efficiency for thermal resistance"""
         return 1- (radiator.A_fin/ radiator.A_cold * (1 - eta_fin))  
 
-    def hx_thermal_resistance(radiator: Radiator, h_c_cold: float, h_c_hot: float, eta_surface) -> Radiator:
+    def hx_thermal_resistance(radiator: Radiator, h_c_cold: float, h_c_hot: float, eta_surface: float) -> Radiator:
         return 1/(h_c_hot * radiator.A_hot) + 1 / (radiator.A_cold * h_c_cold * eta_surface)
 
-    def colburn_factor(radiator: Radiator, reynolds: float) -> float:
+    def colburn_factor(reynolds: float, alpha: float, delta: float, gamma: float) -> float:
         """calculates colburn factor"""
-        j = 0.6522 * reynolds**(-0.5403) * radiator.HX_alpha**(-0.1541) * radiator.HX_delta**0.1499 * radiator.HX_gamma**(-0.0678)  *  (1 + 5.269e-5 * reynolds**1.34 * radiator.HX_alpha**0.504 * radiator.HX_delta**0.456 * radiator.HX_gamma**(-1.055))**0.1
+        j = 0.6522 * reynolds**(-0.5403) * alpha**(-0.1541) * delta**0.1499 * gamma**(-0.0678)  *  (1 + 5.269e-5 * reynolds**1.34 * alpha**0.504 * delta**0.456 * gamma**(-1.055))**0.1
         return j
 
     def hydralic_diameter_HX( width: float, height: float ) -> float:
@@ -162,6 +168,7 @@ class RadiatorPerformance:
         :return: hydraulic diameter[m]:
         """
         return 2 * (width * height ) / (width + height)
+    
     def reynolds_HX(mass_flux: float, hydraulic_diameter: float, viscosity) -> float:
         return mass_flux * hydraulic_diameter / viscosity
 
@@ -184,6 +191,7 @@ class RadiatorPerformance:
             return hc
         elif Re < 3e3:
             Nu = 7.54 +  (0.03 * (Dh /pipe_length) * Re * Pr) / (1 + 0.016 *((Dh/ pipe_length) *Re * Pr ) ** (2/3))
+            #Nu = 0.664 * Re **0.5 * Pr ** (1/3)
             hc = k * Nu / Dh
             return hc
         else: 
@@ -200,6 +208,10 @@ class RadiatorPerformance:
         return mass_flow / A_crossectional
 
     def mass_radiator(HX: Radiator, density_material: float) -> float:
+        """Calculate radiator mass
+        :param: HX: Heat exhanger
+        :param: density_material: material density[kg/m^3]
+        :return: radiator mass: radiator mass with 20% contigency[kg]    """
         fin_volume = (HX.s_fin + 2 * HX.h_fin) * HX.t_fin * HX.l_fin * HX.N_fin
         primary_cold_volume = (HX.A_cold - HX.A_fin * HX.N_fin) * HX.t_tube
         hot_volume = HX.A_hot * HX.t_channel
@@ -220,12 +232,12 @@ class RadiatorPerformance:
         
         #cold side
         massflux_cold = RadiatorPerformance.mass_flux(mass_flow_cold,HX.A_fs_cross)
-        #print(f"mass flux cold: { mass_flow_cold}")
+        ##print(f"mass flux cold: { mass_flow_cold}")
         Dh_cold =  RadiatorPerformance.hydralic_diameter_HX(HX.s_fin, HX.h_fin)
-        #print(f"Dh cold: {Dh_cold }")
+        ##print(f"Dh cold: {Dh_cold }")
         Re_cold =  RadiatorPerformance.reynolds_HX(mass_flux= massflux_cold, hydraulic_diameter=Dh_cold,viscosity= air.viscosity) 
-        #print(f"Re cold: {Re_cold}")
-        colburn =  RadiatorPerformance.colburn_factor(radiator= HX, reynolds= Re_cold)
+        ##print(f"Re cold: {Re_cold}")
+        colburn =  RadiatorPerformance.colburn_factor(alpha= HX.HX_alpha, delta= HX.HX_delta, gamma= HX.HX_gamma, reynolds= Re_cold)
         Pr_cold =  RadiatorPerformance.prandtl_heat(air.heat_capacity, viscosity= air.viscosity, thermal_conductivity= air.thermal_conductivity)
         h_c_cold =  RadiatorPerformance.heat_capacity_cold(colburn, massflux_cold, air.heat_capacity, Pr_cold) 
         #print(f"hc cold:  {h_c_cold}\n")
@@ -239,13 +251,16 @@ class RadiatorPerformance:
         Re_hot =  RadiatorPerformance.reynolds_HX(mass_flux_hot, dh_hot,coolant.viscosity) 
         Pr_hot =  RadiatorPerformance.prandtl_heat(coolant.heat_capacity, coolant.viscosity, coolant.thermal_conductivity)
         AR_channel = HX.W_channel  /HX. W_HX
+        #print(f"AR: {AR_channel}")
         friction_factor_hot =  RadiatorPerformance.calculate_flam(Re_hot,AR_channel)
+        #print(f"Friction factor: {friction_factor_hot }")
         #print(f"Reynolds number hot: {Re_hot }")
         h_c_hot =  RadiatorPerformance.heat_capacity_hot(Re_hot, Pr_hot, friction_factor_hot , dh_hot, coolant.thermal_conductivity, HX.W_HX) 
-        #print(f"hc hot: {h_c_hot}")
+        #print(f"hc hot: {h_c_hot:,}")
 
         eta_fin =  RadiatorPerformance.fin_efficiency(h_c_cold, air.thermal_conductivity , HX )
         eta_surface =  RadiatorPerformance.surface_efficiency(HX,eta_fin)
+        ##print(eta_surface)
         R_tot =  RadiatorPerformance.hx_thermal_resistance(HX,h_c_cold, h_c_hot,eta_surface)
 
         return R_tot
