@@ -875,7 +875,7 @@ def WingboxOptimizer(x, wing, engine, material, aero):
 
    
 
-    prob.model.add_design_var('wingbox_design.tsp_', lower = 0.001, upper= 0.1)
+    prob.model.add_design_var('wingbox_design.tsp', lower = 0.001, upper= 0.1)
     prob.model.add_design_var('wingbox_design.trib', lower = 0.001, upper= 0.1)
     prob.model.add_design_var('wingbox_design.hst', lower = 0.001 , upper= 0.4)
     prob.model.add_design_var('wingbox_design.tst', lower = 0.001, upper= 0.1)
