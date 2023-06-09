@@ -19,6 +19,7 @@ class VeeTail():
     c_control_surface_to_c_vee_ratio: float = None
     #CD0: float = None WRONG
     ruddervator_efficiency: float = None
+    span: float None
 
 
 
@@ -37,7 +38,7 @@ class VeeTail():
         self.c_control_surface_to_c_vee_ratio = data["c_control_surface_to_c_vee_ratio"]
         #self.CD0 = data["CD0_vtail"] WRONG
         self.ruddervator_efficiency = data["ruddervator_efficiency"]
-
+        self.span = data["span_vtail"]
 
     def dump(self):
         with open(r"input/data_structures/aetheria_constants.json") as jsonFile:
@@ -51,6 +52,8 @@ class VeeTail():
         data["surface_vtail"] = self.surface
         data["c_control_surface_to_c_vee_ratio"] = self.c_control_surface_to_c_vee_ratio
         data["ruddervator_efficiency"] = self.ruddervator_efficiency
+        data["span_vtail"] = self.span
+
 
         with open(r"input/data_structures/aetheria_constants.json", "w") as jsonFile:
             json.dump(data, jsonFile, indent=6)
