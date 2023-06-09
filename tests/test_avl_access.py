@@ -9,7 +9,7 @@ sys.path.append(str(list(pl.Path(__file__).parents)[1]))
 os.chdir(str(list(pl.Path(__file__).parents)[1]))
 
 
-from modules.aero.avl_access import get_lift_distr
+from modules.aero.avl_access import get_lift_distr, get_strip_array
 from input.data_structures.wing import Wing
 from input.data_structures.aero import Aero
 
@@ -36,4 +36,10 @@ def test_get_lift_distr():
     assert (np.diff(np.vectorize(lift_func)(span_points)) < 0).all() # Assert that the lift only decreases towards the tip
 
 
+def test_get_strip_forces():
+    y_le_arr, cl_strip_arr= get_strip_array(WingClass, AeroClass, plot= False)
+
+    assert np.max(y_le_arr) < WingClass.span/2 and np.min(y_le_arr) > 0  # Make sure all coordinates are within bounds
+    assert np.where(cl_strip_arr == np.max(cl_strip_arr))[0][0] > 1  # Assert maximum lift coefficient is not at the root
+    assert (cl_strip_arr < AeroClass.cL_cruise + 0.1).all()
 
