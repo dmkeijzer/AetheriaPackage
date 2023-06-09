@@ -120,35 +120,35 @@ def numerical_simulation(y_start, mass, g0, S, CL_climb, alpha_climb, CD_climb, 
     acc_lst = np.array(acc_lst)
 
     # Create a figure and subplots
-    fig, axs = plt.subplots(2, 2, figsize=(10, 8))
+    # fig, axs = plt.subplots(2, 2, figsize=(10, 8))
 
-    # Plot data on each subplot
-    axs[0, 0].plot(t_lst, L_lst, color='blue')
-    axs[0, 0].set_xlabel('Time [s]')
-    axs[0, 0].set_ylabel('Power [kW]')
-    axs[0, 0].grid()
+    # # Plot data on each subplot
+    # axs[0, 0].plot(t_lst, L_lst, color='blue')
+    # axs[0, 0].set_xlabel('Time [s]')
+    # axs[0, 0].set_ylabel('Power [kW]')
+    # axs[0, 0].grid()
 
-    axs[0, 1].plot(x_lst, y_lst, color='red')
-    axs[0, 1].axis('equal')
-    axs[0, 1].set_xlabel('X-position [m]')
-    axs[0, 1].set_ylabel('Y-position [m]')
-    axs[0, 1].grid()
+    # axs[0, 1].plot(x_lst, y_lst, color='red')
+    # axs[0, 1].axis('equal')
+    # axs[0, 1].set_xlabel('X-position [m]')
+    # axs[0, 1].set_ylabel('Y-position [m]')
+    # axs[0, 1].grid()
 
-    axs[1, 0].plot(t_lst, vx_lst, color='green')
-    axs[1, 0].set_xlabel('Time [s]')
-    axs[1, 0].set_ylabel('Velocity in x-dir [m/s]')
-    axs[1, 0].grid()
+    # axs[1, 0].plot(t_lst, vx_lst, color='green')
+    # axs[1, 0].set_xlabel('Time [s]')
+    # axs[1, 0].set_ylabel('Velocity in x-dir [m/s]')
+    # axs[1, 0].grid()
 
-    axs[1, 1].plot(t_lst, acc_lst, color='orange')
-    axs[1, 1].set_xlabel('Time [s]')
-    axs[1, 1].set_ylabel('Longitudinal acceleration [g]')
-    axs[1, 1].grid()
+    # axs[1, 1].plot(t_lst, acc_lst, color='orange')
+    # axs[1, 1].set_xlabel('Time [s]')
+    # axs[1, 1].set_ylabel('Longitudinal acceleration [g]')
+    # axs[1, 1].grid()
 
-    # Adjust spacing between subplots
-    fig.tight_layout()
+    # # Adjust spacing between subplots
+    # fig.tight_layout()
 
     # Display the figure
-    plt.show()
+    # plt.show()
 
     return E, y_lst, t_lst, x_lst
 
@@ -166,7 +166,7 @@ def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha
     vy = vx_start*descend_slope
     vy_start = vx_start*descend_slope
     vy_end = -2
-    y_start = 104
+    y_start = 77
     y_end = 15
     t = 0
     x = 0
@@ -290,39 +290,39 @@ def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha
     acc_lst = np.array(acc_lst)
 
     # Create a figure and subplots
-    fig, axs = plt.subplots(2, 2, figsize=(10, 8))
+    # fig, axs = plt.subplots(2, 2, figsize=(10, 8))
 
-    # Plot data on each subplot
-    axs[0, 0].plot(t_lst, T_lst, color='blue')
-    axs[0, 0].set_xlabel('Time [s]')
-    axs[0, 0].set_ylabel('Power [kW]')
-    axs[0, 0].grid()
+    # # Plot data on each subplot
+    # axs[0, 0].plot(t_lst, P_lst, color='blue')
+    # axs[0, 0].set_xlabel('Time [s]')
+    # axs[0, 0].set_ylabel('Power [kW]')
+    # axs[0, 0].grid()
 
-    axs[0, 1].plot(x_lst, y_lst, color='red')
-    axs[0, 1].axis('equal')
-    axs[0, 1].set_xlabel('X-position [m]')
-    axs[0, 1].set_ylabel('Y-position [m]')
-    axs[0, 1].grid()
+    # axs[0, 1].plot(x_lst, y_lst, color='red')
+    # axs[0, 1].axis('equal')
+    # axs[0, 1].set_xlabel('X-position [m]')
+    # axs[0, 1].set_ylabel('Y-position [m]')
+    # axs[0, 1].grid()
 
-    axs[1, 0].plot(t_lst, vx_lst, color='green')
-    axs[1, 0].set_xlabel('Time [s]')
-    axs[1, 0].set_ylabel('Velocity in x-dir [m/s]')
-    axs[1, 0].grid()
+    # axs[1, 0].plot(t_lst, vx_lst, color='green')
+    # axs[1, 0].set_xlabel('Time [s]')
+    # axs[1, 0].set_ylabel('Velocity in x-dir [m/s]')
+    # axs[1, 0].grid()
 
-    axs[1, 1].plot(t_lst, V_lst, color='orange')
-    axs[1, 1].set_xlabel('Time [s]')
-    axs[1, 1].set_ylabel('Acceleration [m/s]')
-    axs[1, 1].grid()
+    # axs[1, 1].plot(t_lst, V_lst, color='orange')
+    # axs[1, 1].set_xlabel('Time [s]')
+    # axs[1, 1].set_ylabel('Acceleration [m/s]')
+    # axs[1, 1].grid()
 
-    # Adjust spacing between subplots
-    fig.tight_layout()
+    # # Adjust spacing between subplots
+    # fig.tight_layout()
 
-    # Display the figure
+    # # Display the figure
     # plt.show()
 
     return E, y_lst, t_lst, x_lst, P_lst # Energy, y, t, x, P
 
 
-# print(numerical_simulation_landing(vx_start=data['v_stall_flaps20'], descend_slope=-0.125, mass=data["mtom"], g0=const.g0,
-#                                    S=data['S'], CL=data['cl_descent_trans_flaps20'], alpha=data['alpha_descent_trans_flaps20'],
-#                                    CD=data["cdi_descent_trans_flaps20"]+data['cd0'], Adisk=data["diskarea"])[0])
+print(numerical_simulation_landing(vx_start=data['v_stall_flaps20'], descend_slope=-0.04, mass=data["mtom"], g0=const.g0,
+                                   S=data['S'], CL=data['cl_descent_trans_flaps20'], alpha=data['alpha_descent_trans_flaps20'],
+                                   CD=data["cdi_descent_trans_flaps20"]+data['cd0'], Adisk=data["diskarea"])[0])

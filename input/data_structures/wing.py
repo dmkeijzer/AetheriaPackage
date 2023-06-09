@@ -41,6 +41,7 @@ class Wing():
     v_stall: float = None
     v_approach: float = None
     alpha_approach: float = None
+    thickness_to_chord: float = None
 
     def load(self):
         with open(r"input/data_structures/aetheria_constants.json") as jsonFile:
@@ -71,6 +72,7 @@ class Wing():
         self.x_lewing = data["x_lewing"]
         self.v_stall = data["v_stall"]
         self.alpha_approach = data["alpha_approach"]
+        self.thickness_to_chord = data["thickness_to_chord"]
 
         # self.effective_aspectratio =  data[""] # Left out for now since it is not implemented yet
         # self.effective_span =  data[""] # Left out for now since it is not implemented yet

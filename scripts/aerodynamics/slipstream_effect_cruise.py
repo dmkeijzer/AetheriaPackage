@@ -40,7 +40,7 @@ angle_of_attack_prop = angle_of_attack_fuse + i_cs_var
 drag_cruise = 0.5*rho_cr*data['S']*const.v_cr*const.v_cr*data['cd']
 # drag_cruise = 0
 # Thrust coefficient
-C_T_var = C_T(T=drag_cruise, rho=const.rho_cr, V_0=const.v_cr, S_W=data["S"])
+C_T_var = 0.12
 
 #change in V
 V_delta_var = V_delta(C_T=C_T_var, S_W=data['S'], n_e=3, D=diameter_propellers, V_0=const.v_cr)
