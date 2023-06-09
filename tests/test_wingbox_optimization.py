@@ -66,7 +66,6 @@ WingboxClass.max_rib_pitch = L
 WingboxClass.str_pitch = b_st
 WingboxClass.lift_func = lambda y:-151.7143*9.81*y+531*9.81
 
-
 #------------------------------------------------------------------------------------------
 
 def test_global_local():
@@ -110,19 +109,52 @@ def test_buckling_constr():
     pass
 
 
+#------------------------------------------------------------------------------------------
+
+
 
 def test_web_flange():
     res_optimization = WingboxClass.web_flange(h_st , t_st, tmax, tmin)[0]
     comparsion_value_notebook = 486900483.7870751
-    print("------web_flange------")
+    print(f" web flange optimizatino = {res_optimization:.2e}")
+    print(f"  web flange notebook = {comparsion_value_notebook:.2e}")
+    assert res_optimization*comparsion_value_notebook > 0
+
+def test_crippling():
+    res_optimization = WingboxClass.crippling(h_st , t_st, w_st,  tmax, tmin)[0]
+    comparsion_value_notebook = -7442667.720708497
+    print(f" crippling optimizatino = {res_optimization:.2e}")
+    print(f"  crippling notebook = {comparsion_value_notebook:.2e}")
+    assert res_optimization*comparsion_value_notebook > 0
+
+def test_local_column():
+    res_optimization = WingboxClass.local_column(h_st , t_st, w_st,  tmax, tmin)[0]
+    comparsion_value_notebook = 7794407.777376909
+    print(f" local column optimizatino = {res_optimization:.2e}")
+    print(f" local column notebook = {comparsion_value_notebook:.2e}")
+    assert res_optimization*comparsion_value_notebook > 0
+
+def test_flange_loc_loc():
+    res_optimization = WingboxClass.flange_loc_loc( t_st, w_st,  tmax, tmin)[0]
+    comparsion_value_notebook = 170567009.39318538
+    print(f"flagne loc loc optimizatino = {res_optimization:.2e}")
+    print(f" flange loc loc  notebook = {comparsion_value_notebook:.2e}")
+    assert res_optimization*comparsion_value_notebook > 0
+
+
+def test_web_flange():
+    res_optimization = WingboxClass.web_flange(h_st , t_st, tmax, tmin)[0]
+    comparsion_value_notebook = 486900483.7870751
     print(f"Result from optimizatino = {res_optimization}")
     print(f"Result from  notebook = {comparsion_value_notebook}")
-    print("\n")
-    #assert np.isclose(res_optimization, comparsion_value_notebook)
+    assert np.isclose(res_optimization, comparsion_value_notebook)
     pass
 
-#test_global_local()
+test_global_local()
 test_post_buckling()
 test_von_Mises()
 test_buckling_constr()
 test_web_flange()
+test_crippling()
+test_local_column()
+test_flange_loc_loc()
