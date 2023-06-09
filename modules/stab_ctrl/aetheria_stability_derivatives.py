@@ -197,7 +197,7 @@ def Vvcalc(Sv, lv, S, b):
     return Vv
 
 
-def Cyb(Sv, S, CLav):
+def Cyb(Cnb, b, lv): #Eq 8-16 FD reader
     """
     Sv: surface area of vertical tail [m^2]
     S: surface area of wing [m^2]
@@ -206,8 +206,7 @@ def Cyb(Sv, S, CLav):
     returns
     Cyb: Y-force coefficient derivative wrt sideslip angle [rad^-1]
     """
-    Cyb = -Sv * CLav / S
-    return Cyb
+    return -Cnb * b / lv
 
 
 def Cyr(Vv, CLav):
@@ -312,9 +311,28 @@ def Cx0(W,theta_0,rho,V,S):
     return Cx0
 
 
-def longitudinal_derivatives(CD, CL, W,rho,S, m, c, lh, CL0, CD0, lcg, Vh_V2, theta_0, V, Cmafuse=None, Cmqfuse=None, CLa=None, CLah=None, depsda=None,
+def longitudinal_derivatives(Aero, Perf, GeneralConst, Wing, VTail, Stab, lcg, theta_0, Cmafuse=None, Cmqfuse=None, CLa=None, CLah=None, depsda=None,
                              CDa=None, Vh=None, Vfuse=None, cla=None, A=None, clah=None,
                              Ah=None, b=None, k=None, Sh=None):
+    Aero.load()
+    Perf.load()
+    Wing.load()
+    VTail.load()
+
+    CD = Aero.cd
+    CL = Aero.cL_cruise
+    W = Perf.MTOM * GeneralConst.g0
+    rho = GeneralConst.rho_cr
+    S = Wing.surface
+    m = Perf.MTOM
+    c = Wing.chord_mac
+    lh = VTail.length_wing2vtail
+    CL0 = Wing.cL_alpha0
+    CD0 = Aero.cd0
+    Vh_V2 = VTail.Vh_V2
+    V = GeneralConst.v_cr
+
+
     """
     CD: aircraft drag coefficient[-]
     CL: aircraft lift coefficient [-]
@@ -374,30 +392,41 @@ def longitudinal_derivatives(CD, CL, W,rho,S, m, c, lh, CL0, CD0, lcg, Vh_V2, th
         assert Sh != None, "Missing input: Sh"
         assert S != None, "Missing input: S"
         Vh = Vhcalc(Sh, lh, S, c)
+    Stab.load()
+    Stab.Cxa = Cxa(CL0, CDa)
+    Stab.Cxq = Cxq()
+    Stab.Cza = Cza(CLa, CD0)
+    Stab.Czq = Czq(CLah, Vh)
+    Stab.Cma = Cma(CLa, lcg, c, CLah, Vh, depsda, Cmafuse)
+    Stab.Cmq = Cmq(CLah, Vh, lh, c, Cmqfuse)
+    Stab.Cz_adot = CZ_adot(CLah, Sh, S, Vh_V2, depsda, lh, c)
+    Stab.Cm_adot = Cm_adot(CLah, Sh, S, Vh_V2, depsda, lh, c)
+    Stab.muc = muc(m, rho, S, c)
+    Stab.Cxu = -2 * CD
+    Stab.Czu = -2 * CL
+    # Stab.Cx0 = -CL
+    Stab.Cx0 = Cx0(W, theta_0, rho, V, S)
+    Stab.Cz0 = Cz0(W, theta_0, rho, V, S)
+    Stab.Cmu = 0  #Because the derivative of CL and Ct with respect to the Mach number is essentially 0.
 
-    dict = {}
-    dict["Cxa"] = Cxa(CL0, CDa)
-    dict["Cxq"] = Cxq()
-    dict["Cza"] = Cza(CLa, CD0)
-    dict["Czq"] = Czq(CLah, Vh)
-    dict["Cma"] = Cma(CLa, lcg, c, CLah, Vh, depsda, Cmafuse)
-    dict["Cmq"] = Cmq(CLah, Vh, lh, c, Cmqfuse)
-    dict["Cz_adot"]=CZ_adot(CLah,Sh,S,Vh_V2,depsda,lh,c)
-    dict["Cm_adot"]=Cm_adot(CLah,Sh,S,Vh_V2,depsda,lh,c)
-    dict["muc"]=muc(m, rho,S,c)
-    dict["Cxu"]=-2*CD
-    dict["Czu"]=-2*CL
-    #dict["Cx0"]=-CL
-    dict["Cx0"]=Cx0(W,theta_0,rho,V,S)
-    dict["Cz0"]=Cz0(W,theta_0,rho,V,S)
-    dict["Cmu"]=0  #Because the derivative of CL and Ct with respect to the Mach number is essentially 0. 
-
-    return dict
-
+    Stab.dump()
 
 
-def lateral_derivatives(Cnb,m,rho, Sv, lv, S, b, dihedral, taper, CL0, CLav=None, Vv=None, CLa=None, clav=None,
+def lateral_derivatives(Perf, GeneralConst, Wing, VTail, Stab, Cnb, CLav=None, Vv=None, CLa=None, clav=None,
                         Av=None, cla=None, A=None, Cn_beta_dot=None,CY_beta_dot=None): #Cnbfuse=None, Vfuse=None
+    Perf.load()
+    Wing.load()
+    VTail.load()
+    Stab.load()
+    m = Perf.MTOM
+    rho = GeneralConst.rho_cr
+    Sv = VTail.surface * np.sin(VTail.dihedral)**2 #Eq.14 NASA paper
+    lv = VTail.length_wing2vtail
+    S = Wing.surface
+    b = Wing.span
+    dihedral = 0
+    taper = Wing.taper
+    CL0 = Wing.cL_alpha0
     """
     Cnb: this is the derivative the yaw moment coefficient with respect to sideslip angle beta- [-]
     theta_0: initial pitch angle [rad]
@@ -444,26 +473,25 @@ def lateral_derivatives(Cnb,m,rho, Sv, lv, S, b, dihedral, taper, CL0, CLav=None
     if CY_beta_dot == None:
         CY_beta_dot=0
 
-    dict = {}
-    dict["Cyb"] = Cyb(Sv, S, CLav)
-    dict["Cyp"] = Cyp()
-    dict["Cyr"] = Cyr(Vv, CLav)
-    dict["Clb"] = Clb(CLa, dihedral, taper)
-    dict["Clp"] = Clp(CLa, taper)
-    dict["Clr"] = Clr(CL0)
-    #dict["Cnb"] = Cnb(CLav, Vv, Cnbfuse)
-    dict["Cnp"] = Cnp(CL0)
-    dict["Cnr"] = Cnr(CLav, Vv, lv, b)
-
-    dict["Cy_beta_dot"] = CY_beta_dot
-    dict["Cn_beta_dot"] = Cn_beta_dot
-    dict["mub"]=mub(m,rho,S,b)
-    dict["Cnb"]=Cnb
-    return dict
-
+    Stab.Cyb = Cyb(Cnb, b, lv)
+    Stab.Cyp = Cyp()
+    Stab.Cyr = Cyr(Vv, CLav)
+    Stab.Clb = Clb(CLa, dihedral, taper)
+    Stab.Clp = Clp(CLa, taper)
+    Stab.Clr = Clr(CL0)
+    # Stab.Cnb = Cnb(CLav, Vv, Cnbfuse)
+    Stab.Cnp = Cnp(CL0)
+    Stab.Cnr = Cnr(CLav, Vv, lv, b)
+    Stab.Cy_dr = -Stab.Cn_dr * b / lv #Eq 8-41 FD reader
+    Stab.Cy_beta_dot = CY_beta_dot
+    Stab.Cn_beta_dot = Cn_beta_dot
+    Stab.mub = mub(m, rho, S, b)
+    Stab.Cnb = Cnb
+    Stab.dump()
 
 
-def eigval_finder_sym(Iyy, m, c, long_stab_dervs):      #Iyy = 12081.83972
+
+def eigval_finder_sym(Stab, Iyy, m, c):      #Iyy = 12081.83972
     """
     Iyy: moment of inertia around Y-axis
     m: MTOM
@@ -473,19 +501,20 @@ def eigval_finder_sym(Iyy, m, c, long_stab_dervs):      #Iyy = 12081.83972
     returns
     array with eigenvalues NON-DIMENSIONALISED
     """
-    CX0 = long_stab_dervs["Cx0"]
-    CXa = long_stab_dervs["Cxa"]
-    CXu = long_stab_dervs["Cxu"]
-    CZ0 = long_stab_dervs["Cz0"]
-    CZa = long_stab_dervs["Cza"]
-    CZu = long_stab_dervs["Czu"]
-    CZq = long_stab_dervs["Czq"]
-    CZadot = long_stab_dervs["Cz_adot"]
-    Cma = long_stab_dervs["Cma"]
-    Cmq = long_stab_dervs["Cmq"]
-    Cmu = long_stab_dervs["Cmu"]
-    Cmadot = long_stab_dervs["Cm_adot"]
-    muc = long_stab_dervs["muc"]
+    Stab.load
+    CX0 = Stab.Cx0
+    CXa = Stab.Cxa
+    CXu = Stab.Cxu
+    CZ0 = Stab.Cz0
+    CZa = Stab.Cza
+    CZu = Stab.Czu
+    CZq = Stab.Czq
+    CZadot = Stab.Cz_adot
+    Cma = Stab.Cma
+    Cmq = Stab.Cmq
+    Cmu = Stab.Cmu
+    Cmadot = Stab.Cm_adot
+    muc = Stab.muc
 
     KY2 = Iyy / (m*c**2)
     Aeigval = 4 * muc **2 * KY2 * (CZadot - 2 * muc)
@@ -493,10 +522,10 @@ def eigval_finder_sym(Iyy, m, c, long_stab_dervs):      #Iyy = 12081.83972
     Ceigval = Cma * 2 * muc * (CZq + 2*muc) - Cmadot * (2 * muc * CX0 + CXu * (CZq + 2*muc)) + Cmq * (CXu * (CZadot - 2*muc) - 2*muc*CZa) + 2 * muc*KY2*(CXa*CZu - CZa * CXu)
     Deigval = Cmu * (CXa*(CZq + 2*muc) - CZ0 * (CZadot - 2 * muc)) - Cma * (2*muc*CX0 + CXu * (CZq + 2*muc)) + Cmadot * (CX0*CXu - CZ0*CZu) + Cmq*(CXu * CZa - CZu * CXa)
     Eeigval = -Cmu * (CX0 * CXa + CZ0 * CZa) + Cma * (CX0 * CXu + CZ0 * CZu)
-    return np.roots(np.array([Aeigval, Beigval, Ceigval, Deigval, Eeigval]))
+    Stab.sym_eigvals = list(np.roots(np.array([Aeigval, Beigval, Ceigval, Deigval, Eeigval])))
+    Stab.dump()
 
-
-def eigval_finder_asymm(Ixx, Izz, Ixz, m, b, CL, lat_stab_dervs):   #Ixx = 10437.12494 Izz = 21722.48912
+def eigval_finder_asymm(Stab, Ixx, Izz, Ixz, m, b, CL):   #Ixx = 10437.12494 Izz = 21722.48912
 
     """
     Ixx: moment of inertia around X-axis
@@ -510,16 +539,17 @@ def eigval_finder_asymm(Ixx, Izz, Ixz, m, b, CL, lat_stab_dervs):   #Ixx = 10437
     returns
     array with eigenvalues NON-DIMENSIONALISED
     """
-    CYb = lat_stab_dervs["Cyb"]
-    CYp = lat_stab_dervs["Cyp"]
-    CYr = lat_stab_dervs["Cyr"]
-    Clb = lat_stab_dervs["Clb"]
-    Clp = lat_stab_dervs["Clp"]
-    Clr = lat_stab_dervs["Clr"]
-    Cnb = lat_stab_dervs["Cnb"]
-    Cnp = lat_stab_dervs["Cnp"]
-    Cnr = lat_stab_dervs["Cnr"]
-    mub = lat_stab_dervs["mub"]
+    Stab.load()
+    CYb = Stab.Cyb
+    CYp = Stab.Cyp
+    CYr = Stab.Cyr
+    Clb = Stab.Clb
+    Clp = Stab.Clp
+    Clr = Stab.Clr
+    Cnb = Stab.Cnb
+    Cnp = Stab.Cnp
+    Cnr = Stab.Cnr
+    mub = Stab.mub
 
 
     KX2 = Ixx / (m*b**2)
@@ -539,7 +569,8 @@ def eigval_finder_asymm(Ixx, Izz, Ixz, m, b, CL, lat_stab_dervs):   #Ixx = 10437
                           Clb * Cnr - Cnb * Clr) + 0.5 * CYr * (
                           Clp * Cnb - Cnp * Clb)
     Eeigval = CL * (Clb * Cnr - Cnb * Clr)
-    return np.roots(np.array([Aeigval, Beigval, Ceigval, Deigval, Eeigval]))
+    Stab.asym_eigvals = list(np.roots(np.array([Aeigval, Beigval, Ceigval, Deigval, Eeigval])))
+    Stab.dump()
 
 
 if __name__ == "__main__":

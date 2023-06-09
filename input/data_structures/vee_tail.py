@@ -17,7 +17,7 @@ class VeeTail():
     dihedral: float = None
     surface: float = None
     c_control_surface_to_c_vee_ratio: float = None
-    CD0: float = None
+    #CD0: float = None WRONG
     ruddervator_efficiency: float = None
 
 
@@ -35,7 +35,7 @@ class VeeTail():
         self.dihedral = data["dihedral_vtail"]
         self.surface = data["surface_vtail"]
         self.c_control_surface_to_c_vee_ratio = data["c_control_surface_to_c_vee_ratio"]
-        self.CD0 = data["CD0_vtail"]
+        #self.CD0 = data["CD0_vtail"] WRONG
         self.ruddervator_efficiency = data["ruddervator_efficiency"]
 
 
