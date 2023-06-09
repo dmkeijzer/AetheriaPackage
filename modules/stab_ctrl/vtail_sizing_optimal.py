@@ -35,11 +35,12 @@ def size_vtail_opt(WingClass, HorTailClass, FuseClass, VTailClass, StabClass, CL
         ShS = wingloc_ShS[0,1]
         l_v = FuseClass.length_fuselage * (1 - wingloc)
         Vh_V2 = 0.95
-        CLh_cr = (WingClass.cm_ac + WingClass.cL_cruise * (delta_cg_ac)/WingClass.chord_mac) / (Vh_V2 * ShS * l_v / WingClass.chord_mac)
         v_tail = get_control_surface_to_tail_chord_ratio(WingClass, FuseClass, HorTailClass, CLh, l_v, Cn_beta_req=-0.0571, beta_h=1, eta_h=0.95, total_deflection=20 * np.pi / 180, design_cross_wind_speed=5.14, step=0.1 * np.pi / 180)
+        CLvee_cr_N = (WingClass.cm_ac + WingClass.cL_cruise * (delta_cg_ac)/WingClass.chord_mac) / (Vh_V2 * v_tail[-2]/S*np.cos(v_tail[-3]) * l_v / WingClass.chord_mac)
+        
         if type(v_tail[-1]) is str:
             break
-        log = np.vstack((log, np.array([CLh, HorTailClass.surface, CLh_cr ** 2], v_tail[-2])))
+        log = np.vstack((log, np.array([CLh, HorTailClass.surface, CLvee_cr_N ** 2], v_tail[-2])))
         print(CLh)
         CLh = CLh - CLh_step
     CLh = CLh + CLh_step
@@ -56,6 +57,8 @@ def size_vtail_opt(WingClass, HorTailClass, FuseClass, VTailClass, StabClass, CL
     v_tail = get_control_surface_to_tail_chord_ratio(WingClass, FuseClass, HorTailClass, CLh, l_v, Cn_beta_req=-0.0571,
                                                      beta_h=1, eta_h=0.95, total_deflection=20 * np.pi / 180,
                                                      design_cross_wind_speed=5.14, step=0.1 * np.pi / 180)
+    
+    
     VTailClass.load()
     VTailClass.CL_cruise = CLh_cr
     VTailClass.length_wing2vtail = l_v
@@ -83,12 +86,11 @@ def size_vtail_opt(WingClass, HorTailClass, FuseClass, VTailClass, StabClass, CL
         plt.subplot(132)
         plt.plot(log[:,0], log[:,2])
         plt.xlabel("CLh_approach values")
-        plt.ylabel("CLh_cruise^2 values (~CD)")
+        plt.ylabel("CL of vee tail during cruise normal to its surface (~CD)")
 
         plt.subplot(133)
         plt.plot(log[:,0], log[:,2] * log[:,3])
-        plt.xlabel("CLh_approach values")
-        plt.ylabel("CLh_cruise^2 values * Sh (~D)")
+        plt.xlabel("CLvee_cruise_N^2 values * Svee (~D)")
 
         plt.show()
 
