@@ -19,7 +19,7 @@ class VeeTail():
     c_control_surface_to_c_vee_ratio: float = None
     #CD0: float = None WRONG
     ruddervator_efficiency: float = None
-    span: float None
+    span: float = None
 
 
 

@@ -47,13 +47,14 @@ def size_vtail_opt(WingClass, HorTailClass, FuseClass, VTailClass, StabClass, b_
     log = log[np.where(log[3,:] == np.min(log[3,:]))[0], :]
     CLh = log[0,0]
     b_vee = log[0,2]
+
     wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, CLh_approach=CLh)
     WingClass.load()
     FuseClass.load()
     HorTailClass.load()
     wingloc = wingloc_ShS[0, 0]
     l_v = FuseClass.length_fuselage * (1 - wingloc)
-    axial_induction_factor=0.2
+    axial_induction_factor=0.005
     Vh_V2 = 0.95*(1+axial_induction_factor)**2
 
 
