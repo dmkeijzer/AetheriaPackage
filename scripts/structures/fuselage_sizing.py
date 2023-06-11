@@ -13,11 +13,16 @@ import modules.structures.fuselage_length as fl
 import input.data_structures.GeneralConstants as const
 
 # inputs
+
+m = 2500
+s, A = fl.simple_crash_box(m, 20, 3.15*10**6, 9.1)
+#h0 = 1.6 + s
+
 h0 = 1.8
 b0 = 1.6
 Beta = 0.5
 V = 0.5
-ARe = 2.75
+ARe = 2.82
 n = 2
 l_tank = np.linspace(1, 5, 40)
 l_fuelcell = 0.3
@@ -40,10 +45,10 @@ print("hc: ", hc)
 print("bc: ", bc)
 print("hf: ", hf)
 print("bf: ", bf)
-#print("AR:", AR)
-print("V_tank:", V_tank)
 
+print("V_tank:", V_tank)
 
 l_fuselage = l_cockpit + l_cabin + l_fcs + l_tail
 
 print(l_fuselage)
+

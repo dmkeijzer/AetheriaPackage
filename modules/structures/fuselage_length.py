@@ -107,3 +107,86 @@ def minimum_tail_length(h0, b0, Beta, V, l_tank, ARe, n):
     tail_data.append(l_tank[min_index])
 
     return tail_data
+
+def stress_strain_curve(stress_p, E, plain_stress):
+    e = np.arange(0,1,0.001)
+    densification = 0.95
+    strain_p = stress_p / E
+    crush_strength = np.zeros(len(e))
+
+    for i in range(len(e)):
+        if e[i] <= strain_p:
+            crush_strength[i] = e[i]*E
+        if e[i] > strain_p and e[i] <= densification:
+            crush_strength[i] = plain_stress
+        if e[i] > densification:
+            crush_strength[i] = plain_stress + (e[i]-densification)*E
+
+    plt.plot(e, crush_strength/(10**6))
+    plt.show()
+    return crush_strength, e
+
+
+def decel_calculation():
+    a = [0]
+    v = [9.1]
+    s = [0]
+    t = [0]
+    m = 3000
+    Ek = [0.5*m*v[-1]**2]
+    s_tot = 0.4
+    dt = 0.00001
+    g = 9.81
+    A = 1
+    sigma_cr, e = stress_strain_curve(1*10**6, 5*10**6, 0.35*10**6)
+    """
+    while v[-1] > 0:
+        strain = s[-1]/s_tot
+        index = np.abs(e - strain).argmin()
+        Fcrush = sigma_cr[index]*A
+        F = - Fcrush
+        print("Fcrush: ", Fcrush)
+        a.append(F/m)
+        v.append(v[-1]+a[-1]*dt)
+        print(v[-1])
+        s.append(s[-1]+v[-1]*dt)
+        print(s[-1])
+        t.append(t[-1]+dt)
+    """
+    while v[-1] > 0:
+        strain = s[-1]/s_tot
+        index = np.abs(e - strain).argmin()
+        Fcrush = sigma_cr[index]*A
+        #Fcrush = 0.315*10**6
+        ds = v[-1]*dt
+        work_done = Fcrush*ds
+        Ek.append(Ek[-1]- work_done)
+        if Ek[-1] > 0:
+            v.append(np.sqrt(2*Ek[-1]/m))
+            a.append((v[-1]-v[-2])/dt)
+            t.append(t[-1]+dt)
+            s.append(s[-1] + ds)
+        else:
+            Ek.pop(-1)
+            break
+
+    plt.plot(t[1:-1], np.array(a[1:-1])/g)
+    plt.xlabel("Time")
+    plt.ylabel("Acceleration")
+    plt.show()
+    plt.plot(t, s)
+    plt.xlabel("Time")
+    plt.ylabel("Distance")
+    plt.show()
+    plt.plot(t, v)
+    plt.xlabel("Time")
+    plt.ylabel("Velocity")
+    plt.show()
+
+
+def simple_crash_box(m, a, sigma_cr, v):
+    s = v**2/(2*a)
+    A = m*a/sigma_cr
+    return s, A
+
+simple_crash_box(2500, 20*9.81, 0.315*10**6, 9.1)
