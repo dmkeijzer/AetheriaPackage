@@ -49,8 +49,8 @@ AeroClass.cL_cruise = 0.43
 
 t_spar = 0.003
 t_rib = 5e-3
-L = 10e-2
-b_st = 5e-2
+L = 0.875
+b_st = 0.15
 h_st = 2e-2
 t_st = 1e-3
 w_st = 2e-2
@@ -70,86 +70,80 @@ WingboxClass.lift_func = lambda y:-151.7143*9.81*y+531*9.81
 
 def test_global_local():
     res_optimization = WingboxClass.global_local(h_st,t_st,tmax,tmin)[0]
-    comparsion_value_notebook = 1212005009.6072173
+    comparsion_value_notebook = 45727479.94651724
     print("------global_local------")
-    print(f"Result from optimizatino = {res_optimization:.2e}")
+    print(f"Result from optimization = {res_optimization:.2e}")
     print(f"Result from  notebook = {comparsion_value_notebook:.2e}")
     print("\n")
-    #assert np.isclose(res_optimization, comparsion_value_notebook)
-    #pass
+    assert np.isclose(res_optimization, comparsion_value_notebook)
 
 def test_post_buckling():
     res_optimization = WingboxClass.post_buckling(t_spar, t_rib, h_st,t_st,w_st, tmax,tmin)[0]
-    comparsion_value_notebook = 83638804500.84502
+    comparsion_value_notebook = 2195408.1751563707
     print("------post_buckling------")
-    print(f"Result from optimizatino = {res_optimization:.2e}")
+    print(f"Result from optimization = {res_optimization:.2e}")
     print(f"Result from  notebook = {comparsion_value_notebook:.2e}")
     print("\n")
-    #assert np.isclose(res_optimization, comparsion_value_notebook)
-    pass
+    assert np.isclose(res_optimization, comparsion_value_notebook)
 
 def test_von_Mises():
     res_optimization = WingboxClass.von_Mises(t_spar, t_rib, h_st,t_st,w_st,tmax,tmin)[0]
-    comparsion_value_notebook = 425055710.74430805
+    comparsion_value_notebook = 423308334.02230597
     print("------von_Mises------")
-    print(f"Result from optimizatino = {res_optimization:.2e}")
+    print(f"Result from optimization = {res_optimization:.2e}")
     print(f"Result from  notebook = {comparsion_value_notebook:.2e}")
     print("\n")
-    #assert np.isclose(res_optimization, comparsion_value_notebook)
-    pass
+    assert np.isclose(res_optimization, comparsion_value_notebook)
 
 def test_buckling_constr():
     print("------buckling_constr------")
-    res_optimization = WingboxClass.buckling(t_spar, t_rib, h_st,t_st,w_st,tmax,tmin)[0]
-    comparsion_value_notebook = 0.9742673834717309
-    print(f"Result from optimizatino = {res_optimization:.2e}")
+    res_optimization = WingboxClass.buckling_constr(t_spar, t_rib, h_st,t_st,w_st,tmax,tmin)[0]
+    comparsion_value_notebook = 0.9096335729148468
+    print(f"Result from optimization = {res_optimization:.2e}")
     print(f"Result from  notebook = {comparsion_value_notebook:.2e}")
     print("\n")
-    #assert np.isclose(res_optimization, comparsion_value_notebook)
-    pass
+    assert np.isclose(res_optimization, comparsion_value_notebook)
 
 
 
 def test_web_flange():
     res_optimization = WingboxClass.web_flange(h_st , t_st, tmax, tmin)[0]
-    comparsion_value_notebook = 486900483.7870751
+    comparsion_value_notebook = 587677299.096204
     print("------ Web flange------")
     print(f"  optimization = {res_optimization:.2e}")
     print(f"  notebook = {comparsion_value_notebook:.2e}")
+    print("\n")
     assert res_optimization*comparsion_value_notebook > 0
 
 def test_crippling():
     res_optimization = WingboxClass.crippling(h_st , t_st, w_st,  tmax, tmin)[0]
-    comparsion_value_notebook = -7442667.720708497
-    print("------ Crippling------\n")
-    print(f" crippling optimizatino = {res_optimization:.2e}")
-    print(f"  crippling notebook = {comparsion_value_notebook:.2e}")
+    comparsion_value_notebook = 537660.6998795733
+    print("------ Crippling------")
+    print(f" crippling optimization = {res_optimization:.2e}")
+    print(f" crippling notebook = {comparsion_value_notebook:.2e}")
+    print("\n")
     assert res_optimization*comparsion_value_notebook > 0
 
 def test_local_column():
     res_optimization = WingboxClass.local_column(h_st , t_st, w_st,  tmax, tmin)[0]
-    comparsion_value_notebook = 7794407.777376909
-    print("------Local column------\n")
-    print(f" local column optimizatino = {res_optimization:.2e}")
+    comparsion_value_notebook = 15632.98740709656
+    print("------Local column------")
+    print(f" local column optimization = {res_optimization:.2e}")
     print(f" local column notebook = {comparsion_value_notebook:.2e}")
+    print("\n")
     assert res_optimization*comparsion_value_notebook > 0
 
 def test_flange_loc_loc():
     res_optimization = WingboxClass.flange_loc_loc( t_st, w_st,  tmax, tmin)[0]
-    comparsion_value_notebook = 170567009.39318538
-    print(f"flagne loc loc optimizatino = {res_optimization:.2e}")
-    print(f" flange loc loc  notebook = {comparsion_value_notebook:.2e}")
-    # assert res_optimization*comparsion_value_notebook > 0
+    comparsion_value_notebook = 271343824.7023143
+    print("------Flange loc loc------")
+    print(f"flagne loc loc optimization = {res_optimization:.2e}")
+    print(f"flange loc loc  notebook = {comparsion_value_notebook:.2e}")
+    print("\n")
+    assert res_optimization*comparsion_value_notebook > 0
 
 
-def test_web_flange():
-    res_optimization = WingboxClass.web_flange(h_st , t_st, tmax, tmin)[0]
-    comparsion_value_notebook = 486900483.7870751
-    print("------ Web flange------\n")
-    print(f"Result from optimizatino = {res_optimization:.2e}")
-    print(f"Result from  notebook = {comparsion_value_notebook:.2e}")
-    # assert np.isclose(res_optimization, comparsion_value_notebook)
-    pass
+
 
 test_global_local()
 test_post_buckling()
