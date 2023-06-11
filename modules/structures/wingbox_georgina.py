@@ -242,72 +242,28 @@ class Wingbox():
         return sta2, f2
 
 
-    # def shear_eng(self,t_sp, t_rib, h_st,t_st,w_st,tmax,tmin):
-    #     x,y = self.rib_interpolation( t_sp, t_rib, h_st,t_st,w_st,tmax,tmin)
-    #     f2 = interp1d(x, y)
-    #     x_engine = np.array([self.y_rotor_loc[0],self.y_rotor_loc[2]])
-    #     x_combi = np.concatenate((x, x_engine))
-    #     x_sort = np.sort(x_combi)
-
-    #     index1 = np.where(x_sort == self.y_rotor_loc[0])
-    #     if len(index1[0]) == 1:
-    #         index1 = int(index1[0])
-    #     else:
-    #         index1 = int(index1[0][0])
-    #     y_new1 = f2(x_sort[index1]) + 9.81 * self.engine_weight
-
-    #     index2 = np.where(x_sort == self.y_rotor_loc[2])
-    #     if len(index2[0]) == 1:
-    #         index2 = int(index2[0])
-    #     else:
-    #         index2 = int(index2[0][0])
-    #     y_new2 = f2(x_sort[index2]) + 9.81 * self.engine_weight
-
-    #     y_engine = np.ndarray.flatten(np.array([y_new1, y_new2]))
-    #     y_combi = np.concatenate((y, y_engine))
-    #     y_sort = np.sort(y_combi)
-    #     y_sort = np.flip(y_sort)
-
-    #     for i in range(int(index1)):
-    #         y_sort[i] = y_sort[i] + 9.81 * self.engine_weight
-    #     for i in range(int(index2)):
-    #         y_sort[i] = y_sort[i] + 9.81 * self.engine_weight
-            
-
-    #     return x_sort, y_sort, index1, index2
-
-
-
     def shear_eng(self,t_sp, t_rib, h_st,t_st,w_st,tmax,tmin):
-        x = self.rib_interpolation(t_sp, t_rib, h_st,t_st,w_st,tmax,tmin)[0]
-        y = self.rib_interpolation(t_sp, t_rib, h_st,t_st,w_st,tmax,tmin)[1]
+        x,y = self.rib_interpolation( t_sp, t_rib, h_st,t_st,w_st,tmax,tmin)
         f2 = interp1d(x, y)
-        x_engine = np.array([0.5 * self.span / 4, 0.5 * self.span / 2, 0.5 * 3 * self.span / 4])
+        x_engine = np.array([self.y_rotor_loc[0],self.y_rotor_loc[2]])
         x_combi = np.concatenate((x, x_engine))
         x_sort = np.sort(x_combi)
 
-        index1 = np.where(x_sort == 0.5 * 3 * self.span / 4)
+        index1 = np.where(x_sort == self.y_rotor_loc[0])
         if len(index1[0]) == 1:
             index1 = int(index1[0])
         else:
             index1 = int(index1[0][0])
         y_new1 = f2(x_sort[index1]) + 9.81 * self.engine_weight
 
-        index2 = np.where(x_sort == 0.5 * self.span / 2)
+        index2 = np.where(x_sort == self.y_rotor_loc[2])
         if len(index2[0]) == 1:
             index2 = int(index2[0])
         else:
             index2 = int(index2[0][0])
         y_new2 = f2(x_sort[index2]) + 9.81 * self.engine_weight
 
-        index3 = np.where(x_sort == 0.5 * self.span / 4)
-        if len(index3[0]) == 1:
-            index3 = int(index3[0])
-        else:
-            index3 = int(index3[0][0])
-        y_new3 = f2(x_sort[index3]) + 9.81 * self.engine_weight
-
-        y_engine = np.ndarray.flatten(np.array([y_new1, y_new2, y_new3]))
+        y_engine = np.ndarray.flatten(np.array([y_new1, y_new2]))
         y_combi = np.concatenate((y, y_engine))
         y_sort = np.sort(y_combi)
         y_sort = np.flip(y_sort)
@@ -316,10 +272,54 @@ class Wingbox():
             y_sort[i] = y_sort[i] + 9.81 * self.engine_weight
         for i in range(int(index2)):
             y_sort[i] = y_sort[i] + 9.81 * self.engine_weight
-        for i in range(int(index3)):
-            y_sort[i] = y_sort[i] + 9.81 * self.engine_weight
+            
 
-        return x_sort, y_sort, index1, index2, index3
+        return x_sort, y_sort, index1, index2
+
+
+
+    # def shear_eng(self,t_sp, t_rib, h_st,t_st,w_st,tmax,tmin):
+    #     x = self.rib_interpolation(t_sp, t_rib, h_st,t_st,w_st,tmax,tmin)[0]
+    #     y = self.rib_interpolation(t_sp, t_rib, h_st,t_st,w_st,tmax,tmin)[1]
+    #     f2 = interp1d(x, y)
+    #     x_engine = np.array([0.5 * self.span / 4, 0.5 * self.span / 2, 0.5 * 3 * self.span / 4])
+    #     x_combi = np.concatenate((x, x_engine))
+    #     x_sort = np.sort(x_combi)
+
+    #     index1 = np.where(x_sort == 0.5 * 3 * self.span / 4)
+    #     if len(index1[0]) == 1:
+    #         index1 = int(index1[0])
+    #     else:
+    #         index1 = int(index1[0][0])
+    #     y_new1 = f2(x_sort[index1]) + 9.81 * self.engine_weight
+
+    #     index2 = np.where(x_sort == 0.5 * self.span / 2)
+    #     if len(index2[0]) == 1:
+    #         index2 = int(index2[0])
+    #     else:
+    #         index2 = int(index2[0][0])
+    #     y_new2 = f2(x_sort[index2]) + 9.81 * self.engine_weight
+
+    #     index3 = np.where(x_sort == 0.5 * self.span / 4)
+    #     if len(index3[0]) == 1:
+    #         index3 = int(index3[0])
+    #     else:
+    #         index3 = int(index3[0][0])
+    #     y_new3 = f2(x_sort[index3]) + 9.81 * self.engine_weight
+
+    #     y_engine = np.ndarray.flatten(np.array([y_new1, y_new2, y_new3]))
+    #     y_combi = np.concatenate((y, y_engine))
+    #     y_sort = np.sort(y_combi)
+    #     y_sort = np.flip(y_sort)
+
+    #     for i in range(int(index1)):
+    #         y_sort[i] = y_sort[i] + 9.81 * self.engine_weight
+    #     for i in range(int(index2)):
+    #         y_sort[i] = y_sort[i] + 9.81 * self.engine_weight
+    #     for i in range(int(index3)):
+    #         y_sort[i] = y_sort[i] + 9.81 * self.engine_weight
+
+    #     return x_sort, y_sort, index1, index2, index3
 
 
 
@@ -358,43 +358,40 @@ class Wingbox():
         x = self.get_y_rib_loc()
         f = interp1d(x, moment, kind='quadratic')
 
-        x_engine = np.array([0.5 * self.span / 4, 0.5 * self.span / 2, 0.5 * 3 * self.span / 4])
+        x_engine = x_engine = np.array([self.y_rotor_loc[0],self.y_rotor_loc[2]])
         x_combi = np.concatenate((x, x_engine))
         x_sort = np.sort(x_combi)
 
-        index1 = np.where(x_sort == 0.5 * 3 * self.span / 4)
+        index1 = np.where(x_sort == self.y_rotor_loc[0])
         if len(index1[0]) == 1:
             index1 = int(index1[0])
         else:
             index1 = int(index1[0][0])
         y_new1 = f(x_sort[index1])
 
-        index2 = np.where(x_sort == 0.5 * self.span / 2)
+        index2 = np.where(x_sort == self.y_rotor_loc[2])
         if len(index2[0]) == 1:
             index2 = int(index2[0])
         else:
             index2 = int(index2[0][0])
         y_new2 = f(x_sort[index2])
 
-        index3 = np.where(x_sort == 0.5 * self.span / 4)
-        if len(index3[0]) == 1:
-            index3 = int(index3[0])
-        else:
-            index3 = int(index3[0][0])
-        y_new3 = f(x_sort[index3])
+        # index3 = np.where(x_sort == 0.5 * self.span / 4)
+        # if len(index3[0]) == 1:
+        #     index3 = int(index3[0])
+        # else:
+        #     index3 = int(index3[0][0])
+        # y_new3 = f(x_sort[index3])
 
-        y_engine = np.ndarray.flatten(np.array([y_new1, y_new2, y_new3]))
+        y_engine = np.ndarray.flatten(np.array([y_new1, y_new2]))
         y_combi = np.concatenate((moment, y_engine))
         y_sort = np.sort(y_combi)
         y_sort = np.flip(y_sort)
 
         for i in range(int(index1)):
-            y_sort[i] = y_sort[i] + 9.81 * self.engine_weight * (0.5 * 3 * self.span / 4 - x_sort[i])
+            y_sort[i] = y_sort[i] + 9.81 * self.engine_weight * (self.y_rotor_loc[0] - x_sort[i])
         for i in range(int(index2)):
-            y_sort[i] = y_sort[i] + 9.81 * self.engine_weight * (0.5 * 2 * self.span / 4 - x_sort[i])
-        for i in range(int(index3)):
-            y_sort[i] = y_sort[i] + 9.81 * self.engine_weight * (0.5 * self.span / 4 - x_sort[i])
-
+            y_sort[i] = y_sort[i] + 9.81 * self.engine_weight * (self.y_rotor_loc[2] / 4 - x_sort[i])
         return x_sort, y_sort
 
 
@@ -411,25 +408,19 @@ class Wingbox():
         tarr = self.t_arr(tmax,tmin)
         Nx = np.zeros(len(tarr))
 
-        index1 = np.where(x_sort == 0.5 * 3 * self.span / 4)
+        index1 = np.where(x_sort == self.y_rotor_loc[0])
         if len(index1[0]) == 1:
             index1 = int(index1[0])
         else:
             index1 = int(index1[0][0])
 
-        index2 = np.where(x_sort == 0.5 * self.span / 2)
+        index2 = np.where(x_sort == self.y_rotor_loc[2])
         if len(index2[0]) == 1:
             index2 = int(index2[0])
         else:
             index2 = int(index2[0][0])
 
-        index3 = np.where(x_sort == 0.5 * self.span / 4)
-        if len(index3[0]) == 1:
-            index3 = int(index3[0])
-        else:
-            index3 = int(index3[0][0])
-
-        moment = np.delete(moment, np.array([index1, index2, index3]))
+        moment = np.delete(moment, np.array([index1, index2]))
         bend_stress=np.zeros(len(tarr))
         for i in range(len(tarr)):
             Ixx = self.I_xx(t_sp,h_st,t_st,w_st,tarr[i])(sta[i])
@@ -772,19 +763,18 @@ class Wingbox():
         vector = np.zeros(len(tarr))
         for i in range(len(tarr)):
             vector[i] = -1 * (buck[i] - 1)
-        return vector
+        return vector[0]
 
 
     def global_local(self, h_st,t_st,tmax,tmin):
         tarr = self.t_arr(tmax,tmin)
         diff = np.zeros(len(tarr))
-        print(len(tarr))
         for i in range(len(tarr)):
             glob = self.global_buckling(h_st,t_st,tarr[i])
             loc = self.local_buckling(tarr[i])
             diff[i] = glob - loc #FIXEM glob
         #diff = self.global_buckling(h_st,t_st,tarr)  - self.local_buckling(tarr,b_st)
-        return diff
+        return diff[0]
 
 
 
@@ -795,7 +785,7 @@ class Wingbox():
             col=self.column_st(h_st,t_st,w_st, tarr[i])
             loc = self.local_buckling(tarr[i])*tarr[i]
             diff[i] = col - loc
-        return diff
+        return diff[0]
 
 
     def flange_loc_loc(self, t_st,w_st,tmax,tmin):
@@ -805,7 +795,7 @@ class Wingbox():
         for i in range(len(tarr)):
             loc = self.local_buckling(tarr[i])
             diff[i] = flange - loc
-        return diff
+        return diff[0]
 
 
     def web_flange(self, h_st,t_st,tmax,tmin):
@@ -815,7 +805,7 @@ class Wingbox():
         for i in range(len(tarr)):
             loc = self.local_buckling(tarr[i])
             diff[i] =web-loc
-        return diff
+        return diff[0]
 
 
     def von_Mises(self, t_sp, t_rib, h_st,t_st,w_st,tmax,tmin):
@@ -828,7 +818,7 @@ class Wingbox():
         # for i in range(len(tarr)):
         #     tau_shear= Nxy[i] / tarr[i]
         #     vm[i]=sigma_yield-sqrt(0.5 * (3 * tau_shear ** 2+bend_stress[i]**2))
-        return vm_lst
+        return vm_lst[0]
 
 
 
@@ -839,15 +829,14 @@ class Wingbox():
         for i in range(len(tarr)):
             col = self.column_st( h_st,t_st,w_st,tarr[i])
             crip[i] = t_st * self.beta * self.sigma_yield* ((self.g * t_st ** 2 / A) * sqrt(self.E / self.sigma_yield)) ** self.m_crip - col
-        return crip
-
+        return crip[0]
 
     def post_buckling(self, t_sp, t_rib, h_st,t_st,w_st, tmax,tmin):
         f = self.f_ult(t_sp,h_st,t_st,w_st,tmax,tmin)
         ratio=2/(2+1.3*(1-1/self.pb))
         px= self.n_max*self.shear_force(t_sp, t_rib, h_st,t_st,w_st,tmax,tmin)
         diff=np.subtract(ratio*f,px)
-        return diff
+        return diff[0]
 
 
     # def compute_volume():
@@ -885,30 +874,31 @@ class Wingbox_optimization(om.ExplicitComponent):
         self.add_input('c_r')
         
         #Outputs used as constraints
-        self.add_output('wing_weight',shape = (self.WingboxClass.n_sections,))
-        self.add_output('global_local',shape = (self.WingboxClass.n_sections,))
-        self.add_output('post_buckling',shape = (self.WingboxClass.n_sections,))
-        self.add_output('von_mises',shape = (self.WingboxClass.n_sections,))
-        self.add_output('buckling_constr',shape = (self.WingboxClass.n_sections,))
-        self.add_output('flange_loc_loc',shape = (self.WingboxClass.n_sections,))
-        self.add_output('local_column',shape = (self.WingboxClass.n_sections,))
-        self.add_output('crippling',shape = (self.WingboxClass.n_sections,))
-        self.add_output("web_flange",shape = (self.WingboxClass.n_sections,))
+        # self.add_output('wing_weight',shape = (self.WingboxClass.n_sections,))
+        # self.add_output('global_local',shape = (self.WingboxClass.n_sections,))
+        # self.add_output('post_buckling',shape = (self.WingboxClass.n_sections,))
+        # self.add_output('von_mises',shape = (self.WingboxClass.n_sections,))
+        # self.add_output('buckling_constr',shape = (self.WingboxClass.n_sections,))
+        # self.add_output('flange_loc_loc',shape = (self.WingboxClass.n_sections,))
+        # self.add_output('local_column',shape = (self.WingboxClass.n_sections,))
+        # self.add_output('crippling',shape = (self.WingboxClass.n_sections,))
+        # self.add_output("web_flange",shape = (self.WingboxClass.n_sections,))
 
 
-        # self.add_output('wing_weight',shape = (8,))
-        # self.add_output('global_local',shape = (8,))
-        # self.add_output('post_buckling',shape = (8,))
-        # self.add_output('von_mises',shape = (8,))
-        # self.add_output('buckling_constr',shape = (8,))
-        # self.add_output('flange_loc_loc',shape = (8,))
-        # self.add_output('local_column',shape = (8,))
-        # self.add_output('crippling',shape = (8,))
-        # self.add_output("web_flange",shape = (8,))
+        self.add_output('wing_weight')
+        self.add_output('global_local')
+        self.add_output('post_buckling')
+        self.add_output('von_mises')
+        self.add_output('buckling_constr')
+        self.add_output('flange_loc_loc')
+        self.add_output('local_column')
+        self.add_output('crippling')
+        self.add_output("web_flange")
     def setup_partials(self):
 
         # Partial derivatives are done using finite difference
-        self.declare_partials('*', '*', method='fd')
+        self.declare_partials('*', '*', method='fd'
+                              )
 
     def compute(self, inputs, outputs):
 
@@ -942,15 +932,15 @@ class Wingbox_optimization(om.ExplicitComponent):
 
 
 
-        outputs['wing_weight'][:] = weight
-        outputs['global_local'][:] = constr[0]
-        outputs['post_buckling'][:] = constr[1]
-        outputs['von_mises'][:] = constr[2]
-        outputs['buckling_constr'][:] = constr[3]
-        outputs['flange_loc_loc'][:] = constr[4]
-        outputs['local_column'][:] = constr[5]
-        outputs['crippling'][:] = constr[6]
-        outputs['web_flange'][:] = constr[7]
+        outputs['wing_weight'] = weight
+        outputs['global_local'] = constr[0]
+        outputs['post_buckling'] = constr[1]
+        outputs['von_mises'] = constr[2]
+        outputs['buckling_constr'] = constr[3]
+        outputs['flange_loc_loc'] = constr[4]
+        outputs['local_column'] = constr[5]
+        outputs['crippling'] = constr[6]
+        outputs['web_flange'] = constr[7]
 
         str_lst =  np.array(["Global local", "Post buckling", "Von Mises", 
                     "Buckling", "Flange loc loc", "Local column",
@@ -998,25 +988,25 @@ def WingboxOptimizer(x, wing, engine, material, aero):
 
     # Define constraints 
     prob.model.add_constraint('wingbox_design.global_local', lower=0.)
-    # prob.model.add_constraint('wingbox_design.post_buckling', lower=0.)
-    # prob.model.add_constraint('wingbox_design.von_mises', lower=0.)
-    # prob.model.add_constraint('wingbox_design.buckling_constr', lower=1.)
-    # prob.model.add_constraint('wingbox_design.flange_loc_loc', lower=0.)
-    # prob.model.add_constraint('wingbox_design.local_column', lower=0.) #FIXME Causing exit mode 8
-    # prob.model.add_constraint('wingbox_design.crippling', lower=0.)
-    # prob.model.add_constraint('wingbox_design.web_flange', lower=0.)
+    prob.model.add_constraint('wingbox_design.post_buckling', lower=0.)
+    prob.model.add_constraint('wingbox_design.von_mises', lower=0.)
+    prob.model.add_constraint('wingbox_design.buckling_constr', lower=1.)
+    prob.model.add_constraint('wingbox_design.flange_loc_loc', lower=0.)
+    prob.model.add_constraint('wingbox_design.local_column', lower=0.) #FIXME Causing exit mode 8
+    prob.model.add_constraint('wingbox_design.crippling', lower=0.)
+    prob.model.add_constraint('wingbox_design.web_flange', lower=0.)
 
     prob.driver = om.ScipyOptimizeDriver()
     prob.driver.options['optimizer'] = 'SLSQP'
     prob.driver.opt_settings['maxiter'] = 1000
 
-    prob.model.add_design_var('wingbox_design.tsp', lower = 0., upper= 0.1)
-    prob.model.add_design_var('wingbox_design.trib', lower = 0., upper= 0.1)
-    prob.model.add_design_var('wingbox_design.hst', lower = 0. , upper= 0.4)
-    prob.model.add_design_var('wingbox_design.tst', lower = 0., upper= 0.1)
-    prob.model.add_design_var('wingbox_design.wst', lower = 0., upper= 0.4 )
-    prob.model.add_design_var('wingbox_design.tmax', lower = 0., upper= 0.1)
-    prob.model.add_design_var('wingbox_design.tmin', lower = 0., upper= 0.1)
+    prob.model.add_design_var('wingbox_design.tsp', lower = 0.0001, upper= 0.1)
+    prob.model.add_design_var('wingbox_design.trib', lower = 0.0001, upper= 0.1)
+    prob.model.add_design_var('wingbox_design.hst', lower = 0.0001 , upper= 0.4)
+    prob.model.add_design_var('wingbox_design.tst', lower = 0.0001, upper= 0.1)
+    prob.model.add_design_var('wingbox_design.wst', lower = 0.0001, upper= 0.4 )
+    prob.model.add_design_var('wingbox_design.tmax', lower = 0.0001, upper= 0.1)
+    prob.model.add_design_var('wingbox_design.tmin', lower = 0.0001, upper= 0.1)
 
 
     prob.model.add_objective('wingbox_design.wing_weight')
