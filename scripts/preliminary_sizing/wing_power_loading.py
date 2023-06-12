@@ -16,6 +16,8 @@ import input.GeneralConstants as const
 
 
 write_bool = int(input("\n\nType 1 if you want to write the JSON data to your download folder instead of the repo, type 0 otherwise:\n"))
+WS_range = np.arange(1,4000,1)
+ylim = [0,0.15]
 
 
 
