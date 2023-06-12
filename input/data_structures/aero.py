@@ -20,11 +20,10 @@ class Aero():
     cL_alpha: float = None
     cL_cruise: float = None
     cL_max: float = None
+    cL_max_flaps60 = None
     cm_ac: float = None
     cm_alpha: float = None
     e: float = None
-    cm_alpha: float = None
-    cL_alpha: float = None
     cL_alpha0_approach: float = None
     alpha_zero_L: float = None
     cdi_climb_clean: float = None
@@ -42,6 +41,7 @@ class Aero():
     cd_stall: float = None
     cd0_stall: float = None
     mach_stall: float = None
+    deps_da: float = None
     mach_cruise: float = None
 
     def load(self):
@@ -55,6 +55,7 @@ class Aero():
         self.cL_alpha =  datcom_cl_alpha(A=data["A"], mach=v_cr/a_cr, sweep_half=-data["sweep_le"])
         self.cL_cruise =  data["cL_cruise"]
         self.cL_max = data['cLmax']
+        self.cL_max_flaps60 = data["cLmax_flaps60"]
         self.cm_ac  =  data["cm_ac"]
         self.e  =  data["e"]
         self.cm_alpha = data["cm_alpha"]
@@ -77,7 +78,8 @@ class Aero():
         self.cd0_stall = data['cd0_stall']
         self.mach_stall = data['mach_stall']
         self.mach_cruise = data['mach_cruise']
-        
+        self.deps_da = data['depsda']
+
 
     def dump(self):
         with open(r"input/data_structures/aetheria_constants.json") as jsonFile:
