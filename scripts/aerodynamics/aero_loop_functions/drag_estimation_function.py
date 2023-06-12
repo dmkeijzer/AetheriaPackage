@@ -17,10 +17,12 @@ AeroClass = Aero()
 FuselageClass = Fuselage()
 VTailClass = VeeTail()
 HorTailClass = HorTail()
+WingClass = Wing()
 AeroClass.load()
 FuselageClass.load()
 VTailClass.load()
 HorTailClass.load()
+WingClass.load()
 
 
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
@@ -33,30 +35,30 @@ rho_cr = atm.density()
 mhu = atm.viscosity_dyn()
 
 def final_drag_estimation():
-    mac = data["mac"]
+    mac = WingClass.chord_mac
 
     # General flight variables
     re_var = Reynolds(rho_cr, const.v_cr, mac, mhu, const.k)
     M_var = Mach_cruise(const.v_cr, const.gamma, const.R, t_cr)
-    Oswald_eff_var = Oswald_eff(data["A"])
+    Oswald_eff_var = Oswald_eff(WingClass.aspectratio)
 
 
-    # Writing to JSON file
-    data["e"] = Oswald_eff_var
-    data["depsda"] = 0.1
+    # Writing to Aeroclass
+    AeroClass.e = Oswald_eff_var
+    AeroClass.deps_da = 0.1
 
     # Form factor
-    FF_fus_var = FF_fus(data["l_fuselage"], data["d_fuselage"])
-    FF_wing_var = FF_wing(const.toc, const.xcm, M_var, sweep_m(data["sweep_le"], const.xcm, data["c_root"], data["b"], data["taper"]))
-    FF_tail_var = FF_tail(const.toc_tail, const.xcm_tail, M_var, data['sweep_halfchord_h'])
+    FF_fus_var = FF_fus(FuselageClass.length_fuselage, FuselageClass.diameter_fuselage)
+    FF_wing_var = FF_wing(const.toc, const.xcm, M_var, sweep_m(WingClass.sweep_LE, const.xcm, WingClass.chord_root, WingClass.span, WingClass.taper))
+    FF_tail_var = FF_tail(const.toc_tail, const.xcm_tail, M_var, HorTailClass.sweep_halfchord_h)
 
     # Wetted area
-    S_wet_fus_var = S_wet_fus(data["d_fuselage"], data["l_cockpit"], data["l_cabin"], data["l_tail"])
-    S_wet_wing_var = 2 * data["S"]  # from ADSEE slides
-    S_wet_tail_var = 2 * data["surface_vtail"]
+    S_wet_fus_var = S_wet_fus(FuselageClass.diameter_fuselage, FuselageClass.length_cockpit, FuselageClass.length_cabin, FuselageClass.length_tail)
+    S_wet_wing_var = 2 * WingClass.surface  # from ADSEE slides
+    S_wet_tail_var = 2 * VTailClass.surface
 
     # Miscellaneous drag
-    CD_upsweep_var = CD_upsweep(data["upsweep"], data["d_fuselage"], S_wet_fus_var)
+    CD_upsweep_var = CD_upsweep(FuselageClass.upsweep, FuselageClass.diameter_fuselage, S_wet_fus_var)
     CD_base_var = CD_base(M_var, const.A_base, S_wet_fus_var)
 
     # Skin friction coefficienct
@@ -66,23 +68,23 @@ def final_drag_estimation():
 
     # Total cd
     CD_fus_var = CD_fus(C_fe_fus_var, FF_fus_var, S_wet_fus_var)
-    CD_wing_var = CD_wing(data["name"], C_fe_wing_var, FF_wing_var, S_wet_wing_var, data["S"])
+    CD_wing_var = CD_wing(C_fe_wing_var, FF_wing_var, S_wet_wing_var, WingClass.surface)
     CD_tail_var = CD_tail(C_fe_tail_var, FF_tail_var, S_wet_tail_var)
-    CD0_var = CD0(data["S"], VTailClass.surface, FuselageClass.length_fuselage*FuselageClass.width_fuselage_outer, CD_fus_var, CD_wing_var, CD_upsweep_var, CD_base_var, CD_tail_var, CD_flaps=0)
+    CD0_var = CD0(WingClass.surface, VTailClass.surface, FuselageClass.length_fuselage*FuselageClass.width_fuselage_outer, CD_fus_var, CD_wing_var, CD_upsweep_var, CD_base_var, CD_tail_var, CD_flaps=0)
 
     # Lift times S
     cL_tail_times_Sh = VTailClass.CL_cruise * HorTailClass.surface
-    cL_wing_times_S = data["cL_cruise"]*data["S"]
+    cL_wing_times_S = AeroClass.cL_cruise*WingClass.surface
 
-    total_cL = (cL_wing_times_S + cL_tail_times_Sh) / (data['S'] + HorTailClass.surface)
+    total_cL = (cL_wing_times_S + cL_tail_times_Sh) / (WingClass.surface + HorTailClass.surface)
 
 
     # Summation and L/D calculation
-    CDi_var = CDi(data["name"], data["cL_cruise"], data["A"], data["e"])
+    CDi_var = CDi(AeroClass.cL_cruise, WingClass.aspectratio, WingClass.e)
     CD_var = CD(CD0_var, CDi_var)
     lift_over_drag_var = lift_over_drag(total_cL, CD_var)
 
-    print("CD0_wing", CD_wing_var / data["S"])
+    print("CD0_wing", CD_wing_var / WingClass.surface)
     print("CD cruise", CD_var)
     print("CL cruise", total_cL)
     print("L/D cruise", lift_over_drag_var)
@@ -99,26 +101,26 @@ def final_drag_estimation():
     # General flight variables
     re_var = Reynolds(rho_sl, const.v_stall, mac, mhu, const.k)
     M_var = Mach_cruise(const.v_stall, const.gamma, const.R, t_stall)
-    Oswald_eff_var = Oswald_eff(data["A"])
+    Oswald_eff_var = Oswald_eff(WingClass.aspectratio)
 
 
-    # Writing to JSON file
-    data["e"] = Oswald_eff_var
-    data["depsda"] = 0.1
+    # Writing to Class
+    WingClass.e = Oswald_eff_var
+    AeroClass.deps_da = 0.1
 
     # Form factor
-    FF_fus_var = FF_fus(data["l_fuselage"], data["d_fuselage"])
-    FF_wing_var = FF_wing(const.toc, const.xcm, M_var, sweep_m(data["sweep_le"], const.xcm, data["c_root"], data["b"], data["taper"]))
-    FF_tail_var = FF_tail(const.toc_tail, const.xcm_tail, M_var, data['sweep_halfchord_h'])
+    FF_fus_var = FF_fus(FuselageClass.length_fuselage, FuselageClass.diameter_fuselage)
+    FF_wing_var = FF_wing(const.toc, const.xcm, M_var, sweep_m(WingClass.sweep_LE, const.xcm, WingClass.chord_root, WingClass.span, WingClass.taper))
+    FF_tail_var = FF_tail(const.toc_tail, const.xcm_tail, M_var, HorTailClass.sweep_halfchord_h)
 
 
     # Wetted area
-    S_wet_fus_var = S_wet_fus(data["d_fuselage"], data["l_cockpit"], data["l_cabin"], data["l_tail"])
-    S_wet_wing_var = 2 * data["S"]  # from ADSEE slides
-    S_wet_tail_var = 2 * data["surface_vtail"]
+    S_wet_fus_var = S_wet_fus(FuselageClass.diameter_fuselage, FuselageClass.length_cockpit, FuselageClass.length_cabin, FuselageClass.length_tail)
+    S_wet_wing_var = 2 * WingClass.surface  # from ADSEE slides
+    S_wet_tail_var = 2 * VTailClass.surface
 
     # Miscellaneous drag
-    CD_upsweep_var = CD_upsweep(data["upsweep"], data["d_fuselage"], S_wet_fus_var)
+    CD_upsweep_var = CD_upsweep(FuselageClass.upsweep, FuselageClass.diameter_fuselage, S_wet_fus_var)
     CD_base_var = CD_base(M_var, const.A_base, S_wet_fus_var)
 
     # Skin friction coefficienct
@@ -128,18 +130,18 @@ def final_drag_estimation():
 
     # Total cd
     CD_fus_var = CD_fus(C_fe_fus_var, FF_fus_var, S_wet_fus_var)
-    CD_wing_var = CD_wing(data["name"], C_fe_wing_var, FF_wing_var, S_wet_wing_var, data["S"])
+    CD_wing_var = CD_wing(C_fe_wing_var, FF_wing_var, S_wet_wing_var, WingClass.surface)
     CD_tail_var = CD_tail(C_fe_tail_var, FF_tail_var, S_wet_tail_var)
     CD_flaps_var = CD_flaps(60)
-    CD0_var = CD0(data["S"], VTailClass.surface, FuselageClass.length_fuselage*FuselageClass.width_fuselage_outer, CD_fus_var, CD_wing_var, CD_upsweep_var, CD_base_var, CD_tail_var, CD_flaps_var)
+    CD0_var = CD0(WingClass.surface, VTailClass.surface, FuselageClass.length_fuselage*FuselageClass.width_fuselage_outer, CD_fus_var, CD_wing_var, CD_upsweep_var, CD_base_var, CD_tail_var, CD_flaps_var)
 
     print(CD_flaps_var)
     # Summation and L/D calculation
-    CDi_var = CDi(data["name"], data["cLmax_flaps60"], data["A"], data["e"])
+    CDi_var = CDi(AeroClass.cL_max_flaps60, WingClass.aspectratio, WingClass.e)
     CD_var = CD(CD0_var, CDi_var)
-    lift_over_drag_var = lift_over_drag(data["cLmax_flaps60"], CD_var)
+    lift_over_drag_var = lift_over_drag(AeroClass.cL_max_flaps60, CD_var)
 
-    print("CD0_wing", CD_wing_var / data["S"])
+    print("CD0_wing", CD_wing_var / WingClass.surface)
     print("CD in stall", CD_var)
     print("CD0 stall", CD0_var)
     print("L/D stall", lift_over_drag_var)
