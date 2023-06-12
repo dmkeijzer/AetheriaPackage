@@ -13,24 +13,37 @@ from modules.powersizing import PropulsionSystem
 from modules.stab_ctrl.vtail_sizing_optimal import size_vtail_opt
 from modules.stab_ctrl.wing_loc_horzstab_sizing import wing_location_horizontalstab_size
 from modules.planform.planformsizing import wing_planform
+from modules.preliminary_sizing.wing_power_loading_functions import get_wing_power_loading
 
+#----------------------------- Initialize classes --------------------------------
 IonBlock = Battery(Efficiency= 0.9)
 Pstack = FuelCell()
 Tank = HydrogenTank(energyDensity=1.8, volumeDensity=0.6, cost= 16)
-Mission = PerformanceParameters()
-
-
+mission = PerformanceParameters()
 wing  =  Wing()
+engine = Engine()
+aero = Aero()
 horizontal_tail = HorTail()
 fuselage = Fuselage()
 vtail = VeeTail()
 stability = Stab()
+#----------------------------------------------------------------------
+
+#------------------------ Load cases for first time----------------------------------------
+mission.load()
+wing.load()  
+engine.load() 
+aero.load() 
+horizontal_tail.load() 
+fuselage.load() 
+vtail.load() 
+stability.load() 
+#----------------------------------------------------------------------
 
 
 
-
-
-
+# Preliminary Sizing
+mission, wing,  engine, aero = get_wing_power_loading(mission, wing, engine, aero)
 
 #planform sizing
 wing.load()
@@ -38,10 +51,10 @@ wing = wing_planform(wing)
 wing.dump()
 
 #power system sizing
-Mission.load()
+mission.load()
 nu = np.arange(0,1.001,0.005)
 Totalmass, Tankmass, FCmass, Batterymass= PropulsionSystem.mass(echo= np.copy(nu),
-                             Mission= Mission,
+                             Mission= mission,
                              Battery=IonBlock,
                              FuellCell= Pstack,
                              FuellTank= Tank )
