@@ -83,5 +83,6 @@ AeroClass.downwash_angle = average_downwash_angle
 AeroClass.downwash_angle_wing = downwash_angle_wing
 AeroClass.downwash_angle_prop = downwash_angle_prop
 AeroClass.cL_plus_slipstream = CL_total_cruise
+
 AeroClass.dump()
 
