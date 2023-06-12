@@ -169,3 +169,4 @@ cython_debug/
 .idea/AetheriaPackage.iml
 .idea/misc.xml'
 .modules/avlwrapper/config.cfg
+modules/avlwrapper/config.cfg
