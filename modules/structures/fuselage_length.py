@@ -102,9 +102,13 @@ def minimum_tail_length(h0, b0, Beta, V, l_tank, ARe, n):
     plt.show()
 
     l_tail = np.array(l_tail)
-    min_index = np.argmin(l_tail)
-    tail_data = converge_tail_length(h0, b0, Beta, V, l_tank[min_index], ARe, n)
-    tail_data.append(l_tank[min_index])
+    if len(l_tail) > 0:
+        min_index = np.argmin(l_tail)
+        tail_data = converge_tail_length(h0, b0, Beta, V, l_tank[min_index], ARe, n)
+        tail_data.append(l_tank[min_index])
+    else:
+        print("No possible tail length")
+
 
     return tail_data
 
@@ -189,4 +193,3 @@ def simple_crash_box(m, a, sigma_cr, v):
     A = m*a/sigma_cr
     return s, A
 
-simple_crash_box(2500, 20*9.81, 0.315*10**6, 9.1)
