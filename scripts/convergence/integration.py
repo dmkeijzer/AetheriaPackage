@@ -54,3 +54,4 @@ wing,horizontal_tail,fuselage,vtail, stability = size_vtail_opt(WingClass=  wing
                                                                 b_ref= 3 ) #!!!!!!!!! please update value
 
 
+# WingboxClass =  Wing()
