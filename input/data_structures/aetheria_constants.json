@@ -179,9 +179,9 @@
       "nacelle_width": 0.4,
       "sweep_halfchord_h": 0,
       "volume_fuselage": 0.5,
-      "downwash_angle": 0.07371515773507183,
+      "downwash_angle": 0.0851071259719496,
       "downwash_angle_wing": 0.04356434761472458,
-      "downwash_angle_prop": 0.12364366169089148,
+      "downwash_angle_prop": 0.15390026172072,
       "downwash_angle_stall": 0.16177854114717813,
       "downwash_angle_wing_stall": 0.120211603003049,
       "downwash_angle_prop_stall": 0.19134305991593323,
@@ -234,5 +234,6 @@
       "asym_eigvals": 0,
       "span_vtail": 2.7772085060343867,
       "cL_max": 1.59,
-      "alph_zero_L": -0.0352
+      "alph_zero_L": -0.0352,
+      "C_T": 0.15
 }

@@ -30,7 +30,7 @@ diameter_propellers = 2*np.sqrt(const.diskarea/(np.pi*6))
 D = diameter_propellers
 
 # Angles
-i_cs_var = 0.0549661449027131 # calculated from lift at cruise
+i_cs_var = 0.0733 # calculated from lift at cruise
 angle_of_attack_fuse = 0
 angle_of_attack_prop = angle_of_attack_fuse + i_cs_var
 
@@ -83,4 +83,5 @@ AeroClass.downwash_angle = average_downwash_angle
 AeroClass.downwash_angle_wing = downwash_angle_wing
 AeroClass.downwash_angle_prop = downwash_angle_prop
 
+AeroClass.dump()
 
