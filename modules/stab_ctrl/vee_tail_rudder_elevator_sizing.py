@@ -55,14 +55,14 @@ def get_tail_dihedral_and_area(Lambdah2,S_hor,Fuselage_volume,S,b,l_v,AR_h,taper
 
 #YOU ONLY NEED THIS LAST FUNCTION. THE OTHERS ABOVE ARE SUBFUNCTIONS FOR THE NEXT FUNCTION.
 
-def get_control_surface_to_tail_chord_ratio(Wing, Fuse, HorTail, CL_h,l_v,Cn_beta_req=-0.0571,beta_h=1,eta_h=0.95,total_deflection=20*np.pi/180,design_cross_wind_speed=9,step=0.1*np.pi/180,axial_induction_factor=0.005):
-    V_stall = Wing.v_stall
+def get_control_surface_to_tail_chord_ratio(Wing, Fuse, HorTail,Aero,  CL_h,l_v,Cn_beta_req=-0.0571,beta_h=1,eta_h=0.95,total_deflection=20*np.pi/180,design_cross_wind_speed=9,step=0.1*np.pi/180,axial_induction_factor=0.005):
+    V_stall = Aero.v_stall
     Lambdah2 = HorTail.sweep_halfchord_h
     b = Wing.span
     Fuselage_volume = Fuse.volume_fuselage
     S_hor = HorTail.surface
     downwash_angle_landing = HorTail.downwash_angle
-    aoa_landing = Wing.alpha_approach
+    aoa_landing = Aero.alpha_approach
     Vh_V2 = 0.95*(1+axial_induction_factor)**2 #assumed
     S = Wing.surface
     c = Wing.chord_mac

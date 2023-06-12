@@ -120,7 +120,7 @@ def ctrl_formula_coefs(CLh_approach, CLAh_approach, l_h, MAC, Vh_V_2, Cm_ac, x_a
     return m_ctrl, q_ctrl
 
 
-def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, A_h, plot=False, CLh_approach = None, stepsize = 0.002):
+def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, Aeroclass, A_h, plot=False, CLh_approach = None, stepsize = 0.002):
     log_final = np.zeros((0,6))
     depsda = HorTailClass.downwash
     MAC = WingClass.chord_mac
@@ -135,12 +135,12 @@ def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, A_h, p
     eta = 0.95
     Mach = WingClass.mach_cruise
     Lambdah2 = 0  # Assumed
-    CLaw = WingClass.cL_alpha
+    CLaw = Aeroclass.cL_alpha
     c_root = WingClass.chord_root
     l_f = FuseClass.length_fuselage
-    CL0_approach = WingClass.cL_alpha0_approach
-    Cm_ac_wing = WingClass.cm_ac
-    CLAh_approach = WingClass.cL_approach  # Assumes fuselage contribution negligible
+    CL0_approach = Aeroclass.cL_alpha0_approach 
+    Cm_ac_wing = Aeroclass.cm_ac
+    CLAh_approach = Aeroclass.cL_max * 0.9 # Assumes fuselage contribution negligible
     x_lemac_x_rootc = WingClass.x_lemac
     SM = 0.05  # Stability margin, standard
 
