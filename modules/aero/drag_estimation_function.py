@@ -14,33 +14,33 @@ from modules.aero.midterm_datcom_methods import *
 from input.data_structures import *
 from input.data_structures.ISA_tool import ISA
 from input.data_structures.vee_tail import VeeTail
-AeroClass = Aero()
-FuselageClass = Fuselage()
-VTailClass = VeeTail()
-HorTailClass = HorTail()
-WingClass = Wing()
-AeroClass.load()
-FuselageClass.load()
-VTailClass.load()
-HorTailClass.load()
-WingClass.load()
+# AeroClass = Aero()
+# FuselageClass = Fuselage()
+# VTailClass = VeeTail()
+# HorTailClass = HorTail()
+# WingClass = Wing()
+# AeroClass.load()
+# FuselageClass.load()
+# VTailClass.load()
+# HorTailClass.load()
+# WingClass.load()
 
 
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
 # import CL_cruise from json files
 
 
-atm = ISA(const.h_cruise)
-t_cr = atm.temperature()
-rho_cr = atm.density()
-mhu = atm.viscosity_dyn()
+# atm = ISA(const.h_cruise)
+# t_cr = atm.temperature()
+# rho_cr = atm.density()
+# mhu = atm.viscosity_dyn()
 
-def final_drag_estimation():
+def final_drag_estimation(WingClass, FuselageClass, VTailClass, AeroClass, HortailClass):
     mac = WingClass.chord_mac
 
     # General flight variables
-    re_var = Reynolds(rho_cr, const.v_cr, mac, mhu, const.k)
-    M_var = Mach_cruise(const.v_cr, const.gamma, const.R, t_cr)
+    re_var = Reynolds(const.rho_cr, const.v_cr, mac, const.mhu, const.k)
+    M_var = Mach_cruise(const.v_cr, const.gamma, const.R, const.t_cr)
     Oswald_eff_var = Oswald_eff(WingClass.aspectratio)
 
 
@@ -100,14 +100,14 @@ def final_drag_estimation():
 
     # ------------------------ DRAG DURING STALL -------------- 
     # General flight variables
-    re_var = Reynolds(rho_sl, const.v_stall, mac, mhu, const.k)
+    re_var = Reynolds(rho_sl, const.v_stall, mac, const.mhu, const.k)
     M_var = Mach_cruise(const.v_stall, const.gamma, const.R, t_stall)
     Oswald_eff_var = Oswald_eff(WingClass.aspectratio)
 
 
     # Writing to Class
     AeroClass.e = Oswald_eff_var
-    AeroClass.deps_da = deps_da(AeroClass.cL_alpha, WingClass.aspectratio)
+    AeroClass.deps_da = 0.1
 
     # Form factor
     FF_fus_var = FF_fus(FuselageClass.length_fuselage, FuselageClass.diameter_fuselage)
@@ -136,16 +136,11 @@ def final_drag_estimation():
     CD_flaps_var = CD_flaps(60)
     CD0_var = CD0(WingClass.surface, VTailClass.surface, FuselageClass.length_fuselage*FuselageClass.width_fuselage_outer, CD_fus_var, CD_wing_var, CD_upsweep_var, CD_base_var, CD_tail_var, CD_flaps_var)
 
-    print(CD_flaps_var)
     # Summation and L/D calculation
     CDi_var = CDi(AeroClass.cL_max_flaps60, WingClass.aspectratio, AeroClass.e)
     CD_var = CD(CD0_var, CDi_var)
     lift_over_drag_var = lift_over_drag(AeroClass.cL_max_flaps60, CD_var)
 
-    print("CD0_wing", CD_wing_var / WingClass.surface)
-    print("CD in stall", CD_var)
-    print("CD0 stall", CD0_var)
-    print("L/D stall", lift_over_drag_var)
 
     # Writing to classes file
     AeroClass.ld_stall = lift_over_drag_var
@@ -154,7 +149,6 @@ def final_drag_estimation():
     AeroClass.mach_stall = M_var
 
     AeroClass.dump()
-
-    return AeroClass
+    return WingClass, FuselageClass, VTailClass, AeroClass, HortailClass
 
 print(final_drag_estimation())
