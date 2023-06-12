@@ -42,7 +42,7 @@ def size_vtail_opt(WingClass, HorTailClass, FuseClass, VTailClass, StabClass, b_
             log = np.vstack((log, np.array([CLh, v_tail[6], np.sqrt(A_h * v_tail[6]), CLvee_cr_N ** 2 * v_tail[6],A_h])))
             #print(CLh)
             CLh = CLh - CLh_step
-    print(log)        
+                   
     log = log[np.where(log[:,2] > b_ref)[0], :]
     log = log[np.where(log[3,:] == np.min(log[3,:]))[0], :]
     CLh = log[0,0]
