@@ -48,11 +48,7 @@ def energy_cruise_mass(EnergyRequired: float , echo: float , Tank: HydrogenTank,
     
     #calculating energy required for the fuell cell and the battery
     Tankmass = Tank.mass(EnergyRequired * echo) / FuellCell.efficiency
-    Batterymass = Battery.energymass((1-echo)*EnergyRequired) / Battery.End_of_life /Battery.Efficiency
-
-    #extra weights needed because battery recharching process has losses
-    #AddedMassRecharging = EnergyRequired * (echo - 1 ) / Tank.EnergyDensity / Battery.ChargingEfficiency / FuellCell.Efficiency
-    
+    Batterymass = Battery.energymass((1-echo)*EnergyRequired) / Battery.End_of_life /Battery.Efficiency / 1e3
     return  Tankmass , Batterymass
 
 
@@ -96,7 +92,7 @@ def hover_energy_mass(PowerRequired: float ,MaxPowerFC: float, Battery: Battery,
 
 class PropulsionSystem:
 
-    def mass(echo: float , Mission: PerformanceParameters , Battery: Battery, FuellCell: FuelCell, FuellTank: HydrogenTank, hovertime: float = 90) -> list[float]: #,MaxPowerFC:float,PowerDensityFC: float , PowerDensityBattery: float, EnergyDensityTank: float  ) -> list[float]:
+    def mass(echo: float , Mission: PerformanceParameters , Battery: Battery, FuellCell: FuelCell, FuellTank: HydrogenTank, hovertime: float = 60) -> list[float]: #,MaxPowerFC:float,PowerDensityFC: float , PowerDensityBattery: float, EnergyDensityTank: float  ) -> list[float]:
         """Calculate total mass of the propulsion system
         input: 
             -echo [-]: The percentage of power deliverd by the fuel cell, if over 1 than the fuell cell charges the  battery
@@ -109,9 +105,8 @@ class PropulsionSystem:
         
         
         #Initial sizing for cruise phase
-        Tankmass,  EnergyBatterymass = energy_cruise_mass(Mission.energyRequired / 3.6e6, echo, FuellTank, Battery, FuellCell) #convert to get to Wh
+        Tankmass,  EnergyBatterymass = energy_cruise_mass(Mission.energyRequired / 3.6, echo, FuellTank, Battery, FuellCell) #convert to get to Wh
         FCmass, CruiseBatterymass = power_cruise_mass(Mission.cruisePower , echo,FuellCell, Battery)
-
 
         #initial sizing for hovering phase
 
@@ -120,13 +115,12 @@ class PropulsionSystem:
 
         #heaviest battery is needed for the total mass
         Batterymass = np.zeros(len(echo))
-
         #need to check which batterymass is limiting at each echo and hardcoded it because i did not trust np.maximum as it gave some weird results
         for i in range(len(echo)):
-            Batterymass[i] = max([HoverBatterymass[i], 2* HoverEnergyBatterymass[i], CruiseBatterymass[i], EnergyBatterymass[i]])
+            Batterymass[i] = max([HoverBatterymass, 2* HoverEnergyBatterymass, CruiseBatterymass[i], EnergyBatterymass[i]])
 
-        #returning total mass and all component masss
-        Totalmass = Tankmass + FCmass + Batterymass 
+        #returning total mass and all component masss 
+        Totalmass = Tankmass + FCmass*2 + Batterymass #estimation from pim de boer that power density of fuel cell halves for system power density
         return  Totalmass, Tankmass, FCmass, Batterymass
 
     def volume(echo:float, Battery: BatterySizing, FuellCell: FuellCellSizing, FuellTank: HydrogenTankSizing,Tankmass: float, FuellCellmass:float, Batterymass:float) -> tuple[float]:

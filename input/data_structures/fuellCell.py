@@ -17,7 +17,7 @@ class FuelCell:
     :param Cost: Cost of the fuel cell [US$] (not loaded)
     :param Efficiency: Efficiency of the fuel cell s
     """
-    maxpower = 125 #W
+    maxpower = 125e3 #W
     mass = 42 #kg
     efficiency = .55
     length = 0.582 #m
