@@ -11,4 +11,9 @@ os.chdir(str(list(pl.Path(__file__).parents)[2]))
 from input.data_structures import *
 
 
-# WingboxClass =  Wing()
+
+# Preliminary sizing
+
+
+
+
