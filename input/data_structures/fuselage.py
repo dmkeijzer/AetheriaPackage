@@ -22,7 +22,8 @@ class Fuselage():
 
     def load(self):
         """ Initializes the class automatically from the JSON file
-        """        
+        """ 
+        os.chdir(str(list(pl.Path(__file__).parents)[2]))
         with open(r"input/data_structures/aetheria_constants.json") as jsonFile:
             data = json.load(jsonFile)
         self.length_fuselage = data["l_fuse"]
@@ -38,6 +39,7 @@ class Fuselage():
 
     def dump(self):
         """Dumps values into the json file"""
+        os.chdir(str(list(pl.Path(__file__).parents)[2]))
         with open(r"input/data_structures/aetheria_constants.json") as jsonFile:
             data = json.load(jsonFile)
         data["l_fuse"] = self.length_fuselage
@@ -45,5 +47,5 @@ class Fuselage():
         data["upsweep"] =  self.upsweep
         data["h_wings"] = self.h_wing
 
-        with open(r"output/data_structures/aetheria_constants.json", "w") as jsonFile:
+        with open(r"input/data_structures/aetheria_constants.json", "w") as jsonFile:
             json.dump(data, jsonFile, indent=6)

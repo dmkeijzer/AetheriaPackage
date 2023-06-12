@@ -125,8 +125,8 @@ def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, A_h, p
     MAC = WingClass.chord_mac
     Vh_V_2 = 0.95  # From SEAD, V-tail somewhat similar to fin-mounted stabiliser
     S = WingClass.surface
-    b_f = FuseClass.width_fuselage
-    h_f = FuseClass.height_fuselage
+    b_f = FuseClass.width_fuselage_outer
+    h_f = FuseClass.height_fuselage_outer
     b = WingClass.span
     Lambdac4 = WingClass.quarterchord_sweep
     taper = WingClass.taper
@@ -152,7 +152,7 @@ def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, A_h, p
         x_ac_stab_wing_bar = 0.24  # From graph from Torenbeek
         l_h = l_f * (1-wing_loc)
         l_fn = wing_loc * l_f - x_ac_stab_wing_bar * MAC - x_lemac_x_rootc
-        cglims = J1loading(wing_loc * l_f, l_f)[0]
+        cglims = J1loading(wing_loc * l_f, l_f)[1]
         frontcgexc = (cglims["frontcg"] - wing_loc * l_f + x_ac_stab_wing_bar * MAC)/ MAC
         rearcgexc = (cglims["rearcg"] - wing_loc * l_f + x_ac_stab_wing_bar * MAC)/ MAC
 
@@ -201,7 +201,7 @@ def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, A_h, p
     HorTailClass.surface = log_final[np.where(log_final[:,1] == np.min(log_final[:,1]))[0], 0:2][0][1] * WingClass.surface
     #Update all values
     WingClass.dump()
-    #FuseClass.dump()
+    FuseClass.dump()
     HorTailClass.dump()
 
     return log_final[np.where(log_final[:,1] == np.min(log_final[:,1]))[0], 0:2], log_final[np.where(log_final[:,1] == np.min(log_final[:,1]))[0], -1][0] - x_ac_stab_bar

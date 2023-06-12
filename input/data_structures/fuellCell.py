@@ -12,12 +12,12 @@ class FuelCell:
     """
     This class is to estimate the parameters of a Fuel Cell.
 
-    :param maxpower: max power from FC [kW]
+    :param maxpower: max power from FC [KW]
     :param mass: mass [kg]
     :param Cost: Cost of the fuel cell [US$] (not loaded)
     :param Efficiency: Efficiency of the fuel cell s
     """
-    maxpower = 125e3 #W
+    maxpower = 125 #W
     mass = 42 #kg
     efficiency = .55
     length = 0.582 #m
