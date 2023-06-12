@@ -68,6 +68,7 @@ class Wing():
         data["quarterchord_sweep"] = self.quarterchord_sweep
         data["x_lemac"] = self.x_lemac
         data["x_lewing"] = self.x_lewing
+        data["thickness_to_chord"] = self.thickness_to_chord
 
         with open(r"input/data_structures/aetheria_constants.json", "w") as jsonFile:
             json.dump(data, jsonFile, indent=4)

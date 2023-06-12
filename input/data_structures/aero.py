@@ -89,8 +89,9 @@ class Aero():
         data["cd0"] = self.cd0_cruise
         data['cd_upsweep'] = self.cd_upsweep
         data['cd_base'] = self.cd_base
-        data["cL_cruise"] = self.cruise
+        data["cL_cruise"] = self.cL_cruise
         data['cL_max'] = self.cL_max
+        data["cLmax_flaps60"] = self.cL_max_flaps60
         data["cm_ac"] = self.cm_ac
         data["e"] = self.e
         data["cm_alpha"] = self.cm_alpha
@@ -113,6 +114,7 @@ class Aero():
         data['cd0_stall'] = self.cd0_stall
         data['mach_stall'] = self.mach_stall
         data['mach_cruise'] = self.mach_cruise
+        data['depsda'] = self.deps_da
 
         with open(r"output/data_structures/aetheria_constants.json", "w") as jsonFile:
             json.dump(data, jsonFile, indent=6)
