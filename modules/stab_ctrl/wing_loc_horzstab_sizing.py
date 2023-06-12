@@ -119,6 +119,7 @@ def ctrl_formula_coefs(CLh_approach, CLAh_approach, l_h, MAC, Vh_V_2, Cm_ac, x_a
     q_ctrl = ((Cm_ac / CLAh_approach) - x_ac_stab_bar) / ((CLh_approach / CLAh_approach) * (l_h / MAC) * Vh_V_2)
     return m_ctrl, q_ctrl
 
+
 def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, A_h, plot=False, CLh_approach = None, stepsize = 0.002):
     log_final = np.zeros((0,6))
     depsda = HorTailClass.downwash
