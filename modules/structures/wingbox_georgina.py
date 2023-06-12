@@ -987,14 +987,14 @@ def WingboxOptimizer(x, wing, engine, material, aero):
 
 
     # Define constraints 
-    prob.model.add_constraint('wingbox_design.global_local', lower=0.)
-    prob.model.add_constraint('wingbox_design.post_buckling', lower=0.)
-    prob.model.add_constraint('wingbox_design.von_mises', lower=0.)
-    prob.model.add_constraint('wingbox_design.buckling_constr', lower=1.)
-    prob.model.add_constraint('wingbox_design.flange_loc_loc', lower=0.)
-    prob.model.add_constraint('wingbox_design.local_column', lower=0.) #FIXME Causing exit mode 8
-    prob.model.add_constraint('wingbox_design.crippling', lower=0.)
-    prob.model.add_constraint('wingbox_design.web_flange', lower=0.)
+    prob.model.add_constraint('wingbox_design.global_local', lower=1000.)
+    prob.model.add_constraint('wingbox_design.post_buckling', lower=1000.)
+    prob.model.add_constraint('wingbox_design.von_mises', lower=1000.)
+    prob.model.add_constraint('wingbox_design.buckling_constr', lower=1000.)
+    prob.model.add_constraint('wingbox_design.flange_loc_loc', lower=1000.)
+    prob.model.add_constraint('wingbox_design.local_column', lower=1000.) #FIXME Causing exit mode 8
+    prob.model.add_constraint('wingbox_design.crippling', lower=1000.)
+    prob.model.add_constraint('wingbox_design.web_flange', lower=1000.)
 
     prob.driver = om.ScipyOptimizeDriver()
     prob.driver.options['optimizer'] = 'SLSQP'
