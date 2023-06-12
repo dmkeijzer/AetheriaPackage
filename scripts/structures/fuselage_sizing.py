@@ -15,13 +15,13 @@ import input.data_structures.GeneralConstants as const
 # inputs
 
 m = 2500
+V = 0.5
 #s, A = fl.simple_crash_box(m, 20, 3.15*10**6, 9.1)
 #h0 = 1.6 + s
 
 h0 = 1.8
 b0 = 1.6
 Beta = 0.5
-V = 0.5
 ARe = 2.75
 n = 2
 l_tank = np.linspace(1, 5, 40)
@@ -51,6 +51,7 @@ l_cyl = l_tank - 2*r_tank
 
 V_tank = 4/3*np.pi*r_tank**3 + np.pi*r_tank**2*l_cyl
 
+"""
 print('Tank length: ', l_tank)
 print("Tail: ", l_tail)
 print("Upsweep: ", upsweep)
@@ -59,14 +60,15 @@ print("hc: ", hc)
 print("bc: ", bc)
 print("hf: ", hf)
 print("bf: ", bf)
-
 print("V_tank:", V_tank)
+"""
 
 l_inner_fuselage = l_cockpit + l_cabin + l_fcs + l_tail
 l_outer_fuselage = l_inner_fuselage + 0.2
 
 #things to return
-# l_fuselage
+# l_inner_fuselage
+# l_outer_fuselage
 # upsweep
 # l_tank
 # r_tank
