@@ -1,12 +1,16 @@
 import numpy as np
-import Scripts.propellersizing.BEM2023 as BEM
-import code2021.Final_optimization.Aero_tools as at
+import scripts.Propellersizing.BEM2023 as BEM
+import scripts.Propellersizing.Blade_potting2023 as BP
+import BEM as BEM
 import Blade_plotter as BP
+import code2021.Final_optimization.Aero_tools as at
+
+
 import matplotlib.pyplot as plt
 
 
 # ISA = at.ISA(1000)
-ISA = at.ISA(1000)
+ISA = at.ISA(400)
 a = ISA.soundspeed()
 rho = ISA.density()
 dyn_visc = ISA.viscosity_dyn()
@@ -62,23 +66,23 @@ dyn_visc = ISA.viscosity_dyn()
 
 # Midterm
 # B, R, rpm, xi_0, rho, dyn_vis, V_fr, N_stations, a, RN_spacing, T=None, P=None
-B = 5
+B = 6
 xi_0 = 0.1
-R = 0.55
+R = 0.5029
 A_prop = np.pi*R**2
 MTOM = 3000
 
 # M_t_max = 0.6
 # rpm = M_t_max*a*60 / (np.pi * 2*R)
-rpm = 2000
+rpm = 1090
 # rpm = 1500
 
-V_cruise = 90
+V_cruise = 72.19
 V_h = 52.87
 N_stations = 30
 RN_spacing = 100000
 
-T_cr_per_eng = 27.55 * 5 * 6
+T_cr_per_eng = 153*2.6
 T_h_per_eng = MTOM*9.80665 / 12
 
 propeller = BEM.BEM(B, R, rpm, xi_0, rho, dyn_visc, V_cruise, N_stations, a, RN_spacing, T=T_cr_per_eng)
@@ -129,7 +133,7 @@ print("T_cr", T_cr_per_eng)
 # plt.show()
 
 # Load blade plotter
-plotter = BP.PlotBlade(design[0], design[1], design[3], R, xi_0)
+plotter = BP.PlotBlade(design[0], design[1] ,design[3], R, xi_0)#, airfoil_name='wortman.dat')
 
 # Plot blade
 plotter.plot_blade()
