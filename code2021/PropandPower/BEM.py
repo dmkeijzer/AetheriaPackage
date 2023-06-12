@@ -3,11 +3,16 @@ import numpy as np
 import scipy.integrate as spint
 import scipy.interpolate as spinplt
 import scipy.optimize as sp_opt
-
+import os
+import sys
+import pathlib as pl
 """
 This program calculates the blade geometry for propellers with minimum loss according to a procedure laid down by
 ADKINS AND LIEBECK, based on Larrabee.
 """
+
+sys.path.append(str(list(pl.Path(__file__).parents)[2]))
+os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
 
 class BEM:
@@ -1116,6 +1121,7 @@ class OffDesignAnalysisBEM:
         # Force coefficients
         Cx = self.Cx(Cls, Cds, phi)
         Cy = self.Cy(Cls, Cds, phi)
+
 
         # Thrust and torque per unit radius
         T_prim = 0.5 * self.rho * Ws**2 * self.B * self.chords * Cy

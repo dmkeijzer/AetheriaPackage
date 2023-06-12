@@ -15,26 +15,26 @@ import code2021.Final_optimization.constants_final as const
 g0 = const.g
 
 # Wing parameters
-MTOM = 2150
+MTOM = 3024.8012022968796
 S1 = 9.910670535618632
 S2 = 9.910670535618632
-span1 = 11.97
+span1 = 8.209297146662843
 span2 = 8.209297146662843
 
-n_prop = 6
+n_prop = 12
 m_prop = 502.6006543358783
 
 flighttime = 1.5504351809662442
 takeofftime = 262.839999999906
 
 V_cruise = 72.18676185339652
-h_cruise = 400
+h_cruise = 1000
 
 # Thrust and power values
-T_max = 25837
-P_max = 534000
-P_br_cruise_per_engine = 534000
-T_cr_per_engine = 250
+T_max = 34311.7687171136
+P_max = 1809362.3556091622
+P_br_cruise_per_engine = 13627.720621056835
+T_cr_per_engine = 153.63377687614096
 
 TW_ratio = MTOM*g0/T_max
 

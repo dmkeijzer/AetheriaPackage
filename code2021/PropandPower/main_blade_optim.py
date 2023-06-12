@@ -2,9 +2,10 @@ import scipy.optimize as sc_opt
 import numpy as np
 import scripts.Propellersizing.BEM2023 as BEM
 import scripts.Propellersizing.Blade_potting2023 as BP
+# import code2021.PropandPower.BEM as BEM
 import code2021.Final_optimization.Aero_tools as at
 
-ISA = at.ISA(400)
+ISA = at.ISA(2400)
 
 """
 ------------ These should be a result of the integration code ------------
@@ -105,7 +106,70 @@ t_tot = t_h+t_cr
 # # Plot blade
 # plotter.plot_blade()
 # plotter.plot_3D_blade()
+#
+# Hover design parameters
+# delta_pitch_hover = 54
+rpm_hover = 3000
+Omega_hover = rpm_hover * 2 * np.pi / 60
+n_hover = Omega_hover / (2 * np.pi)
+# delta_pitch_hover = 45
 
+
+# From constants file
+g0 = 9.80665
+
+# Wing parameters
+MTOM = 2150
+
+n_prop = 6
+m_prop = 502.6006543358783
+
+flighttime = 1.5504351809662442
+takeofftime = 262.839999999906
+
+V_cruise = 90
+h_cruise = 400
+
+# Thrust and power values
+T_max = 25837
+P_max = 534000
+P_br_cruise_per_engine = 534000
+T_cr_per_engine = 250
+
+TW_ratio = MTOM*g0/T_max
+
+
+# Atmospherical parameters
+ISA = at.ISA(h_cruise)
+rho = ISA.density()
+dyn_vis = ISA.viscosity_dyn()
+soundspeed = ISA.soundspeed()
+
+# Fixed blade parameters
+xi_0 = 0.1
+
+#eng_sizing = esp.PropSizing(span1, fuselage.mass_fuselage, n_prop, 0.3,0.3, MTOM, xi_0)
+prop_radius = 0.9768
+prop_diameter = prop_radius*2
+totarea = np.pi*(prop_radius)**2*n_prop
+
+# Design parameters
+B = 6
+rpm_cruise = 800
+T_factor = 1.2
+
+# Design the blade
+
+blade_cruise = BEM.BEM(B, prop_radius, rpm_cruise, xi_0, rho, dyn_vis, V_cruise, N_stations=25, a=soundspeed,
+                       RN_spacing=100000, T=T_cr_per_engine*T_factor)
+
+# Initial estimate: zeta = 0
+
+zeta, design, V_e, coefs, solidity = blade_cruise.optimise_blade(0)
+
+C_T = T_cr_per_engine/(rho*(rpm_cruise/60)**2*prop_diameter**4)
+# Initial estimate for RN
+RN = Omega_hover * design[0] * rho / dyn_vis
 
 def cost_function_blades(variables):
     #  Variables: [B, rpm hover, rpm cruise, delta_pitch hover]
@@ -113,21 +177,22 @@ def cost_function_blades(variables):
     # Inputs:   B, R, rpm_cr, xi_0, rho_cr, dyn_vis_cr, V_cr, N_stations, a_cr, RN_spacing, max_M_tip, rho_h,
     #           dyn_vis_h, V_h, a_h, rpm_h, delta_pitch, T_cr, T_h
     blade = BEM.Optiblade(int(variables[0]), R, variables[2], xi_0, rho_cr, dyn_vis_cr, V_cr, N_stations, a_cr, RN_spacing,
-                          max_M_tip, rho_h, dyn_vis_h, V_h, a_h, variables[1], variables[3], T_cr, T_h/12)
+                          max_M_tip, rho_h, dyn_vis_h, V_h, a_h, variables[1], variables[3], T_cr, T_h/12,RN)
 
     blade_performance = blade.optimised_blade()
     # [0] -> Blade in cruise (zeta_new, [cs, betas, alpha, stations_r, E, eff, self.Tc, Pc], Ves, [Cl, Cd])
     # [1] -> Blade in hover (T, Q, eff)
     # [2] -> Thrust_factor
+    print(blade_performance[2])
 
     # Use % of the mission as weights for the optimisation TODO: discuss with Egon whether this or just cruise is better
-    return np.abs((t_cr/t_tot) * (1 - blade_performance[0][1][5]) + (t_h/t_tot) * (1 - blade_performance[1][2]))
+    return np.abs((t_cr/t_tot) * (1 - blade_performance[0][1][5]) + (t_h/t_tot) * (1-blade_performance[1][1][0]/blade_performance[1][1][1]))
 
 
 # Variables to optimise: B, rpm hover, rpm cruise, delta_pitch hover, maybe even thrust factor
 #  B, rpm hover, rpm cruise, delta_pitch hover
 # TODO: B has to be integer
-initial_guess = np.array([5, 2500, 900, np.deg2rad(30)])
+initial_guess = np.array([5, 3500, 1900, np.deg2rad(25)])
 
 # Minimum and maximum bounds for the optimisation
 # Maximum rpm for maximum tip Mach
@@ -138,7 +203,7 @@ rpm_max = omega_max/0.10472
 omega_min = 0.3*a_cr/R
 rpm_min = omega_min/0.10472
 
-max_param = np.array([8, rpm_max, rpm_max, np.deg2rad(40)])
+max_param = np.array([8, rpm_max, rpm_max, np.deg2rad(30)])
 min_param = np.array([3, rpm_min, rpm_min, np.deg2rad(0)])
 print("Max", max_param)
 print("Min", min_param)

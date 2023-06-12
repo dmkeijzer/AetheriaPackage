@@ -14,29 +14,29 @@ from input.data_structures.fuselage import Fuselage
 # From constants file
 g0 = 9.80665
 
-# Wing parameters
+# # Wing parameters
 MTOM = 2150
-S1 = 9.910670535618632
-S2 = 9.910670535618632
-span1 = 11.97
-span2 = 8.209297146662843
+# S1 = 9.910670535618632
+# S2 = 9.910670535618632
+# span1 = 11.97
+# span2 = 8.209297146662843
 
 n_prop = 6
-m_prop = 502.6006543358783
+# m_prop = 502.6006543358783
 
 flighttime = 1.5504351809662442
 takeofftime = 262.839999999906
 
-V_cruise = 100
-h_cruise = 400
+V_cruise = 90
+h_cruise = 2400
 
 # Thrust and power values
-T_max = 25837
-P_max = 534000
-P_br_cruise_per_engine = 534000
-T_cr_per_engine = 250
+#T_max = 25837
+# P_max = 534000
+# P_br_cruise_per_engine = 534000
+T_cr_per_engine = 240
 
-TW_ratio = MTOM*g0/T_max
+TW_ratio = 1.225
 
 fuselage = Fuselage()
 fuselage.load()
@@ -62,13 +62,13 @@ print("")
 
 # Design parameters
 B = 6
-rpm_cruise = 800
-T_factor = 1.2
-
-# Design the blade
+rpm_cruise = 1200
+T_factor = 3
 
 blade_cruise = BEM.BEM(B, prop_radius, rpm_cruise, xi_0, rho, dyn_vis, V_cruise, N_stations=25, a=soundspeed,
-                       RN_spacing=100000, T=T_cr_per_engine*T_factor)
+                       RN_spacing=100000, T=T_cr_per_engine * T_factor)
+# Design the blade
+
 
 # Initial estimate: zeta = 0
 
@@ -114,7 +114,7 @@ print("")
 print("############# Off-design analysis #############")
 print("")
 
-max_M_tip = 0.75
+max_M_tip = 0.65
 omega_max = max_M_tip*soundspeed/prop_radius
 
 rpm_max = omega_max/0.10472
@@ -146,7 +146,8 @@ max_T = 0
 Ts = []
 Vs = []
 dif = 10000
-# for rpm_cr in range(1000, 1200, 10):
+# for rpm_cr in range(800, 1400, 10):
+#     print(rpm_cr)
 #
 #     # print(design[1], design[1]-np.deg2rad(delta_pitch_hover))
 #     hover_blade = BEM.OffDesignAnalysisBEM(V_cruise, B, prop_radius, design[0], design[1], design[3],
@@ -158,16 +159,17 @@ dif = 10000
 #     T = hover_performance[0][0]
 #     Ts.append(T)
 #     Vs.append(V_h)
-#     # print(T)
+#     print(T)
 #
 #     # See if D/L is minimum. If so, save the values
 #     if np.abs(T-T_cr_per_engine) < dif:
 #         best_combo = [rpm_cr, T]
 #         dif = np.abs(T-T_cr_per_engine)
 #
+#
 # plt.plot(Vs, Ts)
 # plt.show()
-
+# print(RN)
 hover_blade = BEM.OffDesignAnalysisBEM(V_cruise, B, prop_radius, design[0], design[1],
                                        design[3], coefs[0], coefs[1], 1090, rho, dyn_vis, soundspeed, RN)
 
@@ -192,6 +194,8 @@ print("AoA per station:", np.rad2deg(hover_performance[2][0]))
 print("")
 print("Cl per station:", hover_performance[2][1])
 print("Cd per station:", hover_performance[2][2])
+print("")
+
 
 
 # print("############# Off-design analysis #############")
@@ -300,7 +304,7 @@ for delta_pitch_max_T in range(1, 75):
     T = maxT_performance[0][0]
     Ts.append(T)
     Vs.append(V_h)
-    print(T)
+
 
     # See if D/L is minimum. If so, save the values
     if T > max_T:
@@ -333,7 +337,8 @@ print("AoA per station:", np.rad2deg(hover_performance[2][0]))
 print("")
 print("Cl per station:", hover_performance[2][1])
 print("Cd per station:", hover_performance[2][2])
-
+print("")
+print("Propeller required power in hover:", hover_performance[1][1] * rho * V_cruise**3 * np.pi * prop_radius**2, "W")
 # Load blade plotter
 plotter = BP.PlotBlade(design[0], design[1], design[3], prop_radius, xi_0)
 
@@ -353,13 +358,35 @@ radial_stations_Koen = np.array([(1/10 + 1/11*9/10), (1/10 + 2/11*9/10), (1/10 +
 chord_fun = np.polynomial.polynomial.Polynomial(coef_chords)
 pitch_fun = np.polynomial.polynomial.Polynomial(coef_pitchs)
 
-koen_chords = chord_fun(radial_stations_Koen) * 1000
-koen_pitch = np.rad2deg(pitch_fun(radial_stations_Koen))
+# ls=[]
+# ys=[]
+# for rpm in range(1000,1500,50):
+#     rpm_cruise = rpm
+#     blade_cruise = BEM.BEM(B, prop_radius, rpm_cruise, xi_0, rho, dyn_vis, V_cruise, N_stations=25, a=soundspeed,
+#                            RN_spacing=100000, T=T_cr_per_engine * T_factor)
+#     zeta, design, V_e, coefs, solidity = blade_cruise.optimise_blade(0)
+#     maxT_blade = BEM.OffDesignAnalysisBEM(V_h, B, prop_radius, design[0], design[1] - np.deg2rad(best_combo[0]),
+#                                           design[3], coefs[0], coefs[1], rpm_max, rho, dyn_vis, soundspeed, RN)
+#
+#     # Outputs: [T, Q, eff], [C_T, C_P], [alphas]
+#     maxT_performance = maxT_blade.analyse_propeller()
+#
+#     val = (hover_performance[1][1] * rho * V_cruise**3 * np.pi * prop_radius**2)
+#     print(val)
+#     ls.append(rpm)
+#     ys.append(val)
+# plt.plot(ls,val)
+# plt.show()
 
-print("Koen chords:", koen_chords)
-print("Koen pitchs:", koen_pitch)
-print("Hub radius:", xi_0)
 
+
+# koen_chords = chord_fun(radial_stations_Koen) * 1000
+# koen_pitch = np.rad2deg(pitch_fun(radial_stations_Koen))
+#
+# print("Koen chords:", koen_chords)
+# print("Koen pitchs:", koen_pitch)
+# print("Hub radius:", xi_0)
+#
 
 
 # Constants from optimisation

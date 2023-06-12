@@ -1,11 +1,11 @@
 import numpy as np
-import BEM as BEM
+import scripts.Propellersizing.BEM2023 as BEM
 import code2021.Final_optimization.Aero_tools as at
 import Blade_plotter as BP
 import matplotlib.pyplot as plt
 
 # ISA = at.ISA(1000)
-ISA = at.ISA(1000)
+ISA = at.ISA(2400)
 a = ISA.soundspeed()
 rho = ISA.density()
 dyn_visc = ISA.viscosity_dyn()
@@ -17,23 +17,23 @@ path = '../PropandPower/Figures/'
 # B, R, rpm, xi_0, rho, dyn_vis, V_fr, N_stations, a, RN_spacing, T=None, P=None
 # B = 5
 xi_0 = 0.1
-R = 0.5029
+R = 0.97
 A_prop = np.pi*R**2
-MTOM = 3024.80
+MTOM = 2150
 
 # M_t_max = 0.6
 # rpm = M_t_max*a*60 / (np.pi * 2*R)
 # rpm = 2000
 # rpm = 1500
 
-V_cruise = 72.18676
+V_cruise = 90
 V_h = 1
 N_stations = 30
 RN_spacing = 100000
 
-T_cr_per_eng = 153.63377
-T_h_per_eng = MTOM*9.80665 / 12
-T_max_per_eng = 1.4 * MTOM*9.80665 / 12
+T_cr_per_eng = 240
+T_h_per_eng = MTOM*9.80665 / 6
+T_max_per_eng = 1.225 * MTOM*9.80665 / 5
 
 # Range of variables for sensitivity analysis
 Bs = np.arange(2, 10)
@@ -75,12 +75,12 @@ Z = np.ones(np.shape(X))
 B = 5
 rpm = 2500
 
-Vs = np.arange(55, 85, 2)
-rs = np.arange(0.35, 0.7, 0.02)
+Vs = np.arange(75,95, 2)
+rs = np.arange(0.55, 0.7, 0.02)
 X, Y = np.meshgrid(rs, Vs[::-1])  # Reorder Vs, idk why it is necessary
 
 Z = np.ones(np.shape(X))
-
+counter=0
 for y in range(len(Vs)):
     for x in range(len(rs)):
 
@@ -95,6 +95,8 @@ for y in range(len(Vs)):
 
         # The parameter of interest is the propeller efficiency
         Z[y][x] = design[5]
+        counter+=1
+        print(counter)
 
 # Plot sensitivity plot
 cont = plt.contourf(X, Y, Z, cmap='coolwarm', levels=20)
@@ -104,15 +106,13 @@ cbar.set_label(r'$\eta$ [-]', fontsize=14)
 plt.ylabel("V [m/s]", fontsize=12)
 plt.xlabel("R [m]", fontsize=12)
 
-R = 0.5029
-V_cruise = 72.18676
 
 plt.scatter(R, V_cruise, marker='x', color='k', label='Design point')
 # point = plt.scatter(6, 1.4, color='black', label= 'Wigeon', marker = 'x')
 
 # Save figures
 plt.tight_layout()
-plt.savefig(path + 'sensitivity_design_BEM_V_R' + '.pdf')
+#plt.savefig(path + 'sensitivity_design_BEM_V_R' + '.pdf')
 plt.legend()
 
 plt.show()
@@ -121,11 +121,11 @@ plt.show()
 B = 5
 D = 2*R
 rpm = 1500
-R = 0.5029
-xi_0 = 0.1
-V_cruise = 72.18676
 
-T_cr_per_eng = 153.63377
+xi_0 = 0.1
+
+
+
 
 
 # Base propeller

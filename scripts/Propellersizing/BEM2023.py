@@ -407,7 +407,7 @@ class BEM:
             local_Cd = optim_vals[1]
             local_AoA = optim_vals[2]
             local_eps = optim_vals[3]
-            Wc = optim_vals[4]
+            #Wc = optim_vals[4]
 
         # Smooth the Cl distribution and recalculate the lift coefficient: Polynomial regression for smooth distribution
         coef_cl = np.polynomial.polynomial.polyfit(stations_r, Cl, 1)
@@ -536,6 +536,9 @@ class BEM:
         a = (zeta/2) * (np.cos(phis))**2 * (1 - E*np.tan(phis))
         a_prime = (zeta/(2*self.x(stations_r))) * np.cos(phis) * np.sin(phis) * \
                   (1 + E/np.tan(phis))
+
+
+
 
         # Calculate local speed at the blade station
         W = self.V * (1 + a) / np.sin(phis)
@@ -876,8 +879,7 @@ class OffDesignAnalysisBEM:
         Start
         """
         Reyn = self.RN_init
-        if type(Reyn) == 'numpy.float64':
-            print('hi')
+
 
 
         for station in range(len(Reyn)):
@@ -1139,6 +1141,7 @@ class OffDesignAnalysisBEM:
 
         # Thrust and torque per unit radius
         T_prim = 0.5 * self.rho * Ws**2 * self.B * self.chords * Cy
+
         Q_prim_r = 0.5 * self.rho * Ws**2 * self.B * self.chords * Cx
 
         # Do simple integration to get total thrust and Q per unit r
@@ -1185,7 +1188,7 @@ class OffDesignAnalysisBEM:
 
 class Optiblade:
     def __init__(self, B, R, rpm_cr, xi_0, rho_cr, dyn_vis_cr, V_cr, N_stations, a_cr, RN_spacing,max_M_tip, rho_h,
-                 dyn_vis_h, V_h, a_h, rpm_h, delta_pitch, T_cr, T_h):
+                 dyn_vis_h, V_h, a_h, rpm_h, delta_pitch, T_cr, T_h,RN):
         """
         This file is for the blade shape optimisation. It optimises the blade for cruise, and checks if the blade can
         meet hover thrust requirements. If not, it designs the blade for higher thrust levels and checks again, up until
@@ -1244,6 +1247,8 @@ class Optiblade:
         self.max_M_tip = max_M_tip
         self.rpm_h = rpm_h
         self.delta_pitch = delta_pitch
+        self.RN = RN
+
 
 
     def blade_design(self, design_thrust_factor):
@@ -1273,11 +1278,11 @@ class Optiblade:
         blade_hover = OffDesignAnalysisBEM(self.V_h, self.B, self.R, design_blade[1][0],
                                            design_blade[1][1] - design_blade[1][1][-1],
                                            design_blade[1][3], design_blade[3][0], design_blade[3][1], rpm_max,
-                                           design_blade[0], self.rho_h, self.dyn_vis_h, self.a_h).analyse_propeller()
+                                           self.rho_h, self.dyn_vis_h, self.a_h,self.RN).analyse_propeller()
         # Return max thrust
-        return blade_hover[0]
+        return blade_hover[0][0]
 
-        return self.T_h+1
+
 
     def optimised_blade(self):
         # Multiply design (cruise) drag times factor
@@ -1287,6 +1292,7 @@ class Optiblade:
         index = 0
         max_thrust = 0
         while max_thrust < self.T_h:
+
             thrust_factor = thrust_factors[index]
 
             # Design optimum blade for the thrust condition
@@ -1295,13 +1301,14 @@ class Optiblade:
             # Check whether the max thrust is enough, once it is the loop ends
             max_thrust = self.max_T_check(blade)
 
+
             index += 1
 
         # Now we have a blade design that can provide the necessary max thrust
         # Analyse the blade at optimum hover condition to optimise
         blade_hover = OffDesignAnalysisBEM(self.V_h, self.B, self.R, blade[1][0], blade[1][1]-self.delta_pitch,
                                            blade[1][3], blade[3][0], blade[3][1], self.rpm_h,
-                                           blade[0], self.rho_h, self.dyn_vis_h, self.a_h).analyse_propeller()
+                                           self.rho_h, self.dyn_vis_h, self.a_h, self.RN).analyse_propeller()
 
         # Return [blade in cruise], [T, Q, eff] of blade in hover, and thrust factor at which the blade is designed
         # The cost function should maximise both cruise and hover efficiency, so [0][1][5] and [1][2] TODO: check

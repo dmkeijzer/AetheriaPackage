@@ -15,7 +15,7 @@ class PropSizing:
         self.b = wing_span
         self.wf = fuselage_width
         self.N_tot = N_eng
-        self.N_per_half_wing = N_eng/3
+        self.N_per_half_wing = N_eng/4
         self.c_fp = clearance_fus_prop
         self.c_pp = clearance_prop_prop
         self.MTOM = MTOM

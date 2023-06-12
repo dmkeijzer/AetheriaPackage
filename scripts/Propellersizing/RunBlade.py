@@ -8,7 +8,7 @@ import code2021.Final_optimization.Aero_tools as at
 
 
 # ISA = at.ISA(1000)
-ISA = at.ISA(400)
+ISA = at.ISA(2400)
 a = ISA.soundspeed()
 rho = ISA.density()
 dyn_visc = ISA.viscosity_dyn()
@@ -16,14 +16,14 @@ dyn_visc = ISA.viscosity_dyn()
 
 B = 6
 xi_0 = 0.1
-R = 0.97
+R = 0.7
 A_prop = np.pi*R**2
 MTOM = 2150
 
 # M_t_max = 0.6
 # rpm = M_t_max*a*60 / (np.pi * 2*R)
 #rpm should be so that Ct = 0.09-0.13
-rpm = 1500
+rpm = 1000
 # rpm = 1500
 
 V_cruise = 90
@@ -33,17 +33,22 @@ RN_spacing = 100000
 
 CLCD = 14.7778
 
-T_cr_per_eng = MTOM*9.80665/CLCD/6
+T_cr_per_eng = MTOM*9.80665/CLCD/6*3
 P_cr_per_eng =135000/6
 T_h_per_eng = MTOM*9.80665 / 6
 
-propeller = BEM.BEM(B, R, rpm, xi_0, rho, dyn_visc, V_cruise, N_stations, a, RN_spacing, P=P_cr_per_eng)
+propeller = BEM.BEM(B, R, rpm, xi_0, rho, dyn_visc, V_cruise, N_stations, a, RN_spacing, T=T_cr_per_eng)
 
 
 
 # Zeta init
 zeta_init = 0
 zeta, design, V_e, coefs, solidity = propeller.optimise_blade(zeta_init)
+
+C_T = T_cr_per_eng/(rho*(rpm/60)**2*(R*2)**4)
+
+
+print("C_T:", C_T, "[-]")
 
 print("Displacement velocity ratio (zeta):", zeta)
 print("")
