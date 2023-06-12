@@ -8,7 +8,7 @@ sys.path.append(str(list(pl.Path(__file__).parents)[0]))
 
 
 @dataclass
-class Engine:
+class Engine():
     """
     This class is to estimate the parameters of a Fuel Cell.
 
@@ -25,6 +25,7 @@ class Engine:
     mass_pertotalengine: float = None
     x_rotor_loc: float = None
     y_rotor_loc: float = None
+    nacelle_width: float = None
 
 
     def load(self):
@@ -37,3 +38,13 @@ class Engine:
         self.mass_pertotalengine = self.totalmass/self.no_engines
         self.x_rotor_loc = data["x_rotor_loc"]
         self.y_rotor_loc = data["y_rotor_loc"]
+        self.nacelle_width = data["nacelle_width"]
+
+    def dump(self):
+
+        with open(r"input/data_structures/aetheria_constants.json") as jsonFile:
+            data = json.load(jsonFile)
+
+
+        with open(r"input/data_structures/aetheria_constants.json", "w") as jsonFile:
+            json.dump(data, jsonFile, indent=4)

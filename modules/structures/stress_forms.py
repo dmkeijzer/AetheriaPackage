@@ -136,13 +136,17 @@ def shear_thin_walled_rectangular_section(width,height,thickness,i_xx,i_zz,Vx,Vz
         return q_da_b(s) + qs0()
 
     #accumulate data
-    x = np.arange(0,width,1E-5)
-    y = np.arange(0,height,1E-5)
+    x = np.arange(0,width,1E-4)
+    y = np.arange(0,height,1E-4)
     tau_ab = q_ab(x)/(thickness)
     tau_bc = q_bc(y)/(thickness)
     tau_cd = q_cd(x)/(thickness)
     tau_da = q_da(y)/(thickness)
     print(tau_ab)#,tau_bc,tau_cd,tau_da)
+    print(np.shape(tau_ab))
+    print(np.shape(tau_bc))
+    print(np.shape(tau_cd))
+    print(np.shape(tau_da))
     return tau_ab,tau_bc,tau_cd,tau_da
 
 

@@ -21,7 +21,7 @@ class Wing():
     y_mac: float = None
     sweep_LE: float = None
     quarterchord_sweep: float = None
-    X_lemac: float = None
+    x_lemac: float = None
     effective_aspectratio: float = None
     effective_span: float = None
 
@@ -37,6 +37,11 @@ class Wing():
     cL_alpha0: float = None
     mach_cruise: float = None
     cL_alpha0_approach: float = None
+    x_lewing: float = None
+    v_stall: float = None
+    v_approach: float = None
+    alpha_approach: float = None
+    thickness_to_chord: float = None
 
     def load(self):
         with open(r"input/data_structures/aetheria_constants.json") as jsonFile:
@@ -51,8 +56,8 @@ class Wing():
         self.chord_mac = data["mac"]
         self.y_mac = data["y_mac"]
         self.sweep_LE = data["sweep_le"]
-        self.quarterchord_sweep = data["sweep_le"]
-        self.X_lemac = data["x_lemac"]
+        self.quarterchord_sweep = data["quarterchord_sweep"]
+        self.x_lemac = data["x_lemac"]
         self.cd = data["cd"]
         self.cd0 = data["cd0"]
         self.cL_alpha = data["clalpha"]
@@ -60,30 +65,40 @@ class Wing():
         self.cm_ac = data["cm_ac"]
         self.e = data["e"]
         self.cm_alpha = data["cm_alpha"]
-        self.cL_approach = data["cLmax_flaps60"]
+        self.cL_approach = data["cLmax"]
         self.cL_alpha0 = data["cL0"]
         self.mach_cruise = v_cr / a_cr
-        self.cL_alpha0_approach = data["cL0_approach"]
+        self.cL_alpha0_approach = data["cL0"]
+        self.x_lewing = data["x_lewing"]
+        self.v_stall = data["v_stall"]
+        self.alpha_approach = data["alpha_approach"]
+        self.thickness_to_chord = data["thickness_to_chord"]
+
         # self.effective_aspectratio =  data[""] # Left out for now since it is not implemented yet
         # self.effective_span =  data[""] # Left out for now since it is not implemented yet
 
-    def dump(self):
-        data = {
-            "S": self.surface,
-            "taper": self.taper,
-            "A": self.aspectratio,
-            "b": self.span,
-            "c_root": self.chord_root,
-            "c_tip": self.chord_tip,
-            "mac": self.chord_mac,
-            "y_mac": self.y_mac,
-            "sweep_le": self.tan_sweep_LE,
-            "quarterchord_sweep": self.quarterchord_sweep,
-            "x_lemac": self.X_lemac,
-            "cd": self.cd
-        }
+        return data
 
-        with open(r"output/data_structures/aetheria_constants.json", "w") as jsonFile:
+    def dump(self):
+
+        with open(r"input/data_structures/aetheria_constants.json") as jsonFile:
+            data = json.load(jsonFile)
+
+        data["S"] = self.surface
+        data["taper"] = self.taper
+        data["A"] = self.aspectratio
+        data["b"] = self.span
+        data["c_root"] = self.chord_root
+        data["c_tip"] = self.chord_tip
+        data["mac"] = self.chord_mac
+        data["y_mac"] = self.y_mac
+        data["sweep_le"] = self.sweep_LE
+        data["quarterchord_sweep"] = self.quarterchord_sweep
+        data["x_lemac"] = self.x_lemac
+        data["cd"] = self.cd
+        data["x_lewing"] = self.x_lewing
+
+        with open(r"input/data_structures/aetheria_constants.json", "w") as jsonFile:
             json.dump(data, jsonFile, indent=4)
 
 

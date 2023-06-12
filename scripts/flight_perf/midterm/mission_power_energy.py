@@ -13,7 +13,7 @@ sys.path.append(str(list(pl.Path(__file__).parents)[3]))
 os.chdir(str(list(pl.Path(__file__).parents)[3]))
 
 from modules.flight_perf.EnergyPower import *
-import input.GeneralConstants as const
+import input.data_structures.GeneralConstants as const
     
 TEST = int(input("\n\nType 1 if you want to write the JSON data to your download folder instead of the repo, type 0 otherwise:\n")) # Set to true if you want to write to your downloads folders instead of rep0
 dict_directory = "input"
@@ -41,7 +41,7 @@ for dict_name in dict_names:
     #----------------------- Horizontal Climb --------------------------------------------------------------------
     v_aft= v_exhaust(data["mtom"], const.g0, const.rho_cr, data["mtom"]/data["diskloading"], const.v_cr)
     prop_eff_var = propeff(v_aft, const.v_cr)
-    climb_power_var = powerclimb(data["mtom"], const.g0, data["S"], const.rho_sl, data["ld_climb"], prop_eff_var, const.rho_cr)
+    climb_power_var = powerclimb(data["mtom"], const.g0, data["S"], const.rho_sl, data["ld_climb"], prop_eff_var, const.roc_cr)
     t_climb = (const.h_cruise  - const.h_transition) / const.roc_cr
     E_climb = climb_power_var * t_climb
     

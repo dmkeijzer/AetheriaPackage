@@ -119,18 +119,18 @@ def ctrl_formula_coefs(CLh_approach, CLAh_approach, l_h, MAC, Vh_V_2, Cm_ac, x_a
     q_ctrl = ((Cm_ac / CLAh_approach) - x_ac_stab_bar) / ((CLh_approach / CLAh_approach) * (l_h / MAC) * Vh_V_2)
     return m_ctrl, q_ctrl
 
-def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, plot=False):
+def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, A_h, plot=False, CLh_approach = None, stepsize = 0.002):
     log_final = np.zeros((0,6))
     depsda = HorTailClass.downwash
     MAC = WingClass.chord_mac
     Vh_V_2 = 0.95  # From SEAD, V-tail somewhat similar to fin-mounted stabiliser
     S = WingClass.surface
-    b_f = FuseClass.width_fuselage
-    h_f = FuseClass.height_fuselage
+    b_f = FuseClass.width_fuselage_outer
+    h_f = FuseClass.height_fuselage_outer
     b = WingClass.span
     Lambdac4 = WingClass.quarterchord_sweep
     taper = WingClass.taper
-    A_h = HorTailClass.aspect_ratio
+    # A_h = HorTailClass.aspect_ratio
     eta = 0.95
     Mach = WingClass.mach_cruise
     Lambdah2 = 0  # Assumed
@@ -138,18 +138,21 @@ def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, plot=F
     c_root = WingClass.chord_root
     l_f = FuseClass.length_fuselage
     CL0_approach = WingClass.cL_alpha0_approach
-    Cm_ac_wing = WingClass.cm
+    Cm_ac_wing = WingClass.cm_ac
     CLAh_approach = WingClass.cL_approach  # Assumes fuselage contribution negligible
-    x_lemac_x_rootc = WingClass.X_lemac
+    x_lemac_x_rootc = WingClass.x_lemac
     SM = 0.05  # Stability margin, standard
 
-    for wing_loc in np.linspace(0.3, 0.65, np.size(np.arange(-1,2,0.002))):
+    if CLh_approach == None:
+        CLh_approach = CLh_approach_estimate(A_h)
+
+    for wing_loc in np.linspace(0.3, 0.65, np.size(np.arange(-1,2,stepsize))):
         log_stab = np.zeros((0, 2))
         log_ctrl = np.zeros((0, 2))
         x_ac_stab_wing_bar = 0.24  # From graph from Torenbeek
         l_h = l_f * (1-wing_loc)
         l_fn = wing_loc * l_f - x_ac_stab_wing_bar * MAC - x_lemac_x_rootc
-        cglims = J1loading(wing_loc * l_f, l_f)[0]
+        cglims = J1loading(wing_loc * l_f, l_f)[1]
         frontcgexc = (cglims["frontcg"] - wing_loc * l_f + x_ac_stab_wing_bar * MAC)/ MAC
         rearcgexc = (cglims["rearcg"] - wing_loc * l_f + x_ac_stab_wing_bar * MAC)/ MAC
 
@@ -167,8 +170,6 @@ def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, plot=F
 
         m_stab, q_stab = stab_formula_coefs(CLah, CLaAh, depsda, l_h, MAC, Vh_V_2, x_ac_stab_bar, SM)
 
-        CLh_approach = CLh_approach_estimate(A_h)
-
         Cm_ac_flaps = -0.1825#From delta CL0
         Cm_ac_fuselage = cmac_fuselage_contr(b_f, l_f, h_f, CL0_approach, S, MAC, CLaAh)  # CLaAh for ctrl is different than for stab if cruise in compressible flow
         Cm_ac_nacelles = 0  # Assumed/missing data on nacelles
@@ -177,10 +178,10 @@ def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, plot=F
         m_ctrl, q_ctrl = ctrl_formula_coefs(CLh_approach, CLAh_approach, l_h, MAC, Vh_V_2, Cm_ac, x_ac_stab_bar) # x_ac_bar for ctrl is different than for stab if cruise in compressible flow
 
         #log_cgexc = np.vstack((log_cgexc, np.array([cglims["frontcg"], cglims["rearcg"], wing_loc])))
-        for x_aft_stab_bar in np.arange(-1,2,0.002):
+        for x_aft_stab_bar in np.arange(-1,2,stepsize):
             ShS_stab = m_stab * x_aft_stab_bar + q_stab
             log_stab = np.vstack((log_stab, np.array([x_aft_stab_bar, ShS_stab])))
-        for x_front_ctrl_bar in np.arange(-1,2,0.002):
+        for x_front_ctrl_bar in np.arange(-1,2,stepsize):
             ShS_ctrl = m_ctrl * x_front_ctrl_bar + q_ctrl
             log_ctrl = np.vstack((log_ctrl, np.array([x_front_ctrl_bar, ShS_ctrl])))
 
@@ -193,7 +194,17 @@ def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, plot=F
     if plot:
         plt.plot(log_final[:,0], log_final[:,1])
         plt.show()
-    return log_final[np.where(log_final[:,1] == np.min(log_final[:,1]))[0], 0:2]
+
+
+    WingClass.x_lewing = log_final[np.where(log_final[:,1] == np.min(log_final[:,1]))[0], 0:2][0][0] *FuseClass.length_fuselage - 0.24 * WingClass.chord_mac - WingClass.x_lemac
+    HorTailClass.hortailsurf_wingsurf =  log_final[np.where(log_final[:,1] == np.min(log_final[:,1]))[0], 0:2][0][1]
+    HorTailClass.surface = log_final[np.where(log_final[:,1] == np.min(log_final[:,1]))[0], 0:2][0][1] * WingClass.surface
+    #Update all values
+    WingClass.dump()
+    FuseClass.dump()
+    HorTailClass.dump()
+
+    return log_final[np.where(log_final[:,1] == np.min(log_final[:,1]))[0], 0:2], log_final[np.where(log_final[:,1] == np.min(log_final[:,1]))[0], -1][0] - x_ac_stab_bar
 
 if __name__ == "__main__":
     from input.data_structures import *

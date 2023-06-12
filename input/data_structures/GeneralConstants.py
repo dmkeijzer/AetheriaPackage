@@ -27,9 +27,10 @@ v_stall = 40
 roc_cr = 5
 rod_cr = 3 # Rate of descend 
 roc_hvr = 2
-h_cruise = 400          #[m]        O
+climb_gradient = 0.065
+descent_slope = 0.04
+h_cruise = 2400         #[m]        O
 mission_dist = 400e3  # m
-h_transition = 30 # meter PLACEHOLDER
 npax = 4                # Amount of passengers O
 ax_target_climb = 0.5*g0   # PLACEHOLDER
 ay_target_climb = 0.2*g0 # PLACEHOLDER
@@ -61,7 +62,7 @@ mhu = atm.viscosity_dyn()           #[kg/m^3]   O   the dynamic viscosity
 
 # Power
 p_density = 7e3     # w totalEnergy/kg    ? # averaged from:  A review: high power density motors for electric vehicles
-
+diskarea = 4.2
 
 #standard masses
 m_pl =  510  # kg
@@ -73,12 +74,17 @@ xcm = 0.2973 # NACA2412
 A_base = 0 #Assumed 0 base area
 frac_lam_fus = 0.05
 frac_lam_wing = 0.1
-k = 0.634 * 10**(-5) # Surface smoothness parameter
+k = 0.634 * 10**(-5)  # Surface smoothness parameter
+
+#airfoil V-tail
+toc_tail = 0.12  # NACA 0012
+xcm_tail = 0.2903
+
 
 # Time constants for midterm
 t_takeoff = 15.3
-t_trans = 10 #PLACEHOLDER
 t_loiter = 20*60
+t_landing = 15
 
 #fuelcell input
 VolumeDensityFuellCell = 3.25 #kW /l

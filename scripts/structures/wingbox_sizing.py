@@ -13,75 +13,42 @@ from input.data_structures.material import Material
 from input.data_structures.wing import Wing
 from input.data_structures.engine import Engine
 from input.data_structures.ISA_tool import ISA
+from input.data_structures.aero import Aero
 
 #------------ Instantiate classes and load values from JSON -----------------------
 WingClass = Wing()
 MatClass = Material()
 EngClass = Engine()
+AeroClass =  Aero()
 ISAClass = ISA(const.h_cruise)
 
 WingClass.load()
 MatClass.load()
 EngClass.load()
+AeroClass.load()
 #-----------------------------------------------------------------------------------------
 
 #--------------------------- Assign correct values to global values in wingbox_georgina -----------
 
 
-wb.taper = WingClass.taper
-wb.rho = MatClass.rho
-wb.W_eng = EngClass.mass_pertotalengine
-wb.E = MatClass.E
-wb.poisson = MatClass.poisson
-wb.pb= MatClass.pb
-wb.beta= MatClass.beta
-wb.g= MatClass.g
-wb.sigma_yield = MatClass.sigma_yield
-wb.m_crip = MatClass.m_crip
-wb.sigma_uts = MatClass.sigma_uts
-wb.n_max= const.n_max_req
-wb.y_rotor_loc = EngClass.y_rotor_loc
+# wb.taper = WingClass.taper
+# wb.rho = MatClass.rho
+# wb.W_eng = EngClass.mass_pertotalengine
+# wb.E = MatClass.E
+# wb.poisson = MatClass.poisson
+# wb.pb= MatClass.pb
+# wb.beta= MatClass.beta
+# wb.g= MatClass.g
+# wb.sigma_yield = MatClass.sigma_yield
+# wb.m_crip = MatClass.m_crip
+# wb.sigma_uts = MatClass.sigma_uts
+# wb.n_max= const.n_max_req
+# wb.y_rotor_loc = EngClass.y_rotor_loc
 
 
-#------------------------------- Run script and save----------------------------------------------
-# # NOTE Note that the half span is inserted not full span!!!!!!!!!!!!
-
-# # bnds = wb.create_bounds(WingClass) # create bounds
-# bnds = ((0.001, 0.005), (0.001, 0.005), (0.007, 0.05), (0.001, 0.01),(0.001, 0.01),(0.001, 0.003),(0.004, 0.005),(0.001, 0.003))
-# res = wb.wingbox_optimization(x0, bnds, WingClass)
-
-# with open(r"output/structures/wingbox_output.pkl", "wb") as f:
-#     pickle.dump(res, f)
-#     print("Succesfully loaded data structure into wingbox_output.pkl")
- 
-# #------------------------------- Print out results  ----------------------------------------------
-# str = ["Half span", "chord root", "t spar", "t rib", "Rib pitch", 
-#         "Pitch stringer", "Height Stringer", "t stringer", "Stringer Flange Width", "thickness"]
-# vec_res = res.x
-
-# print(f"\nExited succesfully = {res.success} [kg]")
-# print(f"\nExecution time = {np.round(res.execution_time, 1)} [s] = {np.round(res.execution_time/60, 1)} [min]")
-# print(f"\nRequired iterations = {res.nit} ")
-# print(f"\nWing weight = {res.fun} [kg]\n")
-
-# i = 0
-
-# for str_ele, res_ele  in zip(str, vec_res):
-#     i += 1
-#     if i > 2:
-#         print(f"{str_ele} = {np.round(res_ele*1000, 4)} [mm]")
-#     else:     
-#         print(f"{str_ele} = {np.round(res_ele, 4)} [m]")
-
-#---------------------------------------------------------------------------------------------------
-
-
-# arr = np.random.randint(0,100,8)
-# arr = [0.003, 0.003, 0.12, 0.07, 0.003,0.003,0.004,0.0022]
-x0=np.array([0.003, 0.003, 0.12, 0.07, 0.003,0.003,0.004,0.0022])    # :param x0: Initial estimate Design vector X = [b, cr, tsp, trib, L, bst, hst, tst, wst, t]
+x0=np.array([0.01, 0.003, 0.07, 0.003,0.009,0.006, 0.003])    # :param x0: Initial estimate Design vector X = [b, cr, tsp, trib, L, bst, hst, tst, wst, t]
 
 
     
 
-optimizertest = wb.WingboxOptimizer(x0, WingClass, EngClass)
-print(optimizertest.optimize())
+optimizertest = wb.WingboxOptimizer(x0,WingClass, EngClass, MatClass, AeroClass)

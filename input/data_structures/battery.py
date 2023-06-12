@@ -8,18 +8,14 @@ import numpy as np
 import os
 import sys 
 import pathlib as pl
-sys.path.append(str(list(pl.Path(__file__).parents)[1]))
-os.chdir(str(list(pl.Path(__file__).parents)[1]))
 
 
 @dataclass
 class Battery:
     """
-    This class is to estimate the parameters of a Hydrogen tank.
+    This class is to estimate the parameters battery.
 
     :param EnergyDensity: Specific energy density [kWh/kg]
-    :param Energy: Required total energy for the tank [kWh]
-    :param Power: Power output of the tank [kW]
     :param PowerDensity: Power density [kW/kg]
     :param VolumeDensity: Specific volumetric density [kWh/l]
     :param CostDensity: Cost density [US$/kWh]
@@ -29,7 +25,7 @@ class Battery:
     :param End_of_life
     """
     #densities
-    EnergyDensity : float = 0.34
+    EnergyDensity : float = 0.3
     PowerDensity : float  = 3.8
     VolumeDensity : float = .85
     CostDensity : float = None
@@ -39,7 +35,6 @@ class Battery:
     Depth_of_discharge : float = 1
     End_of_life : float = 0.8
     ChargingEfficiency : float = None
-
 
 
     def energymass(self, Energy):

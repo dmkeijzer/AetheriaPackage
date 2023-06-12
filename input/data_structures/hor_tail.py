@@ -20,6 +20,10 @@ class HorTail():
     #cL_approach_h: float = None
     #chord_mac_h: float = None
     downwash: float = None
+    hortailsurf_wingsurf: float = None
+    sweep_halfchord_h: float = None
+    downwash_angle: float = None
+    taper_h: float = None
     def load(self):
         """ Initializes the class automatically from the JSON file
         """        
@@ -35,16 +39,20 @@ class HorTail():
         #self.cL_approach_h = data["cL_approach_h"]
         #self.chord_mac_h = data["mac_h"]
         self.downwash = data["depsda"]
-
+        self.hortailsurf_wingsurf = data["hortailsurf_wingsurf"]
+        self.sweep_halfchord_h = data["sweep_halfchord_h"]
+        self.downwash_angle = data["downwash_angle"]
+        self.taper_h = 1
 
     def dump(self):
+        with open(r"input/data_structures/aetheria_constants.json") as jsonFile:
+            data = json.load(jsonFile)
         """Dumps values into json file"""
-        data = {
-        "S_h": self.surface,
-        "A_h": self.aspect_ratio,
-        "t_r_h": self.t_r_h,
-        # "b_h": self.b_h
-        }
 
-        with open(r"output/data_structures/aetheria_constants.json", "w") as jsonFile:
+        data["S_h"] = self.surface
+        data["A_h"] = self.aspect_ratio
+        data["t_r_h"] = self.t_r_h
+        data["hortailsurf_wingsurf"] = self.hortailsurf_wingsurf
+
+        with open(r"input/data_structures/aetheria_constants.json", "w") as jsonFile:
             json.dump(data, jsonFile, indent=6)
