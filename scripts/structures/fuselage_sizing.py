@@ -16,8 +16,7 @@ import input.data_structures.GeneralConstants as const
 
 m = 2500
 V = 0.5
-#s, A = fl.simple_crash_box(m, 20, 3.15*10**6, 9.1)
-#h0 = 1.6 + s
+
 
 h0 = 1.8
 b0 = 1.6
@@ -38,7 +37,6 @@ l_fcs = 2 * l_fuelcell
 # densification strain
 # impact velocity
 # initial crashbox height
-
 
 s_p, s_y, e_0, e_d, v0, s0 = 0.5*10**6, 1.2*10**6, 0.038, 0.9, 9.1, 0.5
 crash_box_height, crash_box_area = fl.crash_box_height_convergerence(s_p, s_y, e_0, e_d, v0, s0, m)
