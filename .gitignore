@@ -11,6 +11,7 @@ __pycache__/
 .vscode
 .idea
 *.cfg
+*.lprof
 
 # Distribution / packaging
 .Python
@@ -167,4 +168,6 @@ cython_debug/
 .idea/misc.xml
 .idea/AetheriaPackage.iml
 .idea/AetheriaPackage.iml
-.idea/misc.xml
+.idea/misc.xml'
+.modules/avlwrapper/config.cfg
+modules/avlwrapper/config.cfg

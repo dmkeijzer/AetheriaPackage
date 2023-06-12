@@ -49,6 +49,7 @@ D=zeros([18 4]);
 D(13:end,1:end)=pinv(prop_thrust_to_uvec);
 
 sys=ss(A,B,C,D);
+
 s=tf([1 0],1);
 low_pass_filter=K_prop/(T_prop*s+1);
 

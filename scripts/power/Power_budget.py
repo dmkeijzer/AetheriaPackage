@@ -1,33 +1,37 @@
-"""
-Contains constants for the power budget.
-"""
+from dataclasses import dataclass
 
+@dataclass
 class Power_Budget:
-    def __init__(self, m):
-        # Constant required power
-        self.avionics = 233.8  # [W]
-        self.airco = 2783.1  # [W]
-        self.battery_cooling = 30 * m/72  # [W]
-        self.autopilot = 140.1  # [W]
-        self.trim = 50.1  # [W]
-        self.passenger_power = 377.1 # [W]
-        self.external_lights = 108.5  # [W]
-        self.deice = 2783.1  # [W]
+    """
+    Contains constants for the power budget.
+        """
+    
+    mass_battery_kg: float
+    # Constant required power
+    avionics = 233.8  # [W]
+    airco = 2783.1  # [W]
+    battery_cooling = 30 * mass_battery_kg /72  # [W]
+    autopilot = 140.1  # [W]
+    trim = 50.1  # [W]
+    passenger_power = 377.1 # [W]
+    external_lights = 108.5  # [W]
+    deice = 2783.1  # [W]
 
-        # Non continuous power
-        self.landing_gear = 46.4  # [W]
-        self.wing_rot_mech = 19500  # [W]
+    # Non continuous power
+    landing_gear = 46.4  # [W]
+    wing_rot_mech = 19500  # [W]'
 
+    @property
     def P_continuous(self):
         return self.avionics + self.airco + self.battery_cooling + self.autopilot + self.trim + self.passenger_power \
                + self.external_lights + self.deice
-
+    @property
     def E_landing_gear(self, t_lg_rot):
         return self.landing_gear * t_lg_rot
-
+    @property
     def E_wing_rot(self, t_transition):
         return self.wing_rot_mech * t_transition
-    
+    @property
     def Total_power_budget(self):
         return self.avionics + self.airco + self.battery_cooling + self.autopilot + self.trim + self.passenger_power \
                + self.external_lights + self.deice + self.landing_gear + self.wing_rot_mech

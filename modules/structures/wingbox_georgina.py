@@ -50,17 +50,22 @@ class Wingbox():
         self.engine_weight = engine.mass_pertotalengine
         self.y_rotor_loc = engine.y_rotor_loc
         self.nacelle_w = engine.nacelle_width #TODO Check if it gets updated
-        self.n_str = 7 
+        self.n_str = 2 
         #GEOMETRY
         self.width = 0.6*self.chord_root
         self.str_pitch = 0.6*self.chord_root/(self.n_str-1)#TODO VERANDER TERUG
         
         #Set number of ribs in inboard and outboard section
         self.n_ribs_sec0 = 1 #Number of ribs inboard of inboard engine
-        self.n_ribs_sec1 = 4 #Number of ribs inboard and outboard engines
+        self.n_ribs_sec1 = 1 #Number of ribs inboard and outboard engines
         self.n_sections = self.n_ribs_sec0 + self.n_ribs_sec1 + 3
         #self.max_rib_pitch = np.max(np.diff(self.get_y_rib_loc()))
-        self.max_rib_pitch = 1.05
+        self.y_rib_0 = np.array([self.y_rotor_loc[0] - 0.5 * self.nacelle_w])
+        self.y_rib_1 = np.array([self.y_rotor_loc[0] + 0.5 * self.nacelle_w])
+        self.y_rib_2 = np.array([self.span/2])
+        self.rib_pitch0 = self.y_rib_0/(self.n_ribs_sec0 + 1)
+        self.rib_pitch1 = (self.y_rib_2-self.y_rib_1)/(self.n_ribs_sec1 + 1)
+        self.max_rib_pitch = max(self.rib_pitch0, self.rib_pitch1)
 
     def aero(self, y):
         return  self.lift_func(y)
@@ -72,14 +77,10 @@ class Wingbox():
 
     #Determine rib positions in spanwise direction (y)
     def get_y_rib_loc(self):
-        y_rib_0 = np.array([self.y_rotor_loc[0] - 0.5 * self.nacelle_w])
-        y_rib_1 = np.array([self.y_rotor_loc[0] + 0.5 * self.nacelle_w])
+        y_rib_sec0 = np.arange(0, self.y_rib_0, self.y_rib_0/(self.n_ribs_sec0 + 1))
+        y_rib_sec1 = np.arange(self.y_rib_1,self.y_rib_2, (self.y_rib_2-self.y_rib_1)/(self.n_ribs_sec1 + 1))
 
-        y_rib_2 = np.array([self.span/2])
-        y_rib_sec0 = np.arange(0, y_rib_0, y_rib_0/(self.n_ribs_sec0 + 1))
-        y_rib_sec1 = np.arange(y_rib_1,y_rib_2, (y_rib_2-y_rib_1)/(self.n_ribs_sec1 + 1))
-
-        y_rib_loc = np.concatenate([y_rib_0,y_rib_2,y_rib_sec0,y_rib_sec1])
+        y_rib_loc = np.concatenate([self.y_rib_0,self.y_rib_2,y_rib_sec0,y_rib_sec1])
 
         y_rib_loc = np.sort(y_rib_loc)
         # y_rib_loc = np.arange(0, 7 / 2 + 0.875, 0.875) #TODO VERANDER TERUG
@@ -987,14 +988,14 @@ def WingboxOptimizer(x, wing, engine, material, aero):
 
 
     # Define constraints 
-    prob.model.add_constraint('wingbox_design.global_local', lower=0.)
-    prob.model.add_constraint('wingbox_design.post_buckling', lower=0.)
-    prob.model.add_constraint('wingbox_design.von_mises', lower=0.)
-    prob.model.add_constraint('wingbox_design.buckling_constr', lower=1.)
-    prob.model.add_constraint('wingbox_design.flange_loc_loc', lower=0.)
-    prob.model.add_constraint('wingbox_design.local_column', lower=0.) #FIXME Causing exit mode 8
-    prob.model.add_constraint('wingbox_design.crippling', lower=0.)
-    prob.model.add_constraint('wingbox_design.web_flange', lower=0.)
+    prob.model.add_constraint('wingbox_design.global_local', lower=1000.)
+    prob.model.add_constraint('wingbox_design.post_buckling', lower=1000.)
+    prob.model.add_constraint('wingbox_design.von_mises', lower=1000.)
+    prob.model.add_constraint('wingbox_design.buckling_constr', lower=1000.)
+    prob.model.add_constraint('wingbox_design.flange_loc_loc', lower=1000.)
+    prob.model.add_constraint('wingbox_design.local_column', lower=1000.) #FIXME Causing exit mode 8
+    prob.model.add_constraint('wingbox_design.crippling', lower=1000.)
+    prob.model.add_constraint('wingbox_design.web_flange', lower=1000.)
 
     prob.driver = om.ScipyOptimizeDriver()
     prob.driver.options['optimizer'] = 'SLSQP'

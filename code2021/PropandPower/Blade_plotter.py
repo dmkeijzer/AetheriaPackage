@@ -23,7 +23,7 @@ class PlotBlade:
         self.tc_ratio = tc_ratio
 
     def load_airfoil(self):
-        file = open('../PropandPower/'+self.airfoil_name)
+        file = open('code2021/PropandPower/'+self.airfoil_name)
 
         airfoil = file.readlines()
 
