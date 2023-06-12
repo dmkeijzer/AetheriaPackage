@@ -6,7 +6,6 @@ import pathlib as pl
 import os
 
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
-os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
 
 @dataclass
@@ -33,6 +32,7 @@ class PerformanceParameters:
     MTOM: float = None
 
     def load(self):
+        os.chdir(str(list(pl.Path(__file__).parents)[2]))
         with open(r"input/data_structures/aetheria_constants.json") as jsonFile:
             data = json.load(jsonFile)
 
