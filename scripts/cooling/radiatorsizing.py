@@ -36,6 +36,7 @@ fc = FuelCell()
 fc.load()
 water = Fluid(viscosity = 0.355e-3, thermal_conductivity = 0.65, heat_capacity = 4184, density=997)
 air = Fluid(heat_capacity=1005, density= 1.225,viscosity=18e-6, thermal_conductivity=25.87e-3)
+
 HX = Radiator(W_HX= W_HX, H_HX= H_HX, Z_HX= Z_HX)
 HX.load()
 HX = RadiatorPerformance.hx_geometry(HX)
