@@ -13,8 +13,10 @@ from input.data_structures.GeneralConstants import *
 
 @dataclass
 class Aero():
-    cd: float = None
-    cd0: float = None
+    cd_cruise: float = None
+    cd0_cruise: float = None
+    cd_upsweep: float = None
+    cd_base: float = None
     cL_alpha: float = None
     cL_cruise: float = None
     cm_ac: float = None
@@ -30,13 +32,19 @@ class Aero():
     downwash_angle: float = None
     downwash_angle_wing: float = None
     downwash_angle_prop: float = None
+    ld_stall: float = None
+    cd_stall: float = None
+    cd0_stall: float = None
+    mach_stall: float = None
 
     def load(self):
         with open(r"input/data_structures/aetheria_constants.json") as jsonFile:
             data = json.load(jsonFile)
 
-        self.cd =  data["cd"]
-        self.cd0 =  data["cd0"]
+        self.cd_cruise =  data["cd"]
+        self.cd0_cruise =  data["cd0"]
+        self.cd_upsweep = data['cd_upsweep']
+        self.cd_base = data['cd_base']
         self.cL_alpha =  datcom_cl_alpha(A=data["A"], mach=v_cr/a_cr, sweep_half=-data["sweep_le"])
         self.cL_cruise =  data["cL_cruise"]
         self.cm_ac  =  data["cm_ac"]
@@ -52,6 +60,10 @@ class Aero():
         self.downwash_angle = data['downwash_angle']
         self.downwash_angle_wing = data['downwash_angle_wing']
         self.downwash_angle_prop = data['downwash_angle_prop']
+        self.ld_stall = data['ld_stall']
+        self.cd_stall = data['cd_stall']
+        self.cd0_stall = data['cd0_stall']
+        self.mach_stall = data['mach_stall']
         
         
 
@@ -59,8 +71,10 @@ class Aero():
         with open(r"input/data_structures/aetheria_constants.json") as jsonFile:
             data = json.load(jsonFile)
 
-        data["cd"] = self.cd
-        data["cd0"] = self.cd0
+        data["cd"] = self.cd_cruise
+        data["cd0"] = self.cd0_cruise
+        data['cd_upsweep'] = self.cd_upsweep
+        data['cd_base'] = self.cd_base
         data["cL_cruise"] = self.cruise
         data["cm_ac"] = self.cm_ac
         data["e"] = self.e
@@ -75,7 +89,10 @@ class Aero():
         data['downwash_angle_'] = self.downwash_angle 
         data['downwash_angle_wing'] = self.downwash_angle_wing 
         data['downwash_angle_prop'] = self.downwash_angle_prop 
-        
+        data['ld_stall'] = self.ld_stall
+        data['cd_stall'] = self.cd_stall
+        data['cd0_stall'] = self.cd0_stall
+        data['mach_stall'] = self.mach_stall
 
         with open(r"output/data_structures/aetheria_constants.json", "w") as jsonFile:
             json.dump(data, jsonFile, indent=6)
