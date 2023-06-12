@@ -13,7 +13,7 @@ V = 0.5
 number_tanks = 2
 
 # resolution of 2D graphs
-resolution = 20
+resolution = 200
 
 # range of length of tanks
 l_tank = np.linspace(0.3, 6, resolution)
@@ -22,4 +22,4 @@ l_tank = np.linspace(0.3, 6, resolution)
 fl.plot_variable(h0, b0, V, l_tank, number_tanks, 'ARe', np.linspace(1, 3, resolution), 'Beta', 0.5)
 
 # Plot with Beta as variable (using the 'viridis_r' colormap in reverse order)
-fl.plot_variable(h0, b0, V, l_tank, number_tanks,'Beta', np.linspace(0.3, 0.6, resolution), 'ARe', 2)
+fl.plot_variable(h0, b0, V, l_tank, number_tanks,'Beta', np.linspace(0.3, 0.6, resolution), 'ARe', 2.75)
