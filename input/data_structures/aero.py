@@ -43,6 +43,7 @@ class Aero():
     mach_stall: float = None
     deps_da: float = None
     mach_cruise: float = None
+    alpha_approach: float = None
 
     def load(self):
         with open(r"input/data_structures/aetheria_constants.json") as jsonFile:
