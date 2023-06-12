@@ -13,33 +13,33 @@ from modules.aero.clean_class2drag import *
 from input.data_structures import *
 from input.data_structures.ISA_tool import ISA
 from input.data_structures.vee_tail import VeeTail
-AeroClass = Aero()
-FuselageClass = Fuselage()
-VTailClass = VeeTail()
-HorTailClass = HorTail()
-WingClass = Wing()
-AeroClass.load()
-FuselageClass.load()
-VTailClass.load()
-HorTailClass.load()
-WingClass.load()
+# AeroClass = Aero()
+# FuselageClass = Fuselage()
+# VTailClass = VeeTail()
+# HorTailClass = HorTail()
+# WingClass = Wing()
+# AeroClass.load()
+# FuselageClass.load()
+# VTailClass.load()
+# HorTailClass.load()
+# WingClass.load()
 
 
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
 # import CL_cruise from json files
 
 
-atm = ISA(const.h_cruise)
-t_cr = atm.temperature()
-rho_cr = atm.density()
-mhu = atm.viscosity_dyn()
+# atm = ISA(const.h_cruise)
+# t_cr = atm.temperature()
+# rho_cr = atm.density()
+# mhu = atm.viscosity_dyn()
 
-def final_drag_estimation():
+def final_drag_estimation(WingClass, FuselageClass, VTailClass, AeroClass, HortailClass):
     mac = WingClass.chord_mac
 
     # General flight variables
-    re_var = Reynolds(rho_cr, const.v_cr, mac, mhu, const.k)
-    M_var = Mach_cruise(const.v_cr, const.gamma, const.R, t_cr)
+    re_var = Reynolds(const.rho_cr, const.v_cr, mac, const.mhu, const.k)
+    M_var = Mach_cruise(const.v_cr, const.gamma, const.R, const.t_cr)
     Oswald_eff_var = Oswald_eff(WingClass.aspectratio)
 
 
@@ -99,13 +99,13 @@ def final_drag_estimation():
 
     # ------------------------ DRAG DURING STALL -------------- 
     # General flight variables
-    re_var = Reynolds(rho_sl, const.v_stall, mac, mhu, const.k)
+    re_var = Reynolds(rho_sl, const.v_stall, mac, const.mhu, const.k)
     M_var = Mach_cruise(const.v_stall, const.gamma, const.R, t_stall)
     Oswald_eff_var = Oswald_eff(WingClass.aspectratio)
 
 
     # Writing to Class
-    WingClass.e = Oswald_eff_var
+    AeroClass.e = Oswald_eff_var
     AeroClass.deps_da = 0.1
 
     # Form factor
@@ -152,6 +152,5 @@ def final_drag_estimation():
     AeroClass.cd0_stall = CD0_var
     AeroClass.mach_stall = M_var
 
-
-    return AeroClass
+    return WingClass, FuselageClass, VTailClass, AeroClass, HortailClass
 

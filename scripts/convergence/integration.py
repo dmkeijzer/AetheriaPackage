@@ -28,7 +28,7 @@ def run_integration():
     fuselage = Fuselage()
     vtail = VeeTail()
     stability = Stab()
-    #----------------------------------------------------------------------
+    #----------------------------------------------------------------------------------
 
     #------------------------ Load cases for first time----------------------------------------
     mission.load()
@@ -40,6 +40,7 @@ def run_integration():
     vtail.load() 
     stability.load() 
     #----------------------------------------------------------------------
+
     # Preliminary Sizing
     mission, wing,  engine, aero = get_wing_power_loading(mission, wing, engine, aero)
 
