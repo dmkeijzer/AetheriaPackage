@@ -44,6 +44,7 @@ class Aero():
     deps_da: float = None
     mach_cruise: float = None
     alpha_approach: float = None
+    cL_plus_slipstream: float = None
 
     def load(self):
         with open(r"input/data_structures/aetheria_constants.json") as jsonFile:
@@ -81,6 +82,7 @@ class Aero():
         self.mach_stall = data['mach_stall']
         self.mach_cruise = data['mach_cruise']
         self.deps_da = data['depsda']
+        self.cL_plus_slipstream = data["cL_plus_slipstream"]
 
 
     def dump(self):
@@ -118,6 +120,7 @@ class Aero():
         data['mach_stall'] = self.mach_stall
         data['mach_cruise'] = self.mach_cruise
         data['depsda'] = self.deps_da
+        data["cL_plus_slipstream"] = self.cL_plus_slipstream 
 
         with open(r"input/data_structures/aetheria_constants.json", "w") as jsonFile:
             json.dump(data, jsonFile, indent=6)
