@@ -25,3 +25,9 @@ def cL_max_flaps60(cl_max_airfoil, v_stall, v_stall_flaps60):
     cL_max = 0.9*cl_max_airfoil
     return v_stall**2/v_stall_flaps60**2 * cL_max
 
+
+def cL_alpha_wingfus(cL_alpha_wing, diameter_fus, wing_span):
+
+    x = diameter_fus/wing_span
+    K_wf = 1 + 0.025*x - 0.25*x**2
+    return K_wf*cL_alpha_wing
