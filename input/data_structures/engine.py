@@ -8,7 +8,7 @@ sys.path.append(str(list(pl.Path(__file__).parents)[0]))
 
 
 @dataclass
-class Engine:
+class Engine():
     """
     This class is to estimate the parameters of a Fuel Cell.
 

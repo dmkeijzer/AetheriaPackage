@@ -34,8 +34,11 @@ overall_heat_transfer_capacity = np.arange(0.5,6,0.1) * 1500 #m^2
 bat = Battery(Efficiency= 0.9)
 fc = FuelCell()
 fc.load()
-water = Fluid(viscosity = 0.355e-3, thermal_conductivity = 0.65, heat_capacity = 4184, density=997)
+
+
+coolant = Fluid(viscosity = 0.355e-3, thermal_conductivity = 0.65, heat_capacity = 4184, density=997)
 air = Fluid(heat_capacity=1005, density= 1.225,viscosity=18e-6, thermal_conductivity=25.87e-3)
+
 HX = Radiator(W_HX= W_HX, H_HX= H_HX, Z_HX= Z_HX)
 HX.load()
 HX = RadiatorPerformance.hx_geometry(HX)
@@ -47,14 +50,14 @@ totalHeat = heatfuelcell + heatbattery
 
 
 #mass flow and heat capacity rate
-mass_flow_hot = heatfuelcell / water.heat_capacity /dT
+mass_flow_hot = heatfuelcell / coolant.heat_capacity /dT
 pfan = CoolingsystemPerformance.power_fan_airspeed(air_speed,fan_area= area_inlet  ,density = air.density)
-c_hot = water.heat_capacity * mass_flow_hot
+c_hot = coolant.heat_capacity * mass_flow_hot
 mass_flow_cold = air.density * area_inlet * air_speed
 c_cold = air.heat_capacity * mass_flow_cold
 
 #calculate calculate heat radiated
-R_tot_HX = RadiatorPerformance.cooling_radiator(HX= HX, mass_flow_cold= mass_flow_cold, mass_flow_hot = mass_flow_hot,air = air, coolant = water)
+R_tot_HX = RadiatorPerformance.cooling_radiator(HX= HX, mass_flow_cold= mass_flow_cold, mass_flow_hot = mass_flow_hot,air = air, coolant = coolant)
 Q_expelled = CoolingsystemPerformance.calculate_heat_expelled(c_hot = c_hot, c_cold = c_cold, 
                                                    T_hot_in = T_h_in, T_cold_in= T_air, 
                                                    overall_heat_transfer_capacity= 1/R_tot_HX )

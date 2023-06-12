@@ -13,10 +13,11 @@ from modules.aero.clean_class2drag import *
 from input.data_structures import *
 from input.data_structures.ISA_tool import ISA
 from input.data_structures.vee_tail import VeeTail
-
+AeroClass = Aero()
 FuselageClass = Fuselage()
 VTailClass = VeeTail()
 HorTailClass = HorTail()
+AeroClass.load()
 FuselageClass.load()
 VTailClass.load()
 HorTailClass.load()
@@ -98,11 +99,11 @@ print("CL cruise", total_cL)
 print("L/D cruise", lift_over_drag_var)
 
 # Writing to JSON file
-data["ld_cr"] = lift_over_drag_var
-data["cd"] = CD_var
-data["cd0"] = CD0_var
-data["cd_upsweep"] = CD_upsweep_var
-data["cd_base"] = CD_base_var
+AeroClass.ld_cruise = lift_over_drag_var
+AeroClass.cd_cruise = CD_var
+AeroClass.cd0_cruise = CD0_var
+AeroClass.cd_upsweep = CD_upsweep_var
+AeroClass.cd_base = CD_base_var
 
 
 # ------------------------ DRAG DURING STALL -------------- 
@@ -154,11 +155,12 @@ print("CD in stall", CD_var)
 print("CD0 stall", CD0_var)
 print("L/D stall", lift_over_drag_var)
 
-# Writing to JSON file
-data["ld_stall"] = lift_over_drag_var
-data["cd_stall"] = CD_var
-data["cd0_stall"] = CD0_var
-data['mach_stall'] = M_var
+# Writing to classes file
+AeroClass.ld_stall = lift_over_drag_var
+AeroClass.cd_stall = CD_var
+AeroClass.cd0_stall = CD0_var
+AeroClass.mach_stall = M_var
+
 
 
 

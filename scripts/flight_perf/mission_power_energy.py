@@ -84,7 +84,7 @@ for dict_name in dict_names:
     # print('t', t_trans_landing)
 
 
-        # ----------------------- Horizontal Descend-----------------------
+        # ----------------------- Horizontal Descent-----------------------
     P_desc = powerdescend(data["mtom"], const.g0, WingClass.surface, rho_climb, AeroClass.ld_climb, prop_eff_var, const.rod_cr)
     t_desc = (const.h_cruise - final_trans_altitude_landing)/const.rod_cr # Equal descend as ascend
     E_desc = P_desc* t_desc
