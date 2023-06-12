@@ -24,23 +24,7 @@ class Wing():
     x_lemac: float = None
     effective_aspectratio: float = None
     effective_span: float = None
-
-    # Aero part of the wing
-    cd: float = None
-    cd0: float = None
-    cL_alpha: float = None
-    cL_cruise: float = None
-    cm_ac: float = None
-    e: float = None
-    cm_alpha: float = None
-    cL_approach: float = None
-    cL_alpha0: float = None
-    mach_cruise: float = None
-    cL_alpha0_approach: float = None
     x_lewing: float = None
-    v_stall: float = None
-    v_approach: float = None
-    alpha_approach: float = None
     thickness_to_chord: float = None
 
     def load(self):
@@ -58,20 +42,8 @@ class Wing():
         self.sweep_LE = data["sweep_le"]
         self.quarterchord_sweep = data["quarterchord_sweep"]
         self.x_lemac = data["x_lemac"]
-        self.cd = data["cd"]
-        self.cd0 = data["cd0"]
-        self.cL_alpha = data["clalpha"]
-        self.cL_cruise = data["cL_cruise"]
-        self.cm_ac = data["cm_ac"]
-        self.e = data["e"]
-        self.cm_alpha = data["cm_alpha"]
-        self.cL_approach = data["cLmax"]
-        self.cL_alpha0 = data["cL0"]
         self.mach_cruise = v_cr / a_cr
-        self.cL_alpha0_approach = data["cL0"]
         self.x_lewing = data["x_lewing"]
-        self.v_stall = data["v_stall"]
-        self.alpha_approach = data["alpha_approach"]
         self.thickness_to_chord = data["thickness_to_chord"]
 
         # self.effective_aspectratio =  data[""] # Left out for now since it is not implemented yet
@@ -95,7 +67,6 @@ class Wing():
         data["sweep_le"] = self.sweep_LE
         data["quarterchord_sweep"] = self.quarterchord_sweep
         data["x_lemac"] = self.x_lemac
-        data["cd"] = self.cd
         data["x_lewing"] = self.x_lewing
 
         with open(r"input/data_structures/aetheria_constants.json", "w") as jsonFile:

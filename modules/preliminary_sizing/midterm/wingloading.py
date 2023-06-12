@@ -13,8 +13,6 @@ os.chdir(str(list(pl.Path(__file__).parents)[3]))
 
 import input.data_structures.GeneralConstants as const
 
-def wingloading_stall(CLmax,V_stall,rho):
-    return CLmax*0.5*rho*V_stall*V_stall
 
 def plot_wing_power_loading_graphs(dict_directory,dict_name,i):
     #Check if it"s lilium or not to define the variable that will say to vertical_flight what formula to use.

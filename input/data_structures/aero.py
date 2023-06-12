@@ -25,6 +25,7 @@ class Aero():
     e: float = None
     cm_alpha: float = None
     cL_alpha: float = None
+    cL_alpha0_approach: float = None
     alpha_zero_L: float = None
     cdi_climb_clean: float = None
     cl_climb_clean: float = None
@@ -60,11 +61,11 @@ class Aero():
         self.cl_alpha = data["cl_alpha"]
         self.alpha_zero_L = data['alpha_zero_L']
         self.cdi_climb_clean = data["cdi_climb_clean"]
-        # self.cl_climb_clean = data["cl_climb_clean"]
         self.alpha_climb_clean = data["alpha_climb_clean"] 
         self.ld_climb  = data["ld_climb"] 
         self.v_stall = data['v_stall']
         self.ld_cruise = data['ld_cr']
+        self.cL_alpha0_approach = data["cL0"]
         self.downwash_angle = data['downwash_angle']
         self.downwash_angle_wing = data['downwash_angle_wing']
         self.downwash_angle_prop = data['downwash_angle_prop']

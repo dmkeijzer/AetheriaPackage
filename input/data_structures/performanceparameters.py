@@ -29,11 +29,15 @@ class PerformanceParameters:
     rate_of_descent_cruise : float = None
     rate_of_climb_hover: float = None
     cruise_velocity : float = None
+    v_stall: float = None
+    v_approach: float = None
     MTOM: float = None
-    wing_loading: float = None
+    wing_loading_cruise: float = None
     Stots: float = None # Total area of wing reference area
     prop_eff: float = None # Propulsive efficiency
     turn_loadfactor: float = None # Turning load factor
+    v_max: float = None
+    glide_slope: float = None
 
 
     def load(self):
@@ -51,10 +55,13 @@ class PerformanceParameters:
         self.rate_of_climb_hover = constants.roc_hvr
         self.cruise_velocity = constants.v_cr
         self.MTOM = data["mtom"]
-        self.wing_loading = data["WS"]
+        self.wing_loading_cruise = data["WS"]
         self.Stots = data["StotS"]
         self.prop_eff = data["prop_eff"]
-        self.turn_loadfactor 
+        self.turn_loadfactor = data["turn_loadfactor"]
+        self.v_max = data["v_max"]
+        self.v_stall = data["v_stall"]
+        self.G = data["G"]
 
     
     def dump(self):
@@ -66,8 +73,12 @@ class PerformanceParameters:
         data["mission_energy"] = self.energyRequired
         data["power_climb"] = self.climbPower
         data["mtom"] = self.MTOM
-        data["WS"] = self.wing_loading
+        data["WS"] = self.wing_loading_cruise
         data["prop_eff"] = self.prop_eff
+        data["turn_loadfactor"] = self.turn_loadfactor
+        data["v_max"] =  self.v_max
+        data["v_stall"] = self.v_stall
+        data["G"] = self.G
 
         
     
