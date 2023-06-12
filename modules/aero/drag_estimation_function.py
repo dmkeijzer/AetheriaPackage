@@ -51,7 +51,7 @@ def final_drag_estimation(WingClass, FuselageClass, VTailClass, AeroClass, Horta
     # Form factor
     FF_fus_var = FF_fus(FuselageClass.length_fuselage, FuselageClass.diameter_fuselage)
     FF_wing_var = FF_wing(const.toc, const.xcm, M_var, sweep_m(WingClass.sweep_LE, const.xcm, WingClass.chord_root, WingClass.span, WingClass.taper))
-    FF_tail_var = FF_tail(const.toc_tail, const.xcm_tail, M_var, HorTailClass.sweep_halfchord_h)
+    FF_tail_var = FF_tail(const.toc_tail, const.xcm_tail, M_var, HortailClass.sweep_halfchord_h)
 
     # Wetted area
     S_wet_fus_var = S_wet_fus(FuselageClass.diameter_fuselage, FuselageClass.length_cockpit, FuselageClass.length_cabin, FuselageClass.length_tail)
@@ -74,7 +74,7 @@ def final_drag_estimation(WingClass, FuselageClass, VTailClass, AeroClass, Horta
     CD0_var = CD0(WingClass.surface, VTailClass.surface, FuselageClass.length_fuselage*FuselageClass.width_fuselage_outer, CD_fus_var, CD_wing_var, CD_upsweep_var, CD_base_var, CD_tail_var, CD_flaps=0)
 
     # Lift times S
-    cL_tail_times_Sh = VTailClass.CL_cruise * HorTailClass.surface
+    cL_tail_times_Sh = VTailClass.CL_cruise * HortailClass.surface
     cL_wing_times_S = AeroClass.cL_plus_slipstream*WingClass.surface
 
     total_cL = (cL_wing_times_S + cL_tail_times_Sh) / (WingClass.surface + HorTailClass.surface)
@@ -151,4 +151,4 @@ def final_drag_estimation(WingClass, FuselageClass, VTailClass, AeroClass, Horta
     AeroClass.dump()
     return WingClass, FuselageClass, VTailClass, AeroClass, HortailClass
 
-print(final_drag_estimation())
+

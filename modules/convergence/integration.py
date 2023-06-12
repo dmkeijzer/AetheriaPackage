@@ -14,7 +14,7 @@ from modules.stab_ctrl.vtail_sizing_optimal import size_vtail_opt
 from modules.stab_ctrl.wing_loc_horzstab_sizing import wing_location_horizontalstab_size
 from modules.planform.planformsizing import wing_planform
 from modules.preliminary_sizing.wing_power_loading_functions import get_wing_power_loading
-from modules.aero.final_drag_estimation import final_drag_estimation
+from modules.aero.drag_estimation_function import final_drag_estimation
 
 def run_integration():
     #----------------------------- Initialize classes --------------------------------
@@ -53,7 +53,7 @@ def run_integration():
 
     # Aerodynamic sizing
 
-    wing, fuselage, vtail, aero, horizontal_tail = 
+    wing, fuselage, vtail, aero, horizontal_tail =  final_drag_estimation(wing, fuselage, vtail, aero, horizontal_tail)
 
 
     #power system sizing
@@ -87,3 +87,5 @@ def run_integration():
                                                                     carmelos_bs_stepsize= 1e-1 ) 
 
     # WingboxClass =  Wing()
+
+run_integration()
