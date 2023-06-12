@@ -43,6 +43,7 @@ class Aero():
     cd0_stall: float = None
     mach_stall: float = None
     mach_cruise: float = None
+    alpha_approach: float = None
 
     def load(self):
         with open(r"input/data_structures/aetheria_constants.json") as jsonFile:
@@ -77,6 +78,7 @@ class Aero():
         self.cd0_stall = data['cd0_stall']
         self.mach_stall = data['mach_stall']
         self.mach_cruise = data['mach_cruise']
+        self.alpha_approach = data['alpha_approach']
         
 
     def dump(self):
@@ -111,6 +113,7 @@ class Aero():
         data['cd0_stall'] = self.cd0_stall
         data['mach_stall'] = self.mach_stall
         data['mach_cruise'] = self.mach_cruise
+        data['alpha_approach'] = self.alpha_approach
 
         with open(r"output/data_structures/aetheria_constants.json", "w") as jsonFile:
             json.dump(data, jsonFile, indent=6)

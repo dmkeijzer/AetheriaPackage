@@ -25,6 +25,7 @@ horizontal_tail = HorTail()
 fuselage = Fuselage()
 vtail = VeeTail()
 stability = Stab()
+aero = Aero()
 
 
 
@@ -51,6 +52,8 @@ NU = nu[index_min_mass][0]
 powersystemmass = Totalmass[index_min_mass][0]
 Batterymass = Batterymass[index_min_mass][0]
 fuelcellmass = Pstack.mass
+print(f"power system mass: {powersystemmass}")
+
 
 #stability and control
 wing.load()
@@ -58,13 +61,16 @@ horizontal_tail.load()
 fuselage.load()
 vtail.load()
 stability.load()
+aero.load()
 
 wing,horizontal_tail,fuselage,vtail, stability = size_vtail_opt(WingClass=  wing,
                                                                 HorTailClass= horizontal_tail,
                                                                 FuseClass= fuselage,
                                                                 VTailClass= vtail, 
                                                                 StabClass=stability,
+                                                                Aeroclass= aero,
                                                                 b_ref= 2, #!!!!!!!!! please update value when we get it
-                                                                carmelos_bs_stepsize= 1e-1 ) 
+                                                                stepsize= 1e-1 ) 
 
+print(f"V-tail surface:  {vtail.surface} ")
 # WingboxClass =  Wing()
