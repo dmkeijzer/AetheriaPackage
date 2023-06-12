@@ -35,10 +35,10 @@ def coolingmass(heat: float, heatedensity:float) -> float:
 def energy_cruise_mass(EnergyRequired: float , echo: float , Tank: HydrogenTank, Battery: Battery, FuellCell: FuelCell) -> list[float]:
     """Calculate the mass of the hydrogen tank + the hydrogen itself
         input:
-            -EnergyRequired [kWh] : The total Energy required for the mission
+            -EnergyRequired [Wh] : The total Energy required for the mission
             -echo [-]: The percentage of power deliverd by the fuel cell, if over 1 than the fuell cell charges the  battery
-            -EnergyDensityHydrogen [kWh/kg]: The energy density of the tank + hydrogen in it
-            -EnergyDensityBattery [kWh/kg]: The enegery density of the battery
+            -EnergyDensityHydrogen [Wh/kg]: The energy density of the tank + hydrogen in it
+            -EnergyDensityBattery [Wh/kg]: The enegery density of the battery
             
         output:
             -Tankmass [kg]: The total mass of fuel tanks + the hydrogen in it
@@ -48,7 +48,8 @@ def energy_cruise_mass(EnergyRequired: float , echo: float , Tank: HydrogenTank,
     
     #calculating energy required for the fuell cell and the battery
     Tankmass = Tank.mass(EnergyRequired * echo) / FuellCell.efficiency
-    Batterymass = Battery.energymass((1-echo)*EnergyRequired) / Battery.End_of_life /Battery.Efficiency / 1e3
+    Batterymass = Battery.energymass((1-echo)*EnergyRequired) / Battery.End_of_life /Battery.Efficiency 
+    
     return  Tankmass , Batterymass
 
 
@@ -105,13 +106,11 @@ class PropulsionSystem:
         
         
         #Initial sizing for cruise phase
-        Tankmass,  EnergyBatterymass = energy_cruise_mass(Mission.energyRequired / 3.6, echo, FuellTank, Battery, FuellCell) #convert to get to Wh
-        FCmass, CruiseBatterymass = power_cruise_mass(Mission.cruisePower , echo,FuellCell, Battery)
-
+        Tankmass,  EnergyBatterymass = energy_cruise_mass(Mission.energyRequired / 3.6e6, echo, FuellTank, Battery, FuellCell) #convert to get to Wh
+        FCmass, CruiseBatterymass = power_cruise_mass(Mission.cruisePower / 1e3, echo,FuellCell, Battery)
         #initial sizing for hovering phase
-
-        HoverBatterymass = hover_mass(PowerRequired=Mission.hoverPower,MaxPowerFC= FuellCell.maxpower,Battery= Battery)
-        HoverEnergyBatterymass = hover_energy_mass(PowerRequired= Mission.hoverPower, MaxPowerFC= FuellCell.maxpower ,Battery= Battery,HoverTime= hovertime)
+        HoverBatterymass = hover_mass(PowerRequired=Mission.hoverPower / 1e3 ,MaxPowerFC= FuellCell.maxpower,Battery= Battery)
+        HoverEnergyBatterymass = hover_energy_mass(PowerRequired= Mission.hoverPower /1e3, MaxPowerFC= FuellCell.maxpower ,Battery= Battery,HoverTime= hovertime)
 
         #heaviest battery is needed for the total mass
         Batterymass = np.zeros(len(echo))

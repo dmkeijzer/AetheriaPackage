@@ -25,9 +25,11 @@ def size_vtail_opt(WingClass, HorTailClass, FuseClass, VTailClass, StabClass, b_
     CLh = CLh_initguess
 
     log = np.zeros((0,4))
-    for A_h in np.arange(2, 8, 0.1)
+    for A_h in np.arange(2, 8, 0.1):
         while True:
+            print("start loop running loop")
             wingloc_ShS, delta_cg_ac = wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, A_h, CLh_approach=CLh)
+            print("finish wing location finder")
             WingClass.load()
             FuseClass.load()
             HorTailClass.load()
@@ -36,8 +38,8 @@ def size_vtail_opt(WingClass, HorTailClass, FuseClass, VTailClass, StabClass, b_
             axial_induction_factor=0.2
             Vh_V2 = 0.95*(1+axial_induction_factor)**2
             v_tail = get_control_surface_to_tail_chord_ratio(WingClass, FuseClass, HorTailClass, CLh, l_v, Cn_beta_req=-0.0571, beta_h=1, eta_h=0.95, total_deflection=20 * np.pi / 180, design_cross_wind_speed=5.14, step=0.1 * np.pi / 180)
-            CLvee_cr_N = (WingClass.cm_ac + WingClass.cL_cruise * (delta_cg_ac)/WingClass.chord_mac) / (Vh_V2 * v_tail[-2]/S*np.cos(v_tail[-3]) * l_v / WingClass.chord_mac)
-
+            print("found v_tail control surface")
+            CLvee_cr_N = (WingClass.cm_ac + WingClass.cL_cruise * (delta_cg_ac)/WingClass.chord_mac) / (Vh_V2 * v_tail[-2]/WingClass.surface *np.cos(v_tail[-3]) * l_v / WingClass.chord_mac)
             if type(v_tail[-1]) is str:
                 break
             log = np.vstack((log, np.array([CLh, v_tail[6], np.sqrt(A_h * v_tail[6]), CLvee_cr_N ** 2 * v_tail[6]])))
@@ -48,7 +50,7 @@ def size_vtail_opt(WingClass, HorTailClass, FuseClass, VTailClass, StabClass, b_
     CLh = log[0,0]
     b_vee = log[0,2]
 
-    wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, CLh_approach=CLh)
+    wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, CLh_approach=CLh, stepsize = 1e-1)
     WingClass.load()
     FuseClass.load()
     HorTailClass.load()
@@ -62,7 +64,7 @@ def size_vtail_opt(WingClass, HorTailClass, FuseClass, VTailClass, StabClass, b_
                                                      beta_h=1, eta_h=0.95, total_deflection=20 * np.pi / 180,
                                                      design_cross_wind_speed=5.14, step=0.1 * np.pi / 180)
     CLvee_cr_N = (WingClass.cm_ac + WingClass.cL_cruise * (delta_cg_ac) / WingClass.chord_mac) / (
-                Vh_V2 * v_tail[-2] / S * np.cos(v_tail[-3]) * l_v / WingClass.chord_mac)
+                Vh_V2 * v_tail[-2] / WingClass.surface * np.cos(v_tail[-3]) * l_v / WingClass.chord_mac)
     
     VTailClass.load()
     VTailClass.CL_cruise = CLvee_cr_N
@@ -99,5 +101,7 @@ def size_vtail_opt(WingClass, HorTailClass, FuseClass, VTailClass, StabClass, b_
         plt.xlabel("CLvee_cruise_N^2 values * Svee (~D)")
 
         plt.show()
+
+    return WingClass, HorTailClass, FuseClass, VTailClass, StabClass
 
 

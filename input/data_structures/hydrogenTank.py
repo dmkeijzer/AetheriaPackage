@@ -19,15 +19,15 @@ class HydrogenTank:
     :param EnergyDensity  [kWh/kg]
     :param VolumeDensity [kWh/l]
     :param cost [US$/kWh] (not loaded)
-    :param energy [kWh] (not loaded)
     """
     energyDensity: float = None
     volumeDensity: float = None
     cost: float = None
     
     def load(self):
-        self.energyDensity = constants.EnergyDensityTank
-        self.volumeDensity = constants.VolumeDensityTank
+        self.energyDensity = 1.8  # 1.8 kWh/kg
+        self.volumeDensity = 0.6  #0.6 kWg/l
+        self.cost = 16  # 16 USD / wH
 
 
     def mass(self,energy) -> float:

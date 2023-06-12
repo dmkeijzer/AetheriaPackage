@@ -15,9 +15,7 @@ class Battery:
     """
     This class is to estimate the parameters battery.
 
-    :param EnergyDensity: Specific energy density [Wh/kg]
-    :param Energy: Required total energy for the tank [Wh]
-    :param Power: Power output of the tank [kW]
+    :param EnergyDensity: Specific energy density [kWh/kg]
     :param PowerDensity: Power density [kW/kg]
     :param VolumeDensity: Specific volumetric density [kWh/l]
     :param CostDensity: Cost density [US$/kWh]
@@ -27,8 +25,8 @@ class Battery:
     :param End_of_life
     """
     #densities
-    EnergyDensity : float = 0.34e3
-    PowerDensity : float  = 3.8e3
+    EnergyDensity : float = 0.3
+    PowerDensity : float  = 3.8
     VolumeDensity : float = .85
     CostDensity : float = None
 
