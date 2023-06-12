@@ -28,7 +28,7 @@
       "cLmax": 1.59,
       "cLmax_flaps60": 2.01,
       "cLmax_flaps20": 1.83,
-      "cl_max_airfoil": 1.77
+      "cl_max_airfoil": 1.77,
       "cd": 0.03582932443620001,
       "cd0": 0.023979738813212713,
       "cd0_flaps20": 0,
