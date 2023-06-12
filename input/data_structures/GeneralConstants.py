@@ -62,7 +62,7 @@ mhu = atm.viscosity_dyn()           #[kg/m^3]   O   the dynamic viscosity
 
 # Power
 p_density = 7e3     # w totalEnergy/kg    ? # averaged from:  A review: high power density motors for electric vehicles
-
+diskarea = 4.2
 
 #standard masses
 m_pl =  510  # kg

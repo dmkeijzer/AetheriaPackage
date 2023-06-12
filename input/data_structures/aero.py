@@ -19,6 +19,7 @@ class Aero():
     cd_base: float = None
     cL_alpha: float = None
     cL_cruise: float = None
+    cL_max: float = None
     cm_ac: float = None
     cm_alpha: float = None
     e: float = None
@@ -32,6 +33,9 @@ class Aero():
     downwash_angle: float = None
     downwash_angle_wing: float = None
     downwash_angle_prop: float = None
+    downwash_angle_stall: float = None
+    downwash_angle_wing_stall: float = None
+    downwash_angle_prop_stall: float = None
     ld_stall: float = None
     cd_stall: float = None
     cd0_stall: float = None
@@ -47,6 +51,7 @@ class Aero():
         self.cd_base = data['cd_base']
         self.cL_alpha =  datcom_cl_alpha(A=data["A"], mach=v_cr/a_cr, sweep_half=-data["sweep_le"])
         self.cL_cruise =  data["cL_cruise"]
+        self.cL_max = data['cLmax']
         self.cm_ac  =  data["cm_ac"]
         self.e  =  data["e"]
         self.cm_alpha = data["cm_alpha"]
@@ -60,6 +65,9 @@ class Aero():
         self.downwash_angle = data['downwash_angle']
         self.downwash_angle_wing = data['downwash_angle_wing']
         self.downwash_angle_prop = data['downwash_angle_prop']
+        self.downwash_angle_stall = data['downwash_angle_stall']
+        self.downwash_angle_wing_stall = data['downwash_angle_wing_stall']
+        self.downwash_angle_prop_stall = data['downwash_angle_prop_stall']
         self.ld_stall = data['ld_stall']
         self.cd_stall = data['cd_stall']
         self.cd0_stall = data['cd0_stall']
@@ -76,6 +84,7 @@ class Aero():
         data['cd_upsweep'] = self.cd_upsweep
         data['cd_base'] = self.cd_base
         data["cL_cruise"] = self.cruise
+        data['cL_max'] = self.cL_max
         data["cm_ac"] = self.cm_ac
         data["e"] = self.e
         data["cm_alpha"] = self.cm_alpha
@@ -86,9 +95,12 @@ class Aero():
         data["ld_climb"] = self.ld_climb
         data['v_stall'] = self.v_stall
         data['ld_cr'] = self.ld_cruise
-        data['downwash_angle_'] = self.downwash_angle 
+        data['downwash_angle'] = self.downwash_angle 
         data['downwash_angle_wing'] = self.downwash_angle_wing 
         data['downwash_angle_prop'] = self.downwash_angle_prop 
+        data['downwash_angle_stall'] = self.downwash_angle_stall
+        data['downwash_angle_wing_stall'] = self.downwash_angle_wing_stall
+        data['downwash_angle_prop_stall'] = self.downwash_angle_prop_stall 
         data['ld_stall'] = self.ld_stall
         data['cd_stall'] = self.cd_stall
         data['cd0_stall'] = self.cd0_stall
@@ -103,5 +115,4 @@ if __name__ == "__main__":
     AeroClass.load()
 
     print(AeroClass)
-
 
