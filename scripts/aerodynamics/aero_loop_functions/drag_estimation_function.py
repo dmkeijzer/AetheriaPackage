@@ -4,8 +4,8 @@ import os
 import json
 import numpy as np
 
-sys.path.append(str(list(pl.Path(__file__).parents)[2]))
-os.chdir(str(list(pl.Path(__file__).parents)[2]))
+sys.path.append(str(list(pl.Path(__file__).parents)[3]))
+os.chdir(str(list(pl.Path(__file__).parents)[3]))
 
 # Import from modules and input folder
 import input.data_structures.GeneralConstants  as const
