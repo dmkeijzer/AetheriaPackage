@@ -83,6 +83,7 @@ class Aero():
 
 
     def dump(self):
+        os.chdir(str(list(pl.Path(__file__).parents)[2]))
         with open(r"input/data_structures/aetheria_constants.json") as jsonFile:
             data = json.load(jsonFile)
 
@@ -117,7 +118,7 @@ class Aero():
         data['mach_cruise'] = self.mach_cruise
         data['depsda'] = self.deps_da
 
-        with open(r"output/data_structures/aetheria_constants.json", "w") as jsonFile:
+        with open(r"input/data_structures/aetheria_constants.json", "w") as jsonFile:
             json.dump(data, jsonFile, indent=6)
     
 
