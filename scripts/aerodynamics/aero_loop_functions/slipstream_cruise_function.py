@@ -1,16 +1,17 @@
 import sys
 import pathlib as pl
-sys.path.append(str(list(pl.Path(__file__).parents)[2]))
+
 import json
 import os
 import numpy as np
-
+sys.path.append(str(list(pl.Path(__file__).parents)[3]))
+os.chdir(str(list(pl.Path(__file__).parents)[3]))
 # Import from modules and input folder
 import input.data_structures.GeneralConstants  as const
 from  modules.aero.prop_wing_interaction  import *
 from input.data_structures.ISA_tool import ISA
 
-os.chdir(str(list(pl.Path(__file__).parents)[2]))
+
 # import CL_cruise from json files
 
 
@@ -25,7 +26,7 @@ def slipstream_cruise():
     D = diameter_propellers
 
     # Angles
-    i_cs_var = 0.0549661449027131 # calculated from lift at cruise
+    i_cs_var = 0.0733 # calculated from lift at cruise
     angle_of_attack_fuse = 0
     angle_of_attack_prop = angle_of_attack_fuse + i_cs_var
 
@@ -52,7 +53,7 @@ def slipstream_cruise():
 
     sin_epsilon = sin_epsilon_angles(CL_alpha_s_eff=CL_eff_alpha_var, alpha_s=alpha_s_var, A_s_eff=A_eff_var, CL_wing=AeroClass.cL_cruise, A_w=data["A"])[0]
     sin_epsilon_s = sin_epsilon_angles(CL_alpha_s_eff=CL_eff_alpha_var, alpha_s=alpha_s_var, A_s_eff=A_eff_var, CL_wing=AeroClass.cL_cruise, A_w=data["A"])[1]
-
+    
     CL_slipstream_final = CL_ws(S_W=WingClass.surface, b_W=WingClass.span, n_e=3, D_star=D_star_var, sin_epsilon=sin_epsilon, V_0=const.v_cr, V_delta=V_delta_var, sin_epsilon_s=sin_epsilon_s, CL_wing=AeroClass.cL_cruise)[0]
     CL_old = AeroClass.cL_cruise
 
@@ -71,6 +72,8 @@ def slipstream_cruise():
     AeroClass.downwash_angle = average_downwash_angle
     AeroClass.downwash_angle_wing = downwash_angle_wing
     AeroClass.downwash_angle_prop = downwash_angle_prop
+    AeroClass.cL_plus_slipstream = CL_total_cruise
 
+    AeroClass.dump()
     return AeroClass
 

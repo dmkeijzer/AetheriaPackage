@@ -31,3 +31,7 @@ def cL_alpha_wingfus(cL_alpha_wing, diameter_fus, wing_span):
     x = diameter_fus/wing_span
     K_wf = 1 + 0.025*x - 0.25*x**2
     return K_wf*cL_alpha_wing
+
+
+def deps_da(cL_alpha, AR):
+    return (2*cL_alpha)/(np.pi*AR)
