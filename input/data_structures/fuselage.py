@@ -19,6 +19,9 @@ class Fuselage():
     height_fuselage_inner: float = None
     height_fuselage_outer: float = None
     volume_fuselage: float = None
+    length_cockpit: float = None
+    length_tail: float = None
+
 
     def load(self):
         """ Initializes the class automatically from the JSON file
@@ -35,6 +38,10 @@ class Fuselage():
         self.height_fuselage_inner = data["h_fuselage_inner"]
         self.height_fuselage_outer = data["h_fuselage_outer"]
         self.volume_fuselage = data["volume_fuselage"]
+        self.length_cockpit = data['l_cockpit']
+        self.length_cabin = data['l_cabin']
+        self.length_tail = data['l_tail']
+
 
 
     def dump(self):
@@ -46,6 +53,14 @@ class Fuselage():
         data["d_fuselage"] = self.diameter_fuselage
         data["upsweep"] =  self.upsweep
         data["h_wings"] = self.h_wing
+        data["w_fuselage_inner"] = self.width_fuselage_inner
+        data["w_fuselage_outer"] = self.width_fuselage_outer
+        data["h_fuselage_inner"] = self.height_fuselage_inner
+        data["h_fuselage_outer"] = self.height_fuselage_outer
+        data["volume_fuselage"] = self.volume_fuselage
+        data['l_cockpit'] = self.length_cockpit
+        data['l_cabin'] = self.length_cabin
+        data['l_tail'] = self.length_tail
 
         with open(r"input/data_structures/aetheria_constants.json", "w") as jsonFile:
             json.dump(data, jsonFile, indent=6)

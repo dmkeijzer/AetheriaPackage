@@ -12,17 +12,11 @@ from modules.avlwrapper import Geometry, Surface, Section, NacaAirfoil, Control,
 from input.data_structures.wing import Wing
 from input.data_structures.aero import Aero
 import input.data_structures.GeneralConstants as const
+
 Wingclass = Wing()
 Wingclass.load()
 Aeroclass = Aero()
 Aeroclass.load()
-
-dict_directory = "input/data_structures"
-dict_name = "aetheria_constants.json"
-with open(os.path.join(dict_directory, dict_name)) as f:
-    data = json.load(f)
-
-download_dir = os.path.join(os.path.expanduser("~"), "Downloads")
 
 
 def numerical_simulation(y_start, mass, g0, S, CL_climb, alpha_climb, CD_climb, Adisk, lod_climb, eff_climb, v_stall):
@@ -38,8 +32,7 @@ def numerical_simulation(y_start, mass, g0, S, CL_climb, alpha_climb, CD_climb, 
 
     # Chosen parameters
     vy0 = 2
-    P_max = data['power_hover']
-
+    
     # Choose transition time
     t_end = 30
 
@@ -150,7 +143,7 @@ def numerical_simulation(y_start, mass, g0, S, CL_climb, alpha_climb, CD_climb, 
     # Display the figure
     # plt.show()
 
-    return E, y_lst, t_lst, x_lst
+    return E, y_lst, t_lst, x_lst, V
 
 
 # print(np.max(numerical_simulation(y_start=30.5, mass=data["mtom"], g0=const.g0, S=data['S'], CL_climb=data['cl_climb_clean'],
@@ -176,7 +169,6 @@ def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha
 
     # Chosen parameters
     vy0 = vx * descend_slope
-    P_max = data['power_hover']
 
     # Choose transition time
     t_end = 100
@@ -323,6 +315,6 @@ def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha
     return E, y_lst, t_lst, x_lst, P_lst # Energy, y, t, x, P
 
 
-print(numerical_simulation_landing(vx_start=data['v_stall_flaps20'], descend_slope=-0.04, mass=data["mtom"], g0=const.g0,
-                                   S=data['S'], CL=data['cl_descent_trans_flaps20'], alpha=data['alpha_descent_trans_flaps20'],
-                                   CD=data["cdi_descent_trans_flaps20"]+data['cd0'], Adisk=data["diskarea"])[0])
+# print(numerical_simulation_landing(vx_start=data['v_stall_flaps20'], descend_slope=-0.04, mass=data["mtom"], g0=const.g0,
+#                                    S=data['S'], CL=data['cl_descent_trans_flaps20'], alpha=data['alpha_descent_trans_flaps20'],
+#                                    CD=data["cdi_descent_trans_flaps20"]+data['cd0'], Adisk=data["diskarea"])[0])

@@ -204,7 +204,7 @@ def CD_fus(C_fe_fus, FF_fus, S_wet_fus):
     return C_fe_fus * FF_fus * IF_fus * S_wet_fus
 
 
-def CD_wing(name, C_fe_wing, FF_wing, S_wet_wing, S):
+def CD_wing(C_fe_wing, FF_wing, S_wet_wing, S):
     """_summary_
 
     :param C_fe_wing: skin friction coefficient wing
@@ -217,12 +217,8 @@ def CD_wing(name, C_fe_wing, FF_wing, S_wet_wing, S):
     :rtype: _type_
     """
     IF_wing = 1.1      # From WIGEON script
-    if name == "W1":
-        CD_wing = max(float(C_fe_wing * FF_wing * IF_wing * S_wet_wing), 0.015) # from XFLR5
-    elif name == "L1":
-        CD_wing = max(float(C_fe_wing * FF_wing * IF_wing * S_wet_wing), 0.01) # from XFLR5
-    else: 
-        CD_wing = max(float(C_fe_wing * FF_wing * IF_wing * S_wet_wing), 0.007)
+
+    CD_wing = max(float(C_fe_wing * FF_wing * IF_wing * S_wet_wing), 0.007)
     return CD_wing
 
 
@@ -255,7 +251,7 @@ def CD0(S, S_tail, S_fus, CD_fus, CD_wing, CD_upsweep, CD_base, CD_tail, CD_flap
     return ((CD_wing / S) + (CD_tail / S_tail) + (CD_fus / S_fus)) * leakage_factor + CD_upsweep + CD_base + CD_flaps
 
 
-def CDi(name, CL, A, e):
+def CDi(CL, A, e):
     """_summary_
 
     :param CL: _description_
@@ -267,12 +263,8 @@ def CDi(name, CL, A, e):
     :return: _description_
     :rtype: _type_
     """
-    if name == "J1":
-        CDi = max(float(CL**2 / (np.pi * A * e)), 0.007)
-    elif name == "L1":
-       CDi = max(float(CL**2 / (np.pi * A * e)), 0.006)
-    else:
-        CDi = max(float(CL**2 / (np.pi * A * e)), 0.005)
+
+    CDi = max(float(CL**2 / (np.pi * A * e)), 0.007)
     return CDi
 
 
