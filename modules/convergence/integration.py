@@ -14,6 +14,7 @@ from modules.stab_ctrl.vtail_sizing_optimal import size_vtail_opt
 from modules.stab_ctrl.wing_loc_horzstab_sizing import wing_location_horizontalstab_size
 from modules.planform.planformsizing import wing_planform
 from modules.preliminary_sizing.wing_power_loading_functions import get_wing_power_loading
+from modules.aero.final_drag_estimation import final_drag_estimation
 
 def run_integration():
     #----------------------------- Initialize classes --------------------------------
@@ -51,6 +52,8 @@ def run_integration():
 
 
     # Aerodynamic sizing
+
+    wing, fuselage, vtail, aero, horizontal_tail = 
 
 
     #power system sizing
