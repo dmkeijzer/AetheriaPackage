@@ -50,5 +50,12 @@ print("V_tank:", V_tank)
 
 l_fuselage = l_cockpit + l_cabin + l_fcs + l_tail
 
+#things to return
+# l_fuselage
+# upsweep
+# l_tank
+# r_tank
+# bc, hc
+
 print(l_fuselage)
 
