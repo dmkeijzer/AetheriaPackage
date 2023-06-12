@@ -214,19 +214,8 @@ def crash_box_height_convergerence(plateau_stress, yield_stress, e_0, e_d, v0, s
     print(height, A, max_g/9.81)
     #plt.plot(I, s_arr)
     #plt.show()
+    return travel_distance, A
 
-# inputs
-# mass
-# plateau stress
-# yield stress (peak)
-# yield strain
-# densification strain
-# impact velocity
-# initial crashbox height
-
-m = 2500
-s_p, s_y, e_0, e_d, v0, s0 = 0.5*10**6, 1.2*10**6, 0.038, 0.9, 9.1, 0.5
-crash_box_height_convergerence(s_p, s_y, e_0, e_d, v0, s0, m)
 
 
 
