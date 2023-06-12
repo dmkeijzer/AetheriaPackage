@@ -182,9 +182,9 @@
       "downwash_angle": 0.0851071259719496,
       "downwash_angle_wing": 0.04356434761472458,
       "downwash_angle_prop": 0.15390026172072,
-      "downwash_angle_stall": 0.19933975340706367,
-      "downwash_angle_wing_stall": 0.120211603003049,
-      "downwash_angle_prop_stall": 0.4004264289917792,
+      "downwash_angle_stall": 0.22197201625968602,
+      "downwash_angle_wing_stall": 0.1517455318010746,
+      "downwash_angle_prop_stall": 0.4004370786386418,
       "v_stall_flaps20": 42,
       "alpha_climb_flaps20": 0.2,
       "cl_descent_trans_flaps20": 1.83,
@@ -237,5 +237,5 @@
       "alph_zero_L": -0.0352,
       "C_T": 0.15,
       "cL_plus_slipstream": 0.6650739256692167,
-      "cL_plus_slipstream_stall": 1.9655261331156655
+      "cL_plus_slipstream_stall": 2.3764818914412795
 }
