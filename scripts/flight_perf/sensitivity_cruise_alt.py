@@ -79,7 +79,7 @@ for dict_name in dict_names:
         
         #----------------------- Transition (from horizontal to vertical)-----------------------
         # print("--------------- transition to vertical")
-        transition_simulation_landing = numerical_simulation_landing(vx_start=AeroClass.v_stall, descend_slope=-0.04, mass=PerformanceClass.MTOM, g0=const.g0,
+        transition_simulation_landing = numerical_simulation_landing(vx_start=data['v_stall_flaps20'], descend_slope=-0.04, mass=PerformanceClass.MTOM, g0=const.g0,
                                     S=WingClass.surface, CL=data['cl_descent_trans_flaps20'], alpha=data['alpha_descent_trans_flaps20'],
                                     CD=data["cdi_descent_trans_flaps20"]+data['cd0'], Adisk=const.diskarea)
         E_trans_hor2ver = transition_simulation_landing[0]
@@ -127,13 +127,12 @@ for dict_name in dict_names:
 
         #---------------------------- TOTAL ENERGY CONSUMPTION ----------------------------
         E_total = E_to + E_trans_ver2hor + E_climb + E_cr + E_desc + E_loit_hor + E_loit_vert + E_trans_hor2ver + energy_landing_var
-        E_lst.append(E_total)
+        E_lst.append(E_total/3.6e6)
         t_lst.append(t_climb+ t_cr + t_desc + t_trans_climb + t_trans_landing+ const.t_takeoff)
         print(cruise_alt)
-    plt.plot(cruise_lst, E_lst)
-    plt.grid()
-    plt.show()
 
-    plt.plot(t_lst, cruise_lst)
-    
+    plt.plot(cruise_lst, E_lst)
+    plt.xlabel('Cruise altitude [m]')
+    plt.ylabel("Energy consumption [kWh]")
+    plt.grid()
     plt.show()
