@@ -10,6 +10,7 @@ os.chdir(str(list(pl.Path(__file__).parents)[3]))
 # Import from modules and input folder
 import input.data_structures.GeneralConstants  as const
 from modules.aero.clean_class2drag import *
+from modules.aero.midterm_datcom_methods import *
 from input.data_structures import *
 from input.data_structures.ISA_tool import ISA
 from input.data_structures.vee_tail import VeeTail
@@ -45,7 +46,7 @@ def final_drag_estimation():
 
     # Writing to Aeroclass
     AeroClass.e = Oswald_eff_var
-    AeroClass.deps_da = 0.1
+    AeroClass.deps_da = deps_da(AeroClass.cL_alpha, WingClass.aspectratio)
 
     # Form factor
     FF_fus_var = FF_fus(FuselageClass.length_fuselage, FuselageClass.diameter_fuselage)
@@ -74,13 +75,13 @@ def final_drag_estimation():
 
     # Lift times S
     cL_tail_times_Sh = VTailClass.CL_cruise * HorTailClass.surface
-    cL_wing_times_S = AeroClass.cL_cruise*WingClass.surface
+    cL_wing_times_S = AeroClass.cL_plus_slipstream*WingClass.surface
 
     total_cL = (cL_wing_times_S + cL_tail_times_Sh) / (WingClass.surface + HorTailClass.surface)
 
 
     # Summation and L/D calculation
-    CDi_var = CDi(AeroClass.cL_cruise, WingClass.aspectratio, WingClass.e)
+    CDi_var = CDi(AeroClass.cL_cruise, WingClass.aspectratio, AeroClass.e)
     CD_var = CD(CD0_var, CDi_var)
     lift_over_drag_var = lift_over_drag(total_cL, CD_var)
 
@@ -105,8 +106,8 @@ def final_drag_estimation():
 
 
     # Writing to Class
-    WingClass.e = Oswald_eff_var
-    AeroClass.deps_da = 0.1
+    AeroClass.e = Oswald_eff_var
+    AeroClass.deps_da = deps_da(AeroClass.cL_alpha, WingClass.aspectratio)
 
     # Form factor
     FF_fus_var = FF_fus(FuselageClass.length_fuselage, FuselageClass.diameter_fuselage)
@@ -137,7 +138,7 @@ def final_drag_estimation():
 
     print(CD_flaps_var)
     # Summation and L/D calculation
-    CDi_var = CDi(AeroClass.cL_max_flaps60, WingClass.aspectratio, WingClass.e)
+    CDi_var = CDi(AeroClass.cL_max_flaps60, WingClass.aspectratio, AeroClass.e)
     CD_var = CD(CD0_var, CDi_var)
     lift_over_drag_var = lift_over_drag(AeroClass.cL_max_flaps60, CD_var)
 
@@ -152,6 +153,8 @@ def final_drag_estimation():
     AeroClass.cd0_stall = CD0_var
     AeroClass.mach_stall = M_var
 
+    AeroClass.dump()
 
     return AeroClass
 
+print(final_drag_estimation())
