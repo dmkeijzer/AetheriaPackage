@@ -58,14 +58,13 @@ horizontal_tail.load()
 fuselage.load()
 vtail.load()
 stability.load()
-print("start stab and control")
+
 wing,horizontal_tail,fuselage,vtail, stability = size_vtail_opt(WingClass=  wing,
                                                                 HorTailClass= horizontal_tail,
                                                                 FuseClass= fuselage,
                                                                 VTailClass= vtail, 
                                                                 StabClass=stability,
                                                                 b_ref= 2, #!!!!!!!!! please update value when we get it
-                                                                carmelos_bs_stepsize= 5e-2 ) 
-print("done")
+                                                                carmelos_bs_stepsize= 1e-1 ) 
 
 # WingboxClass =  Wing()
