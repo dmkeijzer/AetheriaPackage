@@ -212,9 +212,9 @@ def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha
         if t < 5:
             phase_1 = True
             phase_2 = False
-        elif level_out == True:
-            phase_1 = False
-            phase_2 = False
+        #elif level_out == True:
+         #   phase_1 = False
+         #   phase_2 = False
         else:
             phase_1 = False
             phase_2 = True

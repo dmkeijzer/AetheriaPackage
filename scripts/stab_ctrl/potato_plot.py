@@ -119,7 +119,7 @@ def J1loading(x1, x2):
     powertrain_weight = constants['powertrain_weight']
     misc_weight = constants['misc_weight']
     wing_weight=constants['wing_weight']
-    hor_tail_weight=constants['hortail_weight']
+    hor_tail_weight=constants['vtail_weight']
     lg_pos = fuselage_pos  # For now, assume it coincides with the cg of the fuselage
     misc_position = fuselage_pos  # For now, assume it coincides with the cg of the fuselage
     mass_array = []
