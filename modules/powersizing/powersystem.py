@@ -87,7 +87,6 @@ class PropulsionSystem:
             -Batterymass[kg]"""
             
         
-        
         #Initial sizing for cruise phase
         Tankmass,  EnergyBatterymass = energy_cruise_mass(Mission.energyRequired / 3.6e6, echo, FuellTank, Battery, FuellCell) #convert to get to Wh
         FCmass, CruiseBatterymass = power_cruise_mass(Mission.cruisePower / 1e3, echo,FuellCell, Battery)
