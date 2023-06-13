@@ -33,7 +33,7 @@ diameter_propellers = 2*np.sqrt(EngineClass.total_disk_area/(np.pi*6))
 D = diameter_propellers
 
 # Angles
-i_cs_var = 0.0733 # calculated from lift at cruise
+i_cs_var = (AeroClass.cL_cruise/AeroClass.cL_alpha) + AeroClass.alpha_zero_L # calculated from lift at cruise
 angle_of_attack_fuse = 0
 angle_of_attack_prop = angle_of_attack_fuse + i_cs_var
 
