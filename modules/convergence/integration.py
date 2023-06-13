@@ -86,6 +86,10 @@ def run_integration():
                                                                     b_ref= 2, #!!!!!!!!! please update value when we get it
                                                                     carmelos_bs_stepsize= 1e-1 ) 
 
-    # WingboxClass =  Wing()
+
+
+    #------------- Structures------------------
+
+    # Fuselage sizing
 
 run_integration()

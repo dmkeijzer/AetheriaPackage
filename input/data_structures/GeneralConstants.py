@@ -53,6 +53,8 @@ a_cr = atm.soundspeed()     #Speed of sound at cruise O
 R = 287                 #[J/kg*K]   O
 gamma = 1.4                  #        O
 
+# Structures
+beta = 0.5 # crash diameter coefficient
 
 
 

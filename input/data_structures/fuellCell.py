@@ -38,3 +38,4 @@ class FuelCell:
     @property
     def price(self):
         return self.maxpower * 75 # 75 dollars per kW
+
