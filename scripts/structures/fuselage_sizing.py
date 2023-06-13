@@ -22,12 +22,12 @@ V = 0.5
 h0 = 1.8
 b0 = 1.6
 Beta = 0.5
-ARe = 2
+ARe = 2.75
 n = 2
 l_tank = np.linspace(1, 5, 40)
 l_fuelcell = 0.15
 l_cockpit = 2
-l_cabin = 2.5
+l_cabin = 2.7
 l_fcs = 2 * l_fuelcell
 
 s_p, s_y, e_0, e_d, v0, s0 = 0.5*10**6, 1.2*10**6, 0.038, 0.9, 9.1, 0.5
@@ -39,9 +39,9 @@ l_tail, upsweep, bc, hc, hf, bf, AR, l_tank = fl.minimum_tail_length(h0, b0, Bet
 r_tank = bc/(2*n)
 l_cyl = l_tank - 2*r_tank
 
-#V_tank = 4/3*np.pi*r_tank**3 + np.pi*r_tank**2*l_cyl
+V_tank = 4/3*np.pi*r_tank**3 + np.pi*r_tank**2*l_cyl
 
-''' 
+
 print('Tank length: ', l_tank)
 print("Tail: ", l_tail)
 print("Upsweep: ", upsweep)
@@ -51,14 +51,17 @@ print("bc: ", bc)
 print("hf: ", hf)
 print("bf: ", bf)
 print("V_tank:", V_tank)
-'''
-l_fuselage = l_cockpit + l_cabin + l_fcs + l_tail
 
-#things to return
-# l_fuselage
+l_inner_fuselage = l_cockpit + l_cabin + l_fcs + l_tail
+l_outer_fuselage = l_inner_fuselage + 0.2
+
+# things to return
+# l_inner_fuselage
+# l_outer_fuselage
 # upsweep
 # l_tank
 # r_tank
 # bc, hc
 
+print(l_outer_fuselage)
 
