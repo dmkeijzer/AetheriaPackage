@@ -21,6 +21,7 @@ from modules.aero.slipstream_cruise_function import slipstream_cruise
 from modules.aero.slipstream_stall_function import slipstream_stall
 from modules.flight_perf.performance  import get_energy_power_perf
 from modules.structures.fuselage_length import get_fuselage_sizing
+from modules.structures.ClassIIWeightEstimation import get_weight_vtol
 from modules.propellor.propellor_sizing import propcalc
 
 
@@ -135,5 +136,18 @@ def run_integration():
     # Fuselage sizing
     fuselage = get_fuselage_sizing(Tank,Pstack, mission, fuselage)
 
+    #------------- weight_estimation------------------
+    mission, fuselage, wing, engine, vtail =  get_weight_vtol(mission, fuselage, wing, engine, vtail)
+
+
+    #Final dump
+    mission.dump()
+    wing.dump()  
+    engine.dump() 
+    aero.dump() 
+    horizontal_tail.dump() 
+    fuselage.dump() 
+    vtail.dump() 
+    stability.dump()
 
 run_integration()

@@ -10,7 +10,7 @@ from modules.powersizing.battery import BatterySizing
 from modules.powersizing.fuellCell import FuellCellSizing
 from modules.powersizing.hydrogenTank import HydrogenTankSizing
 from modules.powersizing.energypowerrequirement import MissionRequirements
-from modules.powersizing.powersystem import PropulsionSystem, onlyFuelCellSizing
+# from modules.powersizing.powersystem import PropulsionSystem, onlyFuelCellSizing
 import input.data_structures.GeneralConstants as  const
 
 
@@ -167,6 +167,7 @@ class H2System(Component):
         :param hoverPower: Power during hover
         :type hoverPower: float
         """        
+        raise Exception("This function is deprecated and no longer suppored, only here for the sake of documentation")
         super().__init__()
         self.id = "Hydrogen system"
         echo = np.arange(0,1.5,0.05)
@@ -241,11 +242,11 @@ def get_weight_vtol(perf_par, fuselage, wing,  engine, vtail):
     """    
 
     # Wing mass 
-    wing.wing_weight = WingWeight(perf_par.MTOM, wing.surface, perf_par.n_ult, wing.aspectratio)
+    wing.wing_weight = WingWeight(perf_par.MTOM, wing.surface, perf_par.n_ult, wing.aspectratio).mass
 
     # Vtail mass
     # Wing equation is used instead of horizontal tail because of the heay load of the engine which is attached
-    vtail.vtail_weight = WingWeight(perf_par.MTOM, vtail.surface, perf_par.n_ult, vtail.aspectratio)
+    vtail.vtail_weight = WingWeight(perf_par.MTOM, vtail.surface, perf_par.n_ult, vtail.aspectratio).mass
 
     #fuselage mass
     fuselage.fuselage_weight = FuselageWeight("J1", perf_par.MTOM, fuselage.max_perimeter, fuselage.length_fuselage, const.npax + 1).mass
@@ -254,11 +255,14 @@ def get_weight_vtol(perf_par, fuselage, wing,  engine, vtail):
     lg_weight = LandingGear(perf_par.MTOM).mass
 
     # Nacelle mas
-    engine.mass_pernacelle = NacelleWeight(perf_par.hoverPower)
+    engine.mass_pernacelle = NacelleWeight(perf_par.hoverPower).mass
 
     # Misc mass
-    misc_mass = Miscallenous(perf_par.MTOM, perf_par.OEM, const.npax + 1)
+    misc_mass = Miscallenous(perf_par.MTOM, perf_par.OEM, const.npax + 1).mass
 
-    perf_par.MTOM = np.sum([wing.wing_weight, vtail.vtail_weight, fuselage.fuselage_weight, lg_weight, misc_mass])
+    perf_par.OEM = np.sum([ perf_par.powersystem_mass , wing.wing_weight, vtail.vtail_weight, fuselage.fuselage_weight, lg_weight, misc_mass])
+    perf_par.MTOM =  perf_par.OEM + const.m_pl
+
+    return perf_par, wing, vtail, fuselage, engine
 
 
