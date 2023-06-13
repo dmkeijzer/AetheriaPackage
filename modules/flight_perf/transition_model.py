@@ -76,7 +76,7 @@ def numerical_simulation(y_start, mass, g0, S, CL_climb, alpha_climb, CD_climb, 
         P_climb = mass * g0 * \
             (np.sqrt(2 * mass * g0 * (S / rho)) * (1 / lod_climb) + vy) / eff_climb
 
-        Ptot = (P_hover * (t_end - t) + P_climb * t) / t_end
+        Ptot = (P_hover *np.sin(alpha_T)+ P_climb * np.cos(alpha_T)) / 1
 
         # Acceleration, velocity and position updates
         ax = (T * np.cos(alpha_T) - L * np.sin(alpha_climb) - D) / mass

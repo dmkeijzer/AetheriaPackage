@@ -57,7 +57,7 @@ for dict_name in dict_names:
     final_trans_distance = transition_simulation[3][-1]
     final_trans_altitude = transition_simulation[1][-1]
     t_trans_climb = transition_simulation[2][-1]
-    print(transition_simulation[4])
+    # print(transition_simulation[4])
 
     #----------------------- Horizontal Climb --------------------------------------------------------------------
     # print("-------- horizontal climb")
@@ -70,7 +70,7 @@ for dict_name in dict_names:
     t_climb = (const.h_cruise  - final_trans_altitude) / const.roc_cr
     # print('v', v_climb)
     E_climb = climb_power_var * t_climb
-    print('E', E_climb)
+    #  print('E', E_climb)
     
     #----------------------- Transition (from horizontal to vertical)-----------------------
     # print("--------------- transition to vertical")
@@ -102,7 +102,7 @@ for dict_name in dict_names:
     E_cr = P_cr * t_cr
     # print('t', t_cr)
     # print('distance', (const.mission_dist - d_desc - d_climb - final_trans_distance_landing))
-    print(P_cr)
+    # print(P_cr)
     #----------------------- Loiter cruise-----------------------
     # print('--------- loiter cruise')
     P_loit_cr = powerloiter(PerformanceClass.MTOM, const.g0, WingClass.surface, const.rho_cr, AeroClass.ld_climb, prop_eff_var)
@@ -111,7 +111,7 @@ for dict_name in dict_names:
 
     #----------------------- Loiter vertically-----------------------
     # print('------ loiter vertically')
-    P_loit_land = hoverstuffopen(PerformanceClass.MTOM*const.g0, const.rho_sl,PerformanceClass.MTOM/data["diskloading"],data["TW"])[1]
+    P_loit_land = hoverstuffopen(PerformanceClass.MTOM*const.g0, const.rho_sl,EngineClass.total_disk_area, data["TW"])[1]
     E_loit_vert = P_loit_land * 30 # 30 sec for hovering vertically
     # print('t', 30)
 
@@ -126,7 +126,7 @@ for dict_name in dict_names:
     #---------------------------- Writing to JSON and printing result  ----------------------------
     data["mission_energy"] = E_total
     data["power_hover"] = P_takeoff
-    print('Pto',P_takeoff)
+    # print('Pto',P_takeoff)
     data["power_climb"] = climb_power_var
     data["power_cruise"] = P_cr 
 
