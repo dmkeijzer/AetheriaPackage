@@ -76,7 +76,7 @@ def numerical_simulation(y_start, mass, g0, S, CL_climb, alpha_climb, CD_climb, 
         P_climb = mass * g0 * \
             (np.sqrt(2 * mass * g0 * (S / rho)) * (1 / lod_climb) + vy) / eff_climb
 
-        Ptot = (P_hover * (t_end - t) + P_climb * t) / t_end
+        Ptot = (P_hover *np.sin(alpha_T)+ P_climb * np.cos(alpha_T)) / 1
 
         # Acceleration, velocity and position updates
         ax = (T * np.cos(alpha_T) - L * np.sin(alpha_climb) - D) / mass
@@ -113,35 +113,35 @@ def numerical_simulation(y_start, mass, g0, S, CL_climb, alpha_climb, CD_climb, 
     acc_lst = np.array(acc_lst)
 
     # Create a figure and subplots
-    # fig, axs = plt.subplots(2, 2, figsize=(10, 8))
+    fig, axs = plt.subplots(2, 2, figsize=(10, 8))
 
-    # # Plot data on each subplot
-    # axs[0, 0].plot(t_lst, L_lst, color='blue')
-    # axs[0, 0].set_xlabel('Time [s]')
-    # axs[0, 0].set_ylabel('Power [kW]')
-    # axs[0, 0].grid()
+    # Plot data on each subplot
+    axs[0, 0].plot(t_lst, P_lst, color='blue')
+    axs[0, 0].set_xlabel('Time [s]')
+    axs[0, 0].set_ylabel('Power [kW]')
+    axs[0, 0].grid()
 
-    # axs[0, 1].plot(x_lst, y_lst, color='red')
-    # axs[0, 1].axis('equal')
-    # axs[0, 1].set_xlabel('X-position [m]')
-    # axs[0, 1].set_ylabel('Y-position [m]')
-    # axs[0, 1].grid()
+    axs[0, 1].plot(x_lst, y_lst, color='red')
+    axs[0, 1].axis('equal')
+    axs[0, 1].set_xlabel('X-position [m]')
+    axs[0, 1].set_ylabel('Y-position [m]')
+    axs[0, 1].grid()
 
-    # axs[1, 0].plot(t_lst, vx_lst, color='green')
-    # axs[1, 0].set_xlabel('Time [s]')
-    # axs[1, 0].set_ylabel('Velocity in x-dir [m/s]')
-    # axs[1, 0].grid()
+    axs[1, 0].plot(t_lst, L_lst, color='green')
+    axs[1, 0].set_xlabel('Time [s]')
+    axs[1, 0].set_ylabel('Lift [N]')
+    axs[1, 0].grid()
 
-    # axs[1, 1].plot(t_lst, acc_lst, color='orange')
-    # axs[1, 1].set_xlabel('Time [s]')
-    # axs[1, 1].set_ylabel('Longitudinal acceleration [g]')
-    # axs[1, 1].grid()
+    axs[1, 1].plot(t_lst, acc_lst, color='orange')
+    axs[1, 1].set_xlabel('Time [s]')
+    axs[1, 1].set_ylabel('Longitudinal acceleration [g]')
+    axs[1, 1].grid()
 
-    # # Adjust spacing between subplots
-    # fig.tight_layout()
+    # Adjust spacing between subplots
+    fig.tight_layout()
 
     # Display the figure
-    # plt.show()
+    plt.show()
 
     return E, y_lst, t_lst, x_lst, V
 
@@ -182,7 +182,7 @@ def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha
     T_lst = []
     t_lst = []
     ax_lst = []
-    D_lst = []
+    L_lst = []
     P_lst = []
     acc_lst = []
     acc_y_lst = []
@@ -271,7 +271,7 @@ def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha
         vx_lst.append(vx)
         alpha_T_lst.append(alpha_T * 180 / np.pi)
         T_lst.append(T)
-        D_lst.append(D)
+        L_lst.append(L)
         P_lst.append(Ptot/1000)
         acc_lst.append(acc_g)
         acc_y_lst.append(acc_y)
@@ -282,35 +282,35 @@ def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha
     acc_lst = np.array(acc_lst)
 
     # Create a figure and subplots
-    # fig, axs = plt.subplots(2, 2, figsize=(10, 8))
+    fig, axs = plt.subplots(2, 2, figsize=(10, 8))
 
-    # # Plot data on each subplot
-    # axs[0, 0].plot(t_lst, P_lst, color='blue')
-    # axs[0, 0].set_xlabel('Time [s]')
-    # axs[0, 0].set_ylabel('Power [kW]')
-    # axs[0, 0].grid()
+    # Plot data on each subplot
+    axs[0, 0].plot(t_lst, P_lst, color='blue')
+    axs[0, 0].set_xlabel('Time [s]')
+    axs[0, 0].set_ylabel('Power [kW]')
+    axs[0, 0].grid()
 
-    # axs[0, 1].plot(x_lst, y_lst, color='red')
-    # axs[0, 1].axis('equal')
-    # axs[0, 1].set_xlabel('X-position [m]')
-    # axs[0, 1].set_ylabel('Y-position [m]')
-    # axs[0, 1].grid()
+    axs[0, 1].plot(x_lst, y_lst, color='red')
+    axs[0, 1].axis('equal')
+    axs[0, 1].set_xlabel('X-position [m]')
+    axs[0, 1].set_ylabel('Y-position [m]')
+    axs[0, 1].grid()
 
-    # axs[1, 0].plot(t_lst, vx_lst, color='green')
-    # axs[1, 0].set_xlabel('Time [s]')
-    # axs[1, 0].set_ylabel('Velocity in x-dir [m/s]')
-    # axs[1, 0].grid()
+    axs[1, 0].plot(t_lst, L_lst, color='green')
+    axs[1, 0].set_xlabel('Time [s]')
+    axs[1, 0].set_ylabel('Lift [N]')
+    axs[1, 0].grid()
 
-    # axs[1, 1].plot(t_lst, V_lst, color='orange')
-    # axs[1, 1].set_xlabel('Time [s]')
-    # axs[1, 1].set_ylabel('Acceleration [m/s]')
-    # axs[1, 1].grid()
+    axs[1, 1].plot(t_lst, acc_lst, color='orange')
+    axs[1, 1].set_xlabel('Time [s]')
+    axs[1, 1].set_ylabel('Longitudinal acceleration [g]')
+    axs[1, 1].grid()
 
-    # # Adjust spacing between subplots
-    # fig.tight_layout()
+    # Adjust spacing between subplots
+    fig.tight_layout()
 
-    # # Display the figure
-    # plt.show()
+    # Display the figure
+    plt.show()
 
     return E, y_lst, t_lst, x_lst, P_lst # Energy, y, t, x, P
 

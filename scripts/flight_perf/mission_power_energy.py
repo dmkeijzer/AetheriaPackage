@@ -20,10 +20,12 @@ from input.data_structures import *
 WingClass = Wing()
 AeroClass = Aero()
 PerformanceClass = PerformanceParameters()
+EngineClass = Engine()
 
 WingClass.load()
 AeroClass.load()
 PerformanceClass.load()
+EngineClass.load()
     
 dict_directory = "input/data_structures"
 dict_names = ["aetheria_constants.json"]
@@ -40,8 +42,8 @@ for dict_name in dict_names:
     #==========================Energy calculation ================================= 
 
     #----------------------- Take-off-----------------------
-    
-    P_takeoff = powertakeoff(PerformanceClass.MTOM, const.g0, const.roc_hvr, const.diskarea, const.rho_sl)
+
+    P_takeoff = powertakeoff(PerformanceClass.MTOM, const.g0, const.roc_hvr, EngineClass.total_disk_area, const.rho_sl)
     E_to = P_takeoff * const.t_takeoff
     
 
@@ -49,32 +51,32 @@ for dict_name in dict_names:
     
     transition_simulation = numerical_simulation(y_start=30.5, mass=PerformanceClass.MTOM, g0=const.g0, S=data['S'], CL_climb=data['cl_climb_clean'],
                                 alpha_climb=data['alpha_climb_clean'], CD_climb=data["cdi_climb_clean"] + data["cd0"],
-                                Adisk=const.diskarea, lod_climb=data['ld_climb'], eff_climb=data['prop_eff'], v_stall=data['v_stall'])
+                                Adisk=EngineClass.total_disk_area, lod_climb=data['ld_climb'], eff_climb=data['prop_eff'], v_stall=data['v_stall'])
     E_trans_ver2hor = transition_simulation[0]
     transition_power_max = np.max(transition_simulation[0])
     final_trans_distance = transition_simulation[3][-1]
     final_trans_altitude = transition_simulation[1][-1]
     t_trans_climb = transition_simulation[2][-1]
-    print(transition_simulation[4])
+    # print(transition_simulation[4])
 
     #----------------------- Horizontal Climb --------------------------------------------------------------------
     # print("-------- horizontal climb")
     average_h_climb = (const.h_cruise  - final_trans_altitude)/2
     rho_climb = ISA(average_h_climb).density()
     v_climb = const.roc_cr/np.sin(const.climb_gradient)
-    v_aft= v_exhaust(PerformanceClass.MTOM, const.g0, rho_climb,const.diskarea, v_climb)
+    v_aft= v_exhaust(PerformanceClass.MTOM, const.g0, rho_climb, EngineClass.total_disk_area, v_climb)
     prop_eff_var = propeff(v_aft, v_climb)
     climb_power_var = powerclimb(PerformanceClass.MTOM, const.g0, WingClass.surface, rho_climb, AeroClass.ld_climb, prop_eff_var, const.roc_cr)
     t_climb = (const.h_cruise  - final_trans_altitude) / const.roc_cr
     # print('v', v_climb)
     E_climb = climb_power_var * t_climb
-    print('E', E_climb)
+    #  print('E', E_climb)
     
     #----------------------- Transition (from horizontal to vertical)-----------------------
     # print("--------------- transition to vertical")
     transition_simulation_landing = numerical_simulation_landing(vx_start=data['v_stall_flaps20'], descend_slope=-0.04, mass=PerformanceClass.MTOM, g0=const.g0,
                                 S=data['S'], CL=data['cl_descent_trans_flaps20'], alpha=data['alpha_descent_trans_flaps20'],
-                                CD=data["cdi_descent_trans_flaps20"]+data['cd0'], Adisk=const.diskarea)
+                                CD=data["cdi_descent_trans_flaps20"]+data['cd0'], Adisk=EngineClass.total_disk_area)
     E_trans_hor2ver = transition_simulation_landing[0]
     transition_power_max_landing = np.max(transition_simulation_landing[4])
     final_trans_distance_landing = transition_simulation_landing[3][-1]
@@ -100,7 +102,7 @@ for dict_name in dict_names:
     E_cr = P_cr * t_cr
     # print('t', t_cr)
     # print('distance', (const.mission_dist - d_desc - d_climb - final_trans_distance_landing))
-
+    # print(P_cr)
     #----------------------- Loiter cruise-----------------------
     # print('--------- loiter cruise')
     P_loit_cr = powerloiter(PerformanceClass.MTOM, const.g0, WingClass.surface, const.rho_cr, AeroClass.ld_climb, prop_eff_var)
@@ -109,7 +111,7 @@ for dict_name in dict_names:
 
     #----------------------- Loiter vertically-----------------------
     # print('------ loiter vertically')
-    P_loit_land = hoverstuffopen(PerformanceClass.MTOM*const.g0, const.rho_sl,PerformanceClass.MTOM/data["diskloading"],data["TW"])[1]
+    P_loit_land = hoverstuffopen(PerformanceClass.MTOM*const.g0, const.rho_sl,EngineClass.total_disk_area, data["TW"])[1]
     E_loit_vert = P_loit_land * 30 # 30 sec for hovering vertically
     # print('t', 30)
 
@@ -124,9 +126,10 @@ for dict_name in dict_names:
     #---------------------------- Writing to JSON and printing result  ----------------------------
     data["mission_energy"] = E_total
     data["power_hover"] = P_takeoff
+    # print('Pto',P_takeoff)
     data["power_climb"] = climb_power_var
     data["power_cruise"] = P_cr 
-    const.diskarea =PerformanceClass.MTOM/data["diskloading"]
+
 
     data["takeoff_energy"] = E_to
     data["trans2hor_energy"] = E_trans_ver2hor
