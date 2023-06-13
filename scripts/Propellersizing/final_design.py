@@ -593,13 +593,13 @@ def propcalc(radius, MTOM, clcd, v_cruise, h_cruise, dyn_vis, soundspeed, rho_cr
     #OUTPUTS
 
     C_T_cruise = T_cr_per_engine/(rho*(rpm_cruise/60)**2*prop_diameter**4)
-    chords_per_station = design[0]
+    #chords_per_station = design[0]
     prop_eff = design[5]
-    design_thrust = T_cr_per_engine * T_factor
+    #design_thrust = T_cr_per_engine * T_factor
 
     max_thrust_per_engine = maxT_performance[0][0]
     power_tot_hover = (maxT_performance[1][1] * rho * n_hover ** 3 * (prop_diameter) ** 5) * 6
 
-    return C_T_cruise, chords_per_station, prop_eff, design_thrust, power_tot_cruise, max_thrust_per_engine, power_tot_hover
+    return C_T_cruise, prop_eff,  power_tot_cruise, max_thrust_per_engine, power_tot_hover
 
 print(propcalc(prop_radius, MTOM, 15, V_cruise, h_cruise, dyn_vis, soundspeed, rho))

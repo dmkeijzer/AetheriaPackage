@@ -197,6 +197,22 @@ class RadiatorPerformance:
         else: 
             raise ValueError("Re is not in range to calculate heat transfer coefficient hot")
 
+    def pressure_drop(friction: float, mass_flux: float, length:float, hydraulic_diameter: float, density: float)-> float:
+        """ 
+            calculate pressure drop of the coolant
+
+            :param: friction: friction factor [-]
+            :param: mass_flux: [kg / (m^2 s)]
+            :param: length: length of the channel [m]
+            :param: hydraulic diamter: [m]
+            :param: density: density of the coolant [kg/m^3]
+            :return: pressure drop
+
+
+        """
+        return (2 * friction * mass_flux * mass_flux * length)/ (hydraulic_diameter * density) 
+
+
     def mass_flux(mass_flow: float, A_crossectional: float) -> float:
         """ calculate mass flux 
 
