@@ -10,7 +10,8 @@ os.chdir(str(list(pl.Path(__file__).parents)[2]))
 @dataclass
 class Fuselage():
     length_fuselage: float = None # Length of the fuseglage
-    length_cabin: float = None # Length of the cabin
+    length_cabin: float = 2.7 # Length of the cabin
+    height_cabin: float = 1.6 # Length of the cabin
     diameter_fuselage: float = None # Diameter of the fuselage
     upsweep: float = None #  Upsweep of the fuselage
     h_wing: float = None # Height of the wing
@@ -21,6 +22,14 @@ class Fuselage():
     volume_fuselage: float = None
     length_cockpit: float = None
     length_tail: float = None
+
+    # Crash diameter stuff
+
+    bc: float = None # width crash area
+    hc: float = None # height crash area
+    bf: float = None # width crash area
+    hf: float = None # height crash area
+
 
 
     def load(self):
@@ -39,7 +48,6 @@ class Fuselage():
         self.height_fuselage_outer = data["h_fuselage_outer"]
         self.volume_fuselage = data["volume_fuselage"]
         self.length_cockpit = data['l_cockpit']
-        self.length_cabin = data['l_cabin']
         self.length_tail = data['l_tail']
 
 
@@ -49,6 +57,7 @@ class Fuselage():
         os.chdir(str(list(pl.Path(__file__).parents)[2]))
         with open(r"input/data_structures/aetheria_constants.json") as jsonFile:
             data = json.load(jsonFile)
+
         data["l_fuse"] = self.length_fuselage
         data["d_fuselage"] = self.diameter_fuselage
         data["upsweep"] =  self.upsweep
@@ -59,8 +68,12 @@ class Fuselage():
         data["h_fuselage_outer"] = self.height_fuselage_outer
         data["volume_fuselage"] = self.volume_fuselage
         data['l_cockpit'] = self.length_cockpit
-        data['l_cabin'] = self.length_cabin
         data['l_tail'] = self.length_tail
+        data["bc"] = self.bc
+        data["bf"] = self.bf
+        data["hc"] = self.hc
+        data["hf"] = self.hf
 
         with open(r"input/data_structures/aetheria_constants.json", "w") as jsonFile:
             json.dump(data, jsonFile, indent=6)
+

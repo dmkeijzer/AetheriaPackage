@@ -53,6 +53,25 @@ a_cr = atm.soundspeed()     #Speed of sound at cruise O
 R = 287                 #[J/kg*K]   O
 gamma = 1.4                  #        O
 
+# Structures
+beta_crash = 0.5 # crash diameter coefficient
+E_mod = 70e9
+poisson = 0.3
+shear_mod =  26000000000.0
+beta_wingbox = 1.42
+sigma_yield = 430000000.0
+ultimate_tensile_stress = 640000000.0
+m_crip = 0.85
+pb = 2.5
+rho = 2710
+g= 5
+fuselage_margin = 0.2 
+ARe = 2.75 # Aspect ration end of tail cone
+n_tanks = 2 # The amount of tanks
+
+s_p, s_y, e_0, e_d, v0, s0 = 0.5*10**6, 1.2*10**6, 0.038, 0.9, 9.1, 0.5
+
+
 
 
 

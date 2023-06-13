@@ -467,9 +467,8 @@ class OutputReader(object):
             if match is not None:
                 surface_name = match.group(1).strip()
 
-            pattern = r'\s+j\s+Xle\s+Yle\s+Zle\s+Chord\s+Area\s+c_cl\s+ai\s+cl_norm\s+cl\s+cd\s+cdv\s+cm_c/4\s+cm_LE\s+C\.P\.x/c'
             # Find start of table based on header
-            if re.search(pattern, line) is not None:
+            if re.search(r'\b(Chord|cd|cl)\b', line) is not None:
                 start_line = line_nr
 
             # Find end of table based on the empty line

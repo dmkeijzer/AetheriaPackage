@@ -38,7 +38,7 @@ class HydrogenTank:
 
     def volume(self,energy) -> float:
         """
-        :return: Volume of the battery [m^3]
+        :return: Volume of the tank [m^3]
         """
         return energy / self.volumeDensity * 0.001
 
