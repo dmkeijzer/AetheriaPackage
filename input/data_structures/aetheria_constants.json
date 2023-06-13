@@ -237,5 +237,5 @@
       "C_T": 0.15,
       "cL_plus_slipstream": 0.6650739256692167,
       "cL_plus_slipstream_stall": 2.3764818914412795,
-      "max_thrust_per_engine" : 4300
+      "max_thrust_per_engine" : 4400
 }

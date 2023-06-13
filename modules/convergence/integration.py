@@ -10,6 +10,7 @@ os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
 from input.data_structures import *
 from modules.powersizing import PropulsionSystem
+from input.data_structures import GeneralConstants
 from modules.stab_ctrl.vtail_sizing_optimal import size_vtail_opt
 from modules.stab_ctrl.wing_loc_horzstab_sizing import wing_location_horizontalstab_size
 from modules.planform.planformsizing import wing_planform
@@ -20,6 +21,8 @@ from modules.aero.slipstream_cruise_function import slipstream_cruise
 from modules.aero.slipstream_stall_function import slipstream_stall
 from modules.flight_perf.performance  import get_energy_power_perf
 from modules.structures.fuselage_length import get_fuselage_sizing
+from modules.propellor.propellor_sizing import propcalc
+
 
 def run_integration():
     #----------------------------- Initialize classes --------------------------------
@@ -65,31 +68,67 @@ def run_integration():
     wing, engine, aero, mission = get_energy_power_perf(wing, engine, aero, mission)
 
 
-    #------------------------- power system sizing-------------------------
-    mission.load()
+
+    #-------------------- propulsion ----------------------------
+    mission, engine = propcalc( clcd= aero.ld_cruise, mission=mission, engine= engine, h_cruise= GeneralConstants.h_cruise)
+
+
+    #-------------------- power system sizing--------------------
     nu = np.arange(0,1.001,0.005)
     Totalmass, Tankmass, FCmass, Batterymass= PropulsionSystem.mass(echo= np.copy(nu),
                                 Mission= mission,
                                 Battery=IonBlock,
                                 FuellCell= Pstack,
                                 FuellTank= Tank )
-
     index_min_mass = np.where(Totalmass == min(Totalmass))
     NU = nu[index_min_mass][0]
     powersystemmass = Totalmass[index_min_mass][0]
     Batterymass = Batterymass[index_min_mass][0]
-    fuelcellmass = Pstack.mass
+    coolingsmass = 15 + 35 #kg mass radiator (15 kg) and mass air (35) subsystem. calculated outside this outside loop and will not change signficant 
+    PerformanceParameters.powersystem_mass = powersystemmass + coolingsmass
 
-    #stability and control
+    #-------------------- stability and control--------------------
+    #The function here loads and dumps a couple of times so to make sure nothing goes wrong therefore
+    #before this class everything has to be dumped and loaded again
+
+    #loading
+    mission.dump()
+    wing.dump()  
+    engine.dump() 
+    aero.dump() 
+    horizontal_tail.dump() 
+    fuselage.dump() 
+    vtail.dump() 
+    stability.dump() 
+
+
+    #dumping
+    mission.load()
+    wing.load()  
+    engine.load() 
+    aero.load() 
+    horizontal_tail.load() 
+    fuselage.load() 
+    vtail.load() 
+    stability.load() 
+    
     wing,horizontal_tail,fuselage,vtail, stability = size_vtail_opt(WingClass=  wing,
                                                                     HorTailClass= horizontal_tail,
                                                                     FuseClass= fuselage,
                                                                     VTailClass= vtail, 
                                                                     StabClass=stability,
                                                                     b_ref= 2, #!!!!!!!!! please update value when we get it
-                                                                    carmelos_bs_stepsize= 1e-1 ) 
+                                                                    stepsize = 5e-2 ) 
 
-
+    #loading
+    mission.dump()
+    wing.dump()  
+    engine.dump() 
+    aero.dump() 
+    horizontal_tail.dump() 
+    fuselage.dump() 
+    vtail.dump() 
+    stability.dump()
 
     #------------- Structures------------------
 
