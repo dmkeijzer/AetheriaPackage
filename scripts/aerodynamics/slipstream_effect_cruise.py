@@ -8,6 +8,7 @@ import numpy as np
 # Import from modules and input folder
 from input.data_structures.wing import Wing
 from input.data_structures.aero import Aero
+from input.data_structures.engine import Engine
 import input.data_structures.GeneralConstants  as const
 from  modules.aero.prop_wing_interaction  import *
 from input.data_structures.ISA_tool import ISA
@@ -28,7 +29,7 @@ t_cr = atm.temperature()
 rho_cr = atm.density()
 mhu = atm.viscosity_dyn()
 # print(rho_cr)
-diameter_propellers = 2*np.sqrt(const.diskarea/(np.pi*6))
+diameter_propellers = 2*np.sqrt(EngineClass.total_disk_area/(np.pi*6))
 D = diameter_propellers
 
 # Angles
@@ -71,6 +72,8 @@ prop_lift_var = prop_lift_thrust(T=drag_cruise, rho=rho_cr, V_0=const.v_cr, S_W=
 
 CL_total_cruise = CL_ws_var + prop_lift_var
 
+
+
 downwash_angle_wing = np.sin(sin_epsilon)
 downwash_angle_prop = np.sin(sin_epsilon_s)
 average_downwash_angle = (downwash_angle_prop*diameter_propellers*4 + downwash_angle_wing*(WingClass.span-4*diameter_propellers))/WingClass.span
@@ -81,10 +84,12 @@ print("CL_wing_section:", CL_wing_section)
 print("CL_prop:", prop_lift_var)
 print("CL percentage increase:", 100*(CL_total_cruise-CL_old)/CL_old)
 
+
 AeroClass.downwash_angle = average_downwash_angle
 AeroClass.downwash_angle_wing = downwash_angle_wing
 AeroClass.downwash_angle_prop = downwash_angle_prop
 AeroClass.cL_plus_slipstream = CL_total_cruise
+
 
 AeroClass.dump()
 
