@@ -211,7 +211,7 @@ def crash_box_height_convergerence(plateau_stress, yield_stress, e_0, e_d, v0, s
         I.append(i)
         s_arr.append(height)
         i += 1
-    print(height, A, max_g/9.81)
+    #print(height, A, max_g/9.81)
     #plt.plot(I, s_arr)
     #plt.show()
     return travel_distance, A
