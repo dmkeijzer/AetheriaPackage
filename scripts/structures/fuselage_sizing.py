@@ -34,7 +34,12 @@ s_p, s_y, e_0, e_d, v0, s0 = 0.5*10**6, 1.2*10**6, 0.038, 0.9, 9.1, 0.5
 crash_box_height, crash_box_area = fl.crash_box_height_convergerence(s_p, s_y, e_0, e_d, v0, s0, m)
 h0 = 1.6 + crash_box_height
 
-V_tank = 4/3*np.pi*r_tank**3 + np.pi*r_tank**2*l_cyl
+l_tail, upsweep, bc, hc, hf, bf, AR, l_tank = fl.minimum_tail_length(h0, b0, Beta, V, l_tank, ARe, n)
+
+r_tank = bc/(2*n)
+l_cyl = l_tank - 2*r_tank
+
+#V_tank = 4/3*np.pi*r_tank**3 + np.pi*r_tank**2*l_cyl
 
 ''' 
 print('Tank length: ', l_tank)
