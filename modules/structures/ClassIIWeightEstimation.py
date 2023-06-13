@@ -223,14 +223,14 @@ class Miscallenous(Component):
 
 
         
-def get_weight_vtol(perf_par, fuselage):
+def get_weight_vtol(perf_par, fuselage, wing,  engine, vtail):
     """ This function is used for the final design, it reuses some of the codes created during
     the midterm. It computes the final weight of the vtol using the data structures created in the
     final design phase
 
     It uses the following weight components
     --------------------------------------
-    Powersystem mass
+    Powersystem mass -> Sized in power sizing, retrieved from perf class
     wing mass -> class II/wingbox code
     vtail mass -> Class II/wingbox code
     fuselage mass -> Class II
@@ -238,12 +238,27 @@ def get_weight_vtol(perf_par, fuselage):
     nacelle mass -> class II
     misc mass -> class II
     --------------------------------------
-
-    :param perf_par: _description_
-    :type perf_par: _type_
     """    
+
+    # Wing mass 
+    wing.wing_weight = WingWeight(perf_par.MTOM, wing.surface, perf_par.n_ult, wing.aspectratio)
+
+    # Vtail mass
+    # Wing equation is used instead of horizontal tail because of the heay load of the engine which is attached
+    vtail.vtail_weight = WingWeight(perf_par.MTOM, vtail.surface, perf_par.n_ult, vtail.aspectratio)
+
     #fuselage mass
-    fuselage.fuselage_weight = FuselageWeight("J1", perf_par.MTOM, fuselage.max_perimeter, fuselage.length_fuselage, const.npax + 1)
+    fuselage.fuselage_weight = FuselageWeight("J1", perf_par.MTOM, fuselage.max_perimeter, fuselage.length_fuselage, const.npax + 1).mass
 
     #landing gear mass
+    lg_weight = LandingGear(perf_par.MTOM).mass
+
+    # Nacelle mas
+    engine.mass_pernacelle = NacelleWeight(perf_par.hoverPower)
+
+    # Misc mass
+    misc_mass = Miscallenous(perf_par.MTOM, perf_par.OEM, const.npax + 1)
+
+    perf_par.MTOM = np.sum([wing.wing_weight, vtail.vtail_weight, fuselage.fuselage_weight, lg_weight, misc_mass])
+
 

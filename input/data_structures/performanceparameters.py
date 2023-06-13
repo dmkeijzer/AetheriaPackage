@@ -32,6 +32,7 @@ class PerformanceParameters:
     v_stall: float = None
     v_approach: float = None
     MTOM: float = None
+    OEM: float = None
     wing_loading_cruise: float = None
     Stots: float = None # Total area of wing reference area
     prop_eff: float = None # Propulsive efficiency
@@ -39,6 +40,10 @@ class PerformanceParameters:
     v_max: float = None
     glide_slope: float = None
     max_thrust_per_engine: float = None
+
+    # Load factors
+    n_max: float = None
+    n_ult : float = None
 
     powersystem_mass: float = None
 
@@ -58,6 +63,7 @@ class PerformanceParameters:
         self.rate_of_climb_hover = constants.roc_hvr
         self.cruise_velocity = constants.v_cr
         self.MTOM = data["mtom"]
+        self.OEM = data["oem"]
         self.wing_loading_cruise = data["WS"]
         self.Stots = data["StotS"]
         self.prop_eff = data["prop_eff"]
@@ -66,6 +72,8 @@ class PerformanceParameters:
         self.v_stall = data["v_stall"]
         self.G = data["G"]
         self.max_thrust_per_engine = data['max_thrust_per_engine']
+        self.n_max = data["n_max"]
+        self.n_ult = data["n_ult"]
 
         self.powersystem_mass = data['h2_weight']
 
@@ -78,6 +86,7 @@ class PerformanceParameters:
         data["mission_energy"] = self.energyRequired
         data["power_climb"] = self.climbPower
         data["mtom"] = self.MTOM
+        data["oem"] = self.OEM
         data["WS"] = self.wing_loading_cruise
         data["prop_eff"] = self.prop_eff
         data["turn_loadfactor"] = self.turn_loadfactor
@@ -85,8 +94,9 @@ class PerformanceParameters:
         data["v_stall"] = self.v_stall
         data["G"] = self.G
         data['max_thrust_per_engine'] = self.max_thrust_per_engine
-
         data['h2_weight'] = self.powersystem_mass
+        data["n_max"] = self.n_max
+        data["n_ult"] = self.n_ult
 
 
     

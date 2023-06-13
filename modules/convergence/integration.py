@@ -14,6 +14,7 @@ from modules.stab_ctrl.vtail_sizing_optimal import size_vtail_opt
 from modules.stab_ctrl.wing_loc_horzstab_sizing import wing_location_horizontalstab_size
 from modules.planform.planformsizing import wing_planform
 from modules.preliminary_sizing.wing_power_loading_functions import get_wing_power_loading
+from modules.structures.Flight_Envelope import get_gust_manoeuvr_loadings
 from modules.aero.drag_estimation_function import final_drag_estimation
 from modules.aero.slipstream_cruise_function import slipstream_cruise
 from modules.aero.slipstream_stall_function import slipstream_stall
@@ -48,6 +49,7 @@ def run_integration():
 
     # Preliminary Sizing
     mission, wing,  engine, aero = get_wing_power_loading(mission, wing, engine, aero)
+    mission =  get_gust_manoeuvr_loadings(mission, aero)
 
     #planform sizing
     wing.load()

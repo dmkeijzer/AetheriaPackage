@@ -2,7 +2,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 
-from input.GeneralConstants import *
+from input.data_structures.GeneralConstants import *
+
 
 
 def maneuvrenv(V, Vs, WoS, CLmax, nmin, nmax, pos=True):
@@ -76,7 +77,14 @@ def plotgustenv(V_s, Vc, CLalpha, WoS, TEXT=False):
     return np.max([posgustload(V, Vs, us, ns, CLalpha, WoS) for V in x])
     # plt.savefig('gust.png')
 
+def get_gust_manoeuvr_loadings(perf_par, aero):
 
+    nm = plotmaneuvrenv(perf_par.wing_loading_cruise, v_cr, aero.cL_max, n_min_req, n_max_req)
+    ng = plotgustenv(v_stall, v_cr , aero.cL_alpha, perf_par.wing_loading_cruise, TEXT=False)
+
+    perf_par.n_max, perf_par.n_ult = max(nm, ng), max(nm, ng)*1.5
+
+    return perf_par
 
 
 
