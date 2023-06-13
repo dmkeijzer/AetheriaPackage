@@ -36,7 +36,7 @@ def size_vtail_opt(WingClass, HorTailClass, FuseClass, VTailClass, StabClass, Ae
             l_v = FuseClass.length_fuselage * (1 - wingloc)
             axial_induction_factor=0.2
             Vh_V2 = 0.95*(1+axial_induction_factor)**2
-            v_tail = get_control_surface_to_tail_chord_ratio(WingClass, FuseClass, HorTailClass, Aeroclass, CLh, l_v, Cn_beta_req=-0.0571, beta_h=1, eta_h=0.95, total_deflection=20 * np.pi / 180, design_cross_wind_speed=5.14, step=0.1 * np.pi / 180)
+            v_tail = get_control_surface_to_tail_chord_ratio(WingClass, FuseClass, HorTailClass, Aeroclass, CLh, l_v, Cn_beta_req=0.0571, beta_h=1, eta_h=0.95, total_deflection=20 * np.pi / 180, design_cross_wind_speed=5.14, step=0.1 * np.pi / 180)
             CLvee_cr_N = (Aeroclass.cm_ac + Aeroclass.cL_cruise * (delta_cg_ac)/WingClass.chord_mac) / (Vh_V2 * v_tail[-2]/WingClass.surface *np.cos(v_tail[-3]) * l_v / WingClass.chord_mac)
             if type(v_tail[-1]) is str:
                 break
@@ -59,7 +59,7 @@ def size_vtail_opt(WingClass, HorTailClass, FuseClass, VTailClass, StabClass, Ae
     Vh_V2 = 0.95*(1+axial_induction_factor)**2
 
 
-    v_tail = get_control_surface_to_tail_chord_ratio(WingClass, FuseClass, HorTailClass, Aero = Aeroclass, CL_h= CLh,l_v= l_v, Cn_beta_req=-0.0571,
+    v_tail = get_control_surface_to_tail_chord_ratio(WingClass, FuseClass, HorTailClass, Aero = Aeroclass, CL_h= CLh,l_v= l_v, Cn_beta_req=0.0571,
                                                      beta_h=1, eta_h=0.95, total_deflection=20 * np.pi / 180,
                                                      design_cross_wind_speed=5.14, step=0.1 * np.pi / 180)
     CLvee_cr_N = (Aeroclass.cm_ac + Aeroclass.cL_cruise * (delta_cg_ac) / WingClass.chord_mac) / (
