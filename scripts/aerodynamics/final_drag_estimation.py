@@ -166,7 +166,7 @@ AeroClass.mach_stall = M_var
 
 
 
-
+AeroClass.dump()
 
 if TEST:
     with open(os.path.join(download_dir, dict_name), "w") as jsonFile:
