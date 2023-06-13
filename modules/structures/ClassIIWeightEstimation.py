@@ -232,6 +232,7 @@ def get_weight_vtol(perf_par, fuselage, wing,  engine, vtail):
     It uses the following weight components
     --------------------------------------
     Powersystem mass -> Sized in power sizing, retrieved from perf class
+    Engine mass
     wing mass -> class II/wingbox code
     vtail mass -> Class II/wingbox code
     fuselage mass -> Class II
@@ -240,6 +241,7 @@ def get_weight_vtol(perf_par, fuselage, wing,  engine, vtail):
     misc mass -> class II
     --------------------------------------
     """    
+
 
     # Wing mass 
     wing.wing_weight = WingWeight(perf_par.MTOM, wing.surface, perf_par.n_ult, wing.aspectratio).mass
@@ -254,14 +256,20 @@ def get_weight_vtol(perf_par, fuselage, wing,  engine, vtail):
     #landing gear mass
     lg_weight = LandingGear(perf_par.MTOM).mass
 
-    # Nacelle mas
+    # Nacelle and engine mass
+
+    total_engine_mass = Powertrain(perf_par.hoverPower, const.p_density).mass
     nacelle_mass = NacelleWeight(perf_par.hoverPower).mass
+
+    engine.totalmass = nacelle_mass + total_engine_mass
+    engine.mass_perpowertrain = (engine.totalmass)/engine.no_engines
     engine.mass_pernacelle = nacelle_mass/engine.no_engines
+    engine.mass_pertotalengine = total_engine_mass/engine.no_engines
 
     # Misc mass
     misc_mass = Miscallenous(perf_par.MTOM, perf_par.OEM, const.npax + 1).mass
 
-    perf_par.OEM = np.sum([ perf_par.powersystem_mass , wing.wing_weight, vtail.vtail_weight, fuselage.fuselage_weight, nacelle_mass, lg_weight, misc_mass])
+    perf_par.OEM = np.sum([ perf_par.powersystem_mass , wing.wing_weight, vtail.vtail_weight, fuselage.fuselage_weight, nacelle_mass, total_engine_mass,  lg_weight, misc_mass])
     perf_par.MTOM =  perf_par.OEM + const.m_pl
 
     return perf_par, wing, vtail, fuselage, engine
