@@ -19,10 +19,9 @@ IonBlock = Battery(Efficiency= 0.9)
 Pstack = FuelCell()
 Tank = HydrogenTank()
 Mission = PerformanceParameters()
-
 Tank.load()
 Mission.load()
-
+ 
 #estimate power system mass
 nu = np.arange(0,1,0.01)
 Totalmass, Tankmass, FCmass, Batterymass= PropulsionSystem.mass(echo= np.copy(nu),

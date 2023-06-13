@@ -87,6 +87,7 @@ class Aero():
         self.cL_plus_slipstream = data["cL_plus_slipstream"]
         self.cL_plus_slipstream_stall = data["cL_plus_slipstream_stall"] 
         self.delta_alpha_zero_L_flaps60 = data['delta_alpha_zero_L_flaps60']
+        self.alpha_approach = data['alpha_approach']
 
 
     def dump(self):
@@ -127,6 +128,7 @@ class Aero():
         data["cL_plus_slipstream"] = self.cL_plus_slipstream 
         data["cL_plus_slipstream_stall"] = self.cL_plus_slipstream_stall
         data['delta_alpha_zero_L_flaps60'] = self.delta_alpha_zero_L_flaps60 
+        data['alpha_approach'] = self.alpha_approach
 
         with open(r"input/data_structures/aetheria_constants.json", "w") as jsonFile:
             json.dump(data, jsonFile, indent=6)
