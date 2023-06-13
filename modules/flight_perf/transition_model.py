@@ -122,7 +122,7 @@ def numerical_simulation(y_start, mass, g0, S, CL_climb, alpha_climb, CD_climb, 
     axs[0, 0].grid()
 
     axs[0, 1].plot(x_lst, y_lst, color='red')
-    axs[0, 1].axis('equal')
+    axs[0, 1].set_ylim(0,200)
     axs[0, 1].set_xlabel('X-position [m]')
     axs[0, 1].set_ylabel('Y-position [m]')
     axs[0, 1].grid()
@@ -136,10 +136,10 @@ def numerical_simulation(y_start, mass, g0, S, CL_climb, alpha_climb, CD_climb, 
     axs[1, 1].set_xlabel('Time [s]')
     axs[1, 1].set_ylabel('Longitudinal acceleration [g]')
     axs[1, 1].grid()
-
+    
     # Adjust spacing between subplots
     fig.tight_layout()
-
+    
     # Display the figure
     plt.show()
 
@@ -291,7 +291,7 @@ def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha
     axs[0, 0].grid()
 
     axs[0, 1].plot(x_lst, y_lst, color='red')
-    axs[0, 1].axis('equal')
+    axs[0, 1].set_ylim(0,200)
     axs[0, 1].set_xlabel('X-position [m]')
     axs[0, 1].set_ylabel('Y-position [m]')
     axs[0, 1].grid()

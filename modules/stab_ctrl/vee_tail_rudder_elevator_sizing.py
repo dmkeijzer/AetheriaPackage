@@ -55,7 +55,7 @@ def get_tail_dihedral_and_area(Lambdah2,S_hor,Fuselage_volume,S,b,l_v,AR_h,taper
 
 #YOU ONLY NEED THIS LAST FUNCTION. THE OTHERS ABOVE ARE SUBFUNCTIONS FOR THE NEXT FUNCTION.
 
-def get_control_surface_to_tail_chord_ratio(Wing, Fuse, HorTail,Aero,  CL_h,l_v,Cn_beta_req=-0.0571,beta_h=1,eta_h=0.95,total_deflection=20*np.pi/180,design_cross_wind_speed=9,step=0.1*np.pi/180,axial_induction_factor=0.005):
+def get_control_surface_to_tail_chord_ratio(Wing, Fuse, HorTail,Aero,  CL_h,l_v,Cn_beta_req=0.0571,beta_h=1,eta_h=0.95,total_deflection=20*np.pi/180,design_cross_wind_speed=9,step=0.1*np.pi/180,axial_induction_factor=0.005):
     V_stall = Aero.v_stall
     Lambdah2 = HorTail.sweep_halfchord_h
     b = Wing.span
@@ -80,15 +80,16 @@ def get_control_surface_to_tail_chord_ratio(Wing, Fuse, HorTail,Aero,  CL_h,l_v,
     
     while (tau_from_elevator>tau_from_rudder and rudder_max>1*np.pi/180):
                 
-        Cn_dr_req=Cn_beta_req*np.arctan(design_cross_wind_speed/V_stall)/(rudder_max)
+        Cn_dr_req=-Cn_beta_req*np.arctan(design_cross_wind_speed/V_stall)/(rudder_max)
+        print('rudder', rudder_max,Cn_beta_req,design_cross_wind_speed, V_stall)
         CL_tail_de_req=(CL_h-CL_alpha_N*(aoa_landing-downwash_angle_landing))/elevator_min
-        
+        print('Cn_dr_req', Cn_dr_req)
     ###CL_h and CL_a_h comes from the horizontal tail designed.   --> Since we use no angle here, in the next line 
         Cm_de_req_tail=-CL_tail_de_req*(Vh_V2)*(S_hor*l_v/(S*c)) ####Get this from CL_de_required, I made this formula --> S_hor or S_vee should be used here
                 
         tau_from_rudder=-Cn_dr_req/(K*CL_alpha_N*np.sin(v_angle)*S_vee/S*l_v/b*Vh_V2)
         tau_from_elevator=-Cm_de_req_tail/(CL_alpha_N*np.cos(v_angle)*S_vee/S*l_v/c*Vh_V2)
-                
+        print('tau', tau_from_rudder)
         elevator_min=elevator_min-step
         rudder_max=rudder_max-step        
         #print(tau_from_rudder,tau_from_elevator)
