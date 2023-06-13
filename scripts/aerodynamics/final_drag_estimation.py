@@ -91,6 +91,7 @@ total_cL = (cL_wing_times_S + cL_tail_times_Sh) / (data['S'] + HorTailClass.surf
 # Summation and L/D calculation
 CDi_var = CDi(data["cL_cruise"], data["A"], data["e"])
 CD_var = CD(CD0_var, CDi_var)
+CD_wing_plus_propeller = (1-0.025) * CD_var
 lift_over_drag_var = lift_over_drag(total_cL, CD_var)
 
 print("CD0_wing", CD_wing_var / data["S"])
@@ -104,6 +105,7 @@ AeroClass.cd_cruise = CD_var
 AeroClass.cd0_cruise = CD0_var
 AeroClass.cd_upsweep = CD_upsweep_var
 AeroClass.cd_base = CD_base_var
+AeroClass.cd_tot_cruise = CD_wing_plus_propeller
 
 
 # ------------------------ DRAG DURING STALL -------------- 
