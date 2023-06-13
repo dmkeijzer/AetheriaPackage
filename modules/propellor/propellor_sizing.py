@@ -88,7 +88,7 @@ def propcalc( clcd, mission: PerformanceParameters, engine: Engine, h_cruise: fl
 
     #update to the correct classes
     mission.hoverPower = power_tot_hover 
-    mission.cruisePower = power_tot_cruise 
+    mission.cruisePower = power_tot_cruise /prop_eff_cruise / 0.95 #extra 0.95 is for mechanical losses
     #mission.max_thrust_per_engine = max_thrust_per_engine
     mission.prop_eff = prop_eff_cruise
     engine.thrust_coefficient = C_T_cruise

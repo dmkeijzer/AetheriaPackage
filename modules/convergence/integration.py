@@ -72,7 +72,7 @@ def run_integration():
 
 
     #-------------------- propulsion ----------------------------
-    mission, engine = propcalc( clcd= aero.ld_cruise, mission=mission, engine= engine, h_cruise= GeneralConstants.h_cruise)
+    #mission, engine = propcalc( clcd= aero.ld_cruise, mission=mission, engine= engine, h_cruise= GeneralConstants.h_cruise)
 
 
     #-------------------- power system sizing--------------------
@@ -153,5 +153,7 @@ def run_integration():
     vtail.dump() 
     stability.dump()
 
-run_integration()
+if __name__ == "__main__":
+    
+    run_integration()
 
