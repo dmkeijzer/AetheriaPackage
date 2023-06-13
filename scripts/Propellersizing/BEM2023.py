@@ -681,6 +681,7 @@ class OffDesignAnalysisBEM:
 
     # Exponent used for function above
     def f(self, r, phi_t):
+
         return (self.B / 2) * (1 - self.Xi(r)) / (np.sin(phi_t))
 
     # # Pitch of blade tip TODO: change
@@ -1008,6 +1009,8 @@ class OffDesignAnalysisBEM:
             for station in range(len(self.r_stations)):
                 # Get the Reynold's number per station
                 RN = Re[station]
+
+
                 RN = self.RN_spacing * round(RN / self.RN_spacing)
 
                 # Maximum and minimum RN in database
