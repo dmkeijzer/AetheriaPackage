@@ -25,7 +25,7 @@ Beta = 0.5
 ARe = 2
 n = 2
 l_tank = np.linspace(1, 5, 40)
-l_fuelcell = 0.3
+l_fuelcell = 0.15
 l_cockpit = 2
 l_cabin = 2.5
 l_fcs = 2 * l_fuelcell
@@ -50,11 +50,9 @@ print("hc: ", hc)
 print("bc: ", bc)
 print("hf: ", hf)
 print("bf: ", bf)
-
 print("V_tank:", V_tank)
 '''
 l_fuselage = l_cockpit + l_cabin + l_fcs + l_tail
-
 
 #things to return
 # l_fuselage
