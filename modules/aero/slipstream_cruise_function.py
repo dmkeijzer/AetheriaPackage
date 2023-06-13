@@ -16,7 +16,7 @@ from input.data_structures.ISA_tool import ISA
 
 
 
-def slipstream_cruise():
+def slipstream_cruise(WingClass, AeroClass):
     atm = ISA(const.h_cruise)
     t_cr = atm.temperature()
     rho_cr = atm.density()

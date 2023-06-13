@@ -27,7 +27,6 @@ AeroClass.load()
 PerformanceClass.load()
 EngineClass.load()
     
-# TEST = int(input("\n\nType 1 if you want to write the JSON data to your download folder instead of the repo, type 0 otherwise:\n")) # Set to true if you want to write to your downloads folders instead of rep0
 dict_directory = "input/data_structures"
 dict_names = ["aetheria_constants.json"]
 download_dir = os.path.join(os.path.expanduser("~"), "Downloads")

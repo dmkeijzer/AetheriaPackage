@@ -12,25 +12,16 @@ from input.data_structures.ISA_tool import ISA
 
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
-# import CL_cruise from json files
 
-AeroClass = Aero()
-FuselageClass = Fuselage()
-VTailClass = VeeTail()
-HorTailClass = HorTail()
-AeroClass.load()
-FuselageClass.load()
-VTailClass.load()
-HorTailClass.load()
 
 
 # ----------- CLmax ---------------------------------------------------------------------------------
-def slipstream_stall():
+def slipstream_stall(AeroClass, WingClass):
     atm = ISA(const.h_transition)
     t_cr = atm.temperature()
     rho_stall = atm.density()
     mhu = atm.viscosity_dyn()
-    # print(rho_stall)
+
     diameter_propellers = 2*np.sqrt(const.diskarea/(np.pi*6))
     D = diameter_propellers
 
@@ -74,14 +65,14 @@ def slipstream_stall():
 
     downwash_angle_wing = np.sin(sin_epsilon)
     downwash_angle_prop = np.sin(sin_epsilon_s)
-    average_downwash_angle = (downwash_angle_prop*diameter_propellers*3 + downwash_angle_wing*(data['b']-3*diameter_propellers))/data['b']
+    average_downwash_angle = (downwash_angle_prop*diameter_propellers*3 + downwash_angle_wing*(WingClass.span -3*diameter_propellers))/WingClass.span
 
     AeroClass.downwash_angle_wing_stall = downwash_angle_wing 
     AeroClass.downwash_angle_prop_stall = downwash_angle_prop 
     AeroClass.downwash_angle_stall = average_downwash_angle 
 
 
-    return AeroClass
+    return AeroClass, WingClass
     
 
 

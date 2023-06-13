@@ -148,7 +148,7 @@ def final_drag_estimation(WingClass, FuselageClass, VTailClass, AeroClass, Horta
     # Writing to classes file
     AeroClass.ld_stall = lift_over_drag_var
     AeroClass.cd_stall = CD_var
-    AeroClass.cd0_stall = CD0_var
+    AeroClass.cd0_stall = CD0_varWingClass, FuselageClass, VTailClass, AeroClass, HortailClass
     AeroClass.mach_stall = M_var
 
     AeroClass.dump()
