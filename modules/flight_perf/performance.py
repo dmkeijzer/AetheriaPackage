@@ -1,4 +1,4 @@
-uthor: Damien & Can & Lucas
+# uthor: Damien & Can & Lucas
 
 
 import numpy as np

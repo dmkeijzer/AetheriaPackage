@@ -1,6 +1,12 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 import matplotlib.pyplot as plt
+import sys
+import pathlib as pl
+
+sys.path.append(str(list(pl.Path(__file__).parents)[2]))
+
+import input.data_structures.GeneralConstants as const
 
 """CALCULATE TAIL LENGTH BASED ON BETA AND ASPECT RATIO"""
 def find_tail_length(h0, b0, Beta, V, l, AR, n):
@@ -78,7 +84,7 @@ def plot_variable(h0, b0, V, l_tank, n,  parameter, parameter_values, fixed_para
 
     plt.show()
 
-def minimum_tail_length(h0, b0, Beta, V, l_tank, ARe, n):
+def minimum_tail_length(h0, b0, Beta, V, l_tank, ARe, n, plot= False):
     l_tail = []
     l_tank = list(l_tank)
     indices_to_remove = []  # Track indices to be removed
@@ -96,10 +102,11 @@ def minimum_tail_length(h0, b0, Beta, V, l_tank, ARe, n):
     # Remove values from l_tank based on indices to remove
     l_tank = [l for i, l in enumerate(l_tank) if i not in indices_to_remove]
 
-    plt.plot(l_tail, l_tank)
-    plt.xlabel("Tail length [m]")
-    plt.ylabel("Tank length [m]")
-    plt.show()
+    if plot:
+        plt.plot(l_tail, l_tank)
+        plt.xlabel("Tail length [m]")
+        plt.ylabel("Tank length [m]")
+        plt.show()
 
     l_tail = np.array(l_tail)
     if len(l_tail) > 0:
@@ -107,7 +114,7 @@ def minimum_tail_length(h0, b0, Beta, V, l_tank, ARe, n):
         tail_data = converge_tail_length(h0, b0, Beta, V, l_tank[min_index], ARe, n)
         tail_data.append(l_tank[min_index])
     else:
-        print("No possible tail length")
+        raise Exception("No possbile tail length")
 
 
     return tail_data
@@ -217,5 +224,26 @@ def crash_box_height_convergerence(plateau_stress, yield_stress, e_0, e_d, v0, s
     return travel_distance, A
 
 
+
+
+def get_fuselage_sizing(h2tank, fuelcell, perf_par,fuselage):
+
+    crash_box_height, crash_box_area = crash_box_height_convergerence(const.s_p, const.s_y, const.e_0, const.e_d, const.v0, const.s0, perf_par.MTOM)
+    fuselage.height_fuselage_inner = fuselage.height_cabin + crash_box_height
+    fuselage.height_fuselage_outer = fuselage.height_fuselage_inner + const.fuselage_margin
+
+    l_tail, upsweep, bc, hc, hf, bf, AR, l_tank = minimum_tail_length(fuselage.height_fuselage_inner, fuselage.width_fuselage_inner, const.beta_crash, h2tank.volume(perf_par.energyRequired/3.6e6) ,np.linspace(1, 5, 40), const.ARe, const.n_tanks)
+
+    fuselage.length_tail = l_tail
+    fuselage.bc = bc
+    fuselage.hc = hc
+    fuselage.bf = bf
+    fuselage.hf = hf
+    fuselage.length_fuselage = fuselage.length_cockpit + fuselage.length_cabin + l_tail + fuelcell.depth + const.fuselage_margin
+
+    return fuselage
+
+
+    
 
 

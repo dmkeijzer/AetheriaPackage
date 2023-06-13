@@ -18,6 +18,7 @@ from modules.aero.drag_estimation_function import final_drag_estimation
 from modules.aero.slipstream_cruise_function import slipstream_cruise
 from modules.aero.slipstream_stall_function import slipstream_stall
 from modules.flight_perf.performance  import get_energy_power_perf
+from modules.structures.fuselage_length import get_fuselage_sizing
 
 def run_integration():
     #----------------------------- Initialize classes --------------------------------
@@ -91,5 +92,7 @@ def run_integration():
     #------------- Structures------------------
 
     # Fuselage sizing
+    fuselage = get_fuselage_sizing(Tank,Pstack, mission, fuselage)
+
 
 run_integration()

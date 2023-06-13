@@ -47,7 +47,7 @@ def get_lift_distr(wing, aero, plot= False, test= False):
     wing_surface = Surface(name="Wing",
                         n_chordwise=13,
                         chord_spacing=Spacing.cosine,
-                        n_spanwise=25,
+                        n_spanwise=20,
                         span_spacing=Spacing.equal,
                         y_duplicate=0.0,
                         sections=[root_section, tip_section])
