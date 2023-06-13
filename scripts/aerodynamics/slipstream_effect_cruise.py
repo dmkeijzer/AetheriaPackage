@@ -17,6 +17,8 @@ os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
 AeroClass = Aero()
 WingClass = Wing()
+EngineClass = Engine()
+EngineClass.load()
 AeroClass.load()
 WingClass.load()
 
@@ -38,7 +40,7 @@ angle_of_attack_prop = angle_of_attack_fuse + i_cs_var
 drag_cruise = 0.5*rho_cr*WingClass.surface*const.v_cr*const.v_cr*AeroClass.cd_cruise
 # drag_cruise = 0
 # Thrust coefficient
-C_T_var = 0.15
+C_T_var = EngineClass.thrust_coefficient
 
 #change in V
 V_delta_var = V_delta(C_T=C_T_var, S_W=WingClass.surface, n_e=4, D=diameter_propellers, V_0=const.v_cr)
