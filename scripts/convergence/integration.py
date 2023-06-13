@@ -14,6 +14,8 @@ from modules.stab_ctrl.vtail_sizing_optimal import size_vtail_opt
 from modules.stab_ctrl.wing_loc_horzstab_sizing import wing_location_horizontalstab_size
 from modules.planform.planformsizing import wing_planform
 from modules.preliminary_sizing.wing_power_loading_functions import get_wing_power_loading
+from modules.propellor.propellor_sizing import propcalc
+from input.data_structures import GeneralConstants 
 
 def run_integration():
     #----------------------------- Initialize classes --------------------------------
@@ -45,13 +47,15 @@ def run_integration():
 
     #planform sizing
     wing = wing_planform(wing)
-    wing.dump()
 
     # Aerodynamic sizing
 
     
+    #propellor sizing 
+    radius_propeller = np.sqrt(mission.MTOM / (120 * 6 * np.pi))
+    mission , c_t_cruise = propcalc(radius_propeller,aero.ld_cruise,mission, GeneralConstants.h_cruise)
+
     #power system sizing
-    mission.load()
     nu = np.arange(0,1.001,0.005)
     Totalmass, Tankmass, FCmass, Batterymass= PropulsionSystem.mass(echo= np.copy(nu),
                                 Mission= mission,
