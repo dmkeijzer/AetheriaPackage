@@ -19,13 +19,13 @@ V = 0.5
 
 #def fuselage_calculations(aircraftmass: float, h2tankVolume: float):
 
-h0 = 1.8
+#h0 = 1.8
 b0 = 1.6
 Beta = 0.5
 ARe = 2.75
 n = 2
 l_tank = np.linspace(1, 5, 40)
-l_fuelcell = 0.15
+l_fuelcell = 0.16
 l_cockpit = 2
 l_cabin = 2.7
 l_fcs = 2 * l_fuelcell
