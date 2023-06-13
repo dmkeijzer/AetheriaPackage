@@ -255,12 +255,13 @@ def get_weight_vtol(perf_par, fuselage, wing,  engine, vtail):
     lg_weight = LandingGear(perf_par.MTOM).mass
 
     # Nacelle mas
-    engine.mass_pernacelle = NacelleWeight(perf_par.hoverPower).mass
+    nacelle_mass = NacelleWeight(perf_par.hoverPower).mass
+    engine.mass_pernacelle = nacelle_mass/engine.no_engines
 
     # Misc mass
     misc_mass = Miscallenous(perf_par.MTOM, perf_par.OEM, const.npax + 1).mass
 
-    perf_par.OEM = np.sum([ perf_par.powersystem_mass , wing.wing_weight, vtail.vtail_weight, fuselage.fuselage_weight, lg_weight, misc_mass])
+    perf_par.OEM = np.sum([ perf_par.powersystem_mass , wing.wing_weight, vtail.vtail_weight, fuselage.fuselage_weight, nacelle_mass, lg_weight, misc_mass])
     perf_par.MTOM =  perf_par.OEM + const.m_pl
 
     return perf_par, wing, vtail, fuselage, engine
