@@ -29,7 +29,7 @@ N_stations -> Number of stations in the blade (try 25-30, maybe 20 if it is too 
 xi_0 -> Non-dimensional hub radius (r_hub/R)
 """
 
-R = 0.9768
+R = 0.65
 xi_0 = 0.1
 rho_cr = ISA.density()
 dyn_vis_cr = ISA.viscosity_dyn()
@@ -44,7 +44,7 @@ dyn_vis_h = at.ISA(0).viscosity_dyn()
 V_h = 2
 a_h = at.ISA(0).soundspeed()
 T_cr = 250
-T_h = 2100*9.80665*1.225
+T_h = 2180*9.80665*1.225
 
 t_cr = 10
 t_h = 1
@@ -119,7 +119,7 @@ n_hover = Omega_hover / (2 * np.pi)
 g0 = 9.80665
 
 # Wing parameters
-MTOM = 2150
+MTOM = 2180
 
 n_prop = 6
 m_prop = 502.6006543358783
@@ -149,14 +149,14 @@ soundspeed = ISA.soundspeed()
 xi_0 = 0.1
 
 #eng_sizing = esp.PropSizing(span1, fuselage.mass_fuselage, n_prop, 0.3,0.3, MTOM, xi_0)
-prop_radius = 0.9768
+prop_radius = 0.65
 prop_diameter = prop_radius*2
 totarea = np.pi*(prop_radius)**2*n_prop
 
 # Design parameters
 B = 6
-rpm_cruise = 800
-T_factor = 1.2
+rpm_cruise = 1000
+T_factor = 2.6
 
 # Design the blade
 
@@ -186,13 +186,13 @@ def cost_function_blades(variables):
     print(blade_performance[2])
 
     # Use % of the mission as weights for the optimisation TODO: discuss with Egon whether this or just cruise is better
-    return np.abs((t_cr/t_tot) * (1 - blade_performance[0][1][5]) + (t_h/t_tot) * (1-blade_performance[1][1][0]/blade_performance[1][1][1]))
+    return np.abs((t_cr/t_tot) * (1 - blade_performance[0][1][5]) + (t_h/t_tot) * (1-blade_performance[1][0][2]))
 
 
 # Variables to optimise: B, rpm hover, rpm cruise, delta_pitch hover, maybe even thrust factor
 #  B, rpm hover, rpm cruise, delta_pitch hover
 # TODO: B has to be integer
-initial_guess = np.array([5, 3500, 1900, np.deg2rad(25)])
+initial_guess = np.array([5, 3500, 1000, np.deg2rad(45)])
 
 # Minimum and maximum bounds for the optimisation
 # Maximum rpm for maximum tip Mach
@@ -203,7 +203,7 @@ rpm_max = omega_max/0.10472
 omega_min = 0.3*a_cr/R
 rpm_min = omega_min/0.10472
 
-max_param = np.array([8, rpm_max, rpm_max, np.deg2rad(30)])
+max_param = np.array([8, rpm_max, rpm_max, np.deg2rad(60)])
 min_param = np.array([3, rpm_min, rpm_min, np.deg2rad(0)])
 print("Max", max_param)
 print("Min", min_param)

@@ -63,7 +63,11 @@ def run_integration():
     NU = nu[index_min_mass][0]
     powersystemmass = Totalmass[index_min_mass][0]
     Batterymass = Batterymass[index_min_mass][0]
-    fuelcellmass = Pstack.mass
+    coolingsmass = 15 + 35 #kg mass radiator and mass air subsystem. calculated outside this outside loop and will not change signficant 
+
+
+    PerformanceParameters.powersystem_mass = powersystemmass + coolingsmass
+    mission.dump()
 
     #stability and control
     wing.load()
@@ -77,8 +81,8 @@ def run_integration():
                                                                     FuseClass= fuselage,
                                                                     VTailClass= vtail, 
                                                                     Aeroclass= aero,
-                                                                    StabClass=stability,
-                                                                    b_ref= .5, #!!!!!!!!! please update value when we get it
-                                                                    stepsize=  5e-2, plot=True )
+                                                                    StabClass=stability,                       
+                                                                    b_ref= 2, #!!!!!!!!! please update value when we get it
+                                                                    stepsize=  5e-2)
     # WingboxClass =  Wing()
 run_integration()

@@ -38,6 +38,9 @@ class PerformanceParameters:
     turn_loadfactor: float = None # Turning load factor
     v_max: float = None
     glide_slope: float = None
+    max_thrust_per_engine: float = None
+
+    powersystem_mass: float = None
 
 
     def load(self):
@@ -62,8 +65,10 @@ class PerformanceParameters:
         self.v_max = data["v_max"]
         self.v_stall = data["v_stall"]
         self.G = data["G"]
+        self.max_thrust_per_engine = data['max_thrust_per_engine']
 
-    
+        self.powersystem_mass = data['h2_weight']
+
     def dump(self):
         with open(r"input/data_structures/aetheria_constants.json") as jsonFile:
             data = json.load(jsonFile)
@@ -79,8 +84,11 @@ class PerformanceParameters:
         data["v_max"] =  self.v_max
         data["v_stall"] = self.v_stall
         data["G"] = self.G
+        data['max_thrust_per_engine'] = self.max_thrust_per_engine
 
-        
+        data['h2_weight'] = self.powersystem_mass
+
+
     
-        with open(r"output/data_structures/aetheria_constants.json", "w") as jsonFile:
+        with open(r"input/data_structures/aetheria_constants.json", "w") as jsonFile:
             json.dump(data, jsonFile, indent=6)
