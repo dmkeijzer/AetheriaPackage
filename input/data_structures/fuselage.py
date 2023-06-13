@@ -34,7 +34,7 @@ class Fuselage():
     @property
     def max_perimeter(self):
         #TODO Please disucss a better explanation with Jorrick
-        return self.length_fuselage*2 + self.length_fuselage*0.2
+        return 2*self.height_fuselage_outer + 2*self.width_fuselage_outer
 
 
     def load(self):

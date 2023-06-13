@@ -29,8 +29,10 @@ WingClass.wing_weight = test_val
 VtailClass.vtail_weight = test_val
 FuseClass.fuselage_weight = test_val
 EngClass.mass_pernacelle = test_val
+EngClass.mass_perpowertrain = test_val
+EngClass.mass_pertotalengine = test_val
 PerfClass.OEM =  test_val
-PerfClass.MTOM
+PerfClass.MTOM = test_val
 
 def test_get_weight_vtol():
     perf_par, wing, vtail, fuselage, engine = get_weight_vtol(PerfClass, FuseClass, WingClass, EngClass, VtailClass)
@@ -39,5 +41,7 @@ def test_get_weight_vtol():
     assert not np.isclose(wing.wing_weight, test_val)
     assert not np.isclose(vtail.vtail_weight, test_val)
     assert not np.isclose(engine.mass_pernacelle, test_val)
+    assert not np.isclose(engine.mass_perpowertrain, test_val)
+    assert not np.isclose(engine.mass_pertotalengine, test_val)
     assert not np.isclose(perf_par.OEM, test_val)
     assert not np.isclose(perf_par.MTOM, test_val)
