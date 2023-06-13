@@ -16,13 +16,17 @@ from input.data_structures.ISA_tool import ISA
 
 
 
-def slipstream_cruise(WingClass, AeroClass):
+def slipstream_cruise(WingClass, AeroClass,mission):
+
+    with open(r"input/data_structures/aetheria_constants.json") as jsonFile:
+            data = json.load(jsonFile)
     atm = ISA(const.h_cruise)
     t_cr = atm.temperature()
     rho_cr = atm.density()
     mhu = atm.viscosity_dyn()
     # print(rho_cr)
-    diameter_propellers = 2*np.sqrt(const.diskarea/(np.pi*6))
+    diskarea = mission.MTOM / 120 
+    diameter_propellers = 2*np.sqrt(diskarea / np.pi )
     D = diameter_propellers
 
     # Angles

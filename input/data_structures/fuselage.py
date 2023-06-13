@@ -54,6 +54,8 @@ class Fuselage():
         self.volume_fuselage = data["volume_fuselage"]
         self.length_cockpit = data['l_cockpit']
         self.length_tail = data['l_tail']
+        self.fuselage_weight = data["fuselage_weight"] 
+        
 
 
 

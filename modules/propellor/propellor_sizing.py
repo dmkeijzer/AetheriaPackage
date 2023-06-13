@@ -68,7 +68,6 @@ def propcalc( clcd, mission: PerformanceParameters, engine: Engine, h_cruise: fl
                     break
         if T > mission.max_thrust_per_engine:
                     
-                    print(T_factor)
                     break
     maxT_blade = BEM.OffDesignAnalysisBEM(V_h, B, prop_radius, design[0], design[1] - np.deg2rad(best_combo[0]),
                                           design[3], coefs[0], coefs[1], rpm_max, rho, dyn_vis, soundspeed, RN)
@@ -82,7 +81,6 @@ def propcalc( clcd, mission: PerformanceParameters, engine: Engine, h_cruise: fl
     #chords_per_station = design[0]
     prop_eff_cruise = design[5]
     prop_eff_hover = maxT_performance[0][2]
-    print(f'Propulsive efficiency hover {prop_eff_hover}')
     #design_thrust = T_cr_per_engine * T_factor
 
     max_thrust_per_engine = maxT_performance[0][0]
@@ -91,7 +89,7 @@ def propcalc( clcd, mission: PerformanceParameters, engine: Engine, h_cruise: fl
     #update to the correct classes
     mission.hoverPower = power_tot_hover 
     mission.cruisePower = power_tot_cruise 
-    mission.max_thrust_per_engine = max_thrust_per_engine
+    #mission.max_thrust_per_engine = max_thrust_per_engine
     mission.prop_eff = prop_eff_cruise
     engine.thrust_coefficient = C_T_cruise
 

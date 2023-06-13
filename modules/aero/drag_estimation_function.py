@@ -85,10 +85,12 @@ def final_drag_estimation(WingClass, FuselageClass, VTailClass, AeroClass, Horta
     CD_var = CD(CD0_var, CDi_var)
     lift_over_drag_var = lift_over_drag(total_cL, CD_var)
 
+    ''' 
     print("CD0_wing", CD_wing_var / WingClass.surface)
     print("CD cruise", CD_var)
     print("CL cruise", total_cL)
     print("L/D cruise", lift_over_drag_var)
+    '''
 
     # Writing to JSON file
     AeroClass.ld_cruise = lift_over_drag_var
@@ -112,7 +114,7 @@ def final_drag_estimation(WingClass, FuselageClass, VTailClass, AeroClass, Horta
     # Form factor
     FF_fus_var = FF_fus(FuselageClass.length_fuselage, FuselageClass.diameter_fuselage)
     FF_wing_var = FF_wing(const.toc, const.xcm, M_var, sweep_m(WingClass.sweep_LE, const.xcm, WingClass.chord_root, WingClass.span, WingClass.taper))
-    FF_tail_var = FF_tail(const.toc_tail, const.xcm_tail, M_var, HorTailClass.sweep_halfchord_h)
+    FF_tail_var = FF_tail(const.toc_tail, const.xcm_tail, M_var, HortailClass.sweep_halfchord_h)
 
 
     # Wetted area
@@ -148,7 +150,7 @@ def final_drag_estimation(WingClass, FuselageClass, VTailClass, AeroClass, Horta
     # Writing to classes file
     AeroClass.ld_stall = lift_over_drag_var
     AeroClass.cd_stall = CD_var
-    AeroClass.cd0_stall = CD0_varWingClass, FuselageClass, VTailClass, AeroClass, HortailClass
+    AeroClass.cd0_stall = CD0_var
     AeroClass.mach_stall = M_var
 
     AeroClass.dump()

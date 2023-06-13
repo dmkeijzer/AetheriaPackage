@@ -21,7 +21,7 @@ from input.data_structures import *
 # HorTailClass.load()
 # FuseClass.load()
 
-def size_vtail_opt(WingClass, HorTailClass, FuseClass, VTailClass, StabClass, Aeroclass, b_ref, stepsize=1e-2,  CLh_initguess = -0.2, CLh_step = 0.01, plot = False):
+def size_vtail_opt(WingClass, HorTailClass, FuseClass, VTailClass, StabClass, Aeroclass, b_ref, stepsize=1e-2,  CLh_initguess = -0.1, CLh_step = 0.01, plot = False):
     CLh = CLh_initguess
 
     log = np.zeros((0,5))

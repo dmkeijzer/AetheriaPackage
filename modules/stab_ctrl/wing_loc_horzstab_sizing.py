@@ -137,7 +137,7 @@ def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, Aerocl
     Lambdah2 = 0  # Assumed
     CLaw = Aeroclass.cL_alpha
     c_root = WingClass.chord_root
-    l_f = FuseClass.length_fuselage
+    l_f = FuseClass.length_fuselage 
     CL0_approach = Aeroclass.cL_alpha0_approach 
     Cm_ac_wing = Aeroclass.cm_ac
     CLAh_approach = Aeroclass.cL_max * 0.9 # Assumes fuselage contribution negligible
