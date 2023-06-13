@@ -18,6 +18,11 @@ import os
 
 from  ISA_tool import ISA
 
+# General paths
+
+json_path = r"input/data_structures/aetheria_constants.json"
+
+
 # constants of physics
 g0 = 9.80665            #[m/s^2]    O
 
