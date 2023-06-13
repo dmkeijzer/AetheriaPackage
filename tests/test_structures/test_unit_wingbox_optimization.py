@@ -143,13 +143,3 @@ def test_flange_loc_loc():
     assert res_optimization*comparsion_value_notebook > 0
 
 
-
-
-test_global_local()
-test_post_buckling()
-test_von_Mises()
-test_buckling_constr()
-test_web_flange()
-test_crippling()
-test_local_column()
-test_flange_loc_loc()

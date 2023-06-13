@@ -16,8 +16,8 @@ def example_values():
 
 
 def test_aileron_sizing(example_values):
-    size_aileron = size_aileron(**example_values["size_aileron"])
+    size_aileron_var = size_aileron(**example_values["size_aileron"])
 
 
-    assert np.isclose(size_aileron, 2.92)
+    assert np.isclose(size_aileron_var, 2.92)
 

@@ -41,5 +41,5 @@ def test_get_strip_forces():
 
     assert np.max(y_le_arr) < WingClass.span/2 and np.min(y_le_arr) > 0  # Make sure all coordinates are within bounds
     assert np.where(cl_strip_arr == np.max(cl_strip_arr))[0][0] > 1  # Assert maximum lift coefficient is not at the root
-    assert (cl_strip_arr < AeroClass.cL_cruise + 0.1).all()
+    assert (cl_strip_arr < AeroClass.cL_cruise + 0.1).all() # Assert reasonalbe values for lift coefficients
 
