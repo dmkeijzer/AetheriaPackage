@@ -13,15 +13,22 @@ from modules.preliminary_sizing.wing_power_loading_functions import get_wing_pow
 PerfClass = PerformanceParameters()
 WingClass = Wing()
 EngClass = Engine()
-AeroClass = Aero(0)
+AeroClass = Aero()
 
 PerfClass.load()
 WingClass.load()
 EngClass.load()
 AeroClass.load()
 
+test_val = 1
+
+AeroClass.cL_cruise = test_val
+PerfClass.wing_loading_cruise = test_val
+
 
 def test_get_wing_power_loading():
     get_wing_power_loading(PerfClass, WingClass, EngClass, AeroClass)
+    assert not np.isclose(AeroClass.cL_cruise, test_val)
+    assert not np.isclose(PerfClass.wing_loading_cruise, test_val)
 
 test_get_wing_power_loading()

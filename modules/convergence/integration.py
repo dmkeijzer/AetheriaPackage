@@ -14,6 +14,10 @@ from modules.stab_ctrl.vtail_sizing_optimal import size_vtail_opt
 from modules.stab_ctrl.wing_loc_horzstab_sizing import wing_location_horizontalstab_size
 from modules.planform.planformsizing import wing_planform
 from modules.preliminary_sizing.wing_power_loading_functions import get_wing_power_loading
+from modules.aero.drag_estimation_function import final_drag_estimation
+from modules.aero.slipstream_cruise_function import slipstream_cruise
+from modules.aero.slipstream_stall_function import slipstream_stall
+from modules.flight_perf.performance  import get_energy_power_perf
 
 def run_integration():
     #----------------------------- Initialize classes --------------------------------
@@ -28,7 +32,7 @@ def run_integration():
     fuselage = Fuselage()
     vtail = VeeTail()
     stability = Stab()
-    #----------------------------------------------------------------------
+    #----------------------------------------------------------------------------------
 
     #------------------------ Load cases for first time----------------------------------------
     mission.load()
@@ -40,17 +44,25 @@ def run_integration():
     vtail.load() 
     stability.load() 
     #----------------------------------------------------------------------
+
     # Preliminary Sizing
     mission, wing,  engine, aero = get_wing_power_loading(mission, wing, engine, aero)
 
     #planform sizing
+    wing.load()
     wing = wing_planform(wing)
     wing.dump()
 
-    # Aerodynamic sizing
 
-    
-    #power system sizing
+    #-------------------- Aerodynamic sizing--------------------
+    wing, fuselage, vtail, aero, horizontal_tail =  final_drag_estimation(wing, fuselage, vtail, aero, horizontal_tail)
+    aero, wing = slipstream_cruise(wing, aero) # TODO the effect of of cl on the angle of attack
+
+    #-------------------- Flight Performance --------------------
+    wing, engine, aero, mission = get_energy_power_perf(wing, engine, aero, mission)
+
+
+    #------------------------- power system sizing-------------------------
     mission.load()
     nu = np.arange(0,1.001,0.005)
     Totalmass, Tankmass, FCmass, Batterymass= PropulsionSystem.mass(echo= np.copy(nu),
@@ -63,26 +75,17 @@ def run_integration():
     NU = nu[index_min_mass][0]
     powersystemmass = Totalmass[index_min_mass][0]
     Batterymass = Batterymass[index_min_mass][0]
-    coolingsmass = 15 + 35 #kg mass radiator and mass air subsystem. calculated outside this outside loop and will not change signficant 
-
-
-    PerformanceParameters.powersystem_mass = powersystemmass + coolingsmass
-    mission.dump()
+    fuelcellmass = Pstack.mass
 
     #stability and control
-    wing.load()
-    horizontal_tail.load()
-    fuselage.load()
-    vtail.load()
-    stability.load()
-
     wing,horizontal_tail,fuselage,vtail, stability = size_vtail_opt(WingClass=  wing,
                                                                     HorTailClass= horizontal_tail,
                                                                     FuseClass= fuselage,
                                                                     VTailClass= vtail, 
-                                                                    Aeroclass= aero,
-                                                                    StabClass=stability,                       
+                                                                    StabClass=stability,
                                                                     b_ref= 2, #!!!!!!!!! please update value when we get it
-                                                                    stepsize=  5e-2)
+                                                                    carmelos_bs_stepsize= 1e-1 ) 
+
     # WingboxClass =  Wing()
+
 run_integration()

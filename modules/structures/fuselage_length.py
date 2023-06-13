@@ -112,10 +112,11 @@ def minimum_tail_length(h0, b0, Beta, V, l_tank, ARe, n):
 
     return tail_data
 
-def stress_strain_curve(stress_p, E, plain_stress):
+def stress_strain_curve(stress_peak, strain_peak, plain_stress, e_d):
+    E = stress_peak/strain_peak
     e = np.arange(0,1,0.001)
-    densification = 0.95
-    strain_p = stress_p / E
+    densification = e_d
+    strain_p = stress_peak / E
     crush_strength = np.zeros(len(e))
 
     for i in range(len(e)):
@@ -126,37 +127,23 @@ def stress_strain_curve(stress_p, E, plain_stress):
         if e[i] > densification:
             crush_strength[i] = plain_stress + (e[i]-densification)*E
 
-    plt.plot(e, crush_strength/(10**6))
-    plt.show()
+    #plt.plot(e, crush_strength/(10**6))
+    #plt.show()
     return crush_strength, e
 
 
-def decel_calculation():
-    a = [0]
-    v = [9.1]
-    s = [0]
-    t = [0]
-    m = 3000
+def decel_calculation(s_p, s_y, e_0, v0, e_d, height,m, PRINT=False):
+    a, v, s, t  = [0], [v0], [0], [0]
     Ek = [0.5*m*v[-1]**2]
-    s_tot = 0.4
-    dt = 0.00001
+    s_tot = height
+    dt = 0.000001
     g = 9.81
-    A = 1
-    sigma_cr, e = stress_strain_curve(1*10**6, 5*10**6, 0.35*10**6)
-    """
-    while v[-1] > 0:
-        strain = s[-1]/s_tot
-        index = np.abs(e - strain).argmin()
-        Fcrush = sigma_cr[index]*A
-        F = - Fcrush
-        print("Fcrush: ", Fcrush)
-        a.append(F/m)
-        v.append(v[-1]+a[-1]*dt)
-        print(v[-1])
-        s.append(s[-1]+v[-1]*dt)
-        print(s[-1])
-        t.append(t[-1]+dt)
-    """
+    A = m*20*g/(s_p)
+    Strain = [0]
+    Strainrate = [0]
+
+    sigma_cr, e = stress_strain_curve(s_y, e_0, s_p, e_d)
+
     while v[-1] > 0:
         strain = s[-1]/s_tot
         index = np.abs(e - strain).argmin()
@@ -165,31 +152,70 @@ def decel_calculation():
         ds = v[-1]*dt
         work_done = Fcrush*ds
         Ek.append(Ek[-1]- work_done)
+
         if Ek[-1] > 0:
             v.append(np.sqrt(2*Ek[-1]/m))
             a.append((v[-1]-v[-2])/dt)
             t.append(t[-1]+dt)
             s.append(s[-1] + ds)
+            Strain.append(strain)
+            Strainrate.append((Strain[-1]-Strain[-2])/dt)
         else:
             Ek.pop(-1)
             break
+    if PRINT:
+        plt.plot(t[1:-1], np.array(Strain[1:-1]))
+        plt.xlabel("Time")
+        plt.ylabel("Strain")
+        plt.show()
 
-    plt.plot(t[1:-1], np.array(a[1:-1])/g)
-    plt.xlabel("Time")
-    plt.ylabel("Acceleration")
-    plt.show()
-    plt.plot(t, s)
-    plt.xlabel("Time")
-    plt.ylabel("Distance")
-    plt.show()
-    plt.plot(t, v)
-    plt.xlabel("Time")
-    plt.ylabel("Velocity")
-    plt.show()
+        plt.plot(t[1:-1], np.array(Strainrate[1:-1]))
+        plt.xlabel("Time")
+        plt.ylabel("Strain rate")
+        plt.show()
 
+        plt.plot(t[1:-1], np.array(a[1:-1])/g)
+        plt.xlabel("Time")
+        plt.ylabel("Acceleration")
+        plt.show()
+
+        plt.plot(t, v)
+        plt.xlabel("Time")
+        plt.ylabel("Velocity")
+        plt.show()
+
+        plt.plot(t, s)
+        plt.plot([0, t[-1]],[e_d*s_tot, e_d*s_tot])
+        plt.xlabel("Time")
+        plt.ylabel("Distance")
+        plt.show()
+    max_g = min(np.array(a))
+
+    return s[-1], A, max_g
 
 def simple_crash_box(m, a, sigma_cr, v):
     s = v**2/(2*a)
     A = m*a/sigma_cr
+    print(s, A)
     return s, A
+
+def crash_box_height_convergerence(plateau_stress, yield_stress, e_0, e_d, v0, s0, m):
+    I, s_arr, i = [], [], 0
+    height = s0
+    error = 1
+    while error > 0.0005:
+        travel_distance, A, max_g = decel_calculation(plateau_stress, yield_stress, e_0, v0, e_d, height, m, False)
+        new_height = travel_distance/e_d
+        error = abs((new_height-height)/height)
+        height = new_height
+        I.append(i)
+        s_arr.append(height)
+        i += 1
+    #print(height, A, max_g/9.81)
+    #plt.plot(I, s_arr)
+    #plt.show()
+    return travel_distance, A
+
+
+
 

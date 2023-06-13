@@ -27,6 +27,7 @@ class Engine():
     y_rotor_loc: float = None
     nacelle_width: float = None
     total_disk_area: float = None
+    thrust_coefficient: float = None
 
 
     def load(self):
@@ -40,7 +41,8 @@ class Engine():
         self.x_rotor_loc = data["x_rotor_loc"]
         self.y_rotor_loc = data["y_rotor_loc"]
         self.nacelle_width = data["nacelle_width"]
-        self.total_disk_area = data["A_tot"]
+        self.total_disk_area = data["diskarea"]
+        self.thrust_coefficient = data['C_T']
 
     def dump(self):
 
@@ -52,7 +54,7 @@ class Engine():
         data["x_rotor_loc"][3] = data["x_rotor_loc"][2]
         data["y_rotor_loc"][2] = data["b"]/2
         data["y_rotor_loc"][3] = -data["y_rotor_loc"][2]
-
+        data['C_T'] = self.thrust_coefficient
 
         with open(r"input/data_structures/aetheria_constants.json", "w") as jsonFile:
             json.dump(data, jsonFile, indent=4)

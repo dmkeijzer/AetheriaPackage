@@ -10,26 +10,9 @@ import pathlib as pl
 
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 
-from modules.powersizing.battery import BatterySizing
-from modules.powersizing.hydrogenTank import HydrogenTankSizing
-from modules.powersizing.fuellCell import FuellCellSizing
+
 from input.data_structures import Battery, FuelCell , HydrogenTank
 from input.data_structures import PerformanceParameters
-
-
-def heatloss(power_electric: float, efficiency: float ) -> float:
-    """
-    :param: power_electric[kW]:  power required of the 
-    :param: efficiency
-    :return: heat[kW]"""
-    return power_electric * (1 - efficiency) / efficiency
-
-def coolingmass(heat: float, heatedensity:float) -> float:
-    """
-    :param: heat[kW]:  heat that has to be cooled
-    :param: heatdensity[kW/kg]: specific weight of the cooling system
-    :return: mass[kg]: mass of the cooling system """
-    return heat / heatedensity
 
 
 def energy_cruise_mass(EnergyRequired: float , echo: float , Tank: HydrogenTank, Battery: Battery, FuellCell: FuelCell) -> list[float]:
@@ -48,7 +31,7 @@ def energy_cruise_mass(EnergyRequired: float , echo: float , Tank: HydrogenTank,
     
     #calculating energy required for the fuell cell and the battery
     Tankmass = Tank.mass(EnergyRequired * echo) / FuellCell.efficiency
-    Batterymass = Battery.energymass((1-echo)*EnergyRequired) / Battery.End_of_life /Battery.Efficiency 
+    Batterymass = Battery.energymass((1-echo)*EnergyRequired) 
     
     return  Tankmass , Batterymass
 
@@ -84,7 +67,7 @@ def hover_mass(PowerRequired: float ,MaxPowerFC: float, Battery: Battery) -> flo
         output:
             -Batterymass
     """
-    BatteryMass = (PowerRequired - MaxPowerFC) / Battery.PowerDensity /Battery.End_of_life 
+    BatteryMass = (PowerRequired - 0.9*MaxPowerFC) / Battery.PowerDensity /Battery.End_of_life 
     return  BatteryMass
 
 def hover_energy_mass(PowerRequired: float ,MaxPowerFC: float, Battery: Battery, HoverTime:float) -> float:
@@ -119,14 +102,14 @@ class PropulsionSystem:
             Batterymass[i] = max([HoverBatterymass, 2* HoverEnergyBatterymass, CruiseBatterymass[i], EnergyBatterymass[i]])
 
         #returning total mass and all component masss 
-        Totalmass = Tankmass + FCmass*2 + Batterymass #estimation from pim de boer that power density of fuel cell halves for system power density
+        Totalmass = Tankmass + FCmass + Batterymass #estimation from pim de boer that power density of fuel cell halves for system power density
         return  Totalmass, Tankmass, FCmass, Batterymass
 
-    def volume(echo:float, Battery: BatterySizing, FuellCell: FuellCellSizing, FuellTank: HydrogenTankSizing,Tankmass: float, FuellCellmass:float, Batterymass:float) -> tuple[float]:
+    def volume(echo:float, Battery: Battery, FuellCell: FuelCell, FuellTank: HydrogenTank,Tankmass: float, Batterymass:float) -> tuple[float]:
 
         #calculating component mass
-        TankVolume = Tankmass  * FuellTank.EnergyDensity / FuellTank.VolumeDensity * 0.001
-        FuellCellVolume = FuellCell.PowerDensity / FuellCell.VolumeDensity * FuellCellmass * 0.001
+        TankVolume = Tankmass  * FuellTank.energyDensity / FuellTank.volumeDensity * 0.001
+        FuellCellVolume = FuellCell.volume
         BatteryVolume = Battery.EnergyDensity / Battery.VolumeDensity * Batterymass *0.001
 
         TotalVolume = TankVolume + FuellCellVolume + BatteryVolume
@@ -134,10 +117,3 @@ class PropulsionSystem:
         return TotalVolume , TankVolume, FuellCellVolume, BatteryVolume
 
 
-def onlyFuelCellSizing(mission: PerformanceParameters, tank: HydrogenTankSizing, fuellcell: FuellCellSizing) -> tuple[float]:
-    tankmass = tank.mass(mission.EnergyRequired) / fuellcell.Efficiency
-    fuellcellmass = fuellcell.mass(mission.HoverPower) 
-    tankvolume = tank.volume(mission.EnergyRequired) / fuellcell.Efficiency
-    FuellCellVolume = fuellcell.PowerDensity / fuellcell.VolumeDensity * fuellcellmass * 0.001
-
-    return tankmass, fuellcellmass, tankvolume, FuellCellVolume

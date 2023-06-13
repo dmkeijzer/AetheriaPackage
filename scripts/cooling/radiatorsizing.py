@@ -15,25 +15,24 @@ from input.data_structures.radiator import Radiator
 
 #constants
 T_air = 40 #celsius
-T_h_in = 80
+T_h_in = 75
 dT = 10 #k
 
 #inputs
 Z_HX = 0.1
-H_HX = 0.4
+H_HX = 0.7
 W_HX = 0.2
 
 #designs parameters
 area_inlet = 0.05  #m^2
 air_speed =  50 #300/3.6
-overall_heat_transfer_capacity = np.arange(0.5,6,0.1) * 1500 #m^2
+
 
 
 
 # initialising 
 bat = Battery(Efficiency= 0.9)
 fc = FuelCell()
-fc.load()
 
 
 coolant = Fluid(viscosity = 0.355e-3, thermal_conductivity = 0.65, heat_capacity = 4184, density=997)

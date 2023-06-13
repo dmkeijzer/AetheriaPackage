@@ -9,23 +9,23 @@ import numpy as np
 import input.data_structures.GeneralConstants as const
 from  modules.aero.prop_wing_interaction  import *
 from input.data_structures.ISA_tool import ISA
+from input.data_structures.wing import Wing
+from input.data_structures.aero import Aero
+from input.data_structures.fuselage import Fuselage
+
 
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
 # import CL_cruise from json files
 
 AeroClass = Aero()
-FuselageClass = Fuselage()
-VTailClass = VeeTail()
-HorTailClass = HorTail()
+WingClass = Wing()
+WingClass.load()
 AeroClass.load()
-FuselageClass.load()
-VTailClass.load()
-HorTailClass.load()
 
 # ----------- CLmax ---------------------------------------------------------------------------------
 
-atm = ISA(const.h_transition)
+atm = ISA(100)
 t_cr = atm.temperature()
 rho_stall = atm.density()
 mhu = atm.viscosity_dyn()
@@ -56,16 +56,16 @@ A_eff_var = A_s_eff(b_W=WingClass.span, S_W=WingClass.surface, n_e=3, D=diameter
 CL_eff_alpha_var = CL_effective_alpha(mach=AeroClass.mach_stall, A_s_eff= A_eff_var, sweep_half=-WingClass.sweep_LE)
 
 # angles
-angles = alpha_s(CL_wing=AeroClass.cL_max, CL_alpha_s_eff=CL_eff_alpha_var, i_cs = i_cs_var, angle_of_attack= angle_of_attack_stall, alpha_0=0, V_0=const.v_stall, V_delta=V_delta_var, delta_alpha_zero_f=(data["delta_alpha_zero_L_flaps60"]))
+angles = alpha_s(CL_wing=AeroClass.cL_max_flaps60, CL_alpha_s_eff=CL_eff_alpha_var, i_cs = i_cs_var, angle_of_attack= angle_of_attack_stall, alpha_0=0, V_0=const.v_stall, V_delta=V_delta_var, delta_alpha_zero_f=AeroClass.delta_alpha_zero_L_flaps60)
 alpha_s_var = angles[0]
-sin_epsilon = sin_epsilon_angles(CL_alpha_s_eff=CL_eff_alpha_var, alpha_s=alpha_s_var, A_s_eff=A_eff_var, CL_wing=AeroClass.cL_max, A_w=WingClass.aspectratio)[0]
-sin_epsilon_s = sin_epsilon_angles(CL_alpha_s_eff=CL_eff_alpha_var, alpha_s=alpha_s_var, A_s_eff=A_eff_var, CL_wing=AeroClass.cL_max, A_w=WingClass.aspectratio)[1]
+sin_epsilon = sin_epsilon_angles(CL_alpha_s_eff=CL_eff_alpha_var, alpha_s=alpha_s_var, A_s_eff=A_eff_var, CL_wing=AeroClass.cL_max_flaps60, A_w=WingClass.aspectratio)[0]
+sin_epsilon_s = sin_epsilon_angles(CL_alpha_s_eff=CL_eff_alpha_var, alpha_s=alpha_s_var, A_s_eff=A_eff_var, CL_wing=AeroClass.cL_max_flaps60, A_w=WingClass.aspectratio)[1]
 
-CL_slipstream_final = CL_ws(S_W=WingClass.surface, b_W=WingClass.span, n_e=3, D_star=D_star_var, sin_epsilon=sin_epsilon, V_0=const.v_stall, V_delta=V_delta_var, sin_epsilon_s=sin_epsilon_s, CL_wing=AeroClass.cL_max)[0]
-CL_old = AeroClass.cL_max
-CL_ws_var = CL_ws(S_W=WingClass.surface, b_W=WingClass.span, n_e=3, D_star=D_star_var, sin_epsilon=sin_epsilon, V_0=const.v_stall, V_delta=V_delta_var, sin_epsilon_s=sin_epsilon_s, CL_wing=AeroClass.cL_max)[1]
-CL_wing_section = CL_ws(S_W=WingClass.surface, b_W=WingClass.span, n_e=3, D_star=D_star_var, sin_epsilon=sin_epsilon, V_0=const.v_stall, V_delta=V_delta_var, sin_epsilon_s=sin_epsilon_s, CL_wing=AeroClass.cL_max)[2]
-CL_s_section = CL_ws(S_W=WingClass.surface, b_W=WingClass.span, n_e=3, D_star=D_star_var, sin_epsilon=sin_epsilon, V_0=const.v_stall, V_delta=V_delta_var, sin_epsilon_s=sin_epsilon_s, CL_wing=AeroClass.cL_max)[3]
+CL_slipstream_final = CL_ws(S_W=WingClass.surface, b_W=WingClass.span, n_e=3, D_star=D_star_var, sin_epsilon=sin_epsilon, V_0=const.v_stall, V_delta=V_delta_var, sin_epsilon_s=sin_epsilon_s, CL_wing=AeroClass.cL_max_flaps60)[0]
+CL_old = AeroClass.cL_max_flaps60
+CL_ws_var = CL_ws(S_W=WingClass.surface, b_W=WingClass.span, n_e=3, D_star=D_star_var, sin_epsilon=sin_epsilon, V_0=const.v_stall, V_delta=V_delta_var, sin_epsilon_s=sin_epsilon_s, CL_wing=AeroClass.cL_max_flaps60)[1]
+CL_wing_section = CL_ws(S_W=WingClass.surface, b_W=WingClass.span, n_e=3, D_star=D_star_var, sin_epsilon=sin_epsilon, V_0=const.v_stall, V_delta=V_delta_var, sin_epsilon_s=sin_epsilon_s, CL_wing=AeroClass.cL_max_flaps60)[2]
+CL_s_section = CL_ws(S_W=WingClass.surface, b_W=WingClass.span, n_e=3, D_star=D_star_var, sin_epsilon=sin_epsilon, V_0=const.v_stall, V_delta=V_delta_var, sin_epsilon_s=sin_epsilon_s, CL_wing=AeroClass.cL_max_flaps60)[3]
 
 prop_lift_var = prop_lift_thrust(T=drag_stall, rho=rho_stall, V_0=const.v_stall, S_W=WingClass.surface, angle_of_attack=(angle_of_attack_stall))
 
@@ -81,12 +81,14 @@ print("CL percentage increase:", 100*(CL_total_cruise-CL_old)/CL_old)
 
 downwash_angle_wing = np.sin(sin_epsilon)
 downwash_angle_prop = np.sin(sin_epsilon_s)
-average_downwash_angle = (downwash_angle_prop*diameter_propellers*3 + downwash_angle_wing*(data['b']-3*diameter_propellers))/data['b']
+average_downwash_angle = (downwash_angle_prop*diameter_propellers*3 + downwash_angle_wing*(WingClass.span-3*diameter_propellers))/WingClass.span
 
 AeroClass.downwash_angle_wing_stall = downwash_angle_wing 
 AeroClass.downwash_angle_prop_stall = downwash_angle_prop 
 AeroClass.downwash_angle_stall = average_downwash_angle 
+AeroClass.cL_plus_slipstream_stall = CL_total_cruise
 
+AeroClass.dump()
 
 
     

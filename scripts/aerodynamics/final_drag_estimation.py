@@ -77,10 +77,10 @@ C_fe_tail_var = C_fe_wing(const.frac_lam_wing, re_var, M_var)
 
 # Total cd
 CD_fus_var = CD_fus(C_fe_fus_var, FF_fus_var, S_wet_fus_var)
-CD_wing_var = CD_wing(data["name"], C_fe_wing_var, FF_wing_var, S_wet_wing_var, data["S"])
+CD_wing_var = CD_wing(C_fe_wing_var, FF_wing_var, S_wet_wing_var, data["S"])
 CD_tail_var = CD_tail(C_fe_tail_var, FF_tail_var, S_wet_tail_var)
 CD0_var = CD0(data["S"], VTailClass.surface, FuselageClass.length_fuselage*FuselageClass.width_fuselage_outer, CD_fus_var, CD_wing_var, CD_upsweep_var, CD_base_var, CD_tail_var, CD_flaps=0)
-
+print(CD_wing_var)
 # Lift times S
 cL_tail_times_Sh = VTailClass.CL_cruise * HorTailClass.surface
 cL_wing_times_S = data["cL_cruise"]*data["S"]
@@ -89,8 +89,9 @@ total_cL = (cL_wing_times_S + cL_tail_times_Sh) / (data['S'] + HorTailClass.surf
 
 
 # Summation and L/D calculation
-CDi_var = CDi(data["name"], data["cL_cruise"], data["A"], data["e"])
+CDi_var = CDi(data["cL_cruise"], data["A"], data["e"])
 CD_var = CD(CD0_var, CDi_var)
+CD_wing_plus_propeller = (1-0.025) * CD_var
 lift_over_drag_var = lift_over_drag(total_cL, CD_var)
 
 print("CD0_wing", CD_wing_var / data["S"])
@@ -104,6 +105,7 @@ AeroClass.cd_cruise = CD_var
 AeroClass.cd0_cruise = CD0_var
 AeroClass.cd_upsweep = CD_upsweep_var
 AeroClass.cd_base = CD_base_var
+AeroClass.cd_tot_cruise = CD_wing_plus_propeller
 
 
 # ------------------------ DRAG DURING STALL -------------- 
@@ -139,14 +141,14 @@ C_fe_tail_var = C_fe_wing(const.frac_lam_wing, re_var, M_var)
 
 # Total cd
 CD_fus_var = CD_fus(C_fe_fus_var, FF_fus_var, S_wet_fus_var)
-CD_wing_var = CD_wing(data["name"], C_fe_wing_var, FF_wing_var, S_wet_wing_var, data["S"])
+CD_wing_var = CD_wing(C_fe_wing_var, FF_wing_var, S_wet_wing_var, data["S"])
 CD_tail_var = CD_tail(C_fe_tail_var, FF_tail_var, S_wet_tail_var)
 CD_flaps_var = CD_flaps(60)
 CD0_var = CD0(data["S"], VTailClass.surface, FuselageClass.length_fuselage*FuselageClass.width_fuselage_outer, CD_fus_var, CD_wing_var, CD_upsweep_var, CD_base_var, CD_tail_var, CD_flaps_var)
 
 print(CD_flaps_var)
 # Summation and L/D calculation
-CDi_var = CDi(data["name"], data["cLmax_flaps60"], data["A"], data["e"])
+CDi_var = CDi(data["cLmax_flaps60"], data["A"], data["e"])
 CD_var = CD(CD0_var, CDi_var)
 lift_over_drag_var = lift_over_drag(data["cLmax_flaps60"], CD_var)
 

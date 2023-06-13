@@ -18,6 +18,11 @@ import os
 
 from  ISA_tool import ISA
 
+# General paths
+
+json_path = r"input/data_structures/aetheria_constants.json"
+
+
 # constants of physics
 g0 = 9.80665            #[m/s^2]    O
 
@@ -62,7 +67,7 @@ mhu = atm.viscosity_dyn()           #[kg/m^3]   O   the dynamic viscosity
 
 # Power
 p_density = 7e3     # w totalEnergy/kg    ? # averaged from:  A review: high power density motors for electric vehicles
-diskarea = 4.2
+
 
 #standard masses
 m_pl =  510  # kg

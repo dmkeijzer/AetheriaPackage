@@ -216,7 +216,7 @@ class RadiatorPerformance:
         primary_cold_volume = (HX.A_cold - HX.A_fin * HX.N_fin) * HX.t_tube
         hot_volume = HX.A_hot * HX.t_channel
         total_volume = fin_volume + primary_cold_volume + hot_volume
-        return total_volume * density_material
+        return total_volume * density_material * 1.2
 
     def cooling_radiator(HX:Radiator, mass_flow_cold: float, mass_flow_hot: float, air: Fluid, coolant: Fluid) -> float:
         """calculates thermal resistance of the radiator

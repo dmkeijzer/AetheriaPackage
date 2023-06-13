@@ -37,18 +37,17 @@ x = np.linspace(0, b/2, 24)
 slipstream = CL_slipstream_final/4
 prop_lift = prop_lift_var/6
 
+# First Engine
 x1 = EngineClass.x_rotor_loc[0]
 pdf1 = stat.norm.pdf(x, loc= x1, scale= 0.4)
 sumpdf1 = np.sum(pdf1)
 pdf1 = pdf1/sumpdf1
 
+# Second Engine
 x2 = EngineClass.x_rotor_loc[2]
 pdf2 = stat.norm.pdf(x, loc= x2, scale= 0.4)
 sumpdf2 = np.sum(pdf2)
-
 pdf2 = pdf2/sumpdf2
-
-print(slipstream*4+prop_lift*6)
 
 
 #term for extra visuals
@@ -56,7 +55,11 @@ term = 10
 sum = cl + term * pdf1 * (slipstream+prop_lift) + term * pdf2 * (slipstream+prop_lift)
 
 # print(pdf)
-plt.plot(x, sum)
-plt.plot(x, cl)
-plt.ylim([0.,0.6])
+plt.plot(np.flip(x), sum, label="CL wing plus propellers")
+plt.plot(np.flip(x), cl, label="CL wing")
+plt.xlabel("X-position over half-span [m]")
+plt.ylabel("CL [-]")
+plt.ylim([0.,0.65])
+plt.legend()
+plt.grid()
 plt.show()
