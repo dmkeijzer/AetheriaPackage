@@ -33,4 +33,3 @@ dihedral_vtail = 30*np.pi/180   # dihedral of vtail
 
 s = span_vtail(prop_radius, fuselage_width, dihedral_vtail)
 
-print(s)

@@ -21,6 +21,8 @@ from modules.aero.slipstream_stall_function import slipstream_stall
 from modules.flight_perf.performance  import get_energy_power_perf
 from modules.structures.fuselage_length import get_fuselage_sizing
 from modules.propellor.propellor_sizing import propcalc
+from scripts.structures.vtail_span import span_vtail
+import time
 
 
 def run_integration():
@@ -53,14 +55,13 @@ def run_integration():
     mission, wing,  engine, aero = get_wing_power_loading(mission, wing, engine, aero)
 
     #planform sizing
-    wing.load()
     wing = wing_planform(wing)
-    wing.dump()
+
 
 
     #-------------------- Aerodynamic sizing--------------------
     wing, fuselage, vtail, aero, horizontal_tail =  final_drag_estimation(wing, fuselage, vtail, aero, horizontal_tail)
-    aero, wing = slipstream_cruise(wing, aero) # TODO the effect of of cl on the angle of attack
+    aero = slipstream_cruise(wing, aero, mission) # TODO the effect of of cl on the angle of attack
 
     #-------------------- Flight Performance --------------------
     wing, engine, aero, mission = get_energy_power_perf(wing, engine, aero, mission)
@@ -79,7 +80,6 @@ def run_integration():
                                 FuellCell= Pstack,
                                 FuellTank= Tank )
     index_min_mass = np.where(Totalmass == min(Totalmass))
-    NU = nu[index_min_mass][0]
     powersystemmass = Totalmass[index_min_mass][0]
     Batterymass = Batterymass[index_min_mass][0]
     coolingsmass = 15 + 35 #kg mass radiator (15 kg) and mass air (35) subsystem. calculated outside this outside loop and will not change signficant 
@@ -110,12 +110,14 @@ def run_integration():
     vtail.load() 
     stability.load() 
     
+    b_ref = span_vtail(1,fuselage.diameter_fuselage,30*np.pi/180)
     wing,horizontal_tail,fuselage,vtail, stability = size_vtail_opt(WingClass=  wing,
+                                                                    Aeroclass= aero,
                                                                     HorTailClass= horizontal_tail,
                                                                     FuseClass= fuselage,
                                                                     VTailClass= vtail, 
                                                                     StabClass=stability,
-                                                                    b_ref= 2, #!!!!!!!!! please update value when we get it
+                                                                    b_ref= b_ref, #!!!!!!!!! please update value when we get it
                                                                     stepsize = 5e-2 ) 
 
     #loading
@@ -133,5 +135,7 @@ def run_integration():
     # Fuselage sizing
     fuselage = get_fuselage_sizing(Tank,Pstack, mission, fuselage)
 
-
+t0 = time.perf_counter()
 run_integration()
+t1 = time.perf_counter()
+print(f'Run time for single iteration: {t1-t0} s')

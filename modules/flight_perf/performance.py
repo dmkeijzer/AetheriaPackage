@@ -113,10 +113,10 @@ def get_energy_power_perf(WingClass, EngineClass, AeroClass, PerformanceClass):
 
     #---------------------------- Writing to JSON and printing result  ----------------------------
     data["mission_energy"] = E_total
-    data["power_hover"] = P_takeoff
+    #data["power_hover"] = P_takeoff
     # print('Pto',P_takeoff)
     data["power_climb"] = climb_power_var
-    data["power_cruise"] = P_cr 
+    #data["power_cruise"] = P_cr 
 
 
     data["takeoff_energy"] = E_to
