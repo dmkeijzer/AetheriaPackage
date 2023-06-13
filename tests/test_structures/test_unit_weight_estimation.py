@@ -7,7 +7,7 @@ import numpy as np
 sys.path.append(str(list(pl.Path(__file__).parents)[1]))
 os.chdir(str(list(pl.Path(__file__).parents)[1]))
 
-from modules.structures.ClassIIWeightEstimation import Wing, Fuselage, LandingGear, Powertrain, HorizontalTail, Nacelle, H2System, Miscallenous
+from modules.structures.ClassIIWeightEstimation import WingWeight, FuselageWeight, LandingGear, Powertrain, HorizontalTailWeight, NacelleWeight, H2System, Miscallenous
 
 @pytest.fixture
 def example_values():
@@ -23,13 +23,13 @@ def example_values():
     }
 
 def test_mass_calculation(example_values):
-    wing = Wing(**example_values["wing"])
-    fuselage1 = Fuselage(**example_values["fuselage1"])
-    fuselage2 = Fuselage(**example_values["fuselage2"])
+    wing = WingWeight(**example_values["wing"])
+    fuselage1 = FuselageWeight(**example_values["fuselage1"])
+    fuselage2 = FuselageWeight(**example_values["fuselage2"])
     landing_gear = LandingGear(**example_values["landing_gear"])
     powertrain = Powertrain(**example_values["powertrain"])
-    horizontal_tail = HorizontalTail(**example_values["horizontal_tail"])
-    nacelle = Nacelle(**example_values["nacelle"])
+    horizontal_tail = HorizontalTailWeight(**example_values["horizontal_tail"])
+    nacelle = NacelleWeight(**example_values["nacelle"])
     miscallenous = Miscallenous(**example_values["miscallenous"])
 
     assert np.isclose(wing.mass, 573.014)

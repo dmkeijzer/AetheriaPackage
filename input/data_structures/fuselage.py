@@ -22,6 +22,7 @@ class Fuselage():
     volume_fuselage: float = None
     length_cockpit: float = None
     length_tail: float = None
+    fuselage_weight: float = None
 
     # Crash diameter stuff
 
@@ -30,6 +31,10 @@ class Fuselage():
     bf: float = None # width crash area
     hf: float = None # height crash area
 
+    @property
+    def max_perimeter(self):
+        #TODO Please disucss a better explanation with Jorrick
+        return self.length_fuselage*2 + self.length_fuselage*0.2
 
 
     def load(self):
@@ -73,6 +78,7 @@ class Fuselage():
         data["bf"] = self.bf
         data["hc"] = self.hc
         data["hf"] = self.hf
+        data["fuselage_weight"] = self.fuselage_weight
 
         with open(r"input/data_structures/aetheria_constants.json", "w") as jsonFile:
             json.dump(data, jsonFile, indent=6)

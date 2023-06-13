@@ -47,7 +47,7 @@ class Component():
     def return_mass(self): return self.mass
 
 
-class Wing(Component):
+class WingWeight(Component):
     def __init__(self, mtom, S, n_ult, A):
         """Retunrs the weight of the wing, Cessna method cantilever wings pg. 67 pt 5. Component weight estimation Roskam
 
@@ -68,7 +68,7 @@ class Wing(Component):
         self.mtow_lbs = 2.20462 * mtom
         self.mass = 0.04674*(self.mtow_lbs**0.397)*(self.S_ft**0.36)*(self.n_ult**0.397)*(self.A**1.712)*0.453592
 
-class Fuselage(Component):
+class FuselageWeight(Component):
     def __init__(self,identifier, mtom, max_per, lf, npax):
         """ Returns fuselage weight, cessna method page 75 Pt 5. component weight estimaation Roskam.
 
@@ -122,7 +122,7 @@ class Powertrain(Component):
         self.id = "Powertrain"
         self.mass = p_max/p_dense
 
-class HorizontalTail(Component):
+class HorizontalTailWeight(Component):
     def __init__(self, w_to, S_h, A_h, t_r_h ):
         """Computes the mass of the horizontal tail, only used for Joby. Cessna method pg. 71 pt V component weight estimation
 
@@ -144,7 +144,7 @@ class HorizontalTail(Component):
         super().__init__()
         self.mass =  (3.184*w_to_lbs**0.887*S_h_ft**0.101*A_h**0.138)/(174.04*t_r_h_ft**0.223)*0.45359237
 
-class Nacelle(Component):
+class NacelleWeight(Component):
     def __init__(self, p_to):
         """ Returns nacelle weight
 
@@ -223,3 +223,27 @@ class Miscallenous(Component):
 
 
         
+def get_weight_vtol(perf_par, fuselage):
+    """ This function is used for the final design, it reuses some of the codes created during
+    the midterm. It computes the final weight of the vtol using the data structures created in the
+    final design phase
+
+    It uses the following weight components
+    --------------------------------------
+    Powersystem mass
+    wing mass -> class II/wingbox code
+    vtail mass -> Class II/wingbox code
+    fuselage mass -> Class II
+    landing gear mass -> Class II
+    nacelle mass -> class II
+    misc mass -> class II
+    --------------------------------------
+
+    :param perf_par: _description_
+    :type perf_par: _type_
+    """    
+    #fuselage mass
+    fuselage.fuselage_weight = FuselageWeight("J1", perf_par.MTOM, fuselage.max_perimeter, fuselage.length_fuselage, const.npax + 1)
+
+    #landing gear mass
+
