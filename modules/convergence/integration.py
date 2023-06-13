@@ -124,6 +124,26 @@ def run_integration():
                                                                     stepsize = 5e-2 ) 
 
     #loading
+    mission.load()
+    wing.load()  
+    engine.load() 
+    aero.load() 
+    horizontal_tail.load() 
+    fuselage.load() 
+    vtail.load() 
+    stability.load() 
+
+    #------------- Structures------------------
+
+    # Fuselage sizing
+    fuselage = get_fuselage_sizing(Tank,Pstack, mission, fuselage)
+
+
+    #------------- weight_estimation------------------
+    mission, fuselage, wing, engine, vtail =  get_weight_vtol(mission, fuselage, wing, engine, vtail)
+
+
+    #Final dump
     mission.dump()
     wing.dump()  
     engine.dump() 
@@ -132,12 +152,6 @@ def run_integration():
     fuselage.dump() 
     vtail.dump() 
     stability.dump()
-
-    #------------- Structures------------------
-
-    # Fuselage sizing
-    fuselage = get_fuselage_sizing(Tank,Pstack, mission, fuselage)
-
 
 run_integration()
 
