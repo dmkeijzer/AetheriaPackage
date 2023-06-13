@@ -38,6 +38,8 @@ class PerformanceParameters:
     turn_loadfactor: float = None # Turning load factor
     v_max: float = None
     glide_slope: float = None
+    max_thrust_per_engine: float = None
+
 
 
     def load(self):
@@ -62,6 +64,7 @@ class PerformanceParameters:
         self.v_max = data["v_max"]
         self.v_stall = data["v_stall"]
         self.G = data["G"]
+        self.max_thrust_per_engine = data['max_thrust_per_engine']
 
     
     def dump(self):
@@ -79,6 +82,7 @@ class PerformanceParameters:
         data["v_max"] =  self.v_max
         data["v_stall"] = self.v_stall
         data["G"] = self.G
+        data['max_thrust_per_engine'] = self.max_thrust_per_engine
 
         
     
