@@ -40,7 +40,7 @@ class Engine():
         self.x_rotor_loc = data["x_rotor_loc"]
         self.y_rotor_loc = data["y_rotor_loc"]
         self.nacelle_width = data["nacelle_width"]
-        self.total_disk_area = data["A_tot"]
+        self.total_disk_area = data["diskarea"]
 
     def dump(self):
 

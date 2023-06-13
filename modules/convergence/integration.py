@@ -15,6 +15,8 @@ from modules.stab_ctrl.wing_loc_horzstab_sizing import wing_location_horizontals
 from modules.planform.planformsizing import wing_planform
 from modules.preliminary_sizing.wing_power_loading_functions import get_wing_power_loading
 from modules.aero.drag_estimation_function import final_drag_estimation
+from modules.aero.slipstream_cruise_function import slipstream_cruise
+from modules.aero.slipstream_stall_function import slipstream_stall
 
 def run_integration():
     #----------------------------- Initialize classes --------------------------------
@@ -51,12 +53,14 @@ def run_integration():
     wing.dump()
 
 
-    # Aerodynamic sizing
-
+    #-------------------- Aerodynamic sizing--------------------
     wing, fuselage, vtail, aero, horizontal_tail =  final_drag_estimation(wing, fuselage, vtail, aero, horizontal_tail)
+    aero, wing = slipstream_cruise(wing, aero) # TODO the effect of of cl on the angle of attack
+
+    #-------------------- Propulsion --------------------
 
 
-    #power system sizing
+    #------------------------- power system sizing-------------------------
     mission.load()
     nu = np.arange(0,1.001,0.005)
     Totalmass, Tankmass, FCmass, Batterymass= PropulsionSystem.mass(echo= np.copy(nu),
