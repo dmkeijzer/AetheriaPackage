@@ -77,7 +77,7 @@ def final_drag_estimation(WingClass, FuselageClass, VTailClass, AeroClass, Horta
     cL_tail_times_Sh = VTailClass.CL_cruise * HortailClass.surface
     cL_wing_times_S = AeroClass.cL_plus_slipstream*WingClass.surface
 
-    total_cL = (cL_wing_times_S + cL_tail_times_Sh) / (WingClass.surface + HorTailClass.surface)
+    total_cL = (cL_wing_times_S + cL_tail_times_Sh) / (WingClass.surface + HortailClass.surface)
 
 
     # Summation and L/D calculation
@@ -136,10 +136,13 @@ def final_drag_estimation(WingClass, FuselageClass, VTailClass, AeroClass, Horta
     CD_flaps_var = CD_flaps(60)
     CD0_var = CD0(WingClass.surface, VTailClass.surface, FuselageClass.length_fuselage*FuselageClass.width_fuselage_outer, CD_fus_var, CD_wing_var, CD_upsweep_var, CD_base_var, CD_tail_var, CD_flaps_var)
 
+    # Total cl
+    total_cL_stall = AeroClass.cL_plus_slipstream_stall
+
     # Summation and L/D calculation
     CDi_var = CDi(AeroClass.cL_max_flaps60, WingClass.aspectratio, AeroClass.e)
     CD_var = CD(CD0_var, CDi_var)
-    lift_over_drag_var = lift_over_drag(AeroClass.cL_max_flaps60, CD_var)
+    lift_over_drag_var = lift_over_drag(total_cL_stall, CD_var)
 
 
     # Writing to classes file
