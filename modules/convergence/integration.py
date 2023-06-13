@@ -17,6 +17,7 @@ from modules.preliminary_sizing.wing_power_loading_functions import get_wing_pow
 from modules.aero.drag_estimation_function import final_drag_estimation
 from modules.aero.slipstream_cruise_function import slipstream_cruise
 from modules.aero.slipstream_stall_function import slipstream_stall
+from modules.flight_perf.performance  import get_energy_power_perf
 
 def run_integration():
     #----------------------------- Initialize classes --------------------------------
@@ -57,7 +58,8 @@ def run_integration():
     wing, fuselage, vtail, aero, horizontal_tail =  final_drag_estimation(wing, fuselage, vtail, aero, horizontal_tail)
     aero, wing = slipstream_cruise(wing, aero) # TODO the effect of of cl on the angle of attack
 
-    #-------------------- Propulsion --------------------
+    #-------------------- Flight Performance --------------------
+    wing, engine, aero, mission = get_energy_power_perf(wing, engine, aero, mission)
 
 
     #------------------------- power system sizing-------------------------
@@ -76,12 +78,6 @@ def run_integration():
     fuelcellmass = Pstack.mass
 
     #stability and control
-    wing.load()
-    horizontal_tail.load()
-    fuselage.load()
-    vtail.load()
-    stability.load()
-
     wing,horizontal_tail,fuselage,vtail, stability = size_vtail_opt(WingClass=  wing,
                                                                     HorTailClass= horizontal_tail,
                                                                     FuseClass= fuselage,
