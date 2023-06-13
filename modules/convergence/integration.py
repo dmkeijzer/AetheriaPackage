@@ -15,11 +15,13 @@ from modules.stab_ctrl.vtail_sizing_optimal import size_vtail_opt
 from modules.stab_ctrl.wing_loc_horzstab_sizing import wing_location_horizontalstab_size
 from modules.planform.planformsizing import wing_planform
 from modules.preliminary_sizing.wing_power_loading_functions import get_wing_power_loading
+from modules.structures.Flight_Envelope import get_gust_manoeuvr_loadings
 from modules.aero.drag_estimation_function import final_drag_estimation
 from modules.aero.slipstream_cruise_function import slipstream_cruise
 from modules.aero.slipstream_stall_function import slipstream_stall
 from modules.flight_perf.performance  import get_energy_power_perf
 from modules.structures.fuselage_length import get_fuselage_sizing
+from modules.structures.ClassIIWeightEstimation import get_weight_vtol
 from modules.propellor.propellor_sizing import propcalc
 from scripts.structures.vtail_span import span_vtail
 import time
@@ -53,6 +55,7 @@ def run_integration():
 
     # Preliminary Sizing
     mission, wing,  engine, aero = get_wing_power_loading(mission, wing, engine, aero)
+    mission =  get_gust_manoeuvr_loadings(mission, aero)
 
     #planform sizing
     wing = wing_planform(wing)
@@ -135,7 +138,6 @@ def run_integration():
     # Fuselage sizing
     fuselage = get_fuselage_sizing(Tank,Pstack, mission, fuselage)
 
-t0 = time.perf_counter()
+
 run_integration()
-t1 = time.perf_counter()
-print(f'Run time for single iteration: {t1-t0} s')
+

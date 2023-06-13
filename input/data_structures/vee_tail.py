@@ -20,8 +20,13 @@ class VeeTail():
     #CD0: float = None WRONG
     ruddervator_efficiency: float = None
     span: float = None
+    vtail_weight: float = None
 
 
+
+    @property
+    def aspectratio(self):
+        return self.span**2/self.surface
 
     def load(self):
         """ Initializes the class automatically from the JSON file
@@ -39,6 +44,7 @@ class VeeTail():
         #self.CD0 = data["CD0_vtail"] WRONG
         self.ruddervator_efficiency = data["ruddervator_efficiency"]
         self.span = data["span_vtail"]
+        self.vtail_weight= data["vtail_weight"]
 
     def dump(self):
         with open(r"input/data_structures/aetheria_constants.json") as jsonFile:
