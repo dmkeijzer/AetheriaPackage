@@ -102,7 +102,7 @@ class PropulsionSystem:
             Batterymass[i] = max([HoverBatterymass, 2* HoverEnergyBatterymass, CruiseBatterymass[i], EnergyBatterymass[i]])
 
         #returning total mass and all component masss 
-        Totalmass = Tankmass + FCmass*2 + Batterymass #estimation from pim de boer that power density of fuel cell halves for system power density
+        Totalmass = Tankmass + FCmass + Batterymass #estimation from pim de boer that power density of fuel cell halves for system power density
         return  Totalmass, Tankmass, FCmass, Batterymass
 
     def volume(echo:float, Battery: Battery, FuellCell: FuelCell, FuellTank: HydrogenTank,Tankmass: float, Batterymass:float) -> tuple[float]:

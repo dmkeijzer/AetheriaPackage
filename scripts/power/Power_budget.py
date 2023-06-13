@@ -10,7 +10,7 @@ class Power_Budget:
     # Constant required power
     avionics = 233.8  # [W]
     airco = 2783.1  # [W]
-    battery_cooling = 30 * mass_battery_kg /72  # [W]
+    battery_cooling = 30 * self.mass_battery_kg /72  # [W]
     autopilot = 140.1  # [W]
     trim = 50.1  # [W]
     passenger_power = 377.1 # [W]
