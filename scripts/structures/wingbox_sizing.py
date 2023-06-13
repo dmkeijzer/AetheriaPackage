@@ -14,7 +14,7 @@ from input.data_structures.wing import Wing
 from input.data_structures.engine import Engine
 from input.data_structures.ISA_tool import ISA
 from input.data_structures.aero import Aero
-
+import modules.structures.wingbox_steven as ws
 #------------ Instantiate classes and load values from JSON -----------------------
 WingClass = Wing()
 MatClass = Material()
@@ -46,11 +46,25 @@ AeroClass.load()
 # wb.y_rotor_loc = EngClass.y_rotor_loc
 
 
-x0=np.array([0.01, 0.01, 0.01, 0.005,0.005])    # :param x0: Initial estimate Design vector X = [b, cr, tsp, trib, L, bst, hst, tst, wst, t]
+# x0=np.array([0.01, 0.01, 0.005,0.005])    # :param x0: Initial estimate Design vector X = [b, cr, tsp, trib, L, bst, hst, tst, wst, t]
+t_sp = 2e-2
+h_st = 3e-2
+t_st = 3e-3
+t_sk = 2e-3
+y = np.linspace(0,WingClass.span/2,10)
+WingboxClass = ws.Wingbox(WingClass, EngClass, MatClass, AeroClass)
+# print(WingboxClass.str_array_root)
+# print(WingboxClass.torque_from_tip(y))
+# print(WingboxClass.weight_from_tip(t_sp,h_st,t_st,t_sk,y))
+print(WingboxClass.shear_z_from_tip(t_sp, h_st,t_st,t_sk,y))
 
+# print(WingboxClass.analyze_hf())
+# print(WingboxClass.analyze_vf())
 
     
-Optclass = wb.Wingbox(WingClass, EngClass, MatClass, AeroClass)
-#print(np.sum(Optclass.post_buckling(1e-3,1e-3,1e-3,1e-3,1e-3,1e-3,1e-3)))
+# Optclass = wb.Wingbox(WingClass, EngClass, MatClass, AeroClass)
+# #print(np.sum(Optclass.post_buckling(1e-3,1e-3,1e-3,1e-3,1e-3,1e-3,1e-3)))
 
-optimizertest = wb.WingboxOptimizer(x0,WingClass, EngClass, MatClass, AeroClass)
+# optimizertest = wb.WingboxOptimizer(x0,WingClass, EngClass, MatClass, AeroClass)
+
+

@@ -71,6 +71,7 @@ class Wing():
         self.x_lewing = data["x_lewing"]
         self.v_stall = data["v_stall"]
         self.alpha_approach = data["alpha_approach"]
+        self.thickness_to_chord = data["thickness_to_chord"]
 
         # self.effective_aspectratio =  data[""] # Left out for now since it is not implemented yet
         # self.effective_span =  data[""] # Left out for now since it is not implemented yet
@@ -95,6 +96,7 @@ class Wing():
         data["x_lemac"] = self.x_lemac
         data["cd"] = self.cd
         data["x_lewing"] = self.x_lewing
+        data["thickness_to_chord"] = self.thickness_to_chord
 
         with open(r"input/data_structures/aetheria_constants.json", "w") as jsonFile:
             json.dump(data, jsonFile, indent=4)
