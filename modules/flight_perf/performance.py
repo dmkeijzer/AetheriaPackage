@@ -96,7 +96,7 @@ def get_energy_power_perf(WingClass, EngineClass, AeroClass, PerformanceClass):
     d_climb = final_trans_distance + (const.h_cruise  - final_trans_altitude)/np.tan(const.climb_gradient) #check if G is correct
     d_cruise = const.mission_dist - d_desc - d_climb - final_trans_distance - final_trans_distance_landing
     t_cr = (const.mission_dist - d_desc - d_climb - final_trans_distance - final_trans_distance_landing)/const.v_cr
-    E_cr = PerformanceClass.cruisePower * t_cr # used the new cruise power 
+    E_cr = P_cr * t_cr # used the new cruise power 
 
     #----------------------- Loiter cruise-----------------------
     P_loit_cr = powerloiter(PerformanceClass.MTOM, const.g0, WingClass.surface, const.rho_cr, AeroClass.ld_climb, prop_eff_var)

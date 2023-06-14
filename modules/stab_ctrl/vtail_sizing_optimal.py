@@ -21,7 +21,7 @@ from input.data_structures import *
 # HorTailClass.load()
 # FuseClass.load()
 
-def size_vtail_opt(WingClass, HorTailClass, FuseClass, VTailClass, StabClass, Aeroclass, b_ref, stepsize=1e-2,  CLh_initguess = -0.3, CLh_step = 0.01, plot = False):
+def size_vtail_opt(WingClass, HorTailClass, FuseClass, VTailClass, StabClass, Aeroclass, b_ref, stepsize=1e-2,  CLh_initguess = -0.1, CLh_step = 0.01, plot = False):
     CLh = CLh_initguess
 
     log = np.zeros((0,5))
@@ -40,11 +40,8 @@ def size_vtail_opt(WingClass, HorTailClass, FuseClass, VTailClass, StabClass, Ae
             CLvee_cr_N = (Aeroclass.cm_ac + Aeroclass.cL_cruise * (delta_cg_ac)/WingClass.chord_mac) / (Vh_V2 * v_tail[-2]/WingClass.surface *np.cos(v_tail[-3]) * l_v / WingClass.chord_mac)
             if type(v_tail[-1]) is str:
                 break
-            #print(log)
             log = np.vstack((log, np.array([CLh, v_tail[6], np.sqrt(A_h * v_tail[6]), CLvee_cr_N ** 2 * v_tail[6],A_h])))
-            #print(CLh)
             CLh = CLh - CLh_step
-
     log = log[np.where(log[:,2] > b_ref)[0], :]
     log = log[np.where(log[:,3] == np.min(log[:,3]))[0], :]
     CLh = log[0,0]

@@ -124,7 +124,7 @@ def run_integration(label):
                                                                     FuseClass= fuselage,
                                                                     VTailClass= vtail, 
                                                                     StabClass=stability,
-                                                                    b_ref= b_ref, #!!!!!!!!! please update value when we get it
+                                                                    b_ref= 1, #!!!!!!!!! please update value when we get it
                                                                     stepsize = 5e-2 ) 
 
     #loading
