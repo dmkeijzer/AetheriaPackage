@@ -49,9 +49,9 @@ for dict_name in dict_names:
 
     #-----------------------Transition to climb-----------------------
     
-    transition_simulation = numerical_simulation(y_start=30.5, mass=PerformanceClass.MTOM, g0=const.g0, S=data['S'], CL_climb=data['cl_climb_clean'],
-                                alpha_climb=data['alpha_climb_clean'], CD_climb=data["cdi_climb_clean"] + data["cd0"],
-                                Adisk=EngineClass.total_disk_area, lod_climb=data['ld_climb'], eff_climb=data['prop_eff'], v_stall=data['v_stall'])
+    transition_simulation = numerical_simulation(y_start=30.5, mass=PerformanceClass.MTOM, g0=const.g0, S=WingClass.surface, CL_climb=AeroClass.cl_climb_clean,
+                                alpha_climb=AeroClass.alpha_climb_clean, CD_climb=AeroClass.cd0_cruise,
+                                Adisk=EngineClass.total_disk_area, lod_climb=AeroClass.ld_climb, eff_climb=PerformanceClass.prop_eff, v_stall=AeroClass.v_stall)
     E_trans_ver2hor = transition_simulation[0]
     transition_power_max = np.max(transition_simulation[0])
     final_trans_distance = transition_simulation[3][-1]
@@ -74,9 +74,9 @@ for dict_name in dict_names:
     
     #----------------------- Transition (from horizontal to vertical)-----------------------
     # print("--------------- transition to vertical")
-    transition_simulation_landing = numerical_simulation_landing(vx_start=data['v_stall_flaps20'], descend_slope=-0.04, mass=PerformanceClass.MTOM, g0=const.g0,
-                                S=data['S'], CL=data['cl_descent_trans_flaps20'], alpha=data['alpha_descent_trans_flaps20'],
-                                CD=data["cdi_descent_trans_flaps20"]+data['cd0'], Adisk=EngineClass.total_disk_area)
+    transition_simulation_landing = numerical_simulation_landing(vx_start=AeroClass.v_stall_flaps20, descend_slope=-0.04, mass=PerformanceClass.MTOM, g0=const.g0,
+                                S=WingClass.surface, CL=AeroClass.cL_descent_trans_flaps20, alpha=AeroClass.alpha_descent_trans_flaps20,
+                                CD=AeroClass.cd0_stall, Adisk=EngineClass.total_disk_area)
     E_trans_hor2ver = transition_simulation_landing[0]
     transition_power_max_landing = np.max(transition_simulation_landing[4])
     final_trans_distance_landing = transition_simulation_landing[3][-1]
