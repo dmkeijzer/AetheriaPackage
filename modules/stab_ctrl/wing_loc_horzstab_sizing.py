@@ -120,7 +120,7 @@ def ctrl_formula_coefs(CLh_approach, CLAh_approach, l_h, MAC, Vh_V_2, Cm_ac, x_a
     return m_ctrl, q_ctrl
 
 
-def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, Aeroclass, A_h, plot=False, CLh_approach = None, stepsize = 0.002, cg_shift = 0):
+def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, Aeroclass, A_h, plot=False, CLh_approach = None, stepsize = 0.002):
     log_final = np.zeros((0,6))
     depsda = HorTailClass.downwash
     MAC = WingClass.chord_mac
@@ -195,7 +195,6 @@ def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, Aerocl
     if plot:
         plt.plot(log_final[:,0], log_final[:,1])
         plt.show()
-
 
     WingClass.x_lewing = log_final[np.where(log_final[:,1] == np.min(log_final[:,1]))[0], 0:2][0][0] *FuseClass.length_fuselage - 0.24 * WingClass.chord_mac - WingClass.x_lemac
     HorTailClass.hortailsurf_wingsurf =  log_final[np.where(log_final[:,1] == np.min(log_final[:,1]))[0], 0:2][0][1]
