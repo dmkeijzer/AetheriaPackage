@@ -29,7 +29,6 @@ import input.data_structures.GeneralConstants as const
 import time
 
 
-@profile
 def run_integration(label):
     #----------------------------- Initialize classes --------------------------------
     IonBlock = Battery(Efficiency= 0.9)
