@@ -55,6 +55,7 @@ class Wingbox():
         self.chord_root = wing.chord_root
         self.n_ribs = 10
         self.rib_pitch = (self.span/2)/(self.n_ribs-1)
+        self.t_rib = 2e-3
 
         #Engine
         self.engine_weight = engine.mass_pertotalengine
@@ -62,7 +63,7 @@ class Wingbox():
         self.y_rotor_loc = engine.y_rotor_loc
         self.x_rotor_loc = engine.x_rotor_loc
         self.thrust_per_engine = engine.thrust_per_engine
-
+        #Torsion shaft
 
         self.nacelle_w = engine.nacelle_width #TODO Check if it gets updated
 
@@ -160,6 +161,10 @@ class Wingbox():
 
     def get_y_mesh(self):
         return np.linspace(0,self.span/2, self.y_mesh)
+    
+    def get_r_o(self,x):
+        t_sp, h_st, t_st, t_sk, t_tb = x
+        return self.height(self.y_rotor_loc[0])/2 - t_sk*3
 
     # def get_str_x(self,y):
     #     x_start_box = self.get_x_start_wb(y)
@@ -245,10 +250,19 @@ class Wingbox():
         difference_array = np.absolute(y-self.y_rotor_loc[0])
         index = difference_array.argmin()
 
-        total_weight[0:index+1] += self.engine_weight
-        total_weight += self.engine_weight
+        r_o = self.get_r_o(x)
+        area_torsionbar = pi*(r_o*r_o - (r_o - t_tb)*(r_o - t_tb)) 
+        weight_bar = np.ones(index+1)*(self.y_rotor_loc[0] - y[0:index+1])*area_torsionbar * self.density
 
-        # self.find_nearest([1,2,3],3)
+        total_weight[0:index+1] += weight_bar
+
+        total_weight[0:index+1] += self.engine_weight
+
+        total_weight += self.engine_weight
+        weight_ribs = np.linspace(len(y),1,self.n_ribs) * self.chord(y) * self.height(y) * self.t_rib * self.density
+
+        total_weight += weight_ribs
+
         return total_weight
 
 
@@ -421,10 +435,7 @@ class Wingbox():
     
     def shear_flow_torque(self,x):
         T = self.torque_from_tip(X)
-        print(T)
-        print(self.height(self.y_rotor_loc[0]))
         t_sp, h_st, t_st, t_sk, t_tb = x
-        print(T/(2*self.chord(y)*self.height(y)))
         return T/(2*self.chord(y)*self.height(y))
         
                 
@@ -547,7 +558,7 @@ class Wingbox():
 
     def torsion_bar_constr(self,x):
         t_sp, h_st, t_st, t_sk, t_tb = x
-        r_o = self.height(self.y_rotor_loc[0])/2 - t_sk*2
+        r_o = self.get_r_o(x)
         max_shear = max(self.torque_from_tip(x))*2*r_o/(pi*(r_o**4 - (r_o - t_tb)**4))
         ratio = max_shear/self.shear_strength
         return -1*(ratio - 1)
@@ -568,23 +579,26 @@ if __name__ == '__main__':
     aero.load()
     aero.dump()
     #------SET VALUES------
-    tsp, hst, tst, tsk, t_tb= 0.005, 0.1344, 0.01733, 5e-3, 5e-3
-    X = [tsp, hst, tst, tsk,t_tb]
+    tsp, hst, tst, tsk, ttb= 0.005, 0.1344, 0.01733, 5e-3, 1e-2
+    X = [tsp, hst, tst, tsk,ttb]
     wingbox = Wingbox(wing, engine, material, aero, HOVER=True)
     y = wingbox.y
 
     #------FUCK AROUND-------
-    fuck_around_bool = True
+    fuck_around_bool = False
     if fuck_around_bool:
-        wingbox.torsion_bar_constr(X)
-        print(wingbox.height(wingbox.span/2))
+        # wingbox.weight_from_tip(X)
+        print(wingbox.total_weight(X))
+        # print(wingbox.get_r_o(X))
+        # print(wingbox.torque_from_tip(X))
 
 
     #-----RUN OPTIMIZER------
-    optimize_bool = False
+    optimize_bool = True
     if optimize_bool:
-        xlower = 5e-3, 1e-2, 1e-3, 5e-4, 1e-4
-        xupper = 3.3e-2, 3.3e-2, 3.3e-2, 1e-1, 2e-2
+        height_tip = wingbox.height(wingbox.span/2) - 1e-2
+        xlower =         5e-3,         1e-2,   1e-3, 5e-4, 1e-4
+        xupper = height_tip/2, height_tip/2, 3.3e-2, 1e-1, 2e-2
 
         
         # xlower = 5e-3, 1e-2, 1e-3, 5e-4
