@@ -161,6 +161,7 @@ def run_integration(label):
     #--------------------------------- Log all variables from current iterations ----------------------------------
     save_path = r"output\final_convergence_history"
     # Load data from JSON file
+    save_path = r"output\final_convergence_history"
     with open(const.json_path) as jsonFile:
         data = json.load(jsonFile)
 
