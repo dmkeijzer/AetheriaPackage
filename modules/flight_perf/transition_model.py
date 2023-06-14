@@ -159,12 +159,12 @@ def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha
     vy = vx_start*descend_slope
     vy_start = vx_start*descend_slope
     vy_end = -2
-    y_start = 77
+    y_start = 72
     y_end = 15
     t = 0
     x = 0
     y = y_start
-    dt = 0.001
+    dt = 0.01
     E = 0
 
     # Chosen parameters
@@ -209,12 +209,12 @@ def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha
         if vy > 0:
             level_out = True
 
-        if t < 5:
+        if t <5:
             phase_1 = True
             phase_2 = False
-        #elif level_out == True:
-         #   phase_1 = False
-         #   phase_2 = False
+        elif level_out == True:
+           phase_1 = False
+           phase_2 = False
         else:
             phase_1 = False
             phase_2 = True
@@ -310,11 +310,9 @@ def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha
     fig.tight_layout()
 
     # Display the figure
-    #plt.show()
+    # plt.show()
 
     return E, y_lst, t_lst, x_lst, P_lst # Energy, y, t, x, P
 
 
-# print(numerical_simulation_landing(vx_start=data['v_stall_flaps20'], descend_slope=-0.04, mass=data["mtom"], g0=const.g0,
-#                                    S=data['S'], CL=data['cl_descent_trans_flaps20'], alpha=data['alpha_descent_trans_flaps20'],
-#                                    CD=data["cdi_descent_trans_flaps20"]+data['cd0'], Adisk=data["diskarea"])[0])
+print()
