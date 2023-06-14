@@ -101,7 +101,7 @@ while ACAI>0
     umin=0;
     % maximum lift of the rotors
     % umax = 6.125;
-    umax= 9.80665*ma*Tfactor*(1+1/(array_size-1))*(1+1.225*4*Sproj/(ma*9.80665))/(array_size);
+    umax= 9.80665*ma*Tfactor/(array_size);
     % control constraint set
     Uset.umin=umin*ones(sz,1);
     Uset.umax=umax*ones(sz,1);

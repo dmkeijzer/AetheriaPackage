@@ -164,3 +164,13 @@ def J1loading(x1, x2):
     res = {"frontcg": min(mass_pos_array), "rearcg": max(mass_pos_array2)}
     res_margin = {"frontcg": min(mass_pos_array)-0.1*(max(mass_pos_array2)-min(mass_pos_array)), "rearcg": max(mass_pos_array2)+0.1*(max(mass_pos_array2)-min(mass_pos_array))}
     return res, res_margin
+
+if __name__ == "__main__":
+    from input.data_structures import *
+    Fuse = Fuselage()
+    Wing = Wing()
+    Fuse.load()
+    Wing.load()
+    lf = Fuse.length_fuselage
+    x1 = Wing.x_lewing + 0.24 * Wing.chord_mac + Wing.x_lemac
+    print(J1loading(x1, lf))
