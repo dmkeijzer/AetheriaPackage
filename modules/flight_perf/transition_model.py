@@ -172,7 +172,7 @@ def numerical_simulation(l_x_1, l_x_2, l_x_3, l_y_1, l_y_2, l_y_3, T_max, y_star
     
     # Display the figure
     #plt.show()
-
+ '''
     return E, y_lst, t_lst, x_lst, V, P_lst
 
 
@@ -352,7 +352,7 @@ def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha
 
     # Display the figure
     # plt.show()
-
+   '''
     return E, y_lst, t_lst, x_lst, P_lst  # Energy, y, t, x, P
 
 
