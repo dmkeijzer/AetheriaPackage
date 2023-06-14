@@ -41,6 +41,8 @@ class Stab():
     mub: float = None
     sym_eigvals: float = None
     asym_eigvals: float = None
+    cg_front: float = None
+    cg_rear: float = None
 
     def load(self):
         """ Initializes the class automatically from the JSON file
@@ -78,6 +80,8 @@ class Stab():
         self.mub = data["mub"]
         self.sym_eigvals = data["sym_eigvals"]
         self.asym_eigvals = data["asym_eigvals"]
+        self.cg_front = data["cg_front"]
+        self.cg_rear = data["cg_rear"]
 
     def dump(self):
         with open(r"input/data_structures/aetheria_constants.json") as jsonFile:
@@ -115,6 +119,8 @@ class Stab():
         data["mub"] = self.mub
         data["sym_eigvals"] = self.sym_eigvals
         data["asym_eigvals"] = self.asym_eigvals
+        data["cg_front"] = self.cg_front
+        data['cg_rear'] = self.cg_rear
 
 
         with open(r"input/data_structures/aetheria_constants.json", "w") as jsonFile:

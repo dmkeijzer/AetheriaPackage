@@ -90,7 +90,7 @@ def run_integration(label):
     powersystemmass = Totalmass[index_min_mass][0]
     Batterymass = Batterymass[index_min_mass][0]
     coolingsmass = 15 + 35 #kg mass radiator (15 kg) and mass air (35) subsystem. calculated outside this outside loop and will not change signficant 
-    PerformanceParameters.powersystem_mass = powersystemmass + coolingsmass
+    mission.powersystem_mass = powersystemmass + coolingsmass
 
     #-------------------- stability and control--------------------
     #The function here loads and dumps a couple of times so to make sure nothing goes wrong therefore

@@ -120,7 +120,7 @@ def ctrl_formula_coefs(CLh_approach, CLAh_approach, l_h, MAC, Vh_V_2, Cm_ac, x_a
     return m_ctrl, q_ctrl
 
 
-def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, Aeroclass, A_h, plot=False, CLh_approach = None, stepsize = 0.002, cg_shift = 0):
+def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, Aeroclass,stabilityclass, A_h, plot=False, CLh_approach = None, stepsize = 0.002, cg_shift = 0):
     log_final = np.zeros((0,6))
     depsda = HorTailClass.downwash
     MAC = WingClass.chord_mac
@@ -156,7 +156,6 @@ def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, Aerocl
         cglims = J1loading(wing_loc * l_f, l_f)[1]
         frontcgexc = (cglims["frontcg"] - wing_loc * l_f + x_ac_stab_wing_bar * MAC)/ MAC
         rearcgexc = (cglims["rearcg"] - wing_loc * l_f + x_ac_stab_wing_bar * MAC)/ MAC
-
         CLaAh = CLaAhcalc(CLaw, b_f, b, S, c_root)
 
         x_ac_stab_nacelles_bar = 0  # Missing nacelles data/counteracting effect for our design
@@ -196,6 +195,8 @@ def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, Aerocl
         plt.plot(log_final[:,0], log_final[:,1])
         plt.show()
 
+    stabilityclass.cg_front = log_final[np.where(log_final[:,1] == np.min(log_final[:,1]))[0], 2][0]
+    stabilityclass.cg_rear = log_final[np.where(log_final[:,1] == np.min(log_final[:,1]))[0], 3][0]
 
     WingClass.x_lewing = log_final[np.where(log_final[:,1] == np.min(log_final[:,1]))[0], 0:2][0][0] *FuseClass.length_fuselage - 0.24 * WingClass.chord_mac - WingClass.x_lemac
     HorTailClass.hortailsurf_wingsurf =  log_final[np.where(log_final[:,1] == np.min(log_final[:,1]))[0], 0:2][0][1]
@@ -204,6 +205,7 @@ def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, Aerocl
     WingClass.dump()
     FuseClass.dump()
     HorTailClass.dump()
+    stabilityclass.dump()
 
     return log_final[np.where(log_final[:,1] == np.min(log_final[:,1]))[0], 0:2], log_final[np.where(log_final[:,1] == np.min(log_final[:,1]))[0], -1][0] - x_ac_stab_bar
 

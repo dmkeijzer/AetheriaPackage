@@ -28,10 +28,11 @@ def size_vtail_opt(WingClass, HorTailClass, FuseClass, VTailClass, StabClass, Ae
     for A_h in np.arange(2, 8, 0.2):
         CLh = CLh_initguess
         while True:
-            wingloc_ShS, delta_cg_ac = wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass,Aeroclass, A_h, CLh_approach=CLh, stepsize= stepsize)
+            wingloc_ShS, delta_cg_ac = wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass,Aeroclass,StabClass,  A_h, CLh_approach=CLh, stepsize= stepsize)
             WingClass.load()
             FuseClass.load()
             HorTailClass.load()
+            StabClass.load()
             wingloc = wingloc_ShS[0,0]
             l_v = FuseClass.length_fuselage * (1 - wingloc)
             axial_induction_factor=0.2
@@ -50,7 +51,7 @@ def size_vtail_opt(WingClass, HorTailClass, FuseClass, VTailClass, StabClass, Ae
     CLh = log[0,0]
     b_vee = log[0,2]
     Ah = log[0,4]
-    wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass,Aeroclass, CLh_approach=CLh,A_h=Ah, stepsize = 1e-1)
+    wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass,Aeroclass,StabClass, CLh_approach=CLh,A_h=Ah, stepsize = 1e-1)
     WingClass.load()
     FuseClass.load()
     HorTailClass.load()
@@ -76,7 +77,6 @@ def size_vtail_opt(WingClass, HorTailClass, FuseClass, VTailClass, StabClass, Ae
     VTailClass.ruddervator_efficiency = v_tail[2]
     VTailClass.span = b_vee
     VTailClass.dump()
-    print(VTailClass.surface)
 
     StabClass.load()
     StabClass.Cm_de = v_tail[3]

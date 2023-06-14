@@ -123,7 +123,7 @@ def numerical_simulation(y_start, mass, g0, S, CL_climb, alpha_climb, CD_climb, 
             running = False
 
     acc_lst = np.array(acc_lst)
-
+    '''
     # Create a figure and subplots
     fig, axs = plt.subplots(2, 2, figsize=(10, 8))
 
@@ -154,7 +154,7 @@ def numerical_simulation(y_start, mass, g0, S, CL_climb, alpha_climb, CD_climb, 
     
     # Display the figure
     #plt.show()
-
+    ''' 
     return E, y_lst, t_lst, x_lst, V, P_lst
 
 
@@ -299,7 +299,7 @@ def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha
         if t > t_end or y < 0:
             running = False
     acc_lst = np.array(acc_lst)
-
+    ''' 
     # Create a figure and subplots
     fig, axs = plt.subplots(2, 2, figsize=(10, 8))
 
@@ -330,7 +330,7 @@ def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha
 
     # Display the figure
     # plt.show()
-
+    '''
     return E, y_lst, t_lst, x_lst, P_lst  # Energy, y, t, x, P
 
 
