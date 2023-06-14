@@ -32,20 +32,20 @@ class PylonSizing():
         return (self.moment*x[1])/self.I_xx(x)
 
     def r2_larger_than_r1(self, x):
-        print(f"r2>r1 = {x[1] - x[0]}")
+        # print(f"r2>r1 = {x[1] - x[0]}")
         return x[1] - x[0]
 
     def column_buckling_constraint(self, x):
-        print(f"r1, r2 = {x[0], x[1]}")
-        print(f"column buckling = {(np.pi**2*const.E_alu*self.I_xx(x))/(self.L**2*self.get_area(x))- self.get_stress(x)}")
+        # print(f"r1, r2 = {x[0], x[1]}")
+        # print(f"column buckling = {(np.pi**2*const.E_alu*self.I_xx(x))/(self.L**2*self.get_area(x))- self.get_stress(x)}")
         return (np.pi**2*const.E_alu*self.I_xx(x))/(self.L**2*self.get_area(x)) - self.get_stress(x)
 
     def von_mises_constraint(self, x):
-        print(f"Von Mises = {const.sigma_yield -1/np.sqrt(2)*self.get_stress(x)} ")
+        # print(f"Von Mises = {const.sigma_yield -1/np.sqrt(2)*self.get_stress(x)} ")
         return const.sigma_yield - 1/np.sqrt(2)*self.get_stress(x)
 
     def eigenfreq_constraint(self, x):
-        print(f"Eigenfrequency = {1/(2*np.pi)*np.sqrt((3*const.E_alu*self.I_xx(x))/(self.L**3*self.mass_eng))}")
+        # print(f"Eigenfrequency = {1/(2*np.pi)*np.sqrt((3*const.E_alu*self.I_xx(x))/(self.L**3*self.mass_eng))}")
         return 1/(2*np.pi)*np.sqrt((3*const.E_alu*self.I_xx(x))/(self.L**3*self.mass_eng)) - const.eigenfrequency_lim_pylon
 
     def  optimize_pylon_sizing(self, x0):
@@ -66,7 +66,11 @@ if __name__ == "__main__":
     engine.load()
     L = 2
     Pylon = PylonSizing(engine, L)
-    x0 = (0.08,0.12)
-    res = Pylon.optimize_pylon_sizing(x0)
-    print(res.x)
-    print(res.success)
+    x0 = (0.089,0.10)
+    print(Pylon.weight_func(x0))
+    print(Pylon.eigenfreq_constraint(x0))
+    print(Pylon.von_mises_constraint(x0))
+    print(Pylon.column_buckling_constraint(x0))
+    # res = Pylon.optimize_pylon_sizing(x0)
+    # print(res.x)
+    # print(res.success)
