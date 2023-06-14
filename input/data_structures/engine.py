@@ -43,7 +43,7 @@ class Engine():
         self.nacelle_width = data["nacelle_width"]
         self.total_disk_area = data["diskarea"]
         self.thrust_coefficient = data['C_T']
-        self.thrust_per_engine = data["tw"]*data["mtom"]/self.no_engines
+        self.thrust_per_engine = data["tw"]*data["mtom"]*9.81/self.no_engines
 
     def dump(self):
 

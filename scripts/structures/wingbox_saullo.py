@@ -2,6 +2,7 @@ from math import *
 import sys
 import pathlib as pl
 import os
+import matplotlib.pyplot as plt
 
 import numpy as np
 from scipy.integrate import trapz
@@ -38,7 +39,7 @@ class Wingbox():
         self.m_crip = material.m_crip
         self.sigma_uts = material.sigma_uts
         self.shear_modulus = material.shear_modulus
-        #self.lift_func = get_lift_distr(wing, aero)
+        self.lift_func = get_lift_distr(wing, aero)
         self.engine = engine
         self.wing = wing
         self.t_rib = 4e-3 #[mm]
@@ -52,7 +53,7 @@ class Wingbox():
         self.n_max = n_max_req
         self.span = wing.span
         self.chord_root = wing.chord_root
-        self.n_ribs = 5
+        self.n_ribs = 10
         self.rib_pitch = (self.span/2)/(self.n_ribs-1)
 
         #Engine
@@ -191,6 +192,7 @@ class Wingbox():
         return 2 * (Ist + A * (0.5 * h) ** 2) * self.n_str + 2 * Isp + 2 * (0.6 * self.chord(self.y) * t_sk ** 3 / 12 + t_sk * 0.6 * self.chord_root * (0.5 * h) ** 2)
 
     def I_zz(self, x):#TODO implement dissappearing stringers
+        t_sp, h_st, t_st, t_sk = x
         y = self.y
         h = self.height(y)
         # nst = n_st(c_r, b_st)
@@ -208,26 +210,25 @@ class Wingbox():
 
 #----------------Load functions--------------------
     def aero(self, y):
-        #return  self.lift_func(y)
-        return -151.7143*9.81*y + 531*9.81
+        return  self.lift_func(y)
+        #return -151.7143*9.81*y + 531*9.81
 
     def weight_from_tip(self, x):#TODO implement dissappearing stringers #TODO Include rib weights
         t_sp, h_st, t_st, t_sk = x
         y = self.y
-        total_weight = np.zeros(len(y))
-        total_weight += self.engine_weight
+
         weight_str = self.density * self.get_area_str(h_st,t_st) * (self.span/2- y) * self.n_str
         weight_skin = t_sk * ((0.6 * self.chord(self.span/2) + 0.6 * self.chord(y))* (self.span/2- y) / 2) * 2 + self.perimiter_ellipse(0.15*self.chord(y),self.height(y))*t_sk * 0.15 + np.sqrt((0.25*self.chord(y))**2 + (self.height(y))**2)*2*t_sk
         weight_spar_flanges = (self.w_sp(self.span/2) + self.w_sp(y))*(self.span/2- y)/2 * t_sp * self.density * 4
         weight_spar_web = (self.height(self.span/2) - 2*t_sp + self.height(y) - 2*t_sp) * (self.span/2- y) /2 * t_sp *self.density * 2
 
-        total_weight += (weight_str + weight_skin + weight_spar_flanges + weight_spar_web)
-        if y[-1]>self.y_rotor_loc[0]:
-            difference_array = np.absolute(y-self.y_rotor_loc[0])
-            index = difference_array.argmin()
-            eng_array = np.zeros(index+1) + self.engine_weight + 1
-            eng_array = np.append(eng_array,np.zeros(len(y)-len(eng_array)))
-            total_weight += eng_array
+        total_weight = (weight_str + weight_skin + weight_spar_flanges + weight_spar_web)
+
+        difference_array = np.absolute(y-self.y_rotor_loc[0])
+        index = difference_array.argmin()
+
+        total_weight[0:index+1] += self.engine_weight
+        total_weight += self.engine_weight
 
         # self.find_nearest([1,2,3],3)
         return total_weight
@@ -238,21 +239,33 @@ class Wingbox():
 
 
     def shear_z_from_tip(self, x):
+        y = self.y
         if self.hover_bool:
-            return -self.weight_from_tip(x)*9.81 + 2 * self.thrust_per_engine
+            difference_array = np.absolute(y-self.y_rotor_loc[0])
+            index = difference_array.argmin()
+
+            thrust_array = np.ones(len(y)) * self.thrust_per_engine
+            thrust_array[0:index+1] += self.thrust_per_engine
+            print(self.thrust_per_engine)
+            return -self.weight_from_tip(x)*9.81 + thrust_array
         else:
             return -self.weight_from_tip(x)*9.81 + self.aero(self.y)
 
-    def torque_from_tip(self,y):
-        difference_array = np.absolute(y-self.y_rotor_loc[0])
-        index = difference_array.argmin()
+    def torque_from_tip(self,x):
+        engine.dump()
         if self.hover_bool == True:
-            torque_array = np.zeros(index+1) + (self.thrust_per_engine- self.engine_weight*9.81)*(self.x_rotor_loc[0]-self.get_x_start_wb(y[index]))
-            torque_array = np.append(torque_array,np.zeros(len(y)-len(torque_array)))
+            difference_array = np.absolute(y-self.y_rotor_loc[0])
+            index = difference_array.argmin()
+            torque_array = np.ones(len(y)) * (self.thrust_per_engine- self.engine_weight*9.81)*((self.get_x_start_wb(self.span/2) + 0.5 * 0.6 * (self.chord(self.span/2)) - self.x_rotor_loc[2])) #Torque at from tip roto
+            
+            torque_array[0:index+1] += (self.thrust_per_engine- self.engine_weight*9.81)*((self.get_x_start_wb(y[index]) + 0.5 * 0.6 * (self.chord(y[index]))) - self.x_rotor_loc[0])
             return torque_array
         else:
-            torque_array = np.zeros(index+1) + (self.engine_weight*9.81)*(self.x_rotor_loc[0]-self.get_x_start_wb(y[index]))
-            torque_array = np.append(torque_array,np.zeros(len(y)-len(torque_array)))
+            difference_array = np.absolute(y-self.y_rotor_loc[0])
+            index = difference_array.argmin()
+            torque_array = np.ones(len(y)) * (- self.engine_weight*9.81)*((self.get_x_start_wb(self.span/2) + 0.5 * 0.6 * (self.chord(self.span/2)) - self.x_rotor_loc[2])) #Torque at from tip roto
+            
+            torque_array[0:index+1] += (- self.engine_weight*9.81)*((self.get_x_start_wb(y[index]) + 0.5 * 0.6 * (self.chord(y[index]))) - self.x_rotor_loc[0])
             return torque_array
 
 
@@ -533,7 +546,16 @@ if __name__ == '__main__':
     aero = Aero()
     aero.load()
 
+    tsp, hst, tst, tsk = 0.005, 0.1344, 0.01733, 5e-3
+    X = [tsp, hst, tst, tsk]
+
     wingbox = Wingbox(wing, engine, material, aero, HOVER=True)
+    y = wingbox.y
+    # plt.plot(y,wingbox.torque_from_tip(X))
+    # #plt.plot(y,wingbox.weight_from_tip(X))
+    # plt.show()
+
+
 
     xlower = 5e-3, 1e-2, 1e-3, 5e-4
     xupper = 1e-1, 0.15, 1e-1, 1e-1
