@@ -584,7 +584,7 @@ def GetWingWeight(wing: Wing, engine: Engine, material: Material, aero: Aero):
     fuck_around_bool = False
     if fuck_around_bool:
         # wingbox.weight_from_tip(X)
-        print(wingbox.total_weight(X))
+        # print(wingbox.total_weight(X))
         # print(wingbox.get_r_o(X))
         # print(wingbox.torque_from_tip(X))
 
@@ -655,9 +655,9 @@ def GetWingWeight(wing: Wing, engine: Engine, material: Material, aero: Aero):
         wing.wing_weight = wingbox.total_weight(resGA.X)*2
         wing.dump()
         return wing
-        print(resMin.x)
+        # print(resMin.x)
 
-        x_final = resGA.X
+        # x_final = resGA.X
         # print("Took ",time.time()-start_time)
         # print(f"Buckling constr = {wingbox.buckling_constr(x_final)}")
         # print(f"Local column = {wingbox.local_column(x_final)}")
