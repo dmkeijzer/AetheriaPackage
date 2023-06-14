@@ -7,7 +7,7 @@ import numpy as np
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
-from scripts.structures.wingbox_saullo import Wingbox
+from modules.structures.wingbox_optimizer import Wingbox
 from input.data_structures.wing import Wing
 from input.data_structures.engine import Engine
 from input.data_structures.material import Material
