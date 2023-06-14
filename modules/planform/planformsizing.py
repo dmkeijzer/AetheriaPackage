@@ -19,7 +19,7 @@ class Wing():
 
 def wing_planform(wing: Wing, MTOM: float, WS_cruise: float):
 
-    wing.surface = MTOM / WS_cruise 
+    wing.surface = MTOM / WS_cruise * 9.81
     wing.span  = np.sqrt( wing.aspectratio * wing.surface)
     wing.chord_root = 2 * wing.surface / ((1 + wing.taper) * wing.span)
     wing.chord_tip = wing.taper * wing.chord_root
