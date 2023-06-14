@@ -25,13 +25,13 @@ def numerical_simulation(y_start, mass, g0, S, CL_climb, alpha_climb, CD_climb, 
     vx = 0
     vy = 2.
     V = np.sqrt(vx**2 + vy**2)
-    v_climb = np.sqrt((1767.4453125*2)/(rho*CL_climb))
+    # v_climb = np.sqrt((1767.4453125*2)/(rho*CL_climb))
     t = 0
     x = 0
     y = y_start
     gamma_climb = np.arctan2(0.125, 1)
     theta_climb = gamma_climb + alpha_climb
-    alpha_T = np.pi/2 - theta_climb
+    alpha_T = np.pi/2 
     dt = 0.01
     E = 0
 
