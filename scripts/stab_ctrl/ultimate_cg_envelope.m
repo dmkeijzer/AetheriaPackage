@@ -55,7 +55,7 @@ for i=1:length(matfiles)
                 if i3 > n
                     loopforbrokenengine = false;
                 end
-    
+                i3=i3+1;    
             end
     
     
