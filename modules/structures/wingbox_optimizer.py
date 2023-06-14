@@ -3,6 +3,9 @@ import sys
 import pathlib as pl
 import os
 import matplotlib.pyplot as plt
+import time
+
+
 
 import numpy as np
 from scipy.integrate import trapz
@@ -564,20 +567,13 @@ class Wingbox():
         return -1*(ratio - 1)
 
 
-if __name__ == '__main__':
+def GetWingWeight(wing: Wing, engine: Engine, material: Material, aero: Aero):
     #----LOAD CLASSES------
-    wing = Wing()
-    wing.load()
-    wing.dump()
-    engine = Engine()
+    engine.dump()
     engine.load()
-    engine.dump()
-    material = Material()
-    material.load()
-    engine.dump()
-    aero = Aero()
-    aero.load()
-    aero.dump()
+    wing.dump()
+    wing.load()
+    #NOTE Engine positions in the json are updated in the dump function so first it's dumped and then it's loaded again.
     #------SET VALUES------
     tsp, hst, tst, tsk, ttb= 0.005, 0.1344, 0.01733, 5e-3, 1e-2
     X = [tsp, hst, tst, tsk,ttb]
@@ -596,6 +592,7 @@ if __name__ == '__main__':
     #-----RUN OPTIMIZER------
     optimize_bool = True
     if optimize_bool:
+        start_time = time.time()
         height_tip = wingbox.height(wingbox.span/2) - 1e-2
         xlower =         5e-3,         1e-2,   1e-3, 5e-4, 1e-4
         xupper = height_tip/2, height_tip/2, 3.3e-2, 1e-1, 2e-2
@@ -628,18 +625,18 @@ if __name__ == '__main__':
                                     xu=xupper,
                                     )
 
-        method = GA(pop_size=50, eliminate_duplicates=True)
+        method = GA(pop_size=100, eliminate_duplicates=True)
 
-        resGA = minimizeGA(problem, method, termination=('n_gen', 60), seed=1,
+        resGA = minimizeGA(problem, method, termination=('n_gen', 100), seed=1,
                         save_history=True, verbose=True)
-        print('GA optimum variables', resGA.X)
-        print('GA optimum weight', resGA.F)
+        # print('GA optimum variables', resGA.X)
+        # print('GA optimum weight', resGA.F)
 
 
         #NOTE final gradient descent to converget to a minimum point with SciPy minimize
 
-        print()
-        print('Final SciPy minimize optimization')
+        # print()
+        # print('Final SciPy minimize optimization')
         options = dict(eps=1e-4, ftol=1e-3)
         constraints = [
             {'type': 'ineq', 'fun': lambda x: wingbox.buckling_constr(x)[0]},
@@ -654,15 +651,21 @@ if __name__ == '__main__':
         resMin = minimize(wingbox.total_weight, resGA.X, method='SLSQP',
                     constraints=constraints, bounds=bounds, jac='3-point',
                     options=options)
-        print(resMin)
+        wing.spar_thickness, wing.stringer_height, wing.stringer_thickness, wing.wingskin_thickness, wing.torsion_bar_thickness = resGA.X
+        wing.wing_weight = wingbox.total_weight(resGA.X)*2
+        wing.dump()
+        return wing
+        print(resMin.x)
 
         x_final = resGA.X
+        # print("Took ",time.time()-start_time)
+        # print(f"Buckling constr = {wingbox.buckling_constr(x_final)}")
+        # print(f"Local column = {wingbox.local_column(x_final)}")
+        # print(f"Global Local= {wingbox.global_local(x_final)}")
+        # print(f"Von Mises = {wingbox.von_Mises(x_final)}")
+        # print(f"Flange loc loc = {wingbox.flange_loc_loc(x_final)}")
+        # print(f"Crippling = {wingbox.crippling(x_final)}")
+        # print(f"Web flange = {wingbox.web_flange(x_final)}")
+        # print(f"Torsion bar = {wingbox.torsion_bar_constr(x_final)}")
 
-        print(f"Buckling constr = {wingbox.buckling_constr(x_final)}")
-        print(f"Local column = {wingbox.local_column(x_final)}")
-        print(f"Global Local= {wingbox.global_local(x_final)}")
-        print(f"Von Mises = {wingbox.von_Mises(x_final)}")
-        print(f"Flange loc loc = {wingbox.flange_loc_loc(x_final)}")
-        print(f"Crippling = {wingbox.crippling(x_final)}")
-        print(f"Web flange = {wingbox.web_flange(x_final)}")
-        print(f"Torsion bar = {wingbox.torsion_bar_constr(x_final)}")
+
