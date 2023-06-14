@@ -133,7 +133,7 @@ def numerical_simulation(l_x_1, l_x_2, l_x_3, l_y_1, l_y_2, l_y_3, T_max, y_star
         alpha_T_lst.append(alpha_T * 180 / np.pi)
         T_lst.append(T)
         D_lst.append(D)
-        P_lst.append(Ptot /1000)
+        P_lst.append(Ptot)
         acc_lst.append(acc_g)
         L_lst.append(L)
 
