@@ -19,6 +19,7 @@ class Material():
     pb: float = None #  post buckling ratio
     g: float = None #  Density of material
     shear_modulus: float = None #Shear modulus
+    shear_strength: float = None
 
     def load(self):
         """ Initializes the class automatically from the JSON file
@@ -27,6 +28,7 @@ class Material():
             data = json.load(jsonFile)["material"]
         self.E = data['youngsmodulus']
         self.poisson = data["poisson"]
+        self.shear_strength = data["shear_strength"]
         self.beta = data["beta"]
         self.sigma_yield = data["sigma_yield"]
         self.sigma_uts = data["ultimate_tensile_stress"]

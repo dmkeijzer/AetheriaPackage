@@ -51,7 +51,7 @@ class Engine():
             data = json.load(jsonFile)
 
         data["A_tot"] = self.total_disk_area
-        data["x_rotor_loc"][2] = data["x_lemac"] + data["c_root"] * 0.25 + data["c_tip"]*0.25
+        data["x_rotor_loc"][2] = data["x_lewing"] + data["c_root"] * 0.25 + data["c_tip"]*0.20
         data["x_rotor_loc"][3] = data["x_rotor_loc"][2]
         data["y_rotor_loc"][2] = data["b"]/2
         data["y_rotor_loc"][3] = -data["y_rotor_loc"][2]
