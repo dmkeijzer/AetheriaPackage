@@ -144,15 +144,15 @@ for dict_name in dict_names:
     with open(os.path.join(dict_directory, dict_name), "w") as jsonFile:
         json.dump(data, jsonFile, indent= 6)
     
-    print(f"Energy consumption {data['name']} = {round(E_total/3.6e6, 1)} [Kwh]")
-    print(f"Energy consumption {data['name']} = {round(E_to/3.6e6, 1)} [Kwh]")
-    print(f"Energy consumption {data['name']} = {round(E_trans_hor2ver/3.6e6, 1)} [Kwh]")
-    print(f"Energy consumption {data['name']} = {round(E_climb/3.6e6, 1)} [Kwh]")
-    print(f"Energy consumption {data['name']} = {round(E_cr/3.6e6, 1)} [Kwh]")
-    print(f"Energy consumption {data['name']} = {round(E_desc/3.6e6, 1)} [Kwh]")
-    print(f"Energy consumption loit {data['name']} = {round((E_loit_hor+E_loit_vert)/3.6e6, 1)} [Kwh]")
-    print(f"Energy consumption {data['name']} = {round(E_trans_hor2ver/3.6e6, 1)} [Kwh]")
-    print(f"Energy consumption {data['name']} = {round(E_loit_vert/3.6e6, 1)} [Kwh]")
-    print(f"Energy consumption {data['name']} = {round(energy_landing_var/3.6e6, 1)} [Kwh]")
+    # print(f"Energy consumption {data['name']} = {round(E_total/3.6e6, 1)} [Kwh]")
+    # print(f"Energy consumption {data['name']} = {round(E_to/3.6e6, 1)} [Kwh]")
+    # print(f"Energy consumption {data['name']} = {round(E_trans_hor2ver/3.6e6, 1)} [Kwh]")
+    # print(f"Energy consumption {data['name']} = {round(E_climb/3.6e6, 1)} [Kwh]")
+    # print(f"Energy consumption {data['name']} = {round(E_cr/3.6e6, 1)} [Kwh]")
+    # print(f"Energy consumption {data['name']} = {round(E_desc/3.6e6, 1)} [Kwh]")
+    # print(f"Energy consumption loit {data['name']} = {round((E_loit_hor+E_loit_vert)/3.6e6, 1)} [Kwh]")
+    # print(f"Energy consumption {data['name']} = {round(E_trans_hor2ver/3.6e6, 1)} [Kwh]")
+    # print(f"Energy consumption {data['name']} = {round(E_loit_vert/3.6e6, 1)} [Kwh]")
+    # print(f"Energy consumption {data['name']} = {round(energy_landing_var/3.6e6, 1)} [Kwh]")
 
 
