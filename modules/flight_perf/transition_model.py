@@ -24,9 +24,14 @@ def numerical_simulation(y_start, mass, g0, S, CL_climb, alpha_climb, CD_climb, 
     # Initialization
     vx = 0
     vy = 2.
+    V = np.sqrt(vx**2 + vy**2)
+    v_climb = np.sqrt((1767.4453125*2)/(rho*CL_climb))
     t = 0
     x = 0
     y = y_start
+    gamma_climb = np.arctan2(0.125, 1)
+    theta_climb = gamma_climb + alpha_climb
+    alpha_T = np.pi/2 - theta_climb
     dt = 0.01
     E = 0
 
@@ -55,20 +60,26 @@ def numerical_simulation(y_start, mass, g0, S, CL_climb, alpha_climb, CD_climb, 
     while running:
 
         t += dt
-        alpha_T = 0.5 * np.pi - (t / t_end) * (0.5 * np.pi - alpha_climb)
         rho = 1.220
+
+        alpha_T = 0.5 * np.pi - (t / t_end) * (0.5 * np.pi - alpha_climb)
+        #alpha_T = (1 - t/t_end)*alpha_T
+
+        #if alpha_T < theta_climb:
+         #   alpha_T = theta_climb
 
         # ======== Actual Simulation ========
 
         # Lift and drag
-        L = 0.5 * rho * vx * vx * S * CL_climb
-        D = 0.5 * rho * vx * vx * S * CD_climb
+        L = 0.5 * rho * vx**2 * S * CL_climb
+        D = 0.5 * rho * vx**2 * S * CD_climb
 
         vy_end = 0.125 * v_stall  # achieves final climb gradient of 12.5%
         ay = (vy_end - vy0) / t_end
 
         # Thrust and power
         T = (mass * g0 - L * np.cos(alpha_climb) + mass * ay) / np.sin(alpha_T)
+        #T = (mass*ay + mass*g0 + D*np.sin(gamma_climb) - L*np.cos(theta_climb)) / np.sin(theta_climb + alpha_T)
         V = np.sqrt(vx ** 2 + vy ** 2)
 
         P_hover = T * vy + 1.2 * T * \
@@ -80,18 +91,19 @@ def numerical_simulation(y_start, mass, g0, S, CL_climb, alpha_climb, CD_climb, 
 
         # Acceleration, velocity and position updates
         ax = (T * np.cos(alpha_T) - L * np.sin(alpha_climb) - D) / mass
+        #ax = (0.5*T*np.cos(theta_climb + alpha_T) - L*np.sin(theta_climb) - D*np.cos(gamma_climb)) / mass
 
-        vx = vx + ax * dt
-        vy = vy + ay * dt
+        vx += ax * dt
+        vy += ay * dt
 
-        x = x + vx * dt
-        y = y + vy * dt
+        x += vx * dt
+        y += vy * dt
 
         # Energy integrand per time step
         E += Ptot * dt
 
         # Longitudinal acceleration in g-force
-        acc_g = (ax)/ g0
+        acc_g = ax/g0
 
         # Append lists for all parameters
         t_lst.append(t)
@@ -146,10 +158,10 @@ def numerical_simulation(y_start, mass, g0, S, CL_climb, alpha_climb, CD_climb, 
     return E, y_lst, t_lst, x_lst, V
 
 
-# print(np.max(numerical_simulation(y_start=30.5, mass=data["mtom"], g0=const.g0, S=data['S'], CL_climb=data['cl_climb_clean'],
-#                                   alpha_climb=data['alpha_climb_clean'], CD_climb=data["cdi_climb_clean"] + data["cd0"],
-#                                   Adisk=data["diskarea"], lod_climb=data['ld_climb'], eff_climb=data['eff'],
-#                                   v_stall=data['v_stall'])[6]))
+#print((numerical_simulation(y_start=30.5, mass=2158.35754, g0=const.g0, S=11.975442, CL_climb=0.592,
+#                                  alpha_climb=0.0873, CD_climb=0.0238580,
+#                                   Adisk=17.986312, lod_climb=220.449, eff_climb=0.9,
+ #                                  v_stall=45)[6]))
 
 
 def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha, CD, Adisk):
@@ -159,7 +171,7 @@ def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha
     vy = vx_start*descend_slope
     vy_start = vx_start*descend_slope
     vy_end = -2
-    y_start = 72
+    y_start = 77
     y_end = 15
     t = 0
     x = 0
@@ -209,12 +221,12 @@ def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha
         if vy > 0:
             level_out = True
 
-        if t <5:
+        if t < 5:
             phase_1 = True
             phase_2 = False
         elif level_out == True:
-           phase_1 = False
-           phase_2 = False
+            phase_1 = False
+            phase_2 = False
         else:
             phase_1 = False
             phase_2 = True
@@ -310,9 +322,11 @@ def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha
     fig.tight_layout()
 
     # Display the figure
-    # plt.show()
+    plt.show()
 
-    return E, y_lst, t_lst, x_lst, P_lst # Energy, y, t, x, P
+    return E, y_lst, t_lst, x_lst, P_lst  # Energy, y, t, x, P
 
 
-print()
+#print(numerical_simulation_landing(vx_start=data['v_stall_flaps20'], descend_slope=-0.04, mass=data["mtom"], g0=const.g0,
+ #                                   S=data['S'], CL=data['cl_descent_trans_flaps20'], alpha=data['alpha_descent_trans_flaps20'],
+ #                                   CD=data["cdi_descent_trans_flaps20"]+data['cd0'], Adisk=data["diskarea"])[0])
