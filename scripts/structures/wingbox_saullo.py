@@ -14,11 +14,11 @@ sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
 from input.data_structures.GeneralConstants import *
-#$from input.data_structures.aero import Aero
+from input.data_structures.aero import Aero
 from input.data_structures.engine import Engine
 from input.data_structures.material import Material
 from input.data_structures.wing import Wing
-#$from modules.aero.avl_access import get_lift_distr
+from modules.aero.avl_access import get_lift_distr
 
 #------------ASSUMPTION----------
 #Ribs carry no structural load. They only limit the buckling constraint on the stringers. So their thickness will be assumed to be 3 mm and their pitch will be optimized.
@@ -79,24 +79,18 @@ class Wingbox():
         self.y = np.linspace(0, self.span/2, 10)
 
 
-    #---------------General functions------------------
-    # def find_nearest(array, value):
-    #     difference_array = np.absolute(array-value)
-    #     index = difference_array.argmin()
-    #     return array[index],index
-
-
     #---------------Geometry functions-----------------
     def perimiter_ellipse(self,a,b):
         return np.pi *  ( 3*(a+b) - np.sqrt( (3*a + b) * (a + 3*b) ) ) #Ramanujans first approximation formula
-    def l_sk(self,y):
-        return np.sqrt(self.height(y) ** 2 + (0.25 * self.chord(y)) ** 2)
 
     def chord(self,y):
         return self.chord_root - self.chord_root * (1 - self.taper) * y * 2 / self.span
 
     def height(self,y):
         return self.thickness_to_chord * self.chord(y)
+    
+    def l_sk(self,y):
+        return np.sqrt(self.height(y) ** 2 + (0.25 * self.chord(y)) ** 2)
 
     def get_w_str(self,h_str):
         return 0.8*h_str
@@ -149,7 +143,7 @@ class Wingbox():
 
     def get_y_te(self,x):
         return (x - self.x_lewing - self.chord_root)/(-0.75*self.chord_root*(1-self.taper)*2/self.span)
-    #!!!!
+
     def get_x_start_wb(self,y):
         return self.get_x_le(y) + 0.15*self.chord(y)
 
@@ -536,10 +530,10 @@ if __name__ == '__main__':
     engine.load()
     material = Material()
     material.load()
-    #aero = Aero()
-    #aero.load()
+    aero = Aero()
+    aero.load()
 
-    wingbox = Wingbox(wing, engine, material, aero=None, HOVER=True)
+    wingbox = Wingbox(wing, engine, material, aero, HOVER=True)
 
     xlower = 5e-3, 1e-2, 1e-3, 5e-4
     xupper = 1e-1, 0.15, 1e-1, 1e-1
