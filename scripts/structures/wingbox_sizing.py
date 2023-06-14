@@ -56,6 +56,7 @@ t_sp_lst = np.linspace(5e-3,1e-1,10)
 h_st_lst = np.linspace(1e-2,0.15,10)
 t_st_lst = np.linspace(1e-3,5e-2,10)
 t_sk_lst = np.linspace(5e-4,3e-2,10)
+
 n_str_lst = np.linspace(1,10,10)
 n_ribs_lst = np.linspace(2, 10, 9)
 
