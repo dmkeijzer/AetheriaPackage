@@ -53,7 +53,7 @@ for dict_name in dict_names:
                                 alpha_climb=AeroClass.alpha_climb_clean, CD_climb=AeroClass.cd0_cruise,
                                 Adisk=EngineClass.total_disk_area, lod_climb=AeroClass.ld_climb, eff_climb=PerformanceClass.prop_eff, v_stall=AeroClass.v_stall)
     E_trans_ver2hor = transition_simulation[0]
-    transition_power_max = np.max(transition_simulation[0])
+    transition_power_max = np.max(transition_simulation[5])
     final_trans_distance = transition_simulation[3][-1]
     final_trans_altitude = transition_simulation[1][-1]
     t_trans_climb = transition_simulation[2][-1]
@@ -101,6 +101,7 @@ for dict_name in dict_names:
     t_cr = (const.mission_dist - d_desc - d_climb - final_trans_distance - final_trans_distance_landing)/const.v_cr
     E_cr = P_cr * t_cr
     # print('t', t_cr)
+
     # print('distance', (const.mission_dist - d_desc - d_climb - final_trans_distance_landing))
     # print(P_cr)
     #----------------------- Loiter cruise-----------------------
@@ -125,8 +126,8 @@ for dict_name in dict_names:
     
     #---------------------------- Writing to JSON and printing result  ----------------------------
     data["mission_energy"] = E_total
-    data["power_hover"] = P_takeoff
-    # print('Pto',P_takeoff)
+    data["power_hover"] = transition_power_max
+    # print('Pto',transition_power_max)
     data["power_climb"] = climb_power_var
     data["power_cruise"] = P_cr 
 
