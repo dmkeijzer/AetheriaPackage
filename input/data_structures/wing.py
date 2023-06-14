@@ -63,7 +63,7 @@ class Wing():
         data["A"] = self.aspectratio
         data["b"] = self.span
         data["c_root"] = self.chord_root
-        data["c_tip"] = self.chord_tip
+        data["c_tip"] = self.chord_root - self.chord_root*(1-self.taper)
         data["mac"] = self.chord_mac
         data["y_mac"] = self.y_mac
         data["sweep_le"] = self.sweep_LE
