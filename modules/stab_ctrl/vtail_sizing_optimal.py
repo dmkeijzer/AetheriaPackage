@@ -27,10 +27,11 @@ def size_vtail_opt(WingClass, HorTailClass, FuseClass, VTailClass, StabClass, Ae
     log = np.zeros((0,5))
     for A_h in np.arange(2, 8, 0.1):
         while True:
-            wingloc_ShS, delta_cg_ac = wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass,Aeroclass, A_h, CLh_approach=CLh, stepsize= stepsize)
+            wingloc_ShS, delta_cg_ac = wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass,Aeroclass,StabClass,  A_h, CLh_approach=CLh, stepsize= stepsize)
             WingClass.load()
             FuseClass.load()
             HorTailClass.load()
+            StabClass.load()
             Aeroclass.load()
             wingloc = wingloc_ShS[0,0]
             l_v = FuseClass.length_fuselage * (1 - wingloc)
@@ -47,7 +48,7 @@ def size_vtail_opt(WingClass, HorTailClass, FuseClass, VTailClass, StabClass, Ae
     CLh = log[0,0]
     b_vee = log[0,2]
     Ah = log[0,4]
-    wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass,Aeroclass, CLh_approach=CLh,A_h=Ah, stepsize = 1e-1)
+    wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass,Aeroclass,StabClass, CLh_approach=CLh,A_h=Ah, stepsize = 1e-1)
     WingClass.load()
     FuseClass.load()
     HorTailClass.load()
