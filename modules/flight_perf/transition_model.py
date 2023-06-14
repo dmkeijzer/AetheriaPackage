@@ -261,12 +261,9 @@ def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha
             T = mass * g0
             ax = 0
             ay = 0
-        try:
-            P_hover = T * vy + 1.2 * T * \
-                (-(vy / 2) + np.sqrt((vy ** 2 / 4) + (T / (2 * rho * Adisk))))
-        except RuntimeWarning:
-            print(T)
-            P_hover = 0
+            
+        P_hover = T * vy + 1.2 * T * \
+            (-(vy / 2) + np.sqrt((vy ** 2 / 4) + (T / (2 * rho * Adisk))))
 
         Ptot = P_hover
 
