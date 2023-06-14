@@ -322,7 +322,7 @@ def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha
     fig.tight_layout()
 
     # Display the figure
-    #plt.show()
+    # plt.show()
 
     return E, y_lst, t_lst, x_lst, P_lst  # Energy, y, t, x, P
 
