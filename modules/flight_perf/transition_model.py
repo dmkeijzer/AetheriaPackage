@@ -171,7 +171,7 @@ def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha
     vy = vx_start*descend_slope
     vy_start = vx_start*descend_slope
     vy_end = -2
-    y_start = 77
+    y_start = 70
     y_end = 15
     t = 0
     x = 0
@@ -232,25 +232,29 @@ def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha
             phase_2 = True
 
         if phase_1 == True:  # phase 1 gliding and turn propellers
-            ay = (L * np.cos(alpha) - mass*g0)/mass
+            gamma = np.arctan2(vy,vx)
+            ay = (L * np.cos(alpha+gamma) - mass*g0-D*np.sin(gamma))/mass
             T = 0
-            ax = (-L * np.sin(alpha) - D) / mass
+            ax = (-L * np.sin(alpha+gamma) - D*np.cos(gamma)) / mass
             vy_level_out = vy
+            # print(gamma*180/np.pi)
 
-        elif phase_2 == True:  # leveling out
+        elif phase_2 == True: # leveling out
+            gamma = np.arctan2(vy,vx)
             t_level_out = 5
             alpha_T = np.pi*0.5
             ay = - vy_level_out / t_level_out
-            T = (-L * np.cos(alpha) + mass * g0 + mass * ay) / np.sin(alpha_T)
-            ax = (T * np.cos(alpha_T) - L * np.sin(alpha) - D) / mass
+            T = (-L * np.cos(alpha+gamma) + mass * g0 + mass * ay - D*np.sin(gamma)) / np.sin(alpha_T+gamma)
+            ax = (T * np.cos(alpha_T+gamma) - L * np.sin(alpha+gamma) - D*np.cos(gamma)) / mass
             y_level_out = y
+            # print(gamma*180/np.pi)
 
         elif phase_1 == False and phase_2 == False and y>y_end:  # descending and vx -> 0
             ay = (vy_end ** 2) / (2 * (y_end - y_level_out))
             T = (-L * np.cos(alpha) + mass * g0 + mass * ay) / np.sin(alpha_T)
             ax = (T * np.cos(alpha_T) - L * np.sin(alpha) - D) / mass
 
-        elif y < y_end:
+        if y < y_end or vx<0 or vx == 0:
             vy = -2
             vx = 0
             alpha_T = np.pi*0.5
@@ -303,7 +307,7 @@ def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha
     axs[0, 0].grid()
 
     axs[0, 1].plot(x_lst, y_lst, color='red')
-    axs[0, 1].set_ylim(0,200)
+    axs[0, 1].axis('equal')
     axs[0, 1].set_xlabel('X-position [m]')
     axs[0, 1].set_ylabel('Y-position [m]')
     axs[0, 1].grid()
