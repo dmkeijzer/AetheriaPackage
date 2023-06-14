@@ -44,7 +44,7 @@ class Wingbox():
         self.x_lewing = wing.x_lewing
         self.thickness_to_chord = wing.thickness_to_chord
         self.hover_bool = HOVER
-
+        
 
         #Wing
         self.taper = wing.taper
