@@ -2,6 +2,7 @@ import numpy as np
 import sys
 import pathlib as pl
 import os
+import json
 
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 sys.path.append(os.path.join(list(pl.Path(__file__).parents)[2], "modules","powersizing"))
@@ -224,7 +225,7 @@ class Miscallenous(Component):
 
 
         
-def get_weight_vtol(perf_par, fuselage, wing,  engine, vtail):
+def get_weight_vtol(perf_par, fuselage, wing,  engine, vtail, test= False):
     """ This function is used for the final design, it reuses some of the codes created during
     the midterm. It computes the final weight of the vtol using the data structures created in the
     final design phase
@@ -271,6 +272,23 @@ def get_weight_vtol(perf_par, fuselage, wing,  engine, vtail):
 
     perf_par.OEM = np.sum([ perf_par.powersystem_mass , wing.wing_weight, vtail.vtail_weight, fuselage.fuselage_weight, nacelle_mass, total_engine_mass,  lg_weight, misc_mass])
     perf_par.MTOM =  perf_par.OEM + const.m_pl
+
+    # Update weight not part of a data structure
+
+    with open(const.json_path, "r") as f:
+        data = json.load(f)
+    
+
+    data["misc_weight"] = misc_mass
+    data["lg_weight"] = lg_weight
+    data["nacelle_weight"] = nacelle_mass
+    data["powertrain_weight"] =  total_engine_mass
+
+    if not test:
+        with open(const.json_path, "w") as f:
+            json.dump(data, f, indent= 6)
+    else:
+        return perf_par, wing, vtail, fuselage, engine, data
 
     return perf_par, wing, vtail, fuselage, engine
 

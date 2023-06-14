@@ -4,6 +4,7 @@ import os
 import json
 import sys
 import pathlib as pl
+import pandas as pd
 
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
@@ -24,10 +25,12 @@ from modules.structures.fuselage_length import get_fuselage_sizing
 from modules.structures.ClassIIWeightEstimation import get_weight_vtol
 from modules.propellor.propellor_sizing import propcalc
 from scripts.structures.vtail_span import span_vtail
+import input.data_structures.GeneralConstants as const
 import time
 
 
-def run_integration():
+@profile
+def run_integration(label):
     #----------------------------- Initialize classes --------------------------------
     IonBlock = Battery(Efficiency= 0.9)
     Pstack = FuelCell()
@@ -152,6 +155,17 @@ def run_integration():
     fuselage.dump() 
     vtail.dump() 
     stability.dump()
+
+    #--------------------------------- Log all variables from current iterations ----------------------------------
+    # Load data from JSON file
+    with open(const.json_path) as jsonFile:
+        data = json.load(jsonFile)
+
+    if os.path.exists(os.path.join(const.json_path, "aetheria" + "_" + label + "_hist.csv")):
+        pd.DataFrame(np.array(list(data.values())).reshape(1, len(data))).to_csv(os.path.join(const.json_path, "aetheria" + "_" + label + "_hist.csv") , mode="a", header=False, index= False)
+    else: 
+        pd.DataFrame([data]).to_csv(os.path.join(const.json_path, "aetheria" + "_" + label + "_hist.csv"), columns= list(data.keys()), index=False)
+            # Read the output from the subprocess
 
 if __name__ == "__main__":
     
