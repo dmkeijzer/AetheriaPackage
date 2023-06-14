@@ -124,8 +124,9 @@ def run_integration(label):
                                                                     FuseClass= fuselage,
                                                                     VTailClass= vtail, 
                                                                     StabClass=stability,
-                                                                    b_ref= 1, #!!!!!!!!! please update value when we get it
-                                                                    stepsize = 5e-2 ) 
+                                                                    b_ref= b_ref, #!!!!!!!!! please update value when we get it
+                                                                    stepsize = 5e-2,
+                                                                    ) 
 
     #loading
     mission.load()
@@ -158,14 +159,15 @@ def run_integration(label):
     stability.dump()
 
     #--------------------------------- Log all variables from current iterations ----------------------------------
+    save_path = r"output\final_convergence_history"
     # Load data from JSON file
     with open(const.json_path) as jsonFile:
         data = json.load(jsonFile)
 
-    if os.path.exists(os.path.join(const.json_path, "aetheria" + "_" + label + "_hist.csv")):
-        pd.DataFrame(np.array(list(data.values())).reshape(1, len(data))).to_csv(os.path.join(const.json_path, "aetheria" + "_" + label + "_hist.csv") , mode="a", header=False, index= False)
+    if os.path.exists(os.path.join(save_path, "aetheria" + "_" + label + "_hist.csv")):
+        pd.DataFrame(np.array(list(data.values())).reshape(1, len(data))).to_csv(os.path.join(save_path, "aetheria" + "_" + label + "_hist.csv") , mode="a", header=False, index= False)
     else: 
-        pd.DataFrame([data]).to_csv(os.path.join(const.json_path, "aetheria" + "_" + label + "_hist.csv"), columns= list(data.keys()), index=False)
+        pd.DataFrame([data]).to_csv(os.path.join(save_path, "aetheria" + "_" + label + "_hist.csv"), columns= list(data.keys()), index=False)
             # Read the output from the subprocess
 
 if __name__ == "__main__":

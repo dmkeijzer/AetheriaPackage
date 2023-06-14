@@ -63,9 +63,10 @@ sigma_yield = 430000000.0
 ultimate_tensile_stress = 640000000.0
 m_crip = 0.85
 pb = 2.5
-rho = 2710
+rho_material = 2710
 g= 5
 fuselage_margin = 0.2 
+eigenfrequency_lim_pylon = 30
 ARe = 2.75 # Aspect ration end of tail cone
 n_tanks = 2 # The amount of tanks
 
