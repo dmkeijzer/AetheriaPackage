@@ -29,6 +29,8 @@ class VTOLOptimization(om.ExplicitComponent):
 
         # Output required
         self.add_output('energy')
+        self.add_output('span')
+        self.add_output("MTOM")
 
     def setup_partials(self):
 

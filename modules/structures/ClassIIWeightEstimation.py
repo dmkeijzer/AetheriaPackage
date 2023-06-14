@@ -270,7 +270,7 @@ def get_weight_vtol(perf_par, fuselage, wing,  engine, vtail, test= False):
     # Misc mass
     misc_mass = Miscallenous(perf_par.MTOM, perf_par.OEM, const.npax + 1).mass
 
-    perf_par.OEM = np.sum([ perf_par.powersystem_mass , wing.wing_weight, vtail.vtail_weight, fuselage.fuselage_weight, nacelle_mass, total_engine_mass,  lg_weight, misc_mass])
+    perf_par.OEM = np.sum([ perf_par.powersystem_mass ,   wing.wing_weight, vtail.vtail_weight, fuselage.fuselage_weight, nacelle_mass, total_engine_mass,  lg_weight, misc_mass])
     perf_par.MTOM =  perf_par.OEM + const.m_pl
 
     # Update weight not part of a data structure
