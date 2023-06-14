@@ -616,9 +616,9 @@ class Wingbox():
         return buck
 
 
-    def global_buckling(self, h_st,t_st,t):#TODO
+    def global_buckling(self, h_st,t_st,t_sk,y):#TODO
         # n = n_st(c_r, b_st)
-        tsmr = (t * self.str_pitch + t_st * self.n_max * (h_st - t)) / self.str_pitch
+        tsmr = (t_sk * self.str_pitch + t_st * self.n_str * (h_st - t_sk)) / self.str_pitch
         return 4 * pi ** 2 * self.E / (12 * (1 - self.poisson ** 2)) * (tsmr / self.str_pitch) ** 2
 
 
@@ -660,7 +660,7 @@ class Wingbox():
         stations= self.get_y_rib_loc() #FIXME change this to an input 
         f_uts=np.zeros(len(tarr))
         for i in range(len(tarr)):
-            A=self.n_max*A_st+0.6*c(stations[i])*tarr[i]
+            A=self.n_str*A_st+0.6*c(stations[i])*tarr[i]
             f_uts[i]=self.sigma_uts*A
         return f_uts
 
@@ -676,15 +676,10 @@ class Wingbox():
         return vector
 
 
-    def global_local(self, h_st,t_st,t_sk):
-        tarr = self.t_arr(t_sk)
-        diff = np.zeros(len(tarr))
-        for i in range(len(tarr)):
-            glob = self.global_buckling(h_st,t_st,tarr[i])
-            loc = self.local_buckling(tarr[i])
-            diff[i] = glob - loc #FIXEM glob
-        #diff = self.global_buckling(h_st,t_st,tarr)  - self.local_buckling(tarr,b_st)
-
+    def global_local(self, h_st,t_st,t_sk,y):
+        glob = self.global_buckling(h_st,t_st,t_sk,y)
+        loc = self.local_buckling(t_sk,y)
+        diff = glob - loc 
         return diff
 
 

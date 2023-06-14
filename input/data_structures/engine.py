@@ -40,7 +40,7 @@ class Engine:
         self.x_rotor_loc = data["x_rotor_loc"]
         self.y_rotor_loc = data["y_rotor_loc"]
         self.nacelle_width = data["nacelle_width"]
-        self.thrust_per_engine = data["thrust_per_engine"]
+        self.thrust_per_engine = data["tw"]*data["mtom"]/self.no_engines
 
     def dump(self):
 
