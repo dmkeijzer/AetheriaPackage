@@ -109,7 +109,7 @@ def final_drag_estimation(WingClass, FuselageClass, VTailClass, AeroClass, Horta
 
     # Writing to Class
     AeroClass.e = Oswald_eff_var
-    AeroClass.deps_da = 0.1
+    AeroClass.deps_da = deps_da(AeroClass.cL_alpha, WingClass.aspectratio)
 
     # Form factor
     FF_fus_var = FF_fus(FuselageClass.length_fuselage, FuselageClass.diameter_fuselage)
