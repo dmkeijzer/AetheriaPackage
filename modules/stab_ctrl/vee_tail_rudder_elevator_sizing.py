@@ -77,7 +77,6 @@ def get_control_surface_to_tail_chord_ratio(Wing, Fuse, HorTail,Aero,  CL_h,l_v,
     v_angle, S_vee= get_tail_dihedral_and_area(Lambdah2,S_hor,Fuselage_volume,S,b,l_v,AR_h,taper_h)
     K = get_K(taper_h,AR_h)
     CL_alpha_N = CLahcalc(AR_h, beta_h, eta_h, Lambdah2)
-    
     while (tau_from_elevator>tau_from_rudder and rudder_max>1*np.pi/180):
                 
         Cn_dr_req=-Cn_beta_req*np.arctan(design_cross_wind_speed/V_stall)/(rudder_max)

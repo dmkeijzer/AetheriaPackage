@@ -23,7 +23,7 @@ def propcalc( clcd, mission: PerformanceParameters, engine: Engine, h_cruise: fl
     xi_0 = 0.1
     B = 6
     rpm_cruise = 900
-    T_factors = [2,3,4,5,6,7,8,9]
+    T_factors = [5,6,7,8,9]
     V_h = 2
 
     isa = ISA(h_cruise)

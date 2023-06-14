@@ -170,12 +170,13 @@ def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, Aerocl
         CLah = CLahcalc(A_h, beta, eta, Lambdah2)
 
         m_stab, q_stab = stab_formula_coefs(CLah, CLaAh, depsda, l_h, MAC, Vh_V_2, x_ac_stab_bar, SM)
+        print(m_stab, q_stab)
 
         Cm_ac_flaps = -0.1825#From delta CL0
         Cm_ac_fuselage = cmac_fuselage_contr(b_f, l_f, h_f, CL0_approach, S, MAC, CLaAh)  # CLaAh for ctrl is different than for stab if cruise in compressible flow
         Cm_ac_nacelles = 0  # Assumed/missing data on nacelles
         Cm_ac = Cm_ac_wing + Cm_ac_flaps + Cm_ac_fuselage + Cm_ac_nacelles
-
+        
         m_ctrl, q_ctrl = ctrl_formula_coefs(CLh_approach, CLAh_approach, l_h, MAC, Vh_V_2, Cm_ac, x_ac_stab_bar) # x_ac_bar for ctrl is different than for stab if cruise in compressible flow
 
         #log_cgexc = np.vstack((log_cgexc, np.array([cglims["frontcg"], cglims["rearcg"], wing_loc])))
@@ -195,7 +196,6 @@ def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, Aerocl
     if plot:
         plt.plot(log_final[:,0], log_final[:,1])
         plt.show()
-
 
     WingClass.x_lewing = log_final[np.where(log_final[:,1] == np.min(log_final[:,1]))[0], 0:2][0][0] *FuseClass.length_fuselage - 0.24 * WingClass.chord_mac - WingClass.x_lemac
     HorTailClass.hortailsurf_wingsurf =  log_final[np.where(log_final[:,1] == np.min(log_final[:,1]))[0], 0:2][0][1]

@@ -29,7 +29,7 @@ import input.data_structures.GeneralConstants as const
 import time
 
 
-@profile
+
 def run_integration(label):
     #----------------------------- Initialize classes --------------------------------
     IonBlock = Battery(Efficiency= 0.9)
@@ -59,9 +59,10 @@ def run_integration(label):
     # Preliminary Sizing
     mission, wing,  engine, aero = get_wing_power_loading(mission, wing, engine, aero)
     mission =  get_gust_manoeuvr_loadings(mission, aero)
+    
 
     #planform sizing
-    wing = wing_planform(wing)
+    wing = wing_planform(wing, mission.MTOM, mission.wing_loading_cruise)
 
 
 
