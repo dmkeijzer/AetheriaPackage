@@ -14,5 +14,5 @@ from input.data_structures.performanceparameters import PerformanceParameters
 
 label  = ("_".join(time.asctime().split(" ")[1:-1])).replace(":",".")[:-3]
 
-for i in range(10):
+for i in range(2):
     run_integration(label)

@@ -78,7 +78,7 @@ def size_vtail_opt(WingClass, HorTailClass, FuseClass, VTailClass, StabClass, Ae
     VTailClass.ruddervator_efficiency = v_tail[2]
     VTailClass.span = b_vee
     VTailClass.dump()
-    print(VTailClass.surface)
+
 
     StabClass.load()
     StabClass.Cm_de = v_tail[3]

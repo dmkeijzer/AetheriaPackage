@@ -121,7 +121,20 @@ class Powertrain(Component):
         """        
         super().__init__()
         self.id = "Powertrain"
-        self.mass = p_max/p_dense
+        self.mass = 12 * (13 + 10) #p_max/p_dense 12 engines (13 kg) and inverters (10 kg) These are scimo engines and converters
+
+
+class Propeller(Component):
+    def __init__(self ):
+        """Returns the mas of the engines based on power
+
+        :param p_max: Maximum power [w]
+        :
+        """
+        
+        super().__init__()
+        self.id = "Propeller"
+        self.mass = 6 * 30 # 6 propellers and 30 kg per proppeller (I just googled a bit)
 
 class HorizontalTailWeight(Component):
     def __init__(self, w_to, S_h, A_h, t_r_h ):
@@ -233,7 +246,7 @@ def get_weight_vtol(perf_par, fuselage, wing,  engine, vtail, test= False):
     It uses the following weight components
     --------------------------------------
     Powersystem mass -> Sized in power sizing, retrieved from perf class
-    Engine mass
+    Engine mass -> Scimo engines and inverters used
     wing mass -> class II/wingbox code
     vtail mass -> Class II/wingbox code
     fuselage mass -> Class II
@@ -259,7 +272,7 @@ def get_weight_vtol(perf_par, fuselage, wing,  engine, vtail, test= False):
 
     # Nacelle and engine mass
 
-    total_engine_mass = Powertrain(perf_par.hoverPower, const.p_density).mass
+    total_engine_mass = Powertrain(perf_par.hoverPower, const.p_density).mass + Propeller().mass
     nacelle_mass = NacelleWeight(perf_par.hoverPower).mass
 
     engine.totalmass = nacelle_mass + total_engine_mass

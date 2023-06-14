@@ -239,7 +239,7 @@ def get_fuselage_sizing(h2tank, fuelcell, perf_par,fuselage):
     fuselage.hc = hc
     fuselage.bf = bf
     fuselage.hf = hf
-    fuselage.length_fuselage = fuselage.length_cockpit + fuselage.length_cabin + l_tail + fuelcell.depth + const.fuselage_margin + 2
+    fuselage.length_fuselage = fuselage.length_cockpit + fuselage.length_cabin + l_tail + fuelcell.depth + const.fuselage_margin 
 
     return fuselage
 
