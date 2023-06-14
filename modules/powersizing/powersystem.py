@@ -76,7 +76,7 @@ def hover_energy_mass(PowerRequired: float ,MaxPowerFC: float, Battery: Battery,
 
 class PropulsionSystem:
 
-    def mass(echo: float , Mission: PerformanceParameters , Battery: Battery, FuellCell: FuelCell, FuellTank: HydrogenTank, hovertime: float = 60) -> list[float]: #,MaxPowerFC:float,PowerDensityFC: float , PowerDensityBattery: float, EnergyDensityTank: float  ) -> list[float]:
+    def mass(echo: float , Mission: PerformanceParameters , Battery: Battery, FuellCell: FuelCell, FuellTank: HydrogenTank, hovertime: float = 60, extra_power_during_hover_kW: float = 20 ) -> list[float]: #,MaxPowerFC:float,PowerDensityFC: float , PowerDensityBattery: float, EnergyDensityTank: float  ) -> list[float]:
         """Calculate total mass of the propulsion system
         input: 
             -echo [-]: The percentage of power deliverd by the fuel cell, if over 1 than the fuell cell charges the  battery
@@ -91,8 +91,8 @@ class PropulsionSystem:
         Tankmass,  EnergyBatterymass = energy_cruise_mass(Mission.energyRequired / 3.6e6, echo, FuellTank, Battery, FuellCell) #convert to get to Wh
         FCmass, CruiseBatterymass = power_cruise_mass(Mission.cruisePower / 1e3, echo,FuellCell, Battery)
         #initial sizing for hovering phase
-        HoverBatterymass = hover_mass(PowerRequired=Mission.hoverPower / 1e3 ,MaxPowerFC= FuellCell.maxpower,Battery= Battery)
-        HoverEnergyBatterymass = hover_energy_mass(PowerRequired= Mission.hoverPower /1e3, MaxPowerFC= FuellCell.maxpower ,Battery= Battery,HoverTime= hovertime)
+        HoverBatterymass = hover_mass(PowerRequired=Mission.hoverPower / 1e3 + extra_power_during_hover_kW ,MaxPowerFC= FuellCell.maxpower,Battery= Battery)
+        HoverEnergyBatterymass = hover_energy_mass(PowerRequired= Mission.hoverPower /1e3 + extra_power_during_hover_kW, MaxPowerFC= FuellCell.maxpower ,Battery= Battery,HoverTime= hovertime)
 
         #heaviest battery is needed for the total mass
         Batterymass = np.zeros(len(echo))
