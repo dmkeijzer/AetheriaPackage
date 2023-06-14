@@ -50,7 +50,6 @@ def get_tail_dihedral_and_area(Lambdah2,S_hor,Fuselage_volume,S,b,l_v,AR_h,taper
     S_ver=(Cn_beta_req-Cn_beta_f)/(K*CL_alpha_N)*S*b/l_v   ###Here, the the vertical tail aspect ratio is taken as AR_vee*K = AR_h*K to calculate required vertical tail area
     S_vee=S_ver+S_hor
     v_angle=np.arctan(np.sqrt(S_ver/S_hor))
-    print(v_angle)
     return v_angle, S_vee
 
 

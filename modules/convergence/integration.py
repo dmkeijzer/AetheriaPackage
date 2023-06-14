@@ -159,13 +159,14 @@ def run_integration(label):
 
     #--------------------------------- Log all variables from current iterations ----------------------------------
     # Load data from JSON file
+    save_path = r"output\final_convergence_history"
     with open(const.json_path) as jsonFile:
         data = json.load(jsonFile)
 
-    if os.path.exists(os.path.join(const.json_path, "aetheria" + "_" + label + "_hist.csv")):
-        pd.DataFrame(np.array(list(data.values())).reshape(1, len(data))).to_csv(os.path.join(const.json_path, "aetheria" + "_" + label + "_hist.csv") , mode="a", header=False, index= False)
+    if os.path.exists(os.path.join(save_path, "aetheria" + "_" + label + "_hist.csv")):
+        pd.DataFrame(np.array(list(data.values())).reshape(1, len(data))).to_csv(os.path.join(save_path, "aetheria" + "_" + label + "_hist.csv") , mode="a", header=False, index= False)
     else: 
-        pd.DataFrame([data]).to_csv(os.path.join(const.json_path, "aetheria" + "_" + label + "_hist.csv"), columns= list(data.keys()), index=False)
+        pd.DataFrame([data]).to_csv(os.path.join(save_path, "aetheria" + "_" + label + "_hist.csv"), columns= list(data.keys()), index=False)
             # Read the output from the subprocess
 
 if __name__ == "__main__":
