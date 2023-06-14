@@ -13,6 +13,7 @@ from modules.powersizing.hydrogenTank import HydrogenTankSizing
 from modules.powersizing.energypowerrequirement import MissionRequirements
 # from modules.powersizing.powersystem import PropulsionSystem, onlyFuelCellSizing
 import input.data_structures.GeneralConstants as  const
+from input.data_structures import *
 
 
 
@@ -121,7 +122,7 @@ class Powertrain(Component):
         """        
         super().__init__()
         self.id = "Powertrain"
-        self.mass = 12 * (13 + 10) #p_max/p_dense 12 engines (13 kg) and inverters (10 kg) These are scimo engines and converters
+        self.mass = 12 * (13 + 10) #p_max/p_dense 12 engines (13 kg) and inverters (10 kg) These are scimo engines and converters https://sci-mo.de/motors/
 
 
 class Propeller(Component):
@@ -238,7 +239,7 @@ class Miscallenous(Component):
 
 
         
-def get_weight_vtol(perf_par, fuselage, wing,  engine, vtail, test= False):
+def get_weight_vtol(perf_par: PerformanceParameters, fuselage: Fuselage, wing: Wing,  engine: Engine, vtail: VeeTail, test= False):
     """ This function is used for the final design, it reuses some of the codes created during
     the midterm. It computes the final weight of the vtol using the data structures created in the
     final design phase
@@ -258,7 +259,7 @@ def get_weight_vtol(perf_par, fuselage, wing,  engine, vtail, test= False):
 
 
     # Wing mass 
-    wing.wing_weight = WingWeight(perf_par.MTOM, wing.surface, perf_par.n_ult, wing.aspectratio).mass
+    wing.wing_weight = wing.wing_weight
 
     # Vtail mass
     # Wing equation is used instead of horizontal tail because of the heay load of the engine which is attached
@@ -272,7 +273,7 @@ def get_weight_vtol(perf_par, fuselage, wing,  engine, vtail, test= False):
 
     # Nacelle and engine mass
 
-    total_engine_mass = Powertrain(perf_par.hoverPower, const.p_density).mass + Propeller().mass
+    total_engine_mass = Powertrain(perf_par.hoverPower, const.p_density).mass + Propeller().mass #
     nacelle_mass = NacelleWeight(perf_par.hoverPower).mass
 
     engine.totalmass = nacelle_mass + total_engine_mass
