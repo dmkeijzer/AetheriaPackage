@@ -115,7 +115,7 @@ def numerical_simulation(y_start, mass, g0, S, CL_climb, alpha_climb, CD_climb, 
         alpha_T_lst.append(alpha_T * 180 / np.pi)
         T_lst.append(T)
         D_lst.append(D)
-        P_lst.append(Ptot / 1000)
+        P_lst.append(Ptot )
         acc_lst.append(acc_g)
         L_lst.append(L)
 
@@ -155,7 +155,7 @@ def numerical_simulation(y_start, mass, g0, S, CL_climb, alpha_climb, CD_climb, 
     # Display the figure
     #plt.show()
 
-    return E, y_lst, t_lst, x_lst, V
+    return E, y_lst, t_lst, x_lst, V, P_lst
 
 
 #print((numerical_simulation(y_start=30.5, mass=2158.35754, g0=const.g0, S=11.975442, CL_climb=0.592,
@@ -288,7 +288,7 @@ def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha
         alpha_T_lst.append(alpha_T * 180 / np.pi)
         T_lst.append(T)
         L_lst.append(L)
-        P_lst.append(Ptot/1000)
+        P_lst.append(Ptot)
         acc_lst.append(acc_g)
         acc_y_lst.append(acc_y)
         V_lst.append(np.sqrt(vx**2+vy**2))
