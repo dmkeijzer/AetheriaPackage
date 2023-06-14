@@ -54,7 +54,7 @@ def get_energy_power_perf(WingClass, EngineClass, AeroClass, PerformanceClass):
 
     E_to = P_takeoff * const.t_takeoff
     #-----------------------Transition to climb-----------------------
-    transition_simulation = numerical_simulation(y_start=30.5, mass=PerformanceClass.MTOM, g0=const.g0, S=data['S'], CL_climb=data['cl_climb_clean'],
+    transition_simulation = numerical_simulation(l_x_1=3.7057, l_x_2=1.70572142*0.75, l_x_3=4.5, l_y_1=0.5, l_y_2=0.5, l_y_3=0.789+0.5, T_max=8700, y_start=30.5, mass=PerformanceClass.MTOM, g0=const.g0, S=data['S'], CL_climb=data['cl_climb_clean'],
                                 alpha_climb=data['alpha_climb_clean'], CD_climb=data["cdi_climb_clean"] + data["cd0"],
                                 Adisk=EngineClass.total_disk_area, lod_climb=data['ld_climb'], eff_climb=data['prop_eff'], v_stall=data['v_stall'])
     E_trans_ver2hor = transition_simulation[0]
@@ -132,7 +132,6 @@ def get_energy_power_perf(WingClass, EngineClass, AeroClass, PerformanceClass):
     PerformanceClass.cruisePower = P_cr
     PerformanceClass.hoverPower = P_takeoff
     PerformanceClass.climbPower = climb_power_var
-
     with open(const.json_path, "w") as jsonFile:
         json.dump(data, jsonFile, indent= 6)
 

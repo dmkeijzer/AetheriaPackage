@@ -26,7 +26,6 @@ from modules.structures.ClassIIWeightEstimation import get_weight_vtol
 from modules.propellor.propellor_sizing import propcalc
 from scripts.structures.vtail_span import span_vtail
 import input.data_structures.GeneralConstants as const
-import time
 
 
 

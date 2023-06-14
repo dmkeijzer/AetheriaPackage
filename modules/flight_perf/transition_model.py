@@ -111,7 +111,7 @@ def numerical_simulation(l_x_1, l_x_2, l_x_3, l_y_1, l_y_2, l_y_3, T_max, y_star
         y += vy * dt
 
         if V>v_stall:
-            print('transition complete')
+            #print('transition complete')
             break
 
         # Energy integrand per time step
