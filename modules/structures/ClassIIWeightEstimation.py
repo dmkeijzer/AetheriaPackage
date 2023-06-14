@@ -259,7 +259,7 @@ def get_weight_vtol(perf_par: PerformanceParameters, fuselage: Fuselage, wing: W
 
 
     # Wing mass 
-    wing.wing_weight = wing.wing_weight
+    #wing.wing_weight = wing.wing_weight This is automatically updated in the wing box calculations
 
     # Vtail mass
     # Wing equation is used instead of horizontal tail because of the heay load of the engine which is attached

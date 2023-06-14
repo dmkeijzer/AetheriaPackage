@@ -573,99 +573,83 @@ def GetWingWeight(wing: Wing, engine: Engine, material: Material, aero: Aero):
     engine.load()
     wing.dump()
     wing.load()
+    wingbox = Wingbox(wing, engine, material, aero, HOVER=True)
     #NOTE Engine positions in the json are updated in the dump function so first it's dumped and then it's loaded again.
-    #------SET VALUES------
+    #------SET INITIAL VALUES------
     tsp, hst, tst, tsk, ttb= 0.005, 0.1344, 0.01733, 5e-3, 1e-2
     X = [tsp, hst, tst, tsk,ttb]
-    wingbox = Wingbox(wing, engine, material, aero, HOVER=True)
     y = wingbox.y
 
-    #------FUCK AROUND-------
-    fuck_around_bool = False
-    if fuck_around_bool:
-        # wingbox.weight_from_tip(X)
-        # print(wingbox.total_weight(X))
-        # print(wingbox.get_r_o(X))
-        # print(wingbox.torque_from_tip(X))
+    #------SET BOUNDS--------
+    height_tip = wingbox.height(wingbox.span/2) - 1e-2#NOTE Set upper value so the stringer is not bigger than the wing itself.
+    xlower =         5e-3,         1e-2,   1e-3, 5e-4, 1e-4
+    xupper = height_tip/2, height_tip/2, 3.3e-2, 1e-1, 2e-2
+
+    bounds = np.vstack((xlower, xupper)).T
 
 
-    #-----RUN OPTIMIZER------
-    optimize_bool = True
-    if optimize_bool:
-        start_time = time.time()
-        height_tip = wingbox.height(wingbox.span/2) - 1e-2
-        xlower =         5e-3,         1e-2,   1e-3, 5e-4, 1e-4
-        xupper = height_tip/2, height_tip/2, 3.3e-2, 1e-1, 2e-2
+    #NOTE GA optimizer to explore the design space
+    objs = [wingbox.total_weight]
 
-        
-        # xlower = 5e-3, 1e-2, 1e-3, 5e-4
-        # xupper = 1e-1, 0.15, 1e-1, 1e-1
+    constr_ieq = [
+        lambda x: -wingbox.buckling_constr(x)[0],
+        lambda x: -wingbox.local_column(x),
+        lambda x: -wingbox.global_local(x),
+        lambda x: -wingbox.von_Mises(x)[0],
+        lambda x: -wingbox.flange_loc_loc(x),
+        lambda x: -wingbox.crippling(x),
+        lambda x: -wingbox.web_flange(x),
+        lambda x: -wingbox.torsion_bar_constr(x),
+    ]
 
-        bounds = np.vstack((xlower, xupper)).T
+    problem = FunctionalProblem(len(X),
+                                objs,
+                                constr_ieq=constr_ieq,
+                                xl=xlower,
+                                xu=xupper,
+                                )
 
+    method = GA(pop_size=100, eliminate_duplicates=True)
 
-        #NOTE GA optimizer to explore the design space
-        objs = [wingbox.total_weight]
-
-        constr_ieq = [
-            lambda x: -wingbox.buckling_constr(x)[0],
-            lambda x: -wingbox.local_column(x),
-            lambda x: -wingbox.global_local(x),
-            lambda x: -wingbox.von_Mises(x)[0],
-            lambda x: -wingbox.flange_loc_loc(x),
-            lambda x: -wingbox.crippling(x),
-            lambda x: -wingbox.web_flange(x),
-            lambda x: -wingbox.torsion_bar_constr(x),
-        ]
-
-        problem = FunctionalProblem(len(X),
-                                    objs,
-                                    constr_ieq=constr_ieq,
-                                    xl=xlower,
-                                    xu=xupper,
-                                    )
-
-        method = GA(pop_size=100, eliminate_duplicates=True)
-
-        resGA = minimizeGA(problem, method, termination=('n_gen', 100), seed=1,
-                        save_history=True, verbose=True)
-        # print('GA optimum variables', resGA.X)
-        # print('GA optimum weight', resGA.F)
+    resGA = minimizeGA(problem, method, termination=('n_gen', 100), seed=1,
+                    save_history=True, verbose=True)
+    # print('GA optimum variables', resGA.X)
+    # print('GA optimum weight', resGA.F)
 
 
-        #NOTE final gradient descent to converget to a minimum point with SciPy minimize
+    #NOTE final gradient descent to converget to a minimum point with SciPy minimize
 
-        # print()
-        # print('Final SciPy minimize optimization')
-        options = dict(eps=1e-4, ftol=1e-3)
-        constraints = [
-            {'type': 'ineq', 'fun': lambda x: wingbox.buckling_constr(x)[0]},
-            {'type': 'ineq', 'fun': lambda x: wingbox.local_column(x)},
-            {'type': 'ineq', 'fun': lambda x: wingbox.global_local(x)},
-            {'type': 'ineq', 'fun': lambda x: wingbox.von_Mises(x)[0]},
-            {'type': 'ineq', 'fun': lambda x: wingbox.flange_loc_loc(x)},
-            {'type': 'ineq', 'fun': lambda x: wingbox.crippling(x)},
-            {'type': 'ineq', 'fun': lambda x: wingbox.web_flange(x)},
-            {'type': 'ineq', 'fun': lambda x: wingbox.torsion_bar_constr(x)},
-        ]
-        resMin = minimize(wingbox.total_weight, resGA.X, method='SLSQP',
-                    constraints=constraints, bounds=bounds, jac='3-point',
-                    options=options)
-        wing.spar_thickness, wing.stringer_height, wing.stringer_thickness, wing.wingskin_thickness, wing.torsion_bar_thickness = resGA.X
-        wing.wing_weight = wingbox.total_weight(resGA.X)*2
-        wing.dump()
-        return wing
-        # print(resMin.x)
+    # print()
+    # print('Final SciPy minimize optimization')
+    options = dict(eps=1e-4, ftol=1e-3)
+    constraints = [
+        {'type': 'ineq', 'fun': lambda x: wingbox.buckling_constr(x)[0]},
+        {'type': 'ineq', 'fun': lambda x: wingbox.local_column(x)},
+        {'type': 'ineq', 'fun': lambda x: wingbox.global_local(x)},
+        {'type': 'ineq', 'fun': lambda x: wingbox.von_Mises(x)[0]},
+        {'type': 'ineq', 'fun': lambda x: wingbox.flange_loc_loc(x)},
+        {'type': 'ineq', 'fun': lambda x: wingbox.crippling(x)},
+        {'type': 'ineq', 'fun': lambda x: wingbox.web_flange(x)},
+        {'type': 'ineq', 'fun': lambda x: wingbox.torsion_bar_constr(x)},
+    ]
+    resMin = minimize(wingbox.total_weight, resGA.X, method='SLSQP',
+                constraints=constraints, bounds=bounds, jac='3-point',
+                options=options)
+    wing.spar_thickness, wing.stringer_height, wing.stringer_thickness, wing.wingskin_thickness, wing.torsion_bar_thickness = resGA.X
+    wing.wing_weight = wingbox.total_weight(resGA.X)*2
+    wing.dump()
+    return wing
+    # print(resMin.x)
 
-        # x_final = resGA.X
-        # print("Took ",time.time()-start_time)
-        # print(f"Buckling constr = {wingbox.buckling_constr(x_final)}")
-        # print(f"Local column = {wingbox.local_column(x_final)}")
-        # print(f"Global Local= {wingbox.global_local(x_final)}")
-        # print(f"Von Mises = {wingbox.von_Mises(x_final)}")
-        # print(f"Flange loc loc = {wingbox.flange_loc_loc(x_final)}")
-        # print(f"Crippling = {wingbox.crippling(x_final)}")
-        # print(f"Web flange = {wingbox.web_flange(x_final)}")
-        # print(f"Torsion bar = {wingbox.torsion_bar_constr(x_final)}")
+    # x_final = resGA.X
+    # print("Took ",time.time()-start_time)
+    # print(f"Buckling constr = {wingbox.buckling_constr(x_final)}")
+    # print(f"Local column = {wingbox.local_column(x_final)}")
+    # print(f"Global Local= {wingbox.global_local(x_final)}")
+    # print(f"Von Mises = {wingbox.von_Mises(x_final)}")
+    # print(f"Flange loc loc = {wingbox.flange_loc_loc(x_final)}")
+    # print(f"Crippling = {wingbox.crippling(x_final)}")
+    # print(f"Web flange = {wingbox.web_flange(x_final)}")
+    # print(f"Torsion bar = {wingbox.torsion_bar_constr(x_final)}")
 
 
