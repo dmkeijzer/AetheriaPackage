@@ -169,7 +169,7 @@ def run_integration(label):
         data = json.load(jsonFile)
 
     if os.path.exists(os.path.join(save_path, "aetheria" + "_" + label + "_hist.csv")):
-        pd.DataFrame(np.array(list(data.values())).reshape(1, len(data))).to_csv(os.path.join(save_path, "aetheria" + "_" + label + "_hist.csv") , mode="a", header=False, index= False)
+        pd.DataFrame(np.array(list(data.values()), dtype= object).reshape(1, len(data))).to_csv(os.path.join(save_path, "aetheria" + "_" + label + "_hist.csv") , mode="a", header=False, index= False)
     else: 
         pd.DataFrame([data]).to_csv(os.path.join(save_path, "aetheria" + "_" + label + "_hist.csv"), columns= list(data.keys()), index=False)
             # Read the output from the subprocess
