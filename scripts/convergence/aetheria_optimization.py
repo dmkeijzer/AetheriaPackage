@@ -57,15 +57,20 @@ class VTOLOptimization(om.ExplicitComponent):
         print(f"===============================\nOuter loop iteration = {self.counter}\n===============================")
         print(f"MTOM: {MTOM_one}")
         for i in range(10):
-            print(f'\nInner loop Iteration = {i}') #pr
-            run_integration(self.label) 
+            print(f'\nInner loop Iteration = {i}') 
+            run_integration(self.label) # run integration files which can be looped
 
+            # load data so that convergences can be checked
             with open(const.json_path, 'r') as f:
                 data = json.load(f)
             MTOM_two = data["mtom"]
+
+            #log data so that convergences can be monitored live
             print(f"MTOM: {MTOM_two} kg")
+
+            #break out of the convergences loop if the mtom convergences below 0.5%
             epsilon = abs(MTOM_two - MTOM_one) / MTOM_one
-            if epsilon < 0.005: #NOTE break out of the convergences loop if the mtom convergences below 0.5%
+            if epsilon < 0.005: #NOTE 
                 print(f" Inner loop has converged -> epsilon is: {epsilon * 100}%")
                 break
             MTOM_one = MTOM_two
@@ -112,7 +117,8 @@ prob.model.add_constraint('Integrated_design.crashworthiness_lim', lower= 0 )
 
 prob.driver = om.ScipyOptimizeDriver()
 prob.driver.options['optimizer'] = 'COBYLA'
-prob.driver.opt_settings['maxiter'] = 12
+#prob.driver.opt_settings['maxiter'] = 15
+
 
 prob.model.add_design_var('Integrated_design.AR', lower = 5, upper = 15)
 prob.model.add_design_var('Integrated_design.l_fuselage', lower = 8, upper = 16)

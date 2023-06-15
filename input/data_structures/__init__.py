@@ -17,3 +17,5 @@ from material import Material
 from radiator import Radiator
 from stability import Stab
 from vee_tail import VeeTail
+from power import Power
+from material import Material
