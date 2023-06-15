@@ -37,7 +37,7 @@ soundspeed = ISA.soundspeed()
 # Fixed blade parameters
 xi_0 = 0.1
 
-prop_radius = 0.65
+prop_radius = 0.7
 prop_diameter = prop_radius*2
 totarea = np.pi*(prop_radius)**2*n_prop
 
@@ -48,7 +48,7 @@ print("")
 # Design parameters
 B = 6
 rpm_cruise = 1000
-T_factor = 2.2
+T_factor = 2
 
 blade_cruise = BEM.BEM(B, prop_radius, rpm_cruise, xi_0, rho, dyn_vis, V_cruise, N_stations=25, a=soundspeed,
                        RN_spacing=100000, T=T_cr_per_engine * T_factor)
@@ -280,9 +280,9 @@ ps=[]
 #
 # # Hover design parameters
 # # delta_pitch_hover = 54
-# rpm_hover = 2500
-# Omega_hover = rpm_hover * 2 * np.pi / 60
-# n_hover = Omega_hover / (2 * np.pi)
+
+Omega_hover = max_M_tip*soundspeed/prop_radius
+n_hover = Omega_hover / (2 * np.pi)
 # # delta_pitch_hover = 45
 #
 # # Atmospheric parameters still assumed at 1 km
@@ -303,7 +303,7 @@ RN = Omega_hover * design[0] * rho / dyn_vis
 #
 #     # print(design[1], design[1]-np.deg2rad(delta_pitch_hover))
 #     hover_blade = BEM.OffDesignAnalysisBEM(V_h, B, prop_radius, design[0], design[1]-np.deg2rad(delta_pitch_hover), design[3],
-#                                            coefs[0], coefs[1], rpm_hover, rho, dyn_vis, soundspeed, RN)
+#                                            coefs[0], coefs[1], rpm_max, rho, dyn_vis, soundspeed, RN)
 #
 #
 #     # Outputs: [T, Q, eff], [C_T, C_P], [alphas]
@@ -317,14 +317,13 @@ RN = Omega_hover * design[0] * rho / dyn_vis
 #     if T > max_T:
 #         best_combo = [delta_pitch_hover, T]
 #         max_T = T
-#     print(counter)
-#     counter+=1
 #
-# # plt.plot(Vs, Ts)
-# # plt.show()
-#
+# #
+# # # plt.plot(Vs, Ts)
+# # # plt.show()
+# #
 # hover_blade = BEM.OffDesignAnalysisBEM(V_h, B, prop_radius, design[0], design[1] - np.deg2rad(best_combo[0]),
-#                                        design[3], coefs[0], coefs[1], rpm_hover, rho, dyn_vis, soundspeed, RN)
+#                                        design[3], coefs[0], coefs[1], rpm_max, rho, dyn_vis, soundspeed, RN)
 #
 # # Outputs: [T, Q, eff], [C_T, C_P], [alphas]
 # hover_performance = hover_blade.analyse_propeller()
@@ -336,27 +335,27 @@ RN = Omega_hover * design[0] * rho / dyn_vis
 # print("")
 # print("With:")
 # print("     Hover speed:", V_h, "m/s")
-# print("     Hover rpm:", rpm_hover, "rpm")
+# print("     Hover rpm:", max, "rpm")
 # print("     Blade pitch change:", best_combo[0], "deg")
 # print("")
-# # print("Hover efficiency:", hover_performance[0][2], "[-]")
+# print("Hover efficiency:", hover_performance[0][2], "[-]")
 # # print("")
-# # print("Necessary hover power:", 0.001 * hover_performance[1][1] * rho * n_hover**3 * prop_diameter**5, "kW")
+# print("Necessary hover power:", 0.001 * hover_performance[1][1] * rho * n_hover**3 * prop_diameter**5, "kW")
 # # print("")
 # print("AoA per station:", np.rad2deg(hover_performance[2][0]))
 # print("")
 # print("Cl per station:", hover_performance[2][1])
 # print("Cd per station:", hover_performance[2][2])
-
-print("############# Off-design analysis: Max thrust #############")
-print("")
+#
+# print("############# Off-design analysis: Max thrust #############")
+# print("")
 # Max thrust
 
 max_T = 0
 # best_combo = []
 Ts = []
 Vs = []
-
+# for t in range(10,70,3):
 for delta_pitch_max_T in range(15, 60):
 
     # print(design[1], design[1]-np.deg2rad(delta_pitch_hover))
@@ -380,11 +379,12 @@ for delta_pitch_max_T in range(15, 60):
         max_T = T
 
 
-# print(design[1], design[1]-np.deg2rad(delta_pitch_hover))
-maxT_blade = BEM.OffDesignAnalysisBEM(V_h, B, prop_radius, design[0], design[1] - np.deg2rad(best_combo[0]),
-                                      design[3], coefs[0], coefs[1], rpm_max, rho, dyn_vis, soundspeed, RN)
 
-# Outputs: [T, Q, eff], [C_T, C_P], [alphas]
+    # print(design[1], design[1]-np.deg2rad(delta_pitch_hover))
+maxT_blade = BEM.OffDesignAnalysisBEM(V_h, B, prop_radius, design[0], design[1] - np.deg2rad(best_combo[0]),
+                                          design[3], coefs[0], coefs[1], rpm_max, rho, dyn_vis, soundspeed, RN)
+
+    # Outputs: [T, Q, eff], [C_T, C_P], [alphas]
 maxT_performance = maxT_blade.analyse_propeller()
 
 
@@ -524,14 +524,14 @@ pitch_fun = np.polynomial.polynomial.Polynomial(coef_pitchs)
 
 
 
-def propcalc(radius, MTOM, clcd, v_cruise, h_cruise, dyn_vis, soundspeed, rho_cruise, TW = 1.225, rho_hover = 1.225):
+def propcalc(radius, MTOM, clcd, v_cruise, h_cruise, dyn_vis, soundspeed, rho_cruise, t,TW = 1.225, rho_hover = 1.225):
     prop_radius = radius
     n_prop = 6
     T_cr_per_engine = (MTOM * g0 / clcd)/n_prop
     xi_0 = 0.1
     B = 6
     rpm_cruise = 1000
-    T_factor = 2.2
+    T_factor = t
     V_h = 2
 
     ISA = at.ISA(h_cruise)
@@ -602,4 +602,12 @@ def propcalc(radius, MTOM, clcd, v_cruise, h_cruise, dyn_vis, soundspeed, rho_cr
 
     return C_T_cruise, prop_eff,  power_tot_cruise, max_thrust_per_engine, power_tot_hover
 
-print(propcalc(prop_radius, MTOM, 15, V_cruise, h_cruise, dyn_vis, soundspeed, rho))
+#print(propcalc(prop_radius, MTOM, 15, V_cruise, h_cruise, dyn_vis, soundspeed, rho))
+
+
+for t in range(20,130,5):
+    C_T_cruise, chords_per_station, prop_eff, design_thrust, power_tot_cruise, max_thrust_per_engine, power_tot_hover = propcalc(prop_radius, MTOM, 15, V_cruise, h_cruise, dyn_vis, soundspeed, rho,t/10)
+    CarmeloVal = 0.8 * max_thrust_per_engine + 1.2 * max_thrust_per_engine * np.sqrt(1 + max_thrust_per_engine / (2 * 1.225 * np.pi * prop_radius ** 2))
+    print(max_thrust_per_engine/(4304.7),CarmeloVal)
+
+
