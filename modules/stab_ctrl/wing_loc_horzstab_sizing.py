@@ -120,7 +120,7 @@ def ctrl_formula_coefs(CLh_approach, CLAh_approach, l_h, MAC, Vh_V_2, Cm_ac, x_a
     return m_ctrl, q_ctrl
 
 
-def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, Aeroclass,stabilityclass, A_h, plot=False, CLh_approach = None, stepsize = 0.002, cg_shift = 0):
+def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, Aeroclass,stabilityclass, A_h, weights , plot=False, CLh_approach = None, stepsize = 0.002, cg_shift = 0):
     log_final = np.zeros((0,6))
     depsda = HorTailClass.downwash
     MAC = WingClass.chord_mac
@@ -153,7 +153,7 @@ def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, Aerocl
         x_ac_stab_wing_bar = 0.24  # From graph from Torenbeek
         l_h = l_f * (1-wing_loc)
         l_fn = wing_loc * l_f - x_ac_stab_wing_bar * MAC - x_lemac_x_rootc
-        cglims = J1loading(wing_loc * l_f, l_f)[1]
+        cglims = J1loading(wing_loc * l_f, l_f,weights)[1]
         frontcgexc = (cglims["frontcg"] - wing_loc * l_f + x_ac_stab_wing_bar * MAC)/ MAC
         rearcgexc = (cglims["rearcg"] - wing_loc * l_f + x_ac_stab_wing_bar * MAC)/ MAC
         CLaAh = CLaAhcalc(CLaw, b_f, b, S, c_root)
