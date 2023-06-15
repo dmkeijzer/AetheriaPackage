@@ -24,6 +24,7 @@ class VTOLOptimization(om.ExplicitComponent):
 
         # Design variables
         self.add_input('AR')
+        self.add_input('l_fuselage')
         # self.add_input('span')
         # self.add_input('MTOM')
 
@@ -31,6 +32,7 @@ class VTOLOptimization(om.ExplicitComponent):
         self.add_output('energy')
         self.add_output('span')
         self.add_output("MTOM")
+        self.add_output("crashworthiness_lim")
 
     def setup_partials(self):
 
@@ -48,11 +50,10 @@ class VTOLOptimization(om.ExplicitComponent):
         with open(const.json_path, 'w') as f:
             json.dump(data, f, indent=6)
 
-        print(f"Outer loop iteration = {self.counter} ")
-        for i in range(10):
+        print(f"===============================\nOuter loop iteration = {self.counter}\n===============================")
+        for i in range(1):
             run_integration(self.label)
-            print(f'Inner loop Iteration = {i}')
-            print(f"Aspect ratio = {inputs['AR'][0]}")
+            print(f'Inner loop Iteration = {i}\n')
 
         with open(const.json_path, 'r') as f:
             data = json.load(f)
@@ -60,7 +61,17 @@ class VTOLOptimization(om.ExplicitComponent):
         outputs['energy'] = data["mission_energy"]
         outputs['span'] = data["b"]
         outputs['MTOM'] = data["mtom"]
+        outputs['crashworthiness_lim'] = data["l_fuse"] - data["limit_fuse"]
         self.counter += 1
+
+
+        # Give updates on the design
+
+        print(f"\nUpdates on Design Variables\n-----------------------------------")
+        print(f"Aspect ratio = {inputs['AR'][0]}")
+        print(f"Aspect ratio = {inputs['l_fuselage'][0]}")
+        print(f"Crashworhiness limit = {outputs['crashworthiness_lim'][0]}")
+        print(f"Mission Energy= {outputs['energy'][0]/3.6e6} [KwH]")
 
 
 # Set up the problem
@@ -71,12 +82,14 @@ prob = om.Problem()
 prob.model.add_subsystem('Integrated_design',VTOLOptimization())
 # Initial values for the optimization TODO: Improve initial values
 prob.model.set_input_defaults('Integrated_design.AR', 8.4)
+prob.model.set_input_defaults('Integrated_design.l_fuselage', 9)
 # prob.model.set_input_defaults('Integrated_design.span', (8.4*data["S"])**0.5 )
 # prob.model.set_input_defaults('Integrated_design.span', data["mtom"] )
 
 # Define constraints TODO: Probably better to define them in a central file, like constants
 prob.model.add_constraint('Integrated_design.MTOM', upper=3175.)
 prob.model.add_constraint('Integrated_design.span', lower= 6, upper= 14.)
+prob.model.add_constraint('Integrated_design.crashworthiness_lim', lower= 0 )
 
 
 prob.driver = om.ScipyOptimizeDriver()
@@ -84,6 +97,7 @@ prob.driver.options['optimizer'] = 'COBYLA'
 prob.driver.opt_settings['maxiter'] = 12
 
 prob.model.add_design_var('Integrated_design.AR', lower = 5, upper = 15)
+prob.model.add_design_var('Integrated_design.l_fuselage', lower = 8, upper = 16)
 
 prob.model.add_objective('Integrated_design.energy')
 
