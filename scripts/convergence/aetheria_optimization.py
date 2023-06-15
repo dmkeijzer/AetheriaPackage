@@ -24,8 +24,8 @@ class VTOLOptimization(om.ExplicitComponent):
 
         # Design variables
         self.add_input('AR')
-        self.add_input('span')
-        self.add_input('MTOM')
+        # self.add_input('span')
+        # self.add_input('MTOM')
 
         # Output required
         self.add_output('energy')
@@ -43,7 +43,7 @@ class VTOLOptimization(om.ExplicitComponent):
             data = json.load(f)
 
         data["A"] = inputs["AR"][0]
-        data["b"] = inputs["span"][0]
+        # data["b"] = inputs["span"][0]
 
         with open(const.json_path, 'w') as f:
             json.dump(data, f, indent=6)
@@ -71,8 +71,8 @@ prob = om.Problem()
 prob.model.add_subsystem('Integrated_design',VTOLOptimization())
 # Initial values for the optimization TODO: Improve initial values
 prob.model.set_input_defaults('Integrated_design.AR', 8.4)
-prob.model.set_input_defaults('Integrated_design.span', (8.4*data["S"])**0.5 )
-prob.model.set_input_defaults('Integrated_design.span', data["mtom"] )
+# prob.model.set_input_defaults('Integrated_design.span', (8.4*data["S"])**0.5 )
+# prob.model.set_input_defaults('Integrated_design.span', data["mtom"] )
 
 # Define constraints TODO: Probably better to define them in a central file, like constants
 prob.model.add_constraint('Integrated_design.MTOM', upper=3175.)
