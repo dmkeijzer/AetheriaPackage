@@ -579,8 +579,8 @@ def GetWingWeight(wing: Wing, engine: Engine, material: Material, aero: Aero):
     wing.dump()
     wing.load()
     wingbox = Wingbox(wing, engine, material, aero, HOVER=True)
-    #NOTE Engine positions in the json are updated in the dump function so first it's dumped and then it's loaded again.
-    #------SET INITIAL VALUES------
+    # NOTE Engine positions in the json are updated in the dump function so first it's dumped and then it's loaded again.
+    # ------SET INITIAL VALUES------
     tsp= wing.spar_thickness
     hst= wing.stringer_height
     tst= wing.stringer_thickness
@@ -589,21 +589,21 @@ def GetWingWeight(wing: Wing, engine: Engine, material: Material, aero: Aero):
     X = [tsp, hst, tst, tsk,ttb]
     y = wingbox.y
 
-    # X = [0.008, 0.02, 0.02, 0.02, 0.02]
-
-
-    # print(wingboxclass.buckling_constr(X))
-    # print(wingboxclass.local_column(X))
-    # print(wingboxclass.global_local(X))
-    # print(wingboxclass.von_Mises(X)[0])
-    # print(wingboxclass.flange_loc_loc(X))
-    # print(wingboxclass.crippling(X))
-    # print(wingboxclass.web_flange(X))
-    # print(wingboxclass.torsion_bar_constr(X))
+    X = [0.008, 0.02, 0.02, 0.02, 0.02]
+    debug = False
+    if debug:
+        print(wingboxclass.buckling_constr(X))
+        print(wingboxclass.local_column(X))
+        print(wingboxclass.global_local(X))
+        print(wingboxclass.von_Mises(X)[0])
+        print(wingboxclass.flange_loc_loc(X))
+        print(wingboxclass.crippling(X))
+        print(wingboxclass.web_flange(X))
+        print(wingboxclass.torsion_bar_constr(X))
 
     #------SET BOUNDS--------
     height_tip = wingbox.height(wingbox.span/2) - 2*tsk#NOTE Set upper value so the stringer is not bigger than the wing itself.
-    # print(height_tip)
+    # print("height" ,height_tip)
     xlower =         1e-3,         1e-3,   1e-4, 1e-4, 1e-4
     xupper = height_tip/2, height_tip/2, 3.3e-2, 1e-1, height_tip/2
 
@@ -633,16 +633,17 @@ def GetWingWeight(wing: Wing, engine: Engine, material: Material, aero: Aero):
 
     method = GA(pop_size=100, eliminate_duplicates=True)
 
-    resGA = minimizeGA(problem, method, termination=('n_gen', 60), seed=1,
+    resGA = minimizeGA(problem, method, termination=('n_gen', 100), seed=1,
                     save_history=True, verbose=True)
-    # print('GA optimum variables', resGA.X)
-    # print('GA optimum weight', resGA.F)
+    if debug:
+        print('GA optimum variables', resGA.X)
+        print('GA optimum weight', resGA.F)
 
 
-    #NOTE final gradient descent to converget to a minimum point with SciPy minimize
+        # NOTE final gradient descent to converget to a minimum point with SciPy minimize
 
-    # print()
-    # print('Final SciPy minimize optimization')
+        print()
+        print('Final SciPy minimize optimization')
     options = dict(eps=1e-4, ftol=1e-3)
     constraints = [
         {'type': 'ineq', 'fun': lambda x: wingbox.buckling_constr(x)[0]},
@@ -664,38 +665,39 @@ def GetWingWeight(wing: Wing, engine: Engine, material: Material, aero: Aero):
     X = resGA.X
 
     x_final = X
-    
-    # print(f"Buckling constr = {wingbox.buckling_constr(x_final)}")
-    # print(f"Local column = {wingbox.local_column(x_final)}")
-    # print(f"Global Local= {wingbox.global_local(x_final)}")
-    # print(f"Von Mises = {wingbox.von_Mises(x_final)}")
-    # print(f"Flange loc loc = {wingbox.flange_loc_loc(x_final)}")
-    # print(f"Crippling = {wingbox.crippling(x_final)}")
-    # print(f"Web flange = {wingbox.web_flange(x_final)}")
-    # print(f"Torsion bar = {wingbox.torsion_bar_constr(x_final)}")
+    if debug:
+        print(f"Buckling constr = {wingbox.buckling_constr(x_final)}")
+        print(f"Local column = {wingbox.local_column(x_final)}")
+        print(f"Global Local= {wingbox.global_local(x_final)}")
+        print(f"Von Mises = {wingbox.von_Mises(x_final)}")
+        print(f"Flange loc loc = {wingbox.flange_loc_loc(x_final)}")
+        print(f"Crippling = {wingbox.crippling(x_final)}")
+        print(f"Web flange = {wingbox.web_flange(x_final)}")
+        print(f"Torsion bar = {wingbox.torsion_bar_constr(x_final)}")
 
     return wing
 
-wing = Wing()
-engine = Engine()
-material = Material()
-aero = Aero()
+if __name__ == "__main__":
+    wing = Wing()
+    engine = Engine()
+    material = Material()
+    aero = Aero()
 
-wing.load()
-engine.load()
-material.load()
-aero.load()
+    wing.load()
+    engine.load()
+    material.load()
+    aero.load()
 
-engine.dump()
+    engine.dump()
 
-wingboxclass = Wingbox(wing, engine, material, aero, HOVER=True)
-
-
-
-# #X = [tsp,hst,tst,tsk,ttb]
+    wingboxclass = Wingbox(wing, engine, material, aero, HOVER=True)
 
 
 
+    # #X = [tsp,hst,tst,tsk,ttb]
 
-GetWingWeight(wing,engine,material,aero)
+
+
+
+    GetWingWeight(wing,engine,material,aero)
 
