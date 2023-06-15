@@ -23,7 +23,7 @@ from modules.aero.slipstream_stall_function import slipstream_stall
 from modules.flight_perf.performance  import get_energy_power_perf
 from modules.structures.fuselage_length import get_fuselage_sizing
 from modules.structures.ClassIIWeightEstimation import get_weight_vtol
-from modules.structures.wingbox_optimizer import GetWingWeight
+#from modules.structures.wingbox_optimizer import GetWingWeight
 from modules.propellor.propellor_sizing import propcalc
 from scripts.structures.vtail_span import span_vtail
 import input.data_structures.GeneralConstants as const
@@ -145,7 +145,7 @@ def run_integration(label):
 
     # Fuselage sizing
     fuselage = get_fuselage_sizing(Tank,Pstack, mission, fuselage)
-    wing = GetWingWeight(wing, engine, material, aero )
+    #wing = GetWingWeight(wing, engine, material, aero )
 
     #------------- weight_estimation------------------
     mission, fuselage, wing, engine, vtail =  get_weight_vtol(mission, fuselage, wing, engine, vtail)
@@ -160,7 +160,6 @@ def run_integration(label):
     fuselage.dump() 
     vtail.dump() 
     stability.dump()
-    material.dump()
 
     #--------------------------------- Log all variables from current iterations ----------------------------------
     save_path = r"output\final_convergence_history"

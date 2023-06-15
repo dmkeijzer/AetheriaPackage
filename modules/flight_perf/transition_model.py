@@ -13,10 +13,7 @@ from input.data_structures.wing import Wing
 from input.data_structures.aero import Aero
 import input.data_structures.GeneralConstants as const
 
-Wingclass = Wing()
-Wingclass.load()
-Aeroclass = Aero()
-Aeroclass.load()
+
 
 
 def numerical_simulation(l_x_1, l_x_2, l_x_3, l_y_1, l_y_2, l_y_3, T_max, y_start, mass, g0, S, CL_climb, alpha_climb, CD_climb, Adisk, lod_climb, eff_climb, v_stall):
