@@ -249,5 +249,6 @@
       "stringer_height":0,
       "stringer_thickness":0,
       "wingskin_thickness":0,
-      "torsion_bar_thickness":0
+      "torsion_bar_thickness":0,
+      "hub_radius": 0.1
     }

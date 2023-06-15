@@ -100,12 +100,15 @@ if __name__ == "__main__":
     mission = PerformanceParameters()
     mission.load()
 
+    engine = Engine()
+    engine.load()
+
     aero = Aero()
     aero.load()
 
 
     t0 = time.perf_counter()
-    mission, ct= propcalc(aero.ld_cruise, mission, const.h_cruise)
+    mission, ct= propcalc(aero.ld_cruise, mission, engine, const.h_cruise)
     t1 = time.perf_counter()
     print(f'Max thrust per engine {mission.max_thrust_per_engine} ')
     print(f'Hover power {mission.hoverPower}')

@@ -17,7 +17,7 @@ path = '../PropandPower/Figures/'
 # B, R, rpm, xi_0, rho, dyn_vis, V_fr, N_stations, a, RN_spacing, T=None, P=None
 # B = 5
 xi_0 = 0.1
-R = 0.97
+R = 0.65
 A_prop = np.pi*R**2
 MTOM = 2150
 
