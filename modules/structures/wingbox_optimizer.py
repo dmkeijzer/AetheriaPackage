@@ -56,7 +56,7 @@ class Wingbox():
         self.n_max = n_max_req
         self.span = wing.span
         self.chord_root = wing.chord_root
-        self.n_ribs = 20
+        self.n_ribs = 10
         self.rib_pitch = (self.span/2)/(self.n_ribs+1)
         self.t_rib = 1e-3
 
@@ -661,7 +661,7 @@ def GetWingWeight(wing: Wing, engine: Engine, material: Material, aero: Aero):
     wing.wing_weight = wingbox.total_weight(resGA.X)*2
     wing.dump()
 
-    print(resGA.X)
+    X = resGA.X
 
     x_final = X
     
@@ -687,6 +687,7 @@ material.load()
 aero.load()
 
 wingboxclass = Wingbox(wing, engine, material, aero, HOVER=True)
+
 
 
 # X = [tsp,hst,tst,tsk,ttb]
