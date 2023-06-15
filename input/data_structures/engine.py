@@ -30,6 +30,7 @@ class Engine():
     thrust_coefficient: float = None
     thrust_per_engine: float = None
     hub_radius: float = None
+    prop_radius: float = None
 
     def load(self):
         with open(r"input/data_structures/aetheria_constants.json") as jsonFile:
@@ -46,6 +47,7 @@ class Engine():
         self.thrust_coefficient = data['C_T']
         self.thrust_per_engine = data["tw"]*data["mtom"]*9.81/self.no_engines
         self.hub_radius = data['hub_radius']
+        self.prop_radius = data['mtom'] / (120 * 6)
 
     def dump(self):
 
@@ -60,6 +62,7 @@ class Engine():
         data['C_T'] = self.thrust_coefficient
         data["thrust_per_engine"] = self.thrust_per_engine
         data['hub_radius'] = self.hub_radius
+        data['prop_radius'] = self.prop_radius
 
         with open(r"input/data_structures/aetheria_constants.json", "w") as jsonFile:
             json.dump(data, jsonFile, indent=4)
