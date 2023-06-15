@@ -135,7 +135,7 @@ class Propeller(Component):
         
         super().__init__()
         self.id = "Propeller"
-        self.mass = 6 * 30 # 6 propellers and 30 kg per proppeller (I just googled a bit)
+        self.mass = 6 * 20 # 6 propellers and 30 kg per proppeller (I just googled a bit)
 
 class HorizontalTailWeight(Component):
     def __init__(self, w_to, S_h, A_h, t_r_h ):
@@ -259,7 +259,7 @@ def get_weight_vtol(perf_par: PerformanceParameters, fuselage: Fuselage, wing: W
 
 
     # Wing mass 
-    #wing.wing_weight = wing.wing_weight This is automatically updated in the wing box calculations
+    wing.wing_weight = WingWeight(perf_par.MTOM, wing.surface, perf_par.n_ult, wing.aspectratio).mass #This is automatically updated in the wing box calculations
 
     # Vtail mass
     # Wing equation is used instead of horizontal tail because of the heay load of the engine which is attached
@@ -273,7 +273,7 @@ def get_weight_vtol(perf_par: PerformanceParameters, fuselage: Fuselage, wing: W
 
     # Nacelle and engine mass
 
-    total_engine_mass = Powertrain(perf_par.hoverPower, const.p_density).mass + Propeller().mass #
+    total_engine_mass = Powertrain(perf_par.hoverPower, const.p_density).mass + Propeller().mass + 90 #90 kg is for the pylon length
     nacelle_mass = NacelleWeight(perf_par.hoverPower).mass
 
     engine.totalmass = nacelle_mass + total_engine_mass

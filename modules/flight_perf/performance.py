@@ -15,13 +15,6 @@ from modules.flight_perf.transition_model import *
 import input.data_structures.GeneralConstants as const
 from input.data_structures.ISA_tool  import ISA
 from input.data_structures import *
-WingClass = Wing()
-AeroClass = Aero()
-PerformanceClass = PerformanceParameters()
-
-WingClass.load()
-AeroClass.load()
-PerformanceClass.load()
 
 
 def get_energy_power_perf(WingClass, EngineClass, AeroClass, PerformanceClass):
