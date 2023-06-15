@@ -698,7 +698,6 @@ if __name__ == "__main__":
     aero.load()
     performance.load()
 
-    engine.dump()
 
     tsp= wing.spar_thickness
     hst= wing.stringer_height

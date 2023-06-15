@@ -11,5 +11,5 @@ from modules.convergence.integration import run_integration
 
 label  = ("_".join(time.asctime().split(" ")[1:-1])).replace(":",".")[:-3]
 
-for i in range(5):
+for i in range(10):
     run_integration(label)

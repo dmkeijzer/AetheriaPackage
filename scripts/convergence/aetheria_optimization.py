@@ -49,20 +49,28 @@ class VTOLOptimization(om.ExplicitComponent):
         data["l_fuse"] = inputs["l_fuselage"][0]
         # data["b"] = inputs["span"][0]
 
+        MTOM_one = data["mtom"]
+
         with open(const.json_path, 'w') as f:
             json.dump(data, f, indent=6)
 
         print(f"===============================\nOuter loop iteration = {self.counter}\n===============================")
+        print(f"MTOM: {MTOM_one}")
         for i in range(10):
-            #mass_before = data["mtom"]
-            run_integration(self.label)
-            #mass_after_iteration = data["mtom"]
-            #epsilon = abs(mass_after_iteration - mass_before) / mass_before
-            # if epsilon < 0.05:
-            #     print(f"epsilon is: {epsilon}")
-            #     break
+            print(f'\nInner loop Iteration = {i}') #pr
+            run_integration(self.label) 
 
-            print(f'Inner loop Iteration = {i}\n')
+            with open(const.json_path, 'r') as f:
+                data = json.load(f)
+            MTOM_two = data["mtom"]
+            print(f"MTOM: {MTOM_two} kg")
+            epsilon = abs(MTOM_two - MTOM_one) / MTOM_one
+            if epsilon < 0.005: #NOTE break out of the convergences loop if the mtom convergences below 0.5%
+                print(f" Inner loop has converged -> epsilon is: {epsilon * 100}%")
+                break
+            MTOM_one = MTOM_two
+
+            
 
         with open(const.json_path, 'r') as f:
             data = json.load(f)
