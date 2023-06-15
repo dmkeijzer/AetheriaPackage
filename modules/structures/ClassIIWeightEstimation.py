@@ -71,7 +71,7 @@ class WingWeight(Component):
         self.mass = 0.04674*(self.mtow_lbs**0.397)*(self.S_ft**0.36)*(self.n_ult**0.397)*(self.A**1.712)*0.453592
 
 class FuselageWeight(Component):
-    def __init__(self,identifier, mtom, max_per, lf, npax):
+    def __init__(self,identifier, mtom, max_per, lf, npax, nult, wf, hf, Vc):
         """ Returns fuselage weight, cessna method page 75 Pt 5. component weight estimaation Roskam.
 
         :param mtom: Maximum take off weight
@@ -89,14 +89,23 @@ class FuselageWeight(Component):
         self.lf_ft, self.lf = lf*3.28084, lf
         self.max_per_ft = max_per*3.28084
         self.npax = npax
-        if identifier == "J1":
-            self.fweight_high = 14.86*(self.mtow_lbs**0.144)*((self.lf_ft/self.max_per_ft)**0.778)*(self.lf_ft**0.383)*(self.npax**0.455)
-            self.mass = self.fweight_high*0.453592
-        else:
-            self.fweight_high = 14.86*(self.mtow_lbs**0.144)*((self.lf_ft/self.max_per_ft)**0.778)*(self.lf_ft**0.383)*(self.npax**0.455)
-            self.fweight_low = 0.04682*(self.mtow_lbs**0.692)*(self.max_per_ft**0.374)*(self.lf_ft**0.590)
-            self.fweight = (self.fweight_high + self.fweight_low)/2
-            self.mass = self.fweight*0.453592
+
+        self.nult = nult # ultimate load factor
+        self.wf_ft = wf*3.28084 # width fuselage [ft]
+        self.hf_ft = hf*3.28084 # height fuselage [ft]
+        self.Vc_kts = Vc*1.94384449 # design cruise speed [kts]
+
+        self.fweigh_USAF = 200*((self.mtow_lbs*self.nult/10**5)**0.286*(self.lf_ft/10)**0.857*((self.wf_ft+self.hf_ft)/10)*(self.Vc_kts/100)**0.338)**1.1
+        self.mass = self.fweigh_USAF*0.453592
+
+        #if identifier == "J1":
+        #    self.fweight_high = 14.86*(self.mtow_lbs**0.144)*((self.lf_ft/self.max_per_ft)**0.778)*(self.lf_ft**0.383)*(self.npax**0.455)
+        #    self.mass = self.fweight_high*0.453592
+        #else:
+        #    self.fweight_high = 14.86*(self.mtow_lbs**0.144)*((self.lf_ft/self.max_per_ft)**0.778)*(self.lf_ft**0.383)*(self.npax**0.455)
+        #    self.fweight_low = 0.04682*(self.mtow_lbs**0.692)*(self.max_per_ft**0.374)*(self.lf_ft**0.590)
+        #    self.fweight = (self.fweight_high + self.fweight_low)/2
+        #    self.mass = self.fweight*0.453592
 
 class LandingGear(Component):
     def __init__(self, mtom):
