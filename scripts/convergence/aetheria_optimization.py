@@ -46,6 +46,7 @@ class VTOLOptimization(om.ExplicitComponent):
             data = json.load(f)
 
         data["A"] = inputs["AR"][0]
+        data["l_fuse"] = inputs["l_fuselage"][0]
         # data["b"] = inputs["span"][0]
 
         with open(const.json_path, 'w') as f:
