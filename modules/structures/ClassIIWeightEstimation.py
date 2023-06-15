@@ -71,7 +71,7 @@ class WingWeight(Component):
         self.mass = 0.04674*(self.mtow_lbs**0.397)*(self.S_ft**0.36)*(self.n_ult**0.397)*(self.A**1.712)*0.453592
 
 class FuselageWeight(Component):
-    def __init__(self,identifier, mtom, max_per, lf, npax, nult, wf, hf, Vc):
+    def __init__(self,identifier, mtom, lf, nult, wf, hf, Vc):
         """ Returns fuselage weight, cessna method page 75 Pt 5. component weight estimaation Roskam.
 
         :param mtom: Maximum take off weight
@@ -87,8 +87,6 @@ class FuselageWeight(Component):
         self.id = "fuselage"
         self.mtow_lbs = 2.20462 * mtom
         self.lf_ft, self.lf = lf*3.28084, lf
-        self.max_per_ft = max_per*3.28084
-        self.npax = npax
 
         self.nult = nult # ultimate load factor
         self.wf_ft = wf*3.28084 # width fuselage [ft]
@@ -275,7 +273,7 @@ def get_weight_vtol(perf_par: PerformanceParameters, fuselage: Fuselage, wing: W
     vtail.vtail_weight = WingWeight(perf_par.MTOM, vtail.surface, perf_par.n_ult, vtail.aspectratio).mass
 
     #fuselage mass
-    fuselage.fuselage_weight = FuselageWeight("J1", perf_par.MTOM, fuselage.max_perimeter, fuselage.length_fuselage, const.npax + 1).mass
+    fuselage.fuselage_weight = FuselageWeight("J1", perf_par.MTOM, fuselage.length_fuselage, perf_par.n_ult, fuselage.width_fuselage_outer, fuselage.height_fuselage_outer, const.v_cr).mass
 
     #landing gear mass
     lg_weight = LandingGear(perf_par.MTOM).mass
@@ -314,5 +312,4 @@ def get_weight_vtol(perf_par: PerformanceParameters, fuselage: Fuselage, wing: W
         return perf_par, wing, vtail, fuselage, engine, data
 
     return perf_par, wing, vtail, fuselage, engine
-
 

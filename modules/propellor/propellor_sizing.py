@@ -112,7 +112,7 @@ if __name__ == "__main__":
     mission, ct= propcalc(aero.ld_cruise, mission, engine, const.h_cruise)
     t1 = time.perf_counter()
     print(f'Max thrust per engine {mission.max_thrust_per_engine} ')
-    print(f'Max thrust per engine {mission.} ')
+    # print(f'Max thrust per engine {mission.} ')
     print(f'Efficiency {mission.prop_eff}')
     print(f'Hover power {mission.hoverPower}')
     print(f'Cruise power {mission.cruisePower}')
