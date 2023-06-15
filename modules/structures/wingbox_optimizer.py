@@ -633,7 +633,7 @@ def GetWingWeight(wing: Wing, engine: Engine, material: Material, aero: Aero):
 
     method = GA(pop_size=100, eliminate_duplicates=True)
 
-    resGA = minimizeGA(problem, method, termination=('n_gen', 100), seed=1,
+    resGA = minimizeGA(problem, method, termination=('n_gen', 60), seed=1,
                     save_history=True, verbose=True)
     # print('GA optimum variables', resGA.X)
     # print('GA optimum weight', resGA.F)
@@ -686,13 +686,13 @@ engine.load()
 material.load()
 aero.load()
 
-
 engine.dump()
 
 wingboxclass = Wingbox(wing, engine, material, aero, HOVER=True)
 
 
 
+# #X = [tsp,hst,tst,tsk,ttb]
 
 
 
