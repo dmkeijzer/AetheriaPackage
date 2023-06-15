@@ -676,27 +676,26 @@ def GetWingWeight(wing: Wing, engine: Engine, material: Material, aero: Aero):
 
     return wing
 
-# wing = Wing()
-# engine = Engine()
-# material = Material()
-# aero = Aero()
+wing = Wing()
+engine = Engine()
+material = Material()
+aero = Aero()
 
-# wing.load()
-# engine.load()
-# material.load()
-# aero.load()
-
-
-# engine.dump()
-
-# wingboxclass = Wingbox(wing, engine, material, aero, HOVER=True)
+wing.load()
+engine.load()
+material.load()
+aero.load()
 
 
+engine.dump()
 
-# X = [tsp,hst,tst,tsk,ttb]
+wingboxclass = Wingbox(wing, engine, material, aero, HOVER=True)
 
 
 
 
-# GetWingWeight(wing,engine,material,aero)
+
+
+
+GetWingWeight(wing,engine,material,aero)
 
