@@ -39,7 +39,7 @@ def get_lift_distr(wing, aero, plot= False, test= False):
                         airfoil=NacaAirfoil(naca='2412'))
 
     # wing tip
-    tip_section = Section(leading_edge_point=Point(np.sin(wing.sweep_LE)*wing.span, wing.span/2, 0),
+    tip_section = Section(leading_edge_point=Point(np.sin(wing.sweep_LE)*wing.span/2, wing.span/2, 0),
                         chord= wing.chord_tip,
                         airfoil=NacaAirfoil(naca='2412'))
 
@@ -77,7 +77,7 @@ def get_lift_distr(wing, aero, plot= False, test= False):
 
     y_le_per_strip = np.array(strip_data["Yle"]) 
     area_per_strip = np.array(strip_data["Area"])
-    cl_per_strip = np.array(strip_data["cl"])
+    cl_per_strip = np.array(strip_data["c cl"])
     lift_force_per_strip = 1/2*const.rho_cr*const.v_cr**2*area_per_strip*cl_per_strip
 
     coeff = np.polyfit(y_le_per_strip, lift_force_per_strip, 2)

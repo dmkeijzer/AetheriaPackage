@@ -37,6 +37,7 @@ MaterialClass.load()
 AeroClass.load()
 TailClass.load()
 
+
 E = MaterialClass.E # Pa
 rho = MaterialClass.rho# kg/m3
 b = 0.05 # m
@@ -195,6 +196,12 @@ eigvecs = np.zeros((N, num_eigenvalues))
 eigvecs[bu] = eigvecsu
 omegan = eigvals**0.5
 print(omegan, 'rad/s')
+print(f"x - dir = {np.round(omegan[0], 1)} [rad/s] = {np.round(omegan[0]/(2*np.pi),1)} [Hz]")
+print(f"y - dir = {np.round(omegan[1], 1)} [rad/s] = {np.round(omegan[1]/(2*np.pi),1)} [Hz]")
+print(f"z - dir = {np.round(omegan[2], 1)} [rad/s] = {np.round(omegan[2]/(2*np.pi),1)} [Hz]")
+print(f"x - rotation = {np.round(omegan[3], 1)} [rad/s] = {np.round(omegan[3]/(2*np.pi),1)} [Hz]")
+print(f"y - rotation = {np.round(omegan[4], 1)} [rad/s] = {np.round(omegan[4]/(2*np.pi),1)} [Hz]")
+print(f"z - rotation = {np.round(omegan[5], 1)} [rad/s] = {np.round(omegan[5]/(2*np.pi),1)} [Hz]")
 
 
 
