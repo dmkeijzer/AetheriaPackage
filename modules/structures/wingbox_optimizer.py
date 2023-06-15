@@ -57,8 +57,8 @@ class Wingbox():
         self.span = wing.span
         self.chord_root = wing.chord_root
         self.n_ribs = 10
-        self.rib_pitch = (self.span/2)/(self.n_ribs-1)
-        self.t_rib = 2e-3
+        self.rib_pitch = (self.span/2)/(self.n_ribs+1)
+        self.t_rib = 1e-3
 
         #Engine
         self.engine_weight = engine.mass_pertotalengine
@@ -68,10 +68,8 @@ class Wingbox():
         self.thrust_per_engine = engine.thrust_per_engine
         #Torsion shaft
 
-        self.nacelle_w = engine.nacelle_width #TODO Check if it gets updated
-
         #STRINGERS
-        self.n_str = 2
+        self.n_str = 0
         self.str_array_root = np.linspace(0.15*self.chord_root,0.75*self.chord_root,self.n_str+2)
 
         self.y_mesh = 1000
@@ -98,7 +96,7 @@ class Wingbox():
         return np.sqrt(self.height(y) ** 2 + (0.25 * self.chord(y)) ** 2)
 
     def get_w_str(self,h_str):
-        return 0.8*h_str
+        return 0.2*h_str
 
     def get_area_str(self, h_st,t_st):
         return t_st * (2 * self.get_w_str(h_st) + h_st)
@@ -223,6 +221,7 @@ class Wingbox():
 
     def torque_from_tip(self,x):
         if self.hover_bool == True:
+            y = self.y
             difference_array = np.absolute(y-self.y_rotor_loc[0])
             index = difference_array.argmin()
             distance_outboard = ((self.get_x_start_wb(self.span/2) + 0.5 * 0.6 * (self.chord(self.span/2)) - self.x_rotor_loc[2]))
@@ -262,8 +261,9 @@ class Wingbox():
         total_weight[0:index+1] += self.engine_weight
 
         total_weight += self.engine_weight
-        weight_ribs = np.linspace(len(y),1,self.n_ribs) * self.chord(y) * self.height(y) * self.t_rib * self.density
-
+        weight_ribs = np.linspace(len(y),1,len(y)) * self.chord(y) * self.height(y) * self.t_rib * self.density
+        #weight_ribs = np.sort(np.append(np.linspace(1,5,5),np.linspace(1,5,5))) * self.chord(y) * self.height(y) * self.t_rib * self.density
+        #print(weight_ribs)
         total_weight += weight_ribs
 
         return total_weight
@@ -300,7 +300,7 @@ class Wingbox():
         y = self.y
         Vz = self.shear_z_from_tip(x)
         #T = self.torque_from_tip(y)
-        T = np.zeros(len(Vz))
+        T = np.zeros(len(y))
         Ixx = self.I_xx(x)
         height = self.height(y)
         chord = self.chord(y)
@@ -387,7 +387,7 @@ class Wingbox():
 
             T_A = np.array([[T_A11, T_A12, T_A13, T_A14], [T_A21, T_A22, T_A23, T_A24], [T_A31, T_A32, T_A33, T_A34],[T_A41,T_A42,T_A43,T_A44]])
             T_B = np.array([0,0,0,T[i]])
-            T_X = np.linalg.solve(T_A, T_B)
+            #T_X = np.linalg.solve(T_A, T_B)
 
 
 
@@ -416,9 +416,12 @@ class Wingbox():
             q02 = float(X[1])
             q03 = float(X[2])
 
-            qT1 = float(T_X[0])
-            qT2 = float(T_X[1])
-            qT3 = float(T_X[1])
+            # qT1 = float(T_X[0])
+            # qT2 = float(T_X[1])
+            # qT3 = float(T_X[1])
+            qT1 = float(0)
+            qT2 = float(0)
+            qT3 = float(0)
 
             # Compute final shear flow
             q2 = qb2(s2) - q01 - qT1 + q02 + qT2
@@ -481,7 +484,7 @@ class Wingbox():
 
 
     def column_st(self, h_st, t_st, t_sk):#TODO
-        w_st = 0.5*h_st
+        w_st = self.get_w_str(h_st)
         #Lnew=new_L(b,L)
         Ist = t_st * h_st ** 3 / 12 + (w_st - t_st) * t_st ** 3 / 12 + t_sk**3*w_st/12+t_sk*w_st*(0.5*h_st)**2
         i= pi ** 2 * self.E * Ist / (2*w_st* self.rib_pitch ** 2)#TODO IF HE FAILS REPLACE SPAN WITH RIB PITCH
@@ -513,13 +516,15 @@ class Wingbox():
         t_sp, h_st, t_st, t_sk, t_tb = x
         col = self.column_st(h_st,t_st, t_sk)
         loc = self.local_buckling(t_sk)
+        # print("col=",col/1e6)
+        # print("loc=",loc/1e6)
         diff = col - loc
         return diff
 
 
     def flange_loc_loc(self, x):
         t_sp, h_st, t_st, t_sk, t_tb = x
-        w_st = h_st*0.5
+        w_st = self.get_w_str(h_st)
         flange = self.flange_buckling(t_st,w_st)
         loc = self.local_buckling(t_sk)
         diff = flange - loc
@@ -576,14 +581,31 @@ def GetWingWeight(wing: Wing, engine: Engine, material: Material, aero: Aero):
     wingbox = Wingbox(wing, engine, material, aero, HOVER=True)
     #NOTE Engine positions in the json are updated in the dump function so first it's dumped and then it's loaded again.
     #------SET INITIAL VALUES------
-    tsp, hst, tst, tsk, ttb= 0.005, 0.1344, 0.01733, 5e-3, 1e-2
+    tsp= wing.spar_thickness
+    hst= wing.stringer_height
+    tst= wing.stringer_thickness
+    tsk= wing.stringer_thickness
+    ttb= wing.torsion_bar_thickness
     X = [tsp, hst, tst, tsk,ttb]
     y = wingbox.y
 
+    # X = [0.008, 0.02, 0.02, 0.02, 0.02]
+
+
+    print(wingboxclass.buckling_constr(X))
+    print(wingboxclass.local_column(X))
+    print(wingboxclass.global_local(X))
+    print(wingboxclass.von_Mises(X)[0])
+    print(wingboxclass.flange_loc_loc(X))
+    print(wingboxclass.crippling(X))
+    print(wingboxclass.web_flange(X))
+    print(wingboxclass.torsion_bar_constr(X))
+
     #------SET BOUNDS--------
-    height_tip = wingbox.height(wingbox.span/2) - 1e-2#NOTE Set upper value so the stringer is not bigger than the wing itself.
-    xlower =         5e-3,         1e-2,   1e-3, 5e-4, 1e-4
-    xupper = height_tip/2, height_tip/2, 3.3e-2, 1e-1, 2e-2
+    height_tip = wingbox.height(wingbox.span/2) - 2*tsk#NOTE Set upper value so the stringer is not bigger than the wing itself.
+    print(height_tip)
+    xlower =         1e-3,         1e-3,   1e-4, 1e-4, 1e-4
+    xupper = height_tip/2, height_tip/2, 3.3e-2, 1e-1, height_tip/2
 
     bounds = np.vstack((xlower, xupper)).T
 
@@ -613,14 +635,14 @@ def GetWingWeight(wing: Wing, engine: Engine, material: Material, aero: Aero):
 
     resGA = minimizeGA(problem, method, termination=('n_gen', 100), seed=1,
                     save_history=True, verbose=True)
-    # print('GA optimum variables', resGA.X)
-    # print('GA optimum weight', resGA.F)
+    print('GA optimum variables', resGA.X)
+    print('GA optimum weight', resGA.F)
 
 
     #NOTE final gradient descent to converget to a minimum point with SciPy minimize
 
-    # print()
-    # print('Final SciPy minimize optimization')
+    print()
+    print('Final SciPy minimize optimization')
     options = dict(eps=1e-4, ftol=1e-3)
     constraints = [
         {'type': 'ineq', 'fun': lambda x: wingbox.buckling_constr(x)[0]},
@@ -638,18 +660,43 @@ def GetWingWeight(wing: Wing, engine: Engine, material: Material, aero: Aero):
     wing.spar_thickness, wing.stringer_height, wing.stringer_thickness, wing.wingskin_thickness, wing.torsion_bar_thickness = resGA.X
     wing.wing_weight = wingbox.total_weight(resGA.X)*2
     wing.dump()
+    
+    X = resGA.X
+
+    x_final = X
+    
+    print(f"Buckling constr = {wingbox.buckling_constr(x_final)}")
+    print(f"Local column = {wingbox.local_column(x_final)}")
+    print(f"Global Local= {wingbox.global_local(x_final)}")
+    print(f"Von Mises = {wingbox.von_Mises(x_final)}")
+    print(f"Flange loc loc = {wingbox.flange_loc_loc(x_final)}")
+    print(f"Crippling = {wingbox.crippling(x_final)}")
+    print(f"Web flange = {wingbox.web_flange(x_final)}")
+    print(f"Torsion bar = {wingbox.torsion_bar_constr(x_final)}")
+
     return wing
-    # print(resMin.x)
 
-    # x_final = resGA.X
-    # print("Took ",time.time()-start_time)
-    # print(f"Buckling constr = {wingbox.buckling_constr(x_final)}")
-    # print(f"Local column = {wingbox.local_column(x_final)}")
-    # print(f"Global Local= {wingbox.global_local(x_final)}")
-    # print(f"Von Mises = {wingbox.von_Mises(x_final)}")
-    # print(f"Flange loc loc = {wingbox.flange_loc_loc(x_final)}")
-    # print(f"Crippling = {wingbox.crippling(x_final)}")
-    # print(f"Web flange = {wingbox.web_flange(x_final)}")
-    # print(f"Torsion bar = {wingbox.torsion_bar_constr(x_final)}")
+wing = Wing()
+engine = Engine()
+material = Material()
+aero = Aero()
 
+wing.load()
+engine.load()
+material.load()
+aero.load()
+
+
+engine.dump()
+
+wingboxclass = Wingbox(wing, engine, material, aero, HOVER=True)
+
+
+
+# X = [tsp,hst,tst,tsk,ttb]
+
+
+
+
+GetWingWeight(wing,engine,material,aero)
 
