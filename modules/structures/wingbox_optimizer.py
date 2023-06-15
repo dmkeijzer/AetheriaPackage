@@ -660,7 +660,7 @@ def GetWingWeight(wing: Wing, engine: Engine, material: Material, aero: Aero):
     wing.spar_thickness, wing.stringer_height, wing.stringer_thickness, wing.wingskin_thickness, wing.torsion_bar_thickness = resGA.X
     wing.wing_weight = wingbox.total_weight(resGA.X)*2
     wing.dump()
-
+    
     X = resGA.X
 
     x_final = X
@@ -685,6 +685,9 @@ wing.load()
 engine.load()
 material.load()
 aero.load()
+
+
+engine.dump()
 
 wingboxclass = Wingbox(wing, engine, material, aero, HOVER=True)
 

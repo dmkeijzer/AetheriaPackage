@@ -62,9 +62,11 @@ class Engine():
 
         data["A_tot"] = self.total_disk_area
         data["x_rotor_loc"][2] = data["x_lewing"] + data["c_root"] * 0.25 + data["c_tip"]*0.20
-        data["x_rotor_loc"][3] = data["x_rotor_loc"][2]
+        data["x_rotor_loc"][3] = self.x_rotor_loc[2]
         data["y_rotor_loc"][2] = data["b"]/2
-        data["y_rotor_loc"][3] = -data["y_rotor_loc"][2]
+        data["y_rotor_loc"][3] = -self.y_rotor_loc[2]
+        data["x_rotor_loc"][0] = data["x_lewing"] + 0.25*data["c_root"] - 0.25*(data["c_root"] - data["c_root"] * (1 - data["taper"]) * 2 / data["b"] * self.y_rotor_loc[0]) - self.pylon_length
+        data["x_rotor_loc"][1] = data["x_rotor_loc"][0]
         data['C_T'] = self.thrust_coefficient
         data["thrust_per_engine"] = self.thrust_per_engine
         data['hub_radius'] = self.hub_radius
