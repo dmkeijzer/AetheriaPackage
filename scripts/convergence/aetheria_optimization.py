@@ -80,8 +80,8 @@ prob.model.add_constraint('Integrated_design.span', lower= 6, upper= 14.)
 
 
 prob.driver = om.ScipyOptimizeDriver()
-prob.driver.opt_settings['maxiter'] = 1000
 prob.driver.options['optimizer'] = 'COBYLA'
+prob.driver.opt_settings['maxiter'] = 12
 
 prob.model.add_design_var('Integrated_design.AR', lower = 5, upper = 15)
 
