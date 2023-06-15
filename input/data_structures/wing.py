@@ -82,6 +82,7 @@ class Wing():
         data["stringer_thickness"] = self.stringer_thickness
         data["wingskin_thickness"] = self.wingskin_thickness
         data["torsion_bar_thickness"] = self.torsion_bar_thickness
+        data["taper"] = self.taper
 
         with open(r"input/data_structures/aetheria_constants.json", "w") as jsonFile:
             json.dump(data, jsonFile, indent=4)
