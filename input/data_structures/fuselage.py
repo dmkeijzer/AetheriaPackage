@@ -21,6 +21,7 @@ class Fuselage():
     height_fuselage_inner: float = None
     height_fuselage_outer: float = None
     volume_fuselage: float = None
+    crash_box_area: float = None
     length_cockpit: float = None
     length_tail: float = None
     fuselage_weight: float = None
@@ -57,6 +58,7 @@ class Fuselage():
         self.length_cockpit = data['l_cockpit']
         self.length_tail = data['l_tail']
         self.fuselage_weight = data["fuselage_weight"] 
+        self.crash_box_area= data["crash_box_area"] 
         
 
 
@@ -84,6 +86,8 @@ class Fuselage():
         data["hc"] = self.hc
         data["hf"] = self.hf
         data["fuselage_weight"] = self.fuselage_weight
+        data["crash_box_area"] = self.crash_box_area
+
 
         with open(r"input/data_structures/aetheria_constants.json", "w") as jsonFile:
             json.dump(data, jsonFile, indent=6)
