@@ -2,6 +2,7 @@ from dataclasses import dataclass
 import json
 import sys
 import pathlib as pl
+import numpy as np
 import os
 sys.path.append(str(list(pl.Path(__file__).parents)[0]))
 
@@ -31,6 +32,7 @@ class Engine():
     thrust_per_engine: float = None
     hub_radius: float = None
     prop_radius: float = None
+    prop_area: float = None
 
     def load(self):
         with open(r"input/data_structures/aetheria_constants.json") as jsonFile:
@@ -47,7 +49,8 @@ class Engine():
         self.thrust_coefficient = data['C_T']
         self.thrust_per_engine = data["tw"]*data["mtom"]*9.81/self.no_engines
         self.hub_radius = data['hub_radius']
-        self.prop_radius = data['mtom'] / (120 * 6)
+        self.prop_area = data['mtom'] / (120 * 6)
+        self.prop_radius = np.sqrt(self.prop_area / np.pi)
 
     def dump(self):
 
@@ -63,6 +66,7 @@ class Engine():
         data["thrust_per_engine"] = self.thrust_per_engine
         data['hub_radius'] = self.hub_radius
         data['prop_radius'] = self.prop_radius
+        data['prop_area'] = self.prop_area
 
         with open(r"input/data_structures/aetheria_constants.json", "w") as jsonFile:
             json.dump(data, jsonFile, indent=4)
