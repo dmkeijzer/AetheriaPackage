@@ -29,7 +29,7 @@ WingClass.load()
 EngineClass.load()
 
 lift_array = get_strip_array(WingClass, AeroClass, plot= False)
-cl = np.flip(lift_array[1])
+cl = lift_array[1]
 b = WingClass.span
 
 x = np.linspace(0, b/2, 24)
@@ -55,11 +55,11 @@ term = 10
 sum = cl + term * pdf1 * (slipstream+prop_lift) + term * pdf2 * (slipstream+prop_lift)
 
 # print(pdf)
-plt.plot(np.flip(x), sum, label="CL wing plus propellers")
-plt.plot(np.flip(x), cl, label="CL wing")
+plt.plot(x, sum, label="CL wing plus propellers")
+plt.plot(x, cl, label="CL wing")
 plt.xlabel("X-position over half-span [m]")
 plt.ylabel("CL [-]")
-plt.ylim([0.,0.65])
+plt.ylim([0.,0.80])
 plt.legend()
 plt.grid()
 plt.show()
