@@ -55,7 +55,7 @@ def get_tail_dihedral_and_area(Lambdah2,S_hor,Fuselage_volume,S,b,l_v,AR_h,taper
 
 #YOU ONLY NEED THIS LAST FUNCTION. THE OTHERS ABOVE ARE SUBFUNCTIONS FOR THE NEXT FUNCTION.
 
-def get_control_surface_to_tail_chord_ratio(Wing, Fuse, HorTail,Aero,  CL_h,l_v,Cn_beta_req=0.0571,beta_h=1,eta_h=0.95,total_deflection=20*np.pi/180,design_cross_wind_speed=9,step=0.1*np.pi/180,axial_induction_factor=0.005):
+def get_control_surface_to_tail_chord_ratio(Wing, Fuse, HorTail,Aero,  CL_h,l_v, Cn_beta_req=0.0571,beta_h=1,eta_h=0.95,total_deflection=20*np.pi/180,design_cross_wind_speed=9,step=0.1*np.pi/180,axial_induction_factor=0.005):
     V_stall = Aero.v_stall
     Lambdah2 = HorTail.sweep_halfchord_h
     b = Wing.span
@@ -68,7 +68,6 @@ def get_control_surface_to_tail_chord_ratio(Wing, Fuse, HorTail,Aero,  CL_h,l_v,
     c = Wing.chord_mac
     taper_h = HorTail.taper_h
     AR_h = HorTail.aspect_ratio
-    
 
     tau_from_rudder=0     ##Just to initialize loop
     tau_from_elevator=1   ##Just to initialize loop
@@ -77,7 +76,6 @@ def get_control_surface_to_tail_chord_ratio(Wing, Fuse, HorTail,Aero,  CL_h,l_v,
     v_angle, S_vee= get_tail_dihedral_and_area(Lambdah2,S_hor,Fuselage_volume,S,b,l_v,AR_h,taper_h)
     K = get_K(taper_h,AR_h)
     CL_alpha_N = CLahcalc(AR_h, beta_h, eta_h, Lambdah2)
-    
     while (tau_from_elevator>tau_from_rudder and rudder_max>1*np.pi/180):
                 
         Cn_dr_req=-Cn_beta_req*np.arctan(design_cross_wind_speed/V_stall)/(rudder_max)
@@ -103,7 +101,6 @@ def get_control_surface_to_tail_chord_ratio(Wing, Fuse, HorTail,Aero,  CL_h,l_v,
         c_control_surface_to_c_vee_ratio="Not possible. Lower CLh in the horizontal tail sizing program"
     else:
         c_control_surface_to_c_vee_ratio=get_c_control_surface_to_c_vee_ratio(tau)
-    
     return [np.degrees(rudder_max),np.degrees(elevator_min), tau, Cm_de, Cn_dr, v_angle, S_vee, c_control_surface_to_c_vee_ratio]
 
 

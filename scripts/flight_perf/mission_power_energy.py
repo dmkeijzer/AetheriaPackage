@@ -49,11 +49,11 @@ for dict_name in dict_names:
 
     #-----------------------Transition to climb-----------------------
     
-    transition_simulation = numerical_simulation(y_start=30.5, mass=PerformanceClass.MTOM, g0=const.g0, S=data['S'], CL_climb=data['cl_climb_clean'],
-                                alpha_climb=data['alpha_climb_clean'], CD_climb=data["cdi_climb_clean"] + data["cd0"],
-                                Adisk=EngineClass.total_disk_area, lod_climb=data['ld_climb'], eff_climb=data['prop_eff'], v_stall=data['v_stall'])
+    transition_simulation = numerical_simulation(l_x_1=3.7057, l_x_2=1.70572142*0.75, l_x_3=4.5, l_y_1=0.5, l_y_2=0.5, l_y_3=0.789+0.5, T_max=8700, y_start=30.5, mass=PerformanceClass.MTOM, g0=const.g0, S=WingClass.surface, CL_climb=AeroClass.cl_climb_clean,
+                                alpha_climb=AeroClass.alpha_climb_clean, CD_climb=AeroClass.cd0_cruise,
+                                Adisk=EngineClass.total_disk_area, lod_climb=AeroClass.ld_climb, eff_climb=PerformanceClass.prop_eff, v_stall=AeroClass.v_stall)
     E_trans_ver2hor = transition_simulation[0]
-    transition_power_max = np.max(transition_simulation[0])
+    transition_power_max = np.max(transition_simulation[5])
     final_trans_distance = transition_simulation[3][-1]
     final_trans_altitude = transition_simulation[1][-1]
     t_trans_climb = transition_simulation[2][-1]
@@ -74,9 +74,9 @@ for dict_name in dict_names:
     
     #----------------------- Transition (from horizontal to vertical)-----------------------
     # print("--------------- transition to vertical")
-    transition_simulation_landing = numerical_simulation_landing(vx_start=data['v_stall_flaps20'], descend_slope=-0.04, mass=PerformanceClass.MTOM, g0=const.g0,
-                                S=data['S'], CL=data['cl_descent_trans_flaps20'], alpha=data['alpha_descent_trans_flaps20'],
-                                CD=data["cdi_descent_trans_flaps20"]+data['cd0'], Adisk=EngineClass.total_disk_area)
+    transition_simulation_landing = numerical_simulation_landing(vx_start=AeroClass.v_stall_flaps20, descend_slope=-0.04, mass=PerformanceClass.MTOM, g0=const.g0,
+                                S=WingClass.surface, CL=AeroClass.cL_descent_trans_flaps20, alpha=AeroClass.alpha_descent_trans_flaps20,
+                                CD=AeroClass.cd0_stall, Adisk=EngineClass.total_disk_area)
     E_trans_hor2ver = transition_simulation_landing[0]
     transition_power_max_landing = np.max(transition_simulation_landing[4])
     final_trans_distance_landing = transition_simulation_landing[3][-1]
@@ -101,6 +101,7 @@ for dict_name in dict_names:
     t_cr = (const.mission_dist - d_desc - d_climb - final_trans_distance - final_trans_distance_landing)/const.v_cr
     E_cr = P_cr * t_cr
     # print('t', t_cr)
+
     # print('distance', (const.mission_dist - d_desc - d_climb - final_trans_distance_landing))
     # print(P_cr)
     #----------------------- Loiter cruise-----------------------
@@ -125,8 +126,8 @@ for dict_name in dict_names:
     
     #---------------------------- Writing to JSON and printing result  ----------------------------
     data["mission_energy"] = E_total
-    data["power_hover"] = P_takeoff
-    # print('Pto',P_takeoff)
+    data["power_hover"] = transition_power_max
+    # print('Pto',transition_power_max)
     data["power_climb"] = climb_power_var
     data["power_cruise"] = P_cr 
 
@@ -144,15 +145,15 @@ for dict_name in dict_names:
     with open(os.path.join(dict_directory, dict_name), "w") as jsonFile:
         json.dump(data, jsonFile, indent= 6)
     
-    print(f"Energy consumption {data['name']} = {round(E_total/3.6e6, 1)} [Kwh]")
-    print(f"Energy consumption {data['name']} = {round(E_to/3.6e6, 1)} [Kwh]")
-    print(f"Energy consumption {data['name']} = {round(E_trans_hor2ver/3.6e6, 1)} [Kwh]")
-    print(f"Energy consumption {data['name']} = {round(E_climb/3.6e6, 1)} [Kwh]")
-    print(f"Energy consumption {data['name']} = {round(E_cr/3.6e6, 1)} [Kwh]")
-    print(f"Energy consumption {data['name']} = {round(E_desc/3.6e6, 1)} [Kwh]")
-    print(f"Energy consumption loit {data['name']} = {round((E_loit_hor+E_loit_vert)/3.6e6, 1)} [Kwh]")
-    print(f"Energy consumption {data['name']} = {round(E_trans_hor2ver/3.6e6, 1)} [Kwh]")
-    print(f"Energy consumption {data['name']} = {round(E_loit_vert/3.6e6, 1)} [Kwh]")
-    print(f"Energy consumption {data['name']} = {round(energy_landing_var/3.6e6, 1)} [Kwh]")
+    # print(f"Energy consumption {data['name']} = {round(E_total/3.6e6, 1)} [Kwh]")
+    # print(f"Energy consumption {data['name']} = {round(E_to/3.6e6, 1)} [Kwh]")
+    # print(f"Energy consumption {data['name']} = {round(E_trans_hor2ver/3.6e6, 1)} [Kwh]")
+    # print(f"Energy consumption {data['name']} = {round(E_climb/3.6e6, 1)} [Kwh]")
+    # print(f"Energy consumption {data['name']} = {round(E_cr/3.6e6, 1)} [Kwh]")
+    # print(f"Energy consumption {data['name']} = {round(E_desc/3.6e6, 1)} [Kwh]")
+    # print(f"Energy consumption loit {data['name']} = {round((E_loit_hor+E_loit_vert)/3.6e6, 1)} [Kwh]")
+    # print(f"Energy consumption {data['name']} = {round(E_trans_hor2ver/3.6e6, 1)} [Kwh]")
+    # print(f"Energy consumption {data['name']} = {round(E_loit_vert/3.6e6, 1)} [Kwh]")
+    # print(f"Energy consumption {data['name']} = {round(energy_landing_var/3.6e6, 1)} [Kwh]")
 
 

@@ -15,13 +15,6 @@ from modules.flight_perf.transition_model import *
 import input.data_structures.GeneralConstants as const
 from input.data_structures.ISA_tool  import ISA
 from input.data_structures import *
-WingClass = Wing()
-AeroClass = Aero()
-PerformanceClass = PerformanceParameters()
-
-WingClass.load()
-AeroClass.load()
-PerformanceClass.load()
 
 
 def get_energy_power_perf(WingClass, EngineClass, AeroClass, PerformanceClass):
@@ -54,7 +47,7 @@ def get_energy_power_perf(WingClass, EngineClass, AeroClass, PerformanceClass):
 
     E_to = P_takeoff * const.t_takeoff
     #-----------------------Transition to climb-----------------------
-    transition_simulation = numerical_simulation(y_start=30.5, mass=PerformanceClass.MTOM, g0=const.g0, S=data['S'], CL_climb=data['cl_climb_clean'],
+    transition_simulation = numerical_simulation(l_x_1=3.7057, l_x_2=1.70572142*0.75, l_x_3=4.5, l_y_1=0.5, l_y_2=0.5, l_y_3=0.789+0.5, T_max=8700, y_start=30.5, mass=PerformanceClass.MTOM, g0=const.g0, S=data['S'], CL_climb=data['cl_climb_clean'],
                                 alpha_climb=data['alpha_climb_clean'], CD_climb=data["cdi_climb_clean"] + data["cd0"],
                                 Adisk=EngineClass.total_disk_area, lod_climb=data['ld_climb'], eff_climb=data['prop_eff'], v_stall=data['v_stall'])
     E_trans_ver2hor = transition_simulation[0]
@@ -96,7 +89,7 @@ def get_energy_power_perf(WingClass, EngineClass, AeroClass, PerformanceClass):
     d_climb = final_trans_distance + (const.h_cruise  - final_trans_altitude)/np.tan(const.climb_gradient) #check if G is correct
     d_cruise = const.mission_dist - d_desc - d_climb - final_trans_distance - final_trans_distance_landing
     t_cr = (const.mission_dist - d_desc - d_climb - final_trans_distance - final_trans_distance_landing)/const.v_cr
-    E_cr = PerformanceClass.cruisePower * t_cr # used the new cruise power 
+    E_cr = P_cr * t_cr # used the new cruise power 
 
     #----------------------- Loiter cruise-----------------------
     P_loit_cr = powerloiter(PerformanceClass.MTOM, const.g0, WingClass.surface, const.rho_cr, AeroClass.ld_climb, prop_eff_var)
@@ -132,7 +125,6 @@ def get_energy_power_perf(WingClass, EngineClass, AeroClass, PerformanceClass):
     PerformanceClass.cruisePower = P_cr
     PerformanceClass.hoverPower = P_takeoff
     PerformanceClass.climbPower = climb_power_var
-
     with open(const.json_path, "w") as jsonFile:
         json.dump(data, jsonFile, indent= 6)
 

@@ -991,7 +991,7 @@ def WingboxOptimizer(x, wing, engine, material, aero):
     prob.model.add_constraint('wingbox_design.global_local', lower=1000.)
     prob.model.add_constraint('wingbox_design.post_buckling', lower=1000.)
     prob.model.add_constraint('wingbox_design.von_mises', lower=1000.)
-    prob.model.add_constraint('wingbox_design.buckling_constr', lower=1000.)
+    prob.model.add_constraint('wingbox_design.buckling_constr', lower=0.)
     prob.model.add_constraint('wingbox_design.flange_loc_loc', lower=1000.)
     prob.model.add_constraint('wingbox_design.local_column', lower=1000.) #FIXME Causing exit mode 8
     prob.model.add_constraint('wingbox_design.crippling', lower=1000.)
@@ -1001,13 +1001,13 @@ def WingboxOptimizer(x, wing, engine, material, aero):
     prob.driver.options['optimizer'] = 'SLSQP'
     prob.driver.opt_settings['maxiter'] = 1000
 
-    prob.model.add_design_var('wingbox_design.tsp', lower = 0.0001, upper= 0.1)
-    prob.model.add_design_var('wingbox_design.trib', lower = 0.0001, upper= 0.1)
-    prob.model.add_design_var('wingbox_design.hst', lower = 0.0001 , upper= 0.4)
-    prob.model.add_design_var('wingbox_design.tst', lower = 0.0001, upper= 0.1)
-    prob.model.add_design_var('wingbox_design.wst', lower = 0.0001, upper= 0.4 )
-    prob.model.add_design_var('wingbox_design.tmax', lower = 0.0001, upper= 0.1)
-    prob.model.add_design_var('wingbox_design.tmin', lower = 0.0001, upper= 0.1)
+    prob.model.add_design_var('wingbox_design.tsp', lower = 0.0001, upper= 1)
+    prob.model.add_design_var('wingbox_design.trib', lower = 0.0001, upper= 1)
+    prob.model.add_design_var('wingbox_design.hst', lower = 0.0001 , upper= 1)
+    prob.model.add_design_var('wingbox_design.tst', lower = 0.0001, upper= 1)
+    prob.model.add_design_var('wingbox_design.wst', lower = 0.0001, upper= 1 )
+    prob.model.add_design_var('wingbox_design.tmax', lower = 0.0001, upper= 1)
+    prob.model.add_design_var('wingbox_design.tmin', lower = 0.0001, upper= 1)
 
 
     prob.model.add_objective('wingbox_design.wing_weight')

@@ -4,6 +4,7 @@ import os
 import json
 import sys
 import pathlib as pl
+import pandas as pd
 
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
@@ -22,12 +23,15 @@ from modules.aero.slipstream_stall_function import slipstream_stall
 from modules.flight_perf.performance  import get_energy_power_perf
 from modules.structures.fuselage_length import get_fuselage_sizing
 from modules.structures.ClassIIWeightEstimation import get_weight_vtol
+#from modules.structures.wingbox_optimizer import GetWingWeight
 from modules.propellor.propellor_sizing import propcalc
 from scripts.structures.vtail_span import span_vtail
-import time
+import input.data_structures.GeneralConstants as const
 
 
-def run_integration():
+
+
+def run_integration(label):
     #----------------------------- Initialize classes --------------------------------
     IonBlock = Battery(Efficiency= 0.9)
     Pstack = FuelCell()
@@ -40,6 +44,7 @@ def run_integration():
     fuselage = Fuselage()
     vtail = VeeTail()
     stability = Stab()
+    material = Material()
     #----------------------------------------------------------------------------------
 
     #------------------------ Load cases for first time----------------------------------------
@@ -51,14 +56,16 @@ def run_integration():
     fuselage.load() 
     vtail.load() 
     stability.load() 
+    material.load()
     #----------------------------------------------------------------------
 
     # Preliminary Sizing
     mission, wing,  engine, aero = get_wing_power_loading(mission, wing, engine, aero)
     mission =  get_gust_manoeuvr_loadings(mission, aero)
+    
 
     #planform sizing
-    wing = wing_planform(wing)
+    wing = wing_planform(wing, mission.MTOM, mission.wing_loading_cruise)
 
 
 
@@ -86,7 +93,7 @@ def run_integration():
     powersystemmass = Totalmass[index_min_mass][0]
     Batterymass = Batterymass[index_min_mass][0]
     coolingsmass = 15 + 35 #kg mass radiator (15 kg) and mass air (35) subsystem. calculated outside this outside loop and will not change signficant 
-    PerformanceParameters.powersystem_mass = powersystemmass + coolingsmass
+    mission.powersystem_mass = powersystemmass + coolingsmass
 
     #-------------------- stability and control--------------------
     #The function here loads and dumps a couple of times so to make sure nothing goes wrong therefore
@@ -121,7 +128,8 @@ def run_integration():
                                                                     VTailClass= vtail, 
                                                                     StabClass=stability,
                                                                     b_ref= b_ref, #!!!!!!!!! please update value when we get it
-                                                                    stepsize = 5e-2 ) 
+                                                                    stepsize = 5e-2,
+                                                                    ) 
 
     #loading
     mission.load()
@@ -137,7 +145,7 @@ def run_integration():
 
     # Fuselage sizing
     fuselage = get_fuselage_sizing(Tank,Pstack, mission, fuselage)
-
+    #wing = GetWingWeight(wing, engine, material, aero )
 
     #------------- weight_estimation------------------
     mission, fuselage, wing, engine, vtail =  get_weight_vtol(mission, fuselage, wing, engine, vtail)
@@ -152,6 +160,21 @@ def run_integration():
     fuselage.dump() 
     vtail.dump() 
     stability.dump()
+
+    #--------------------------------- Log all variables from current iterations ----------------------------------
+    save_path = r"output\final_convergence_history"
+    # Load data from JSON file
+    save_path = r"output\final_convergence_history"
+    with open(const.json_path) as jsonFile:
+        data = json.load(jsonFile)
+
+    if os.path.exists(os.path.join(save_path, "aetheria" + "_" + label + "_hist.csv")):
+        pd.DataFrame(np.array(list(data.values()), dtype= object).reshape(1, len(data))).to_csv(os.path.join(save_path, "aetheria" + "_" + label + "_hist.csv") , mode="a", header=False, index= False)
+    else: 
+        pd.DataFrame([data]).to_csv(os.path.join(save_path, "aetheria" + "_" + label + "_hist.csv"), columns= list(data.keys()), index=False)
+            # Read the output from the subprocess
+
+
 
 if __name__ == "__main__":
     

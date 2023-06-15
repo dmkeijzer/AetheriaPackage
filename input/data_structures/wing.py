@@ -47,6 +47,11 @@ class Wing():
         self.x_lewing = data["x_lewing"]
         self.thickness_to_chord = data["thickness_to_chord"]
         self.wing_weight = data["wing_weight"]
+        self.spar_thickness = data["spar_thickness"]
+        self.stringer_height = data["stringer_height"]
+        self.stringer_thickness = data["stringer_thickness"]
+        self.wingskin_thickness = data["wingskin_thickness"]
+        self.torsion_bar_thickness = data["torsion_bar_thickness"]
 
         # self.effective_aspectratio =  data[""] # Left out for now since it is not implemented yet
         # self.effective_span =  data[""] # Left out for now since it is not implemented yet
@@ -63,7 +68,7 @@ class Wing():
         data["A"] = self.aspectratio
         data["b"] = self.span
         data["c_root"] = self.chord_root
-        data["c_tip"] = self.chord_tip
+        data["c_tip"] = self.chord_root - self.chord_root*(1-self.taper)
         data["mac"] = self.chord_mac
         data["y_mac"] = self.y_mac
         data["sweep_le"] = self.sweep_LE
@@ -72,6 +77,12 @@ class Wing():
         data["x_lewing"] = self.x_lewing
         data["thickness_to_chord"] = self.thickness_to_chord
         data["wing_weight"] = self.wing_weight
+        data["spar_thickness"] = self.spar_thickness
+        data["stringer_height"] = self.stringer_height
+        data["stringer_thickness"] = self.stringer_thickness
+        data["wingskin_thickness"] = self.wingskin_thickness
+        data["torsion_bar_thickness"] = self.torsion_bar_thickness
+        data["taper"] = self.taper
 
         with open(r"input/data_structures/aetheria_constants.json", "w") as jsonFile:
             json.dump(data, jsonFile, indent=4)

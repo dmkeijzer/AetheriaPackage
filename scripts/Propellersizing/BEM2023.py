@@ -540,6 +540,7 @@ class BEM:
 
 
 
+
         # Calculate local speed at the blade station
         W = self.V * (1 + a) / np.sin(phis)
 

@@ -2,6 +2,7 @@ import numpy as np
 import sys
 import pathlib as pl
 import os
+import json
 
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 sys.path.append(os.path.join(list(pl.Path(__file__).parents)[2], "modules","powersizing"))
@@ -12,6 +13,7 @@ from modules.powersizing.hydrogenTank import HydrogenTankSizing
 from modules.powersizing.energypowerrequirement import MissionRequirements
 # from modules.powersizing.powersystem import PropulsionSystem, onlyFuelCellSizing
 import input.data_structures.GeneralConstants as  const
+from input.data_structures import *
 
 
 
@@ -129,7 +131,20 @@ class Powertrain(Component):
         """        
         super().__init__()
         self.id = "Powertrain"
-        self.mass = p_max/p_dense
+        self.mass = 12 * (13 + 10) #p_max/p_dense 12 engines (13 kg) and inverters (10 kg) These are scimo engines and converters https://sci-mo.de/motors/
+
+
+class Propeller(Component):
+    def __init__(self ):
+        """Returns the mas of the engines based on power
+
+        :param p_max: Maximum power [w]
+        :
+        """
+        
+        super().__init__()
+        self.id = "Propeller"
+        self.mass = 6 * 20 # 6 propellers and 30 kg per proppeller (I just googled a bit)
 
 class HorizontalTailWeight(Component):
     def __init__(self, w_to, S_h, A_h, t_r_h ):
@@ -233,7 +248,7 @@ class Miscallenous(Component):
 
 
         
-def get_weight_vtol(perf_par, fuselage, wing,  engine, vtail):
+def get_weight_vtol(perf_par: PerformanceParameters, fuselage: Fuselage, wing: Wing,  engine: Engine, vtail: VeeTail, test= False):
     """ This function is used for the final design, it reuses some of the codes created during
     the midterm. It computes the final weight of the vtol using the data structures created in the
     final design phase
@@ -241,7 +256,7 @@ def get_weight_vtol(perf_par, fuselage, wing,  engine, vtail):
     It uses the following weight components
     --------------------------------------
     Powersystem mass -> Sized in power sizing, retrieved from perf class
-    Engine mass
+    Engine mass -> Scimo engines and inverters used
     wing mass -> class II/wingbox code
     vtail mass -> Class II/wingbox code
     fuselage mass -> Class II
@@ -253,7 +268,7 @@ def get_weight_vtol(perf_par, fuselage, wing,  engine, vtail):
 
 
     # Wing mass 
-    wing.wing_weight = WingWeight(perf_par.MTOM, wing.surface, perf_par.n_ult, wing.aspectratio).mass
+    wing.wing_weight = WingWeight(perf_par.MTOM, wing.surface, perf_par.n_ult, wing.aspectratio).mass #This is automatically updated in the wing box calculations
 
     # Vtail mass
     # Wing equation is used instead of horizontal tail because of the heay load of the engine which is attached
@@ -267,7 +282,7 @@ def get_weight_vtol(perf_par, fuselage, wing,  engine, vtail):
 
     # Nacelle and engine mass
 
-    total_engine_mass = Powertrain(perf_par.hoverPower, const.p_density).mass
+    total_engine_mass = Powertrain(perf_par.hoverPower, const.p_density).mass + Propeller().mass + 90 #90 kg is for the pylon length
     nacelle_mass = NacelleWeight(perf_par.hoverPower).mass
 
     engine.totalmass = nacelle_mass + total_engine_mass
@@ -278,8 +293,25 @@ def get_weight_vtol(perf_par, fuselage, wing,  engine, vtail):
     # Misc mass
     misc_mass = Miscallenous(perf_par.MTOM, perf_par.OEM, const.npax + 1).mass
 
-    perf_par.OEM = np.sum([ perf_par.powersystem_mass , wing.wing_weight, vtail.vtail_weight, fuselage.fuselage_weight, nacelle_mass, total_engine_mass,  lg_weight, misc_mass])
+    perf_par.OEM = np.sum([ perf_par.powersystem_mass ,   wing.wing_weight, vtail.vtail_weight, fuselage.fuselage_weight, nacelle_mass, total_engine_mass,  lg_weight, misc_mass])
     perf_par.MTOM =  perf_par.OEM + const.m_pl
+
+    # Update weight not part of a data structure
+
+    with open(const.json_path, "r") as f:
+        data = json.load(f)
+    
+
+    data["misc_weight"] = misc_mass
+    data["lg_weight"] = lg_weight
+    data["nacelle_weight"] = nacelle_mass
+    data["powertrain_weight"] =  total_engine_mass
+
+    if not test:
+        with open(const.json_path, "w") as f:
+            json.dump(data, f, indent= 6)
+    else:
+        return perf_par, wing, vtail, fuselage, engine, data
 
     return perf_par, wing, vtail, fuselage, engine
 

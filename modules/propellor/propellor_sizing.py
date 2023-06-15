@@ -23,7 +23,7 @@ def propcalc( clcd, mission: PerformanceParameters, engine: Engine, h_cruise: fl
     xi_0 = 0.1
     B = 6
     rpm_cruise = 900
-    T_factors = [2,3,4,5,6,7,8,9]
+    T_factors = [5,6,7,8,9]
     V_h = 2
 
     isa = ISA(h_cruise)
@@ -91,6 +91,7 @@ def propcalc( clcd, mission: PerformanceParameters, engine: Engine, h_cruise: fl
     mission.cruisePower = power_tot_cruise /prop_eff_cruise / 0.95 #extra 0.95 is for mechanical losses
     #mission.max_thrust_per_engine = max_thrust_per_engine
     mission.prop_eff = prop_eff_cruise
+    mission.t_factor = T_factor
     engine.thrust_coefficient = C_T_cruise
 
     return mission, engine
@@ -100,14 +101,19 @@ if __name__ == "__main__":
     mission = PerformanceParameters()
     mission.load()
 
+    engine = Engine()
+    engine.load()
+
     aero = Aero()
     aero.load()
 
 
     t0 = time.perf_counter()
-    mission, ct= propcalc(aero.ld_cruise, mission, const.h_cruise)
+    mission, ct= propcalc(aero.ld_cruise, mission, engine, const.h_cruise)
     t1 = time.perf_counter()
     print(f'Max thrust per engine {mission.max_thrust_per_engine} ')
+    print(f'Max thrust per engine {mission.} ')
+    print(f'Efficiency {mission.prop_eff}')
     print(f'Hover power {mission.hoverPower}')
     print(f'Cruise power {mission.cruisePower}')
     print(f'Run time: {t1-t0} s')

@@ -59,6 +59,7 @@ class VeeTail():
         data["c_control_surface_to_c_vee_ratio"] = self.c_control_surface_to_c_vee_ratio
         data["ruddervator_efficiency"] = self.ruddervator_efficiency
         data["span_vtail"] = self.span
+        data["vtail_weight"] = self.vtail_weight
 
 
         with open(r"input/data_structures/aetheria_constants.json", "w") as jsonFile:
