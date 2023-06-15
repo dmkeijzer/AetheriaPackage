@@ -252,6 +252,7 @@
       "torsion_bar_thickness": 0.0028731133591455376,
       "hub_radius": 0.1,
       "prop_radius": 1.0188982299440774,
-      "prop_area": 3.261455732429714
+      "prop_area": 3.261455732429714,
+      "pylon_length":2.2
     }
 
