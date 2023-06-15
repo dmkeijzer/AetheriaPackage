@@ -641,7 +641,7 @@ def GetWingWeight(wing: Wing, engine: Engine, material: Material, aero: Aero):
 
     method = GA(pop_size=100, eliminate_duplicates=True)
 
-    resGA = minimizeGA(problem, method, termination=('n_gen', 100), seed=1,
+    resGA = minimizeGA(problem, method, termination=('n_gen', 60), seed=1,
                     save_history=True, verbose=True)
     if debug:
         print('GA optimum variables', resGA.X)
@@ -652,7 +652,7 @@ def GetWingWeight(wing: Wing, engine: Engine, material: Material, aero: Aero):
 
         print()
         print('Final SciPy minimize optimization')
-    options = dict(eps=1e-4, ftol=1e-3)
+    options = dict(eps=1e-5, ftol=1e-3)
     constraints = [
         {'type': 'ineq', 'fun': lambda x: wingbox.buckling_constr(x)[0]},
         {'type': 'ineq', 'fun': lambda x: wingbox.local_column(x)},

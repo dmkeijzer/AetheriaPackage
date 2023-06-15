@@ -104,9 +104,7 @@ os.chdir(str(list(pl.Path(__file__).parents)[2]))
     
 
 
-def J1loading(x1, x2):
-    with open('input/data_structures/aetheria_constants.json') as file:
-        constants = json.load(file)
+def J1loading(x1, x2,constants):
     loading_array = [[5.056, 125], [1.723, 77], [3.453, 77], [3.453, 77], [4.476, 77], [4.476, 77]]
     h2_position = 6.3
     rotor_locations = constants['x_rotor_loc']

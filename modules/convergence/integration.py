@@ -145,12 +145,13 @@ def run_integration(label):
 
     # Fuselage sizing
     fuselage = get_fuselage_sizing(Tank,Pstack, mission, fuselage)
+    ''' 
     try: 
         wing = GetWingWeight(wing, engine, material, aero )
     except TypeError:
         wing.taper += 0.05
         print(f"Wing box design failed, adding 0.05 to taper. New taper = {wing.taper}")
- 
+    '''
 
 
     #------------- weight_estimation------------------
