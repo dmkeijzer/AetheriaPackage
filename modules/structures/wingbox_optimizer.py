@@ -22,6 +22,7 @@ from input.data_structures.aero import Aero
 from input.data_structures.engine import Engine
 from input.data_structures.material import Material
 from input.data_structures.wing import Wing
+from input.data_structures.performanceparameters import PerformanceParameters
 from modules.aero.avl_access import get_lift_distr
 
 #------------ASSUMPTION----------
@@ -30,7 +31,7 @@ from modules.aero.avl_access import get_lift_distr
 
 
 class Wingbox():
-    def __init__(self, wing, engine, material, aero, HOVER):
+    def __init__(self, wing, engine, material, aero, performance, HOVER):
         #Material
         self.poisson = material.poisson
         self.density = material.rho
@@ -53,7 +54,7 @@ class Wingbox():
 
         #Wing
         self.taper = wing.taper
-        self.n_max = n_max_req
+        self.n_ult = performance.n_ult
         self.span = wing.span
         self.chord_root = wing.chord_root
         self.n_ribs = 10
@@ -216,7 +217,8 @@ class Wingbox():
 
 #----------------Load functions--------------------
     def aero(self, y):
-        return  self.lift_func(y)
+        lift = self.lift_func(y) * self.n_ult
+        return  lift
         #return -151.7143*9.81*y + 531*9.81
 
     def torque_from_tip(self,x):
@@ -289,7 +291,13 @@ class Wingbox():
 
 
     def moment_x_from_tip(self, x):
-        return self.weight_from_tip(x)*9.81*(self.span/2 - self.y)
+        shear = self.shear_z_from_tip(x)
+        moment = np.zeros(len(self.y))
+        dy = (self.y[1]-self.y[0])
+        for i in range(2,len(self.y)+1):
+            moment[-i] = shear[-i+1]*dy + moment[-i+1]
+        return moment
+        # return self.shear_z_from_tip(x)*(self.span/2 - self.y)
 
 #-----------Stress functions---------
     def bending_stress_x_from_tip(self, x):
@@ -659,7 +667,7 @@ def GetWingWeight(wing: Wing, engine: Engine, material: Material, aero: Aero):
                 constraints=constraints, bounds=bounds, jac='3-point',
                 options=options)
     wing.spar_thickness, wing.stringer_height, wing.stringer_thickness, wing.wingskin_thickness, wing.torsion_bar_thickness = resGA.X
-    wing.wing_weight = wingbox.total_weight(resGA.X)*2
+    wing.wing_weight = wingbox.total_weight(resGA.X)*2 - 4*wingbox.engine_weight
     wing.dump()
     
     X = resGA.X
@@ -682,22 +690,60 @@ if __name__ == "__main__":
     engine = Engine()
     material = Material()
     aero = Aero()
+    performance = PerformanceParameters()
 
     wing.load()
     engine.load()
     material.load()
     aero.load()
+    performance.load()
 
     engine.dump()
 
-    wingboxclass = Wingbox(wing, engine, material, aero, HOVER=True)
+    tsp= wing.spar_thickness
+    hst= wing.stringer_height
+    tst= wing.stringer_thickness
+    tsk= wing.stringer_thickness
+    ttb= wing.torsion_bar_thickness
+
+    X = [tsp,hst,tst,tsk,ttb]
+
+    wingboxclass = Wingbox(wing, engine, material, aero, performance, HOVER=True)
 
 
 
-    # #X = [tsp,hst,tst,tsk,ttb]
+    wingboxclass_vf = Wingbox(wing, engine, material, aero, performance, HOVER=True)
+    wingboxclass_hf = Wingbox(wing, engine, material, aero, performance, HOVER=False)
+    
+    fig, axs = plt.subplots(6, 1, figsize=(6, 10))
+    axs[0].plot(wingboxclass_vf.y, wingboxclass_vf.shearflow_max_from_tip(X))
+    axs[0].set_title('Shear force in z')
+
+    axs[1].plot(wingboxclass_vf.y, wingboxclass_vf.moment_x_from_tip(X))
+    axs[1].set_title('Bending moment in x')
+
+    axs[2].plot(wingboxclass_vf.y, wingboxclass_vf.bending_stress_x_from_tip(X))
+    axs[2].set_title('Bending stress')
+
+    axs[3].plot(wingboxclass_hf.y, wingboxclass_hf.shear_z_from_tip(X))
+    axs[3].set_title('Shear force in z')
+
+    axs[4].plot(wingboxclass_hf.y, wingboxclass_hf.moment_x_from_tip(X))
+    axs[4].set_title('Bending moment in x')
+
+    axs[5].plot(wingboxclass_hf.y, wingboxclass_hf.bending_stress_x_from_tip(X))
+    axs[5].set_title('Bending stress')
+
+    plt.tight_layout()
+
+    plt.show()
+
+    # plt.plot(wingboxclass_vf.y,wingboxclass_vf.bending_stress_x_from_tip(X))
+    
+    # plt.show()
+    # plt.plot(wingboxclass_vf.y,wingboxclass_vf.bending_stress_x_from_tip(X))
+    # plt.show()
 
 
-
-
-    GetWingWeight(wing,engine,material,aero)
+    # GetWingWeight(wing,engine,material,aero)
 
