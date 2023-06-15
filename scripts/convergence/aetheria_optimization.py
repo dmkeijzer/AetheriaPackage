@@ -24,6 +24,7 @@ class VTOLOptimization(om.ExplicitComponent):
 
         # Design variables
         self.add_input('AR')
+        self.add_input('l_fuselage')
         # self.add_input('span')
         # self.add_input('MTOM')
 
@@ -71,6 +72,7 @@ prob = om.Problem()
 prob.model.add_subsystem('Integrated_design',VTOLOptimization())
 # Initial values for the optimization TODO: Improve initial values
 prob.model.set_input_defaults('Integrated_design.AR', 8.4)
+prob.model.set_input_defaults('Integrated_design.AR', 8.4)
 # prob.model.set_input_defaults('Integrated_design.span', (8.4*data["S"])**0.5 )
 # prob.model.set_input_defaults('Integrated_design.span', data["mtom"] )
 
@@ -84,6 +86,7 @@ prob.driver.options['optimizer'] = 'COBYLA'
 prob.driver.opt_settings['maxiter'] = 12
 
 prob.model.add_design_var('Integrated_design.AR', lower = 5, upper = 15)
+prob.model.add_design_var('Integrated_design.l_fuselage', lower = 8, upper = 16)
 
 prob.model.add_objective('Integrated_design.energy')
 

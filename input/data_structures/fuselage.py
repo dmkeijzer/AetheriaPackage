@@ -10,6 +10,7 @@ os.chdir(str(list(pl.Path(__file__).parents)[2]))
 @dataclass
 class Fuselage():
     length_fuselage: float = None # Length of the fuseglage
+    limit_fuselage: float = None # Length of the fuseglage
     length_cabin: float = 2.7 # Length of the cabin
     height_cabin: float = 1.6 # Length of the cabin
     diameter_fuselage: float = None # Diameter of the fuselage
@@ -44,6 +45,7 @@ class Fuselage():
         with open(r"input/data_structures/aetheria_constants.json") as jsonFile:
             data = json.load(jsonFile)
         self.length_fuselage = data["l_fuse"]
+        self.limit_fuselage = data["l_fuse"]
         self.diameter_fuselage = data["d_fuselage"]
         self.upsweep = data["upsweep"]
         self.h_wing = data["h_wings"]
@@ -66,6 +68,7 @@ class Fuselage():
             data = json.load(jsonFile)
 
         data["l_fuse"] = self.length_fuselage
+        data["limit_fuse"] = self.limit_fuselage
         data["d_fuselage"] = self.diameter_fuselage
         data["upsweep"] =  self.upsweep
         data["h_wings"] = self.h_wing
