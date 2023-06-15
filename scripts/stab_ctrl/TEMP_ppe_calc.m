@@ -1,4 +1,4 @@
-xlewing = 4.28;
+xlewing = 4.385;
 xlewingtip = 4.84-4.58;
 pylon = 2.5;
 xleinboard = 4.764 - 4.58;

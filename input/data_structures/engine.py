@@ -26,13 +26,15 @@ class Engine():
     mass_pertotalengine: float = None
     x_rotor_loc: float = None
     y_rotor_loc: float = None
-    nacelle_width: float = None
+    #nacelle_width: float = None
     total_disk_area: float = None
     thrust_coefficient: float = None
     thrust_per_engine: float = None
     hub_radius: float = None
     prop_radius: float = None
     prop_area: float = None
+    pylon_length: float = None
+
 
     def load(self):
         with open(r"input/data_structures/aetheria_constants.json") as jsonFile:
@@ -44,13 +46,14 @@ class Engine():
         self.mass_pertotalengine = self.totalmass/self.no_engines
         self.x_rotor_loc = data["x_rotor_loc"]
         self.y_rotor_loc = data["y_rotor_loc"]
-        self.nacelle_width = data["nacelle_width"]
+        #self.nacelle_width = data["nacelle_width"]
         self.total_disk_area = data["diskarea"]
         self.thrust_coefficient = data['C_T']
         self.thrust_per_engine = data["tw"]*data["mtom"]*9.81/self.no_engines
         self.hub_radius = data['hub_radius']
         self.prop_area = data['mtom'] / (120 * 6)
         self.prop_radius = np.sqrt(self.prop_area / np.pi)
+        self.pylon_length = data["pylon_length"]
 
     def dump(self):
 
