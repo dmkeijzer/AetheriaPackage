@@ -217,14 +217,14 @@ class Wingbox():
         return moments_of_inertia
 
 
-#----------------Load functions--------------------
-    def aero(self, y):
-        lift_from_tip = np.zeros(len(y))
-        # print(self.lift_func(y))
-        for i in range(len(y)):
-            lift_from_tip[i] = integrate.quad(lambda x : self.lift_func(x), y[i], self.span/2)[0]
-            print(lift_from_tip)
-        return  lift_from_tip
+# #----------------Load functions--------------------
+    # def aero(self, y):
+    #     lift_from_tip = np.zeros(len(y))
+    #     # print(self.lift_func(y))
+    #     for i in range(len(y)):
+    #         lift_from_tip[i] = integrate.quad(lambda x : self.lift_func(x), y[i], self.span/2)[0]
+    #         print(lift_from_tip)
+    #     return  lift_from_tip
         #return -151.7143*9.81*y + 531*9.81
 
     def torque_from_tip(self,x):

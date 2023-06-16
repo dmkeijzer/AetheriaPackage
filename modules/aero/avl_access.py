@@ -77,10 +77,11 @@ def get_lift_distr(wing, aero, plot= False, test= False):
 
     y_le_per_strip = np.array(strip_data["Yle"]) 
     area_per_strip = np.array(strip_data["Area"])
-    cl_per_strip = np.array(strip_data["c cl"])
+    cl_per_strip = np.array(strip_data["cl"])
     lift_force_per_strip = 1/2*const.rho_cr*const.v_cr**2*area_per_strip*cl_per_strip
+    lift_from_tip = np.flip(np.cumsum(lift_force_per_strip))
 
-    coeff = np.polyfit(y_le_per_strip, lift_force_per_strip, 2)
+    coeff = np.polyfit(y_le_per_strip, lift_from_tip, 2)
 
     def lift_func(y):
         return coeff[0]*y**2 + coeff[1]*y + coeff[2]
