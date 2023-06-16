@@ -44,14 +44,13 @@ class Wingbox():
         self.m_crip = material.m_crip
         self.sigma_uts = material.sigma_uts
         self.shear_modulus = material.shear_modulus
-        self.lift_func = get_lift_distr(wing, aero)
         self.engine = engine
         self.wing = wing
         self.x_lewing = wing.x_lewing
         self.thickness_to_chord = wing.thickness_to_chord
         self.hover_bool = HOVER
         self.shear_strength = material.shear_strength
-        self.safety_factor = 1.1
+        self.safety_factor = 1
 
         #Wing
         self.taper = wing.taper
@@ -60,7 +59,8 @@ class Wingbox():
         self.chord_root = wing.chord_root
         self.n_ribs = 10
         self.rib_pitch = (self.span/2)/(self.n_ribs+1)
-        self.t_rib = 1e-3
+        self.t_rib = 3e-3
+        self.lift_func = get_lift_distr(wing, aero)
 
         #Engine
         self.engine_weight = engine.mass_pertotalengine
@@ -98,7 +98,7 @@ class Wingbox():
         return np.sqrt(self.height(y) ** 2 + (0.25 * self.chord(y)) ** 2)
 
     def get_w_str(self,h_str):
-        return 0.2*h_str
+        return 0.3*h_str
 
     def get_area_str(self, h_st,t_st):
         return t_st * (2 * self.get_w_str(h_st) + h_st)
@@ -166,7 +166,7 @@ class Wingbox():
         return np.linspace(0,self.span/2, self.y_mesh)
     
     def get_r_o(self,x):
-        t_sp, h_st, t_st, t_sk, t_tb = x
+        t_sp, h_st, t_st, t_sk = x
         return self.height(self.y_rotor_loc[0])/2 - t_sk*3
 
     # def get_str_x(self,y):
@@ -191,7 +191,7 @@ class Wingbox():
     #     return len(self.get_str_x(y))
 
     def I_xx(self, x):#TODO implement dissappearing stringers
-        t_sp, h_st, t_st, t_sk, t_tb = x
+        t_sp, h_st, t_st, t_sk = x
         h = self.height(self.y)
         # nst = n_st(c_r, b_st)
         Ist = self.I_st_x(h_st, t_st)
@@ -200,7 +200,7 @@ class Wingbox():
         return 2 * (Ist + A * (0.5 * h) ** 2) * self.n_str + 2 * Isp + 2 * (0.6 * self.chord(self.y) * t_sk ** 3 / 12 + t_sk * 0.6 * self.chord_root * (0.5 * h) ** 2)
 
     def I_zz(self, x):#TODO implement dissappearing stringers
-        t_sp, h_st, t_st, t_sk, t_tb = x
+        t_sp, h_st, t_st, t_sk = x
         y = self.y
         h = self.height(y)
         # nst = n_st(c_r, b_st)
@@ -236,7 +236,7 @@ class Wingbox():
             torque_array = np.ones(len(y)) * (self.thrust_per_engine- self.engine_weight*9.81)*distance_outboard #Torque at from tip roto
             
             torque_array[0:index+1] += (self.thrust_per_engine- self.engine_weight*9.81)*distance_inboard
-            return torque_array
+            return -torque_array
         else:
             y = self.y
             difference_array = np.absolute(y-self.y_rotor_loc[0])
@@ -244,10 +244,10 @@ class Wingbox():
             torque_array = np.ones(len(y)) * (- self.engine_weight*9.81)*((self.get_x_start_wb(self.span/2) + 0.5 * 0.6 * (self.chord(self.span/2)) - self.x_rotor_loc[2])) #Torque at from tip roto
             
             torque_array[0:index+1] += (- self.engine_weight*9.81)*((self.get_x_start_wb(y[index]) + 0.5 * 0.6 * (self.chord(y[index]))) - self.x_rotor_loc[0])
-            return torque_array
+            return -torque_array
 
     def weight_from_tip(self, x):#TODO implement dissappearing stringers #TODO Include rib weights
-        t_sp, h_st, t_st, t_sk, t_tb = x
+        t_sp, h_st, t_st, t_sk = x
         y = self.y
 
         weight_str = self.density * self.get_area_str(h_st,t_st) * (self.span/2- y) * self.n_str
@@ -260,11 +260,11 @@ class Wingbox():
         difference_array = np.absolute(y-self.y_rotor_loc[0])
         index = difference_array.argmin()
 
-        r_o = self.get_r_o(x)
-        area_torsionbar = pi*(r_o*r_o - (r_o - t_tb)*(r_o - t_tb)) 
-        weight_bar = np.ones(index+1)*(self.y_rotor_loc[0] - y[0:index+1])*area_torsionbar * self.density
+        # r_o = self.get_r_o(x)
+        # area_torsionbar = pi*(r_o*r_o - (r_o - t_tb)*(r_o - t_tb)) 
+        # weight_bar = np.ones(index+1)*(self.y_rotor_loc[0] - y[0:index+1])*area_torsionbar * self.density
 
-        total_weight[0:index+1] += weight_bar
+        # total_weight[0:index+1] += weight_bar
 
         total_weight[0:index+1] += self.engine_weight
 
@@ -310,15 +310,15 @@ class Wingbox():
         return self.moment_x_from_tip(x)/self.I_xx(x) * self.height(self.y)/2
 
     def shearflow_max_from_tip(self, x):
-        t_sp, h_st, t_st, t_sk, t_tb = x
+        t_sp, h_st, t_st, t_sk = x
         y = self.y
         Vz = self.shear_z_from_tip(x)
-        #T = self.torque_from_tip(y)
-        T = np.zeros(len(y))
+        T = self.torque_from_tip(y)
         Ixx = self.I_xx(x)
         height = self.height(y)
         chord = self.chord(y)
         Nxy = np.zeros(len(y))
+        max_shear_stress = np.zeros(len(y))
         l_sk = self.l_sk(y)
         for i in range(len(y)):
             # Base region 1
@@ -401,7 +401,7 @@ class Wingbox():
 
             T_A = np.array([[T_A11, T_A12, T_A13, T_A14], [T_A21, T_A22, T_A23, T_A24], [T_A31, T_A32, T_A33, T_A34],[T_A41,T_A42,T_A43,T_A44]])
             T_B = np.array([0,0,0,T[i]])
-            #T_X = np.linalg.solve(T_A, T_B)
+            T_X = np.linalg.solve(T_A, T_B)
 
 
 
@@ -430,12 +430,9 @@ class Wingbox():
             q02 = float(X[1])
             q03 = float(X[2])
 
-            # qT1 = float(T_X[0])
-            # qT2 = float(T_X[1])
-            # qT3 = float(T_X[1])
-            qT1 = float(0)
-            qT2 = float(0)
-            qT3 = float(0)
+            qT1 = float(T_X[0])
+            qT2 = float(T_X[1])
+            qT3 = float(T_X[1])
 
             # Compute final shear flow
             q2 = qb2(s2) - q01 - qT1 + q02 + qT2
@@ -445,20 +442,34 @@ class Wingbox():
             max_region2 = max(q2)
             max_region3 = max(q3)
             max_region4 = max(q4)
+
             determine = max(max_region2, max_region3, max_region4)
             Nxy[i] = determine
-        return Nxy
+            max_shear_stress[i] = max(max_region2/t_sp, max_region3/t_sk, max_region4/t_sp)
+        return Nxy, max_shear_stress
 
     def distrcompr_max_from_tip(self, x):
-        t_sp, h_st, t_st, t_sk , t_tb= x
+        t_sp, h_st, t_st, t_sk = x
         return self.bending_stress_x_from_tip(x) * t_sk
     
-    def shear_flow_torque(self,x):
-        T = self.torque_from_tip(X)
-        y = self.y
-        t_sp, h_st, t_st, t_sk, t_tb = x
-        return T/(2*self.chord(y)*self.height(y))
+    # def shear_flow_torque(self,x):
+    #     T = self.torque_from_tip(X)
+    #     y = self.y
+    #     t_sp, h_st, t_st, t_sk = x
+    #     return T/(2*self.chord(y)*self.height(y))
         
+                
+#-------Own constraints------------
+
+    def _max_shear(self,x):
+        Nxy, shear_stress_max = self.shearflow_max_from_tip(x)
+        return np.max(shear_stress_max*self.safety_factor)/(self.shear_strength) - 1
+    
+    def _max_compressive(self,x):
+        return np.max(self.bending_stress_x_from_tip(x)*self.safety_factor)/(self.local_buckling) - 1
+    # def _check_constraints
+        # return 0
+
 
 #-------Georgiana Constraints-------
     def local_buckling(self,t_sk):#TODO
@@ -488,8 +499,8 @@ class Wingbox():
 
 
     def buckling(self, x):#TODO
-        t_sp, h_st, t_st, t_sk, t_tb = x
-        Nxy = self.shearflow_max_from_tip(x)
+        t_sp, h_st, t_st, t_sk = x
+        Nxy, shear_stress_max = self.shearflow_max_from_tip(x)
         Nx = self.distrcompr_max_from_tip(x)
         Nx_crit = self.local_buckling(t_sk)*t_sk
         Nxy_crit = self.shear_buckling(t_sk)*t_sk
@@ -519,7 +530,7 @@ class Wingbox():
 
 
     def global_local(self, x):
-        t_sp, h_st, t_st, t_sk, t_tb = x
+        t_sp, h_st, t_st, t_sk = x
         glob = self.global_buckling(h_st, t_st, t_sk)
         loc = self.local_buckling(t_sk)
         diff = glob - loc
@@ -527,7 +538,7 @@ class Wingbox():
 
 
     def local_column(self, x):
-        t_sp, h_st, t_st, t_sk, t_tb = x
+        t_sp, h_st, t_st, t_sk = x
         col = self.column_st(h_st,t_st, t_sk)
         loc = self.local_buckling(t_sk)
         # print("col=",col/1e6)
@@ -537,7 +548,7 @@ class Wingbox():
 
 
     def flange_loc_loc(self, x):
-        t_sp, h_st, t_st, t_sk, t_tb = x
+        t_sp, h_st, t_st, t_sk = x
         w_st = self.get_w_str(h_st)
         flange = self.flange_buckling(t_st,w_st)
         loc = self.local_buckling(t_sk)
@@ -546,7 +557,7 @@ class Wingbox():
 
 
     def web_flange(self, x):
-        t_sp, h_st, t_st, t_sk, t_tb = x
+        t_sp, h_st, t_st, t_sk = x
         web = self.web_buckling(t_st, h_st)
         loc = self.local_buckling(t_sk)
         diff =web-loc
@@ -555,16 +566,16 @@ class Wingbox():
 
     def von_Mises(self, x):
         y = self.y
-        t_sp, h_st, t_st, t_sk, t_tb = x
-        Nxy=self.shearflow_max_from_tip(x)
+        t_sp, h_st, t_st, t_sk = x
+        Nxy, shear_stress_max =self.shearflow_max_from_tip(x)
         bend_stress=self.bending_stress_x_from_tip(x)
-        tau_shear_arr = Nxy*self.safety_factor/t_sk
+        tau_shear_arr = Nxy/t_sk
         vm_lst = self.sigma_yield - np.sqrt(0.5 * (3 * tau_shear_arr ** 2+bend_stress**2))
         return vm_lst
 
 
     def crippling(self, x):
-        t_sp, h_st, t_st, t_sk, t_tb = x
+        t_sp, h_st, t_st, t_sk = x
         A = self.get_area_str(h_st, t_st)
         col = self.column_st( h_st,t_st,t_sk)
         crip = t_st * self.beta * self.sigma_yield* ((self.g * t_st ** 2 / A) * sqrt(self.E / self.sigma_yield)) ** self.m_crip - col
@@ -578,13 +589,13 @@ class Wingbox():
     #     diff=np.subtract(ratio*f,px)
     #     return diff
 
-    def torsion_bar_constr(self,x):
-        t_sp, h_st, t_st, t_sk, t_tb = x
-        r_o = self.get_r_o(x)
-        max_shear = max(self.torque_from_tip(x))*2*r_o/(pi*(r_o**4 - (r_o - t_tb)**4))
-        ratio = max_shear/self.shear_strength
-        return -1*(ratio - 1)
-
+    # def torsion_bar_constr(self,x):
+    #     t_sp, h_st, t_st, t_sk = x
+    #     r_o = self.get_r_o(x)
+    #     max_shear = max(self.torque_from_tip(x))*2*r_o/(pi*(r_o**4 - (r_o - t_tb)**4))
+    #     ratio = max_shear/self.shear_strength
+    #     return -1*(ratio - 1)
+    
 
 
 def GetWingWeight(wing: Wing, engine: Engine, material: Material, aero: Aero):
@@ -601,11 +612,11 @@ def GetWingWeight(wing: Wing, engine: Engine, material: Material, aero: Aero):
     hst= wing.stringer_height
     tst= wing.stringer_thickness
     tsk= wing.stringer_thickness
-    ttb= wing.torsion_bar_thickness
-    X = [tsp, hst, tst, tsk,ttb]
+
+    X = [tsp, hst, tst, tsk]
     y = wingbox_vf.y
 
-    debug = True
+    debug = False
     if debug:
         print(wingboxclass.buckling_constr(X))
         print(wingboxclass.local_column(X))
@@ -614,13 +625,12 @@ def GetWingWeight(wing: Wing, engine: Engine, material: Material, aero: Aero):
         print(wingboxclass.flange_loc_loc(X))
         print(wingboxclass.crippling(X))
         print(wingboxclass.web_flange(X))
-        print(wingboxclass.torsion_bar_constr(X))
 
     #------SET BOUNDS--------
     height_tip = wingbox_vf.height(wingbox_vf.span/2) - 2e-2#NOTE Set upper value so the stringer is not bigger than the wing itself.
     # print("height" ,height_tip)
-    xlower =         1e-3,         1e-3,   1e-4, 1e-4, 1e-4
-    xupper = height_tip/2, height_tip/2, 3.3e-2, 1e-1, height_tip/2
+    xlower =         1e-3,         1e-3,   1e-4, 1e-4
+    xupper = height_tip/2, height_tip/2, 3.3e-2, 1e-1
 
     bounds = np.vstack((xlower, xupper)).T
 
@@ -636,7 +646,6 @@ def GetWingWeight(wing: Wing, engine: Engine, material: Material, aero: Aero):
         lambda x: -wingbox_vf.flange_loc_loc(x),
         lambda x: -wingbox_vf.crippling(x),
         lambda x: -wingbox_vf.web_flange(x),
-        lambda x: -wingbox_vf.torsion_bar_constr(x),
 
         lambda x: -wingbox_hf.buckling_constr(x)[0],
         lambda x: -wingbox_hf.local_column(x),
@@ -645,7 +654,6 @@ def GetWingWeight(wing: Wing, engine: Engine, material: Material, aero: Aero):
         lambda x: -wingbox_hf.flange_loc_loc(x),
         lambda x: -wingbox_hf.crippling(x),
         lambda x: -wingbox_hf.web_flange(x),
-        lambda x: -wingbox_hf.torsion_bar_constr(x),
     ]
 
     problem = FunctionalProblem(len(X),
@@ -677,7 +685,6 @@ def GetWingWeight(wing: Wing, engine: Engine, material: Material, aero: Aero):
         {'type': 'ineq', 'fun': lambda x: wingbox_vf.flange_loc_loc(x)},
         {'type': 'ineq', 'fun': lambda x: wingbox_vf.crippling(x)},
         {'type': 'ineq', 'fun': lambda x: wingbox_vf.web_flange(x)},
-        {'type': 'ineq', 'fun': lambda x: wingbox_vf.torsion_bar_constr(x)},
 
         {'type': 'ineq', 'fun': lambda x: wingbox_hf.buckling_constr(x)[0]},
         {'type': 'ineq', 'fun': lambda x: wingbox_hf.local_column(x)},
@@ -686,12 +693,11 @@ def GetWingWeight(wing: Wing, engine: Engine, material: Material, aero: Aero):
         {'type': 'ineq', 'fun': lambda x: wingbox_hf.flange_loc_loc(x)},
         {'type': 'ineq', 'fun': lambda x: wingbox_hf.crippling(x)},
         {'type': 'ineq', 'fun': lambda x: wingbox_hf.web_flange(x)},
-        {'type': 'ineq', 'fun': lambda x: wingbox_hf.torsion_bar_constr(x)},
     ]
     resMin = minimize(wingbox_vf.total_weight, resGA.X, method='SLSQP',
                 constraints=constraints, bounds=bounds, jac='3-point',
                 options=options)
-    wing.spar_thickness, wing.stringer_height, wing.stringer_thickness, wing.wingskin_thickness, wing.torsion_bar_thickness = resGA.X
+    wing.spar_thickness, wing.stringer_height, wing.stringer_thickness, wing.wingskin_thickness = resGA.X
     if np.isclose(wingbox_vf.total_weight(resGA.X), wingbox_hf.total_weight(resGA.X)):
         print(f"Weights are the same, dumping new weight: {wingbox_vf.total_weight(resGA.X)}[kg]")
         wing.wing_weight = wingbox_vf.total_weight(resGA.X)*2 - 4*engine.mass_pertotalengine
@@ -703,14 +709,13 @@ def GetWingWeight(wing: Wing, engine: Engine, material: Material, aero: Aero):
     if debug:
         print(f"----VERTICAL FLIGHT------")
         print(f"Buckling constr = {wingbox_vf.buckling_constr(x_final)}")
-        print(f"Local column = {wingbox_vf.local_column(x_final)}")
+        print(f"Local column = {wingbox_vf.local_column(x_final)/1e6}")
         print(f"Global Local= {wingbox_vf.global_local(x_final)}")
-        print(f"Von Mises = {wingbox_vf.von_Mises(x_final)}")
-        print(f"Flange loc loc = {wingbox_vf.flange_loc_loc(x_final)}")
-        print(f"Crippling = {wingbox_vf.crippling(x_final)}")
-        print(f"Web flange = {wingbox_vf.web_flange(x_final)}")
-        print(f"Torsion bar = {wingbox_vf.torsion_bar_constr(x_final)}")
-
+        print(f"Von Mises = {wingbox_vf.von_Mises(x_final/1e6)/1e6}")
+        print(f"Flange loc loc = {wingbox_vf.flange_loc_loc(x_final)/1e6}")
+        print(f"Crippling = {wingbox_vf.crippling(x_final)/1e6}")
+        print(f"Web flange = {wingbox_vf.web_flange(x_final)/1e6}")
+        print()
         print(f"----HORIZONTAL FLIGHT------")
         print(f"Buckling constr = {wingbox_hf.buckling_constr(x_final)}")
         print(f"Local column = {wingbox_hf.local_column(x_final)}")
@@ -719,9 +724,28 @@ def GetWingWeight(wing: Wing, engine: Engine, material: Material, aero: Aero):
         print(f"Flange loc loc = {wingbox_hf.flange_loc_loc(x_final)}")
         print(f"Crippling = {wingbox_hf.crippling(x_final)}")
         print(f"Web flange = {wingbox_hf.web_flange(x_final)}")
-        print(f"Torsion bar = {wingbox_hf.torsion_bar_constr(x_final)}")
+        print()
+        print(f"------STRESSES------")
+        print(f"VF:Max shear stress = {wingbox_vf.shear_z_from_tip(x_final)[1]/1e6}")
+        print(f"VF:Max compression/tension = {wingbox_vf.bending_stress_x_from_tip(x_final)/1e6}")
+        print(f"HF:Max shear stress = {wingbox_hf.shear_z_from_tip(x_final)[1]/1e6}")
+        print(f"HF:Max compression/tension = {wingbox_hf.bending_stress_x_from_tip(x_final)/1e6}")
+        fig, axs = plt.subplots(3, 2)
+        y = wingbox_vf.y
+        axs[0, 0].plot(y,wingbox_hf.lift_func(y))
+        axs[0, 0].set_title('Lift_hf')
+        axs[0, 1].plot(y, wingbox_hf.shear_z_from_tip(x_final), 'tab:orange')
+        axs[0, 1].set_title('Shear force hf')
+        axs[1, 0].plot(y, wingbox_hf.moment_x_from_tip(x_final), 'tab:green')
+        axs[1, 0].set_title('Moment hf')
+        axs[1, 1].plot(y, wingbox_hf.bending_stress_x_from_tip(x_final), 'tab:red')
+        axs[1, 1].set_title('Bending stress')
 
-    return wing
+        # Hide x labels and tick labels for top plots and y ticks for right plots.
+        for ax in axs.flat:
+            ax.label_outer()
+            
+        return wing
 
 if __name__ == "__main__":
     wing = Wing()
@@ -742,31 +766,74 @@ if __name__ == "__main__":
     hst= wing.stringer_height
     tst= wing.stringer_thickness
     tsk= wing.stringer_thickness
-    ttb= wing.torsion_bar_thickness
 
-    X = [tsp,hst,tst,tsk,ttb]
+    X = [tsp,hst,tst,tsk]
+    x_final = X
 
     wingboxclass = Wingbox(wing, engine, material, aero, performance, HOVER=True)
 
-    debug = True
+    debug = False
     if debug:
-        print("Latest values")
-        print(wingboxclass.buckling_constr(X)[0])
-        print(wingboxclass.local_column(X))
-        print(wingboxclass.global_local(X))
-        print(wingboxclass.von_Mises(X)[0])
-        print(wingboxclass.flange_loc_loc(X))
-        print(wingboxclass.crippling(X))
-        print(wingboxclass.web_flange(X))
-        print(wingboxclass.torsion_bar_constr(X))
+        wingbox_vf = Wingbox(wing, engine, material, aero, performance, HOVER=True)
+        wingbox_hf = Wingbox(wing, engine, material, aero, performance, HOVER=False)
+        print(f"----VERTICAL FLIGHT------")
+        print(f"Buckling constr = {wingbox_vf.buckling_constr(x_final)}")
+        print(f"Local column = {wingbox_vf.local_column(x_final)/1e6}")
+        print(f"Global Local= {wingbox_vf.global_local(x_final)}")
+        print(f"Von Mises = {wingbox_vf.von_Mises(x_final)/1e6}")
+        print(f"Flange loc loc = {wingbox_vf.flange_loc_loc(x_final)/1e6}")
+        print(f"Crippling = {wingbox_vf.crippling(x_final)/1e6}")
+        print(f"Web flange = {wingbox_vf.web_flange(x_final)/1e6}")
+        print()
+        print(f"----HORIZONTAL FLIGHT------")
+        print(f"Buckling constr = {wingbox_hf.buckling_constr(x_final)}")
+        print(f"Local column = {wingbox_hf.local_column(x_final)/1e6}")
+        print(f"Global Local= {wingbox_hf.global_local(x_final)}")
+        print(f"Von Mises = {wingbox_hf.von_Mises(x_final)/1e6}")
+        print(f"Flange loc loc = {wingbox_hf.flange_loc_loc(x_final)/1e6}")
+        print(f"Crippling = {wingbox_hf.crippling(x_final)/1e6}")
+        print(f"Web flange = {wingbox_hf.web_flange(x_final)/1e6}")
+        print()
+        print(f"------STRESSES------")
+        print(f"VF:Max shear stress = {wingbox_vf.shear_z_from_tip(x_final)[1]/1e6}")
+        print(f"VF:Max compression/tension = {wingbox_vf.bending_stress_x_from_tip(x_final)/1e6}")
+        print(f"HF:Max shear stress = {wingbox_hf.shear_z_from_tip(x_final)[1]/1e6}")
+        print(f"HF:Max compression/tension = {wingbox_hf.bending_stress_x_from_tip(x_final)/1e6}")
+        fig, axs = plt.subplots(5, 2)
+        y = wingbox_vf.y
+        axs[0, 0].plot(y,wingbox_hf.lift_func(y))
+        axs[0, 0].set_title('Lift_hf')
+        axs[1, 0].plot(y, wingbox_hf.shear_z_from_tip(x_final), 'tab:orange')
+        axs[1, 0].set_title('Shear force hf')
+        axs[2, 0].plot(y, wingbox_hf.moment_x_from_tip(x_final), 'tab:green')
+        axs[2, 0].set_title('Moment hf')
+        axs[3, 0].plot(y, wingbox_hf.bending_stress_x_from_tip(x_final), 'tab:red')
+        axs[3, 0].set_title('Bending stress hf')
+
+        axs[0, 1].plot(y,wingbox_vf.torque_from_tip(y))
+        axs[0, 1].set_title('Torque vf')
+        axs[1, 1].plot(y, wingbox_vf.shear_z_from_tip(x_final), 'tab:orange')
+        axs[1, 1].set_title('Shear force vf')
+        axs[2, 1].plot(y, wingbox_vf.shearflow_max_from_tip(x_final)[0], 'tab:orange')
+        axs[2, 1].set_title('Shear flow vf')
+        axs[3, 1].plot(y, wingbox_vf.moment_x_from_tip(x_final), 'tab:green')
+        axs[3, 1].set_title('Moment vf')
+        axs[4, 1].plot(y, wingbox_vf.bending_stress_x_from_tip(x_final), 'tab:red')
+        axs[4, 1].set_title('Bending stress vf')
+
+        # Hide x labels and tick labels for top plots and y ticks for right plots.
+        # for ax in axs.flat:
+        #     ax.label_outer()
+        plt.show()
+            
 
 
 
     wingboxclass_vf = Wingbox(wing, engine, material, aero, performance, HOVER=True)
     wingboxclass_hf = Wingbox(wing, engine, material, aero, performance, HOVER=False)
     
-    plt.plot(wingboxclass_hf.y,wingboxclass_hf.lift_func(wingboxclass_hf.y))
-    plt.show()
+    # plt.plot(wingboxclass_hf.y,wingboxclass_hf.lift_func(wingboxclass_hf.y))
+    # plt.show()
 
     # fig, axs = plt.subplots(6, 1, figsize=(6, 10))
     # axs[0].plot(wingboxclass_vf.y, wingboxclass_vf.shearflow_max_from_tip(X))
