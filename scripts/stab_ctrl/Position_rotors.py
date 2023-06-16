@@ -32,4 +32,33 @@ def x_pos_tail(Fuse, VTail):
 
 
 
+if __name__ == "__main__":
+    sys.path.append(str(list(pl.Path(__file__).parents)[2]))
+    os.chdir(str(list(pl.Path(__file__).parents)[2]))
+    from input.data_structures import *
+    from scripts.stab_ctrl.potato_plot import J1loading
 
+    with open("input/data_structures/aetheria_constants.json") as f_in:
+        data = json.load(f_in)
+
+
+
+    Wing = Wing()
+    Engine = Engine()
+    Fuse = Fuselage()
+    VTail = VeeTail()
+
+    Wing.load()
+    Engine.load()
+    Fuse.load()
+    VTail.load()
+
+    print(y_pos_inboard(Wing, Engine))
+    print(y_pos_outboard(Wing, Engine))
+    print(y_pos_tail(VTail, Engine))
+    print()
+    print(x_pos_inboard(Wing, Engine))
+    print(x_pos_outboard(Wing))
+    print(x_pos_tail(Fuse, VTail))
+    print()
+    print(J1loading(Wing.x_lewing + Wing.x_lemac + 0.24*Wing.chord_mac, Fuse.length_fuselage, data))
