@@ -66,7 +66,7 @@ pb = 2.5
 rho_material = 2710
 g= 5
 fuselage_margin = 0.2 
-eigenfrequency_lim_pylon = 30
+eigenfrequency_lim_pylon = 20
 ARe = 2.75 # Aspect ration end of tail cone
 n_tanks = 2 # The amount of tanks
 
@@ -144,3 +144,7 @@ oem_cont = 1.1
 #material properties
 E_alu = 73e9
 nu_alu = 0.33
+
+E_composite = 100e9
+sigma_compostie = 2000e6
+rho_composite = 2000
