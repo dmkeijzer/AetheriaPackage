@@ -17,18 +17,21 @@ from input.data_structures.aero import Aero
 WingClass = Wing()
 AeroClass = Aero()
 
-WingClass.chord_root = 1.7
-WingClass.chord_tip = 0.7
-WingClass.span = 10
-WingClass.surface = (1.7 + 0.7)/2*10
-WingClass.chord_mac = 1.22
-WingClass.sweep_LE = np.radians(3)
+WingClass.load()
+AeroClass.load()
+
+# WingClass.chord_root = 1.7
+# WingClass.chord_tip = 0.7
+# WingClass.span = 10
+# WingClass.surface = (1.7 + 0.7)/2*10
+# WingClass.chord_mac = 1.22
+# WingClass.sweep_LE = np.radians(3)
 
 
 AeroClass.cL_cruise = 0.43
 
 def test_get_lift_distr():
-    lift_func, results = get_lift_distr(WingClass, AeroClass, plot=False, test= True)
+    lift_func, results = get_lift_distr(WingClass, AeroClass, plot=True, test= True)
     span_points = np.linspace(0, WingClass.span/2, 300)
 
     assert np.isclose(results["Cruise"]["Totals"]["CLtot"], AeroClass.cL_cruise)
@@ -36,6 +39,7 @@ def test_get_lift_distr():
     assert (np.diff(np.vectorize(lift_func)(span_points)) < 0).all() # Assert that the lift only decreases towards the tip
 
 
+test_get_lift_distr()
 
 def test_get_strip_forces():
     y_le_arr, cl_strip_arr= get_strip_array(WingClass, AeroClass, plot= False)

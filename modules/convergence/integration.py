@@ -27,6 +27,8 @@ from modules.structures.wingbox_optimizer import GetWingWeight
 #from modules.propellor.propellor_sizing import propcalc
 from scripts.structures.vtail_span import span_vtail
 import input.data_structures.GeneralConstants as const
+from scripts.power.finalPowersizing import power_system_convergences
+
 
 
 
@@ -45,6 +47,7 @@ def run_integration(label):
     vtail = VeeTail()
     stability = Stab()
     material = Material()
+    power = Power()
     #----------------------------------------------------------------------------------
 
     #------------------------ Load cases for first time----------------------------------------
@@ -57,6 +60,7 @@ def run_integration(label):
     vtail.load() 
     stability.load() 
     material.load()
+    power.load()
     #----------------------------------------------------------------------
 
     # Preliminary Sizing
@@ -83,17 +87,8 @@ def run_integration(label):
 
 
     #-------------------- power system sizing--------------------
-    nu = np.arange(0,1.001,0.005)
-    Totalmass, Tankmass, FCmass, Batterymass= PropulsionSystem.mass(echo= np.copy(nu),
-                                Mission= mission,
-                                Battery=IonBlock,
-                                FuellCell= Pstack,
-                                FuellTank= Tank )
-    index_min_mass = np.where(Totalmass == min(Totalmass))
-    powersystemmass = Totalmass[index_min_mass][0]
-    Batterymass = Batterymass[index_min_mass][0]
-    coolingsmass = 15 + 35 #kg mass radiator (15 kg) and mass air (35) subsystem. calculated outside this outside loop and will not change signficant 
-    mission.powersystem_mass = powersystemmass + coolingsmass
+    power, mission = power_system_convergences(power, mission) #
+
 
     #-------------------- stability and control--------------------
     #The function here loads and dumps a couple of times so to make sure nothing goes wrong therefore
@@ -167,6 +162,8 @@ def run_integration(label):
     fuselage.dump() 
     vtail.dump() 
     stability.dump()
+    power.dump()
+    
 
     #--------------------------------- Log all variables from current iterations ----------------------------------
     save_path = r"output\final_convergence_history"
