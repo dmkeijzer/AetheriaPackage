@@ -15,24 +15,24 @@ AeroClass = Aero()
 PerformanceClass = PerformanceParameters()
 
 
-WingClass.load()
-AeroClass.load()
-PerformanceClass.load()
-
-b = WingClass.span
-taper = WingClass.taper
-S= WingClass.surface
-Cd0= WingClass.cd0
-c_r=WingClass.chord_root
-CLa=WingClass.cL_alpha
-V=PerformanceClass.cruise_velocity
-Cla=AeroClass.cl_alpha
-
-###HARDCODED VALUES:
-step=0.01
-roll_rate=60*np.pi/(180*1.3)
-aileron_max=20*np.pi/180
-ca_c_ratio=0.25
+##WingClass.load()
+##AeroClass.load()
+##PerformanceClass.load()
+##
+##b = WingClass.span
+##taper = WingClass.taper
+##S= WingClass.surface
+##Cd0= WingClass.cd0
+##c_r=WingClass.chord_root
+##CLa=WingClass.cL_alpha
+##V=PerformanceClass.cruise_velocity
+##Cla=AeroClass.cl_alpha
+##
+#####HARDCODED VALUES:
+##step=0.01
+##roll_rate=60*np.pi/(180*1.3)
+##aileron_max=20*np.pi/180
+##ca_c_ratio=0.25
 
 ##########Aileron Sizing###########
 ####The outer side of the aileron starts at the tip to impart maximum roll moment with minimum surface.
@@ -53,4 +53,4 @@ def size_aileron(S,b,V,Cla,Cd0,c_r,taper,CLa,ca_c_ratio=0.25,step=0.01,aileron_m
         y_inner=y_inner-step
     return y_inner
 
-
+y_inner=size_aileron(13.099835308100221,9.395464129995165,45,6.21,0.1059610557794454,1.991817560177605,9.395464129995165,4.8866469811700375,ca_c_ratio=0.25,step=0.01,aileron_max=30*np.pi/180,roll_rate=60*np.pi/(180*1.3))
