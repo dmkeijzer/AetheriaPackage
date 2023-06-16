@@ -162,6 +162,6 @@ calc_roll_sim=(roll_moment(3:end)+Ixz*(yaw_acceleration_arr(1:end)))/Ixx;
 
 plot(time_arr(3:end),roll_acceleration_no_assumption, 'g');
 hold on;
-%plot(time_arr(3:end),roll_acceleration_arr(2:end), 'b');
+plot(time_arr(3:end),roll_acceleration_arr(2:end), 'b');
 plot(time_arr(3:end),calc_roll_sim, 'r');
 hold off;

@@ -49,7 +49,7 @@ class Engine():
         #self.nacelle_width = data["nacelle_width"]
         self.total_disk_area = data["diskarea"]
         self.thrust_coefficient = data['C_T']
-        self.thrust_per_engine = 2*data["mtom"]*9.81/self.no_engines
+        self.thrust_per_engine = 1.5*data["mtom"]*9.81/self.no_engines
         self.hub_radius = data['hub_radius']
         self.prop_area = data['mtom'] / (120 * 6)
         self.prop_radius = np.sqrt(self.prop_area / np.pi)
