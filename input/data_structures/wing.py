@@ -49,9 +49,11 @@ class Wing():
         self.wing_weight = data["wing_weight"]
         self.spar_thickness = data["spar_thickness"]
         self.stringer_height = data["stringer_height"]
+        self.stringer_width = data["stringer_width"]
         self.stringer_thickness = data["stringer_thickness"]
         self.wingskin_thickness = data["wingskin_thickness"]
         self.torsion_bar_thickness = data["torsion_bar_thickness"]
+
 
         # self.effective_aspectratio =  data[""] # Left out for now since it is not implemented yet
         # self.effective_span =  data[""] # Left out for now since it is not implemented yet
@@ -83,6 +85,7 @@ class Wing():
         data["wingskin_thickness"] = self.wingskin_thickness
         data["torsion_bar_thickness"] = self.torsion_bar_thickness
         data["taper"] = self.taper
+        data["stringer_width"] = self.stringer_width
 
         with open(r"input/data_structures/aetheria_constants.json", "w") as jsonFile:
             json.dump(data, jsonFile, indent=4)
