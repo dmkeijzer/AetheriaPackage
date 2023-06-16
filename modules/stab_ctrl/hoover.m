@@ -144,24 +144,25 @@ plot(t,y(1:end,3,1))  %%%%plot values of 3rd output to 1st input
 %%%Now, the inputs are height, x_external frame, y_external frame, and yaw
 %%%angle.
 
-time_arr = out.roll_arr.Time;
-time_step=time_arr(10)-time_arr(9);
-roll_arr = out.roll_arr.Data;
-yaw_arr = out.yaw_arr.Data;
-pitch_arr = out.pitch_arr.Data;
-roll_rate_arr = diff(roll_arr)/time_step;
-roll_acceleration_arr = roll_rate_arr/time_step;
-pitch_rate_arr = diff(pitch_arr)/time_step;
-yaw_rate_arr = diff(yaw_arr)/time_step;
-yaw_acceleration_arr=diff(yaw_rate_arr)/time_step;
-roll_moment = out.roll_moment.Data;
-
-roll_acceleration_no_assumption=(roll_moment(3:end)+Iyy*pitch_rate_arr(2:end).*yaw_rate_arr(2:end)-Izz*pitch_rate_arr(2:end).*yaw_rate_arr(2:end)+Ixz*(yaw_acceleration_arr(1:end)-roll_rate_arr(2:end).*pitch_rate_arr(2:end)))/Ixx;
-calc_roll_sim=(roll_moment(3:end)+Ixz*(yaw_acceleration_arr(1:end)))/Ixx;
-
-
-plot(time_arr(3:end),roll_acceleration_no_assumption, 'g');
-hold on;
-%plot(time_arr(3:end),roll_acceleration_arr(2:end), 'b');
-plot(time_arr(3:end),calc_roll_sim, 'r');
-hold off;
+% 
+% time_arr = out.roll_arr.Time;
+% time_step=time_arr(10)-time_arr(9);
+% roll_arr = out.roll_arr.Data;
+% yaw_arr = out.yaw_arr.Data;
+% pitch_arr = out.pitch_arr.Data;
+% roll_rate_arr = diff(roll_arr)/time_step;
+% roll_acceleration_arr = roll_rate_arr/time_step;
+% pitch_rate_arr = diff(pitch_arr)/time_step;
+% yaw_rate_arr = diff(yaw_arr)/time_step;
+% yaw_acceleration_arr=diff(yaw_rate_arr)/time_step;
+% roll_moment = out.roll_moment.Data;
+% 
+% roll_acceleration_no_assumption=(roll_moment(3:end)+Iyy*pitch_rate_arr(2:end).*yaw_rate_arr(2:end)-Izz*pitch_rate_arr(2:end).*yaw_rate_arr(2:end)+Ixz*(yaw_acceleration_arr(1:end)-roll_rate_arr(2:end).*pitch_rate_arr(2:end)))/Ixx;
+% calc_roll_sim=(roll_moment(3:end)+Ixz*(yaw_acceleration_arr(1:end)))/Ixx;
+% 
+% 
+% plot(time_arr(3:end),roll_acceleration_no_assumption, 'g');
+% hold on;
+% %plot(time_arr(3:end),roll_acceleration_arr(2:end), 'b');
+% plot(time_arr(3:end),calc_roll_sim, 'r');
+% hold off;

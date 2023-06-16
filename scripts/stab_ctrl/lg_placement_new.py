@@ -15,7 +15,7 @@ h_engine_inner=1.8/2
 h_engine_outer=1.8/2
 y_engine_inner=2.6202
 y_engine_outer=4.7977
-y_additional=0.385  ##0.38 does not work.
+y_additional=0.4  ##0.38 does not work.
 tipback=15*np.pi/180
 x_min_for_front_lg=0.144
 
