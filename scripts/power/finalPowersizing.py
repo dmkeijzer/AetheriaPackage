@@ -35,7 +35,6 @@ def power_system_convergences(powersystem: Power, Mission: PerformanceParameters
     NU = nu[index_min_mass][0]
     powersystemmass = Totalmass[index_min_mass][0] + 15 + 35 #kg mass radiator (15 kg) and mass air (35) subsystem. calculated outside this outside loop and will not change signficant 
     Batterymass = Batterymass[index_min_mass][0]
-    fuelcellmass = Pstack.mass
 
 
     powersystem.battery_energy = Batterymass * IonBlock.EnergyDensity * 3.6e6
@@ -54,6 +53,13 @@ if __name__ == "__main__":
     powersystem = Power()
     Mission = PerformanceParameters()
     Mission.load()
+
+    IonBlock = Battery(Efficiency= 0.9)
+    Pstack = FuelCell()
+    Tank = HydrogenTank()
+    Tank.load()
  
     powersystem, Mission = power_system_convergences(powersystem, Mission)
+    
+    TotalVolume , powersystem.h2_tank_volume, ignore, powersystem.battery_volume = PropulsionSystem.volume(powersystem.nu_FC_cruise_fraction, IonBlock, Pstack, Tank, powersystem.h2_tank_mass, powersystem.battery_mass )
     powersystem.dump()
