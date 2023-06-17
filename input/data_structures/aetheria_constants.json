@@ -250,6 +250,7 @@
     "spar_thickness": 0.0010000004360410778,
     "stringer_height": 0.038265110928698075,
     "stringer_thickness": 0.018870069590283294,
+    "stringer_width": 0.05,
     "wingskin_thickness": 0.008837693258613924,
     "torsion_bar_thickness": 0.00552863335647182,
     "hub_radius": 0.1,
