@@ -1,20 +1,20 @@
 %%
 %%%% INPUTS
 
-Sproj = 1.2 * 13.1;
-Svee = 4.446;
-b_vee = 4.9886;
-lv = 5.3677;
+Sproj = 1.2 * 11.9754;
+Svee = 2.8078;
+b_vee = 2.107;
+lv = 4.3;
 rotor_direction = [-1 1 -1 1 1 -1];
-cg_fw_guess = 8;
+cg_fw_guess = 6;
 cg_r_guess = 3;
-x_rotor_loc = [2.7113 2.7113 5.5775 5.5775 11.3937 11.3937];
+x_rotor_loc = [3.1113 3.1113 5.5775 5.5775 11.3937 11.3937];
 y_rotor_loc = [2.6202 -2.6202 4.7977 -4.7977 2.459 -2.459];
-ma = 2482.586;
-cg_frontlim = 5.3084;
-cg_rearlim = 5.7105;
+ma = 2158;
+cg_frontlim = 4.71796962205636;
+cg_rearlim = 5.068263100185028;
 
-pylonstep = 0.1;
+pylonstep = 2.2;
 Tfac_step = 0.05;
 
 
@@ -28,7 +28,6 @@ Mg = 0;
 Ng = 0.5 * 1.225 * (31/3.6)^2 * (0.5*Svee*sin(deg2rad(35)))*lv;
 Tg = [Zg Lg Mg Ng]; %T = mg + 11.1m/s drag, ROLL = 0.5 * 1.225 * (31/3.6)^2 * (0.5*Svee*sin(35))* (b_vee/2 * sin(35)), PITCH = 0, YAW = 0.5 * 1.225 * (31/3.6)^2 * (0.5*Svee*sin(35))*lv
 
-% Tg = [ma*9.80665 0 0 0];
 n=size(x_rotor_loc,2);
 r_ku = ones(1,n) * 0.1;
 rotor_eta = ones(1,n);
@@ -66,7 +65,7 @@ while loopforpylonsize
     log = vertcat(log, [Tfac, pylonsize]);
     pylonsize = pylonsize + pylonstep;
     x_rotor_loc(1:2) = x_rotor_loc(1:2) - pylonstep;
-    if pylonsize > 0.15
+    if pylonsize > 2.3
         loopforpylonsize = false;
     end
 end

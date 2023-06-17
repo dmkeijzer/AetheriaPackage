@@ -1,5 +1,11 @@
 import numpy as np
-
+import json
+import sys
+import pathlib as pl
+import os
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
 
 def CZ_adot(CLah,Sh,S,Vh_V2,depsda,lh,c):
 
@@ -217,7 +223,7 @@ def Cyr(Vv, CLav):
     returns
     Cyr: Y-force coefficient derivative wrt yaw rate [rad^-1]
     """
-    Cyr = -2 * Vv * CLav
+    Cyr = 2 * Vv * CLav
     return Cyr
 
 
@@ -319,7 +325,7 @@ def longitudinal_derivatives(Aero, Perf, GeneralConst, Wing, VTail, Stab, lcg, t
     Wing.load()
     VTail.load()
 
-    CD = Aero.cd
+    CD = Aero.cd_cruise
     CL = Aero.cL_cruise
     W = Perf.MTOM * GeneralConst.g0
     rho = GeneralConst.rho_cr
@@ -327,8 +333,8 @@ def longitudinal_derivatives(Aero, Perf, GeneralConst, Wing, VTail, Stab, lcg, t
     m = Perf.MTOM
     c = Wing.chord_mac
     lh = VTail.length_wing2vtail
-    CL0 = Wing.cL_alpha0
-    CD0 = Aero.cd0
+    CL0 = -Aero.cL_alpha * (Aero.alpha_zero_L)
+    CD0 = Aero.cd0_cruise
     Vh_V2 = VTail.Vh_V2
     V = GeneralConst.v_cr
 
@@ -426,7 +432,7 @@ def lateral_derivatives(Perf, GeneralConst, Wing, VTail, Stab, Cnb, CLav=None, V
     b = Wing.span
     dihedral = 0
     taper = Wing.taper
-    CL0 = Wing.cL_alpha0
+    CL0 = -Aero.cL_alpha * (Aero.alpha_zero_L)
     """
     Cnb: this is the derivative the yaw moment coefficient with respect to sideslip angle beta- [-]
     theta_0: initial pitch angle [rad]
@@ -501,7 +507,7 @@ def eigval_finder_sym(Stab, Iyy, m, c):      #Iyy = 12081.83972
     returns
     array with eigenvalues NON-DIMENSIONALISED
     """
-    Stab.load
+    Stab.load()
     CX0 = Stab.Cx0
     CXa = Stab.Cxa
     CXu = Stab.Cxu
@@ -522,8 +528,9 @@ def eigval_finder_sym(Stab, Iyy, m, c):      #Iyy = 12081.83972
     Ceigval = Cma * 2 * muc * (CZq + 2*muc) - Cmadot * (2 * muc * CX0 + CXu * (CZq + 2*muc)) + Cmq * (CXu * (CZadot - 2*muc) - 2*muc*CZa) + 2 * muc*KY2*(CXa*CZu - CZa * CXu)
     Deigval = Cmu * (CXa*(CZq + 2*muc) - CZ0 * (CZadot - 2 * muc)) - Cma * (2*muc*CX0 + CXu * (CZq + 2*muc)) + Cmadot * (CX0*CXu - CZ0*CZu) + Cmq*(CXu * CZa - CZu * CXa)
     Eeigval = -Cmu * (CX0 * CXa + CZ0 * CZa) + Cma * (CX0 * CXu + CZ0 * CZu)
-    Stab.sym_eigvals = list(np.roots(np.array([Aeigval, Beigval, Ceigval, Deigval, Eeigval])))
-    Stab.dump()
+    print(np.roots(np.array([Aeigval, Beigval, Ceigval, Deigval, Eeigval])))
+    # Stab.sym_eigvals = list(np.roots(np.array([Aeigval, Beigval, Ceigval, Deigval, Eeigval])))
+    # Stab.dump()
 
 def eigval_finder_asymm(Stab, Ixx, Izz, Ixz, m, b, CL):   #Ixx = 10437.12494 Izz = 21722.48912
 
@@ -569,26 +576,61 @@ def eigval_finder_asymm(Stab, Ixx, Izz, Ixz, m, b, CL):   #Ixx = 10437.12494 Izz
                           Clb * Cnr - Cnb * Clr) + 0.5 * CYr * (
                           Clp * Cnb - Cnp * Clb)
     Eeigval = CL * (Clb * Cnr - Cnb * Clr)
-    Stab.asym_eigvals = list(np.roots(np.array([Aeigval, Beigval, Ceigval, Deigval, Eeigval])))
-    Stab.dump()
+    print(np.roots(np.array([Aeigval, Beigval, Ceigval, Deigval, Eeigval])))
+    # Stab.asym_eigvals = list(np.roots(np.array([Aeigval, Beigval, Ceigval, Deigval, Eeigval])))
+    # Stab.dump()
 
 
 if __name__ == "__main__":
-    a = longitudinal_derivatives(0.04, 0.6, 2500 * 9.8, 1.2, 12, 2500, 1.2, 3, 0.1, 0.02, 0.1, 0.95, np.radians(3), 80,
-                             Cmafuse=None, Cmqfuse=0, CLa=3.7, CLah=1.6, depsda=0.11,
-                             CDa=None, Vh=None, Vfuse=7, cla=None, A=7, clah=None,
-                             Ah=4, b=10, k=None, Sh=3)
+    sys.path.append(str(list(pl.Path(__file__).parents)[2]))
+    os.chdir(str(list(pl.Path(__file__).parents)[2]))
+    from input.data_structures import *
 
-    c = {"symm": {"Iyy": 12080, "m": 2500, "c": 1.2,
-                 "long_stab_dervs": longitudinal_derivatives(0.04, 0.6, 2500 * 9.8, 1.2, 12, 2500, 1.2, 3, 0.1, 0.02,
-                                                             0.1, 0.95, np.radians(3), 80, Cmafuse=None, Cmqfuse=0,
-                                                             CLa=3.7, CLah=1.6, depsda=0.11,
-                                                             CDa=None, Vh=None, Vfuse=7, cla=None, A=7, clah=None,
-                                                             Ah=4, b=10, k=None, Sh=3)},
-        "asymm": {"Ixx": 10440, "Izz": 21720, "Ixz": 500, "m": 2500, "b": 10, "CL": 0.6,
-                  "lat_stab_dervs": lateral_derivatives(0.08, 2500, 1.2, 2, 3, 12, 10, np.radians(2), 0.4, 0.1,
-                                                        CLav=1.8, Vv=None, CLa=3.7, clav=None,
-                                                        Av=3, cla=None, A=7, Cn_beta_dot=None, CY_beta_dot=None)}}
+    Aero = Aero()
+    Perf = PerformanceParameters()
+    GeneralConst = GeneralConstants
+    Wing = Wing()
+    VTail = VeeTail()
+    Stab = Stab()
+    HorTail = HorTail()
+    Fuse = Fuselage()
 
-    b = eigval_finder_sym(**c['symm'])
-    print(c)
+    Aero.load()
+    Perf.load()
+    Wing.load()
+    VTail.load()
+    Stab.load()
+    HorTail.load()
+    Fuse.load()
+
+    lcg = 0.4224
+    theta_0 = 0.0547
+    CLa = Aero.cL_alpha
+    depsda = HorTail.downwash
+    Vfuse = Fuse.volume_fuselage
+    A = Wing.aspectratio
+    b = Wing.span
+    Ah = VTail.span ** 2 / VTail.surface
+    Sh = VTail.surface * np.cos(VTail.dihedral)
+
+    longitudinal_derivatives(Aero, Perf, GeneralConst, Wing, VTail, Stab, lcg, theta_0, Cmafuse=None, Cmqfuse=None,
+                                 CLa=CLa, CLah=None, depsda=depsda,
+                                 CDa=None, Vh=None, Vfuse=Vfuse, cla=None, A=A, clah=2*np.pi,
+                                 Ah=Ah, b=b, k=None, Sh=Sh)
+
+
+    lateral_derivatives(Perf, GeneralConst, Wing, VTail, Stab, 0.0571, CLav=None, Vv=None, CLa=CLa, clav=2*np.pi,
+                        Av=Ah, cla=None, A=A, Cn_beta_dot=None, CY_beta_dot=None)
+
+
+    Iyy = 12081.83972
+    m = Perf.MTOM
+    c = Wing.chord_mac
+    eigval_finder_sym(Stab, Iyy, m, c)  # Iyy = 12081.83972
+
+    Ixx = 10437.12494
+    Izz = 21722.48912
+    Ixz = 26250.67
+    CL_cr = Aero.cL_cruise
+    eigval_finder_asymm(Stab, Ixx, Izz, Ixz, m, b, CL_cr) # Ixx = 10437.12494 Izz = 21722.48912
+
