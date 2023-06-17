@@ -3,7 +3,7 @@ import sys
 import pathlib as pl
 import numpy as np
 
-sys.path.append(str(list(pl.Path(__file__).parents)[1]))
+sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 
 from input.data_structures import Battery, PerformanceParameters, FuelCell, HydrogenTank
 from modules.powersizing.powersystem import energy_cruise_mass, power_cruise_mass,hover_mass,hover_energy_mass, PropulsionSystem
