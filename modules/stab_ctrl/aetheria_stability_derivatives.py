@@ -6,6 +6,7 @@ import os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import control.matlab as ml
 
 def CZ_adot(CLah,Sh,S,Vh_V2,depsda,lh,c):
 
@@ -497,7 +498,7 @@ def lateral_derivatives(Perf, GeneralConst, Wing, VTail, Stab, Cnb, CLav=None, V
 
 
 
-def eigval_finder_sym(Stab, Iyy, m, c):      #Iyy = 12081.83972
+def eigval_finder_sym(Stab, Iyy, m, c,V0=45,CXq=0,CXde=0,CZde=0, Cmde=-2.617):      #Iyy = 12081.83972
     """
     Iyy: moment of inertia around Y-axis
     m: MTOM
@@ -523,16 +524,101 @@ def eigval_finder_sym(Stab, Iyy, m, c):      #Iyy = 12081.83972
     muc = Stab.muc
 
     KY2 = Iyy / (m*c**2)
-    Aeigval = 4 * muc **2 * KY2 * (CZadot - 2 * muc)
-    Beigval = Cmadot * 2 * muc * (CZq + 2 * muc) - Cmq * 2 * muc * (CZadot - 2 * muc) - 2 * muc * KY2 * (CXu * (CZadot - 2*muc) - 2 * muc * CZa)
-    Ceigval = Cma * 2 * muc * (CZq + 2*muc) - Cmadot * (2 * muc * CX0 + CXu * (CZq + 2*muc)) + Cmq * (CXu * (CZadot - 2*muc) - 2*muc*CZa) + 2 * muc*KY2*(CXa*CZu - CZa * CXu)
-    Deigval = Cmu * (CXa*(CZq + 2*muc) - CZ0 * (CZadot - 2 * muc)) - Cma * (2*muc*CX0 + CXu * (CZq + 2*muc)) + Cmadot * (CX0*CXu - CZ0*CZu) + Cmq*(CXu * CZa - CZu * CXa)
-    Eeigval = -Cmu * (CX0 * CXa + CZ0 * CZa) + Cma * (CX0 * CXu + CZ0 * CZu)
-    print(np.roots(np.array([Aeigval, Beigval, Ceigval, Deigval, Eeigval])))
+    # Aeigval = 4 * muc **2 * KY2 * (CZadot - 2 * muc)
+    # Beigval = Cmadot * 2 * muc * (CZq + 2 * muc) - Cmq * 2 * muc * (CZadot - 2 * muc) - 2 * muc * KY2 * (CXu * (CZadot - 2*muc) - 2 * muc * CZa)
+    # Ceigval = Cma * 2 * muc * (CZq + 2*muc) - Cmadot * (2 * muc * CX0 + CXu * (CZq + 2*muc)) + Cmq * (CXu * (CZadot - 2*muc) - 2*muc*CZa) + 2 * muc*KY2*(CXa*CZu - CZa * CXu)
+    # Deigval = Cmu * (CXa*(CZq + 2*muc) - CZ0 * (CZadot - 2 * muc)) - Cma * (2*muc*CX0 + CXu * (CZq + 2*muc)) + Cmadot * (CX0*CXu - CZ0*CZu) + Cmq*(CXu * CZa - CZu * CXa)
+    # Eeigval = -Cmu * (CX0 * CXa + CZ0 * CZa) + Cma * (CX0 * CXu + CZ0 * CZu)
+    # print(np.roots(np.array([Aeigval, Beigval, Ceigval, Deigval, Eeigval])))
+    
+    
+        
     # Stab.sym_eigvals = list(np.roots(np.array([Aeigval, Beigval, Ceigval, Deigval, Eeigval])))
     # Stab.dump()
+    
+    C1 = np.zeros((4, 4), dtype=np.float64)
+    C2 = np.zeros((4, 4), dtype=np.float64)
+    C3 = np.zeros((4, 1), dtype=np.float64)
 
-def eigval_finder_asymm(Stab, Ixx, Izz, Ixz, m, b, CL):   #Ixx = 10437.12494 Izz = 21722.48912
+
+    C1[0, 0] = - 2 * c * muc / V0 ** 2
+    C1[1, 1] = (CZadot - 2 * muc) * c / V0
+    C1[2, 2] = - c / V0
+    C1[3, 1] = Cmadot * c / V0
+    C1[3, 3] = - 2 * muc * KY2 * c ** 2 / V0 ** 2  # Ky2 is already squared
+
+    C2[0, 0] = CXu / V0
+    C2[0, 1] = CXa
+    C2[0, 2] = CZ0
+    C2[0, 3] = CXq * c / V0  # ** 2  # V should probably not be squared. Check derivation: Correct
+    C2[1, 0] = CZu / V0
+    C2[1, 1] = CZa
+    C2[1, 2] = -CX0            # Should probably be negative: Correct
+    C2[1, 3] = (CZq + 2 * muc) * c / V0
+    C2[2, 3] = c / V0
+    C2[3, 0] = Cmu / V0
+    C2[3, 1] = Cma
+    C2[3, 3] = Cmq * c / V0
+    
+    C3[0] = CXde  # / v       # There should not be a divided by v: Correct, don't know how that got in
+    C3[1] = CZde
+    C3[3] = Cmde
+        
+    
+    As=-np.matmul(np.linalg.inv(C1), C2)
+    Bs=-np.matmul(np.linalg.inv(C1), C3)
+    
+    
+    
+    Cs=np.array([[1, 0, 0, 0],
+                [0, 1, 0, 0],
+                [0, 0, 1, 0],
+                [0, 0, 0, 1]])
+    Ds=np.array([[0], [0], [0], [0]])
+    
+    
+    print('Eigenvalues of the symmetric aircraft motion', np.linalg.eigvals(As))
+    
+    
+    sys=ml.ss(As, Bs, Cs, Ds)
+
+    #Htf = ml.tf(sys)
+    #Hol_s = ml.tf(Htf.num[0][0], Htf.den[0][0])
+    #print(Hol_s)
+    #ml.sisotool(Hol_s)
+    gain_phugoid_damper=0.3
+    
+    ####Determine new system
+    
+    Bs[3]=Bs[3]*gain_phugoid_damper
+    
+    sys=ml.ss(As, Bs, Cs, Ds)
+    feedback=np.array([1,0,0,0])
+    
+    
+    sys_damped=ml.feedback(sys,feedback)
+    A_matrix=sys_damped.A    
+    print('Eigenvalues of the symmetric motion after adding phugoid damper', np.linalg.eigvals(A_matrix))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def eigval_finder_asymm(Stab, Ixx, Izz, Ixz, m, b, CL, V0=45, CYbdot=0, Cnbdot=0,CYda=0, Cldr=0, Cnda=0,Cndr=-0.10335434353099078,CYdr=0.18090,Clda=-0.0977677051397158):   #Ixx = 10437.12494 Izz = 21722.48912
 
     """
     Ixx: moment of inertia around X-axis
@@ -562,21 +648,90 @@ def eigval_finder_asymm(Stab, Ixx, Izz, Ixz, m, b, CL):   #Ixx = 10437.12494 Izz
     KX2 = Ixx / (m*b**2)
     KZ2 = Izz / (m*b**2)
     KXZ = Ixz / (m*b**2)
-    Aeigval = 16 * mub ** 3 * (KX2 * KZ2 - KXZ ** 2)
-    Beigval = -4 * mub ** 2 * (
-                2 * CYb * (KX2 * KZ2 - KXZ ** 2) + Cnr * KX2 + Clp * KZ2 + (
-                    Clr + Cnp) * KXZ)
-    Ceigval = 2 * mub * ((CYb * Cnr - CYr * Cnb) * KX2 + (
-                CYb * Clp - Clb * CYp) * KZ2 + ((CYb * Cnp - Cnb * CYp) + (
-                CYb * Clr - Clb * CYr)) * KXZ + 4 * mub * Cnb * KX2 + 4 * mub * Clb * KXZ + 0.5 * (
-                                     Clp * Cnr - Cnp * Clr))
-    Deigval = -4 * mub * CL * (Clb * KZ2 + Cnb * KXZ) + 2 * mub * (
-                Clb * Cnp - Cnb * Clp) + 0.5 * CYb * (
-                          Clr * Cnp - Cnr * Clp) + 0.5 * CYp * (
-                          Clb * Cnr - Cnb * Clr) + 0.5 * CYr * (
-                          Clp * Cnb - Cnp * Clb)
-    Eeigval = CL * (Clb * Cnr - Cnb * Clr)
-    print(np.roots(np.array([Aeigval, Beigval, Ceigval, Deigval, Eeigval])))
+    # Aeigval = 16 * mub ** 3 * (KX2 * KZ2 - KXZ ** 2)
+    # Beigval = -4 * mub ** 2 * (
+    #             2 * CYb * (KX2 * KZ2 - KXZ ** 2) + Cnr * KX2 + Clp * KZ2 + (
+    #                 Clr + Cnp) * KXZ)
+    # Ceigval = 2 * mub * ((CYb * Cnr - CYr * Cnb) * KX2 + (
+    #             CYb * Clp - Clb * CYp) * KZ2 + ((CYb * Cnp - Cnb * CYp) + (
+    #             CYb * Clr - Clb * CYr)) * KXZ + 4 * mub * Cnb * KX2 + 4 * mub * Clb * KXZ + 0.5 * (
+    #                                  Clp * Cnr - Cnp * Clr))
+    # Deigval = -4 * mub * CL * (Clb * KZ2 + Cnb * KXZ) + 2 * mub * (
+    #             Clb * Cnp - Cnb * Clp) + 0.5 * CYb * (
+    #                       Clr * Cnp - Cnr * Clp) + 0.5 * CYp * (
+    #                       Clb * Cnr - Cnb * Clr) + 0.5 * CYr * (
+    #                       Clp * Cnb - Cnp * Clb)
+    # Eeigval = CL * (Clb * Cnr - Cnb * Clr)
+    # print(np.roots(np.array([Aeigval, Beigval, Ceigval, Deigval, Eeigval])))
+    
+    
+    
+    Ca=np.array([[1,0,0,0],[0,1,0,0],
+                          [0,0,1,0],
+                          [0,0,0,1]])
+
+    Da=np.array([[0,0],[0,0],
+                           [0,0],
+                           [0,0]])
+
+
+    C1a=np.array([[(CYbdot-2*mub)*b/V0,0,0,0],        #Checked
+                            [0,-0.5*b/V0 ,0,0],        #Checked
+                            [0,0,-2*mub*KX2*(b/V0)**2,2*mub*KXZ*(b/V0)**2],   #Checked
+                            [Cnbdot*b/V0,0,2*mub*KXZ*(b/V0)**2,-2*mub*KZ2*(b/V0)**2]])  #Checked
+
+    C2a=np.array([[CYb,CL,CYp*b/(2*V0),(CYr-4*mub)*b/(2*V0)],        #Checked
+                            [0,0,b/(2*V0),0],                     #Checked
+                            [Clb,0,Clp*b/(2*V0),Clr*b/(2*V0)],  #Checked
+                            [Cnb,0,Cnp*b/(2*V0),Cnr*b/(2*V0)]])     #Checked
+
+    C3a=np.array([[CYda,CYdr],     #Checked
+                  [0,0],               #Checked
+                  [Clda, Cldr],    #Checked
+                  [Cnda, Cndr]])   #Checked
+
+    Aa=-np.matmul(np.linalg.inv(C1a),C2a)
+
+    Ba=-np.matmul(np.linalg.inv(C1a),C3a)
+    print('Asymmetric motion eigenvalues before yaw damper', np.linalg.eigvals(Aa))
+    
+    ####Determine gain
+    Says=ml.ss(Aa, Ba, Ca, Da)
+    Hset = ml.tf(Says)
+    Hol = ml.tf(Hset.num[3][1], Hset.den[3][1])
+    ml.sisotool(-Hol)
+    gain_yaw_damper=-1.5
+    
+    ####Determine new system
+    Ba[3,1]=Ba[3,1]*gain_yaw_damper
+    
+    Says=ml.ss(Aa, Ba, Ca, Da)
+    feedback=np.array([[0,0,0,0],[0,0,0,1]])
+    
+    #feedback=np.array([[0,0,0,0],[0,0,0,gain_yaw_damper]])
+    Says_damped=ml.feedback(Says,feedback)
+    A_matrix=Says_damped.A
+    
+    print('Asymmetric motion eigenvalues after yaw damper', np.linalg.eigvals(A_matrix))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
     # Stab.asym_eigvals = list(np.roots(np.array([Aeigval, Beigval, Ceigval, Deigval, Eeigval])))
     # Stab.dump()
 
@@ -630,7 +785,10 @@ if __name__ == "__main__":
 
     Ixx = 10437.12494
     Izz = 21722.48912
-    Ixz = 26250.67
+    Ixz = 1264.5   #26250.67
     CL_cr = Aero.cL_cruise
     eigval_finder_asymm(Stab, Ixx, Izz, Ixz, m, b, CL_cr) # Ixx = 10437.12494 Izz = 21722.48912
 
+
+#time constant aperiodic roll: -1/-0.15238788*9.3954/45=1.37<1.4 GOOD 
+#
