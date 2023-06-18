@@ -258,5 +258,12 @@
       "prop_radius": 1.0516788855070442,
       "prop_area": 3.4746909418412555,
       "pylon_length": 2.2,
-      "crash_box_area": 0.9816974824165262
+      "crash_box_area": 0.9816974824165262,
+      "spar_thickness_tail": 0.00500000954731533,
+      "stringer_height_tail": 0.01500523494919439,
+      "stringer_width_tail": 0.015000979065003844,
+      "stringer_thickness_tail": 0.002000171384114936,
+      "wingskin_thickness_tail": 0.0013568628296313488,
+      "thickness_to_chord_tail": 0.12,
+      "x_levtail": 10.788132680310522
 }

@@ -24,6 +24,7 @@ from input.data_structures.engine import Engine
 from input.data_structures.material import Material
 from input.data_structures.wing import Wing
 from input.data_structures.performanceparameters import PerformanceParameters
+from input.data_structures.vee_tail import VeeTail
 from modules.aero.avl_access import get_lift_distr
 
 #------------ASSUMPTION----------
@@ -36,17 +37,17 @@ class Wingbox():
         #Material
         self.poisson = material.poisson
         self.density = material.rho
-        # self.E = material.E
-        self.E = 58100e6
-        self.pb = material.pb
-        self.beta = material.beta
-        self.g = material.g
+        self.E = material.E
+        # self.E = 58100e6
+        # self.pb = material.pb
+        # self.beta = material.beta
+        # self.g = material.g
         self.sigma_yield = material.sigma_yield
-        self.m_crip = material.m_crip
+        # self.m_crip = material.m_crip
         self.sigma_uts = material.sigma_uts
         self.shear_modulus = material.shear_modulus
-        self.engine = engine
-        self.wing = wing
+        # self.engine = engine
+        # self.wing = wing
         self.x_lewing = wing.x_lewing
         self.thickness_to_chord = wing.thickness_to_chord
         self.hover_bool = HOVER
@@ -65,14 +66,15 @@ class Wingbox():
 
         #Engine
         self.engine_weight = engine.mass_pertotalengine
-        self.engine.dump()
+        # self.engine.dump()
         self.y_rotor_loc = engine.y_rotor_loc
         self.x_rotor_loc = engine.x_rotor_loc
         self.thrust_per_engine = engine.thrust_per_engine
+        self.dihedral = wing.dihedral
         #Torsion shaft
 
         #STRINGERS
-        self.n_str = 14
+        self.n_str = 8
         self.str_array_root = np.linspace(0.15*self.chord_root,0.75*self.chord_root,self.n_str+2)
 
         self.y_mesh = 10
@@ -227,25 +229,25 @@ class Wingbox():
     #     return  lift_from_tip
         #return -151.7143*9.81*y + 531*9.81
 
-    def torque_from_tip(self,x):
-        if self.hover_bool == True:
-            y = self.y
-            difference_array = np.absolute(y-self.y_rotor_loc[0])
-            index = difference_array.argmin()
-            distance_outboard = ((self.get_x_start_wb(self.span/2) + 0.5 * 0.6 * (self.chord(self.span/2)) - self.x_rotor_loc[2]))
-            distance_inboard = ((self.get_x_start_wb(y[index]) + 0.5 * 0.6 * (self.chord(y[index]))) - self.x_rotor_loc[0])
-            torque_array = np.ones(len(y)) * (self.thrust_per_engine- self.engine_weight*9.81)*distance_outboard #Torque at from tip roto
+    # def torque_from_tip(self,x):
+    #     if self.hover_bool == True:
+    #         y = self.y
+    #         difference_array = np.absolute(y-self.y_rotor_loc[0])
+    #         index = difference_array.argmin()
+    #         distance_outboard = ((self.get_x_start_wb(self.span/2) + 0.5 * 0.6 * (self.chord(self.span/2)) - self.x_rotor_loc[2]))
+    #         distance_inboard = ((self.get_x_start_wb(y[index]) + 0.5 * 0.6 * (self.chord(y[index]))) - self.x_rotor_loc[0])
+    #         torque_array = np.ones(len(y)) * (self.thrust_per_engine- self.engine_weight*9.81)*distance_outboard #Torque at from tip roto
             
-            torque_array[0:index+1] += (self.thrust_per_engine- self.engine_weight*9.81)*distance_inboard
-            return -torque_array
-        else:
-            y = self.y
-            difference_array = np.absolute(y-self.y_rotor_loc[0])
-            index = difference_array.argmin()
-            torque_array = np.ones(len(y)) * (- self.engine_weight*9.81)*((self.get_x_start_wb(self.span/2) + 0.5 * 0.6 * (self.chord(self.span/2)) - self.x_rotor_loc[2])) #Torque at from tip roto
+    #         torque_array[0:index+1] += (self.thrust_per_engine- self.engine_weight*9.81)*distance_inboard
+    #         return -torque_array
+    #     else:
+    #         y = self.y
+    #         difference_array = np.absolute(y-self.y_rotor_loc[0])
+    #         index = difference_array.argmin()
+    #         torque_array = np.ones(len(y)) * (- self.engine_weight*9.81)*((self.get_x_start_wb(self.span/2) + 0.5 * 0.6 * (self.chord(self.span/2)) - self.x_rotor_loc[2])) #Torque at from tip roto
             
-            torque_array[0:index+1] += (- self.engine_weight*9.81)*((self.get_x_start_wb(y[index]) + 0.5 * 0.6 * (self.chord(y[index]))) - self.x_rotor_loc[0])
-            return -torque_array
+    #         torque_array[0:index+1] += (- self.engine_weight*9.81)*((self.get_x_start_wb(y[index]) + 0.5 * 0.6 * (self.chord(y[index]))) - self.x_rotor_loc[0])
+    #         return -torque_array
 
     def weight_from_tip(self, x):#TODO implement dissappearing stringers #TODO Include rib weights
         t_sp, h_st, w_st, t_st, t_sk = x
@@ -267,8 +269,6 @@ class Wingbox():
 
         # total_weight[0:index+1] += weight_bar
 
-        total_weight[0:index+1] += self.engine_weight
-
         total_weight += self.engine_weight
         weight_ribs = np.linspace(self.n_ribs,1,len(y)) * self.chord(y) * self.height(y) * self.t_rib * self.density
         #weight_ribs = np.sort(np.append(np.linspace(1,5,5),np.linspace(1,5,5))) * self.chord(y) * self.height(y) * self.t_rib * self.density
@@ -285,22 +285,16 @@ class Wingbox():
     def shear_z_from_tip(self, x):
         y = self.y
         if self.hover_bool:
-            difference_array = np.absolute(y-self.y_rotor_loc[0])
-            index = difference_array.argmin()
-
-            thrust_array = np.ones(len(y)) * self.thrust_per_engine
-            thrust_array[0:index+1] += self.thrust_per_engine
-            return -self.weight_from_tip(x)*9.81 + thrust_array
+            thrust_array = np.ones(len(y))*self.thrust_per_engine
+            return -self.weight_from_tip(x)*9.81*np.cos(self.dihedral) + thrust_array*np.cos(self.dihedral)
         else:
-            return -self.weight_from_tip(x)*9.81 + self.lift_func(y)*self.n_ult
+            return -self.weight_from_tip(x)*9.81*np.cos(self.dihedral)
+    
+    
     def thrust_z_from_tip(self,x):
+        y = self.y
         if self.hover_bool:
-            difference_array = np.absolute(y-self.y_rotor_loc[0])
-            index = difference_array.argmin()
-
-            thrust_array = np.ones(len(y)) * self.thrust_per_engine
-            thrust_array[0:index+1] += self.thrust_per_engine
-            return thrust_array
+            return np.ones(len(y))*self.thrust_per_engine
         else:
             return 0
 
@@ -317,13 +311,13 @@ class Wingbox():
 
 #-----------Stress functions---------
     def bending_stress_x_from_tip(self, x):
-        return self.moment_x_from_tip(x)/self.I_xx(x) * self.height(self.y)/2
+        return self.moment_x_from_tip(x)/self.I_xx(x) * self.height(self.y)/2 #+ self.weight_from_tip(x)*9.81*np.sin(self.dihedral) - self.thrust_z_from_tip(x)*np.sin(self.dihedral)
 
     def shearflow_max_from_tip(self, x):
         t_sp, h_st, w_st, t_st, t_sk = x
         y = self.y
         Vz = self.shear_z_from_tip(x)
-        T = self.torque_from_tip(y)
+        T = np.zeros(len(y))
         Ixx = self.I_xx(x)
         height = self.height(y)
         chord = self.chord(y)
@@ -411,7 +405,7 @@ class Wingbox():
 
             T_A = np.array([[T_A11, T_A12, T_A13, T_A14], [T_A21, T_A22, T_A23, T_A24], [T_A31, T_A32, T_A33, T_A34],[T_A41,T_A42,T_A43,T_A44]])
             T_B = np.array([0,0,0,T[i]])
-            T_X = np.linalg.solve(T_A, T_B)
+            # T_X = np.linalg.solve(T_A, T_B)
 
 
 
@@ -440,9 +434,13 @@ class Wingbox():
             q02 = float(X[1])
             q03 = float(X[2])
 
-            qT1 = float(T_X[0])
-            qT2 = float(T_X[1])
-            qT3 = float(T_X[1])
+            # qT1 = float(T_X[0])
+            # qT2 = float(T_X[1])
+            # qT3 = float(T_X[1])
+
+            qT1 = float(0)
+            qT2 = float(0)
+            qT3 = float(0)
 
             # Compute final shear flow
             q2 = qb2(s2) - q01 - qT1 + q02 + qT2
@@ -656,9 +654,9 @@ def GetWingWeight(wing: Wing, engine: Engine, material: Material, aero: Aero):
                                 xu=xupper,
                                 )
 
-    method = GA(pop_size=100, eliminate_duplicates=True)
+    method = GA(pop_size=50, eliminate_duplicates=True)
 
-    resGA = minimizeGA(problem, method, termination=('n_gen', 100   ), seed=1,
+    resGA = minimizeGA(problem, method, termination=('n_gen', 50   ), seed=1,
                     save_history=True, verbose=True)
     print('GA optimum variables', resGA.X)
     print('GA optimum weight', resGA.F)
@@ -728,7 +726,7 @@ def GetWingWeight(wing: Wing, engine: Engine, material: Material, aero: Aero):
     return wing
 
 if __name__ == "__main__":
-    wing = Wing()
+    wing = VeeTail()
     engine = Engine()
     material = Material()
     aero = Aero()
@@ -762,7 +760,7 @@ if __name__ == "__main__":
     # duration = 1000  # Set Duration To 1000 ms == 1 second
     # winsound.Beep(frequency, duration)
 
-    debug = False
+    debug = True
     if debug:
         wingbox_vf = Wingbox(wing, engine, material, aero, performance, HOVER=True)
         wingbox_hf = Wingbox(wing, engine, material, aero, performance, HOVER=False)
