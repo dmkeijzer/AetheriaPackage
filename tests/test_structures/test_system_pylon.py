@@ -12,9 +12,18 @@ from input.data_structures import *
 
 
 engine = Engine()
+wing = Wing()
+
+
+wing.load()
 engine.load()
-L = 2.2
-x0 = (0.095,0.012)
+
+toc = (-1*(wing.chord_root - wing.chord_tip)/wing.span/2*2.3  + wing.chord_root)*0.12
+print(f"toc = {toc/2*1.1}")
+
+
+L = 2.6
+x0 = (toc/2*1.1,0.014)
 
 
 

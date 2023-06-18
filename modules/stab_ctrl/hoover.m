@@ -3,12 +3,12 @@
 %https://www.ijais.org/research/volume9/number5/moussid-2015-ijais-451411.pdf
 
 g=9.81;
-m=2500;
+m=2482.58;
 
-Ixx= 10440;      %600;
-Ixz= 21720;            %200;
-Iyy=12000;    %600;
-Izz=20000;     %600;
+Ixx= 10437;      %600;
+Ixz= 1264.5;     %200;
+Iyy=12082;    %600;
+Izz=21722;     %600;
 K_prop=1;
 T_prop=0.25;
 

@@ -9,16 +9,19 @@ sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
 
-from modules.aero.avl_access import get_lift_distr, get_strip_array
+from modules.aero.avl_access import get_lift_distr, get_strip_array, get_tail_lift_distr
 from input.data_structures.wing import Wing
 from input.data_structures.aero import Aero
+from input.data_structures.vee_tail import VeeTail
 
 
 WingClass = Wing()
 AeroClass = Aero()
+Tail = VeeTail()
 
 WingClass.load()
 AeroClass.load()
+Tail.load()
 
 # WingClass.chord_root = 1.7
 # WingClass.chord_tip = 0.7
@@ -38,8 +41,12 @@ def test_get_lift_distr():
     assert results["Cruise"]["Totals"]["Alpha"] > 0.3  # Assert that angle of attach has a reasonable value
     assert (np.diff(np.vectorize(lift_func)(span_points)) < 0).all() # Assert that the lift only decreases towards the tip
 
+def test_get_tail_lift_distr():
+    lift_func, results = get_tail_lift_distr(WingClass, Tail, AeroClass, plot=True, test=True)
+    span_points = np.linspace(0, WingClass.span/2, 300)
 
-test_get_lift_distr()
+
+test_get_tail_lift_distr()
 
 def test_get_strip_forces():
     y_le_arr, cl_strip_arr= get_strip_array(WingClass, AeroClass, plot= False)
