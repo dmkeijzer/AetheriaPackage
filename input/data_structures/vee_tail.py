@@ -3,6 +3,7 @@ import json
 import sys
 import os
 import pathlib as pl
+import numpy as np
 
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
@@ -16,17 +17,37 @@ class VeeTail():
     elevator_min: float = None
     dihedral: float = None
     surface: float = None
+    taper: float = 1
     c_control_surface_to_c_vee_ratio: float = None
     #CD0: float = None WRONG
     ruddervator_efficiency: float = None
     span: float = None
     vtail_weight: float = None
+    quarterchord_sweep: float = 0
 
 
 
     @property
     def aspectratio(self):
         return self.span**2/self.surface
+    
+    @property
+    def chord_root(self):
+        return  2 *self.surface / ((1 + self.taper) * self.span)
+
+    @property
+    def chord_tip(self):
+        return self.chord_root * self.taper
+
+    @property
+    def chord_mac(self):
+        return  (2 / 3) * self.chord_root  * ((1 + self.taper + self.taper ** 2) / (1 + self.taper))
+
+
+    @property
+    def sweep_LE(self):
+        return 0.25 * (2 * self.chord_root /self.span) * (1 - self.taper) + np.tan(np.radians(self.quarterchord_sweep))
+
 
     def load(self):
         """ Initializes the class automatically from the JSON file

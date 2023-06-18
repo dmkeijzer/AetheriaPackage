@@ -173,8 +173,7 @@ ax.grid(True)
 # Make axes equal
 ax.set_xlim([2, 10])
 ax.set_ylim([-6, 6])
-ax.set_zlim([0, 2])
-plt.legend()
+ax.set_zlim([-2, 2])
 plt.show()
 
 #---------------------------- Compute actual eigenfrequencie -------------------
@@ -222,7 +221,13 @@ for eid, (prop_i, n1, n2) in elements.items():
     beam.n2 = n2
     beam.c1 = DOF*pos1
     beam.c2 = DOF*pos2
-    beam.update_rotation_matrix(0., 0., 1, ncoords_flatten) #Beam local y axis orientation #FIXME make sure theya re correctly fixed, mostly for the vtail
+
+    if eid ==  1:
+        beam.update_rotation_matrix(0., -1*np.sin(TailClass.dihedral), 1*np.cos(TailClass.dihedral), ncoords_flatten) #Beam local y axis orientation 
+    if eid ==  8:
+        beam.update_rotation_matrix(0., 1*np.sin(TailClass.dihedral), 1*np.cos(TailClass.dihedral), ncoords_flatten) #Beam local y axis orientation 
+    else:
+        beam.update_rotation_matrix(0., 0., 1, ncoords_flatten) #Beam local y axis orientation 
     beam.update_probe_xe(ncoords_flatten)
     beam.update_KC0(KC0r, KC0c, KC0v, prop_i)
     beam.update_M(Mr, Mc, Mv, prop_i)
