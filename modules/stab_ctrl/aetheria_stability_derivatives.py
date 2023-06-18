@@ -587,13 +587,21 @@ def eigval_finder_sym(Stab, Iyy, m, c,V0=45,CXq=0,CXde=0,CZde=0, Cmde=-2.617):  
     #Hol_s = ml.tf(Htf.num[0][0], Htf.den[0][0])
     #print(Hol_s)
     #ml.sisotool(Hol_s)
-    gain_phugoid_damper=0.3
+    gain_phugoid_damper=0.09
     
     ####Determine new system
     
     Bs[3]=Bs[3]*gain_phugoid_damper
     
     sys=ml.ss(As, Bs, Cs, Ds)
+    
+    
+    Htf = ml.tf(sys)
+    Hol_s = ml.tf(Htf.num[0][0], Htf.den[0][0])
+    gm, pm, _, _ = ml.margin(Hol_s)
+    print("Gain Margin: ", gm)
+    print("Phase Margin: ", pm)
+    
     #Note that the poles of the open loop system after adding gain is still
     #the same as before
     
@@ -703,7 +711,7 @@ def eigval_finder_asymm(Stab, Ixx, Izz, Ixz, m, b, CL, V0=45, CYbdot=0, Cnbdot=0
     Hset = ml.tf(Says)
     Hol = ml.tf(Hset.num[3][1], Hset.den[3][1])
     #ml.sisotool(-Hol)
-    gain_yaw_damper=-1.5
+    gain_yaw_damper=-1
     
     ####Determine new system
     Ba[3,1]=Ba[3,1]*gain_yaw_damper
@@ -712,6 +720,15 @@ def eigval_finder_asymm(Stab, Ixx, Izz, Ixz, m, b, CL, V0=45, CYbdot=0, Cnbdot=0
     Ba[0,1]=Ba[0,1]*gain_yaw_damper
     
     Says=ml.ss(Aa, Ba, Ca, Da)
+    
+    Htf = ml.tf(Says)
+    Hol_s = ml.tf(Htf.num[0][0], Htf.den[0][0])
+    gm, pm, _, _ = ml.margin(Hol_s)
+    print("Gain Margin: ", gm)
+    print("Phase Margin: ", pm)
+    #The phase margin is negative due to the instability of the spiral mode.
+    
+    
     feedback=np.array([[0,0,0,0],[0,0,0,1]])
     
     #feedback=np.array([[0,0,0,0],[0,0,0,gain_yaw_damper]])
@@ -734,7 +751,7 @@ def eigval_finder_asymm(Stab, Ixx, Izz, Ixz, m, b, CL, V0=45, CYbdot=0, Cnbdot=0
     plt.ylabel('aircraft sideslip angle deviation from equilibrium (rad)')    
     plt.legend()    
     plt.show()
-    plt.show()
+
     
 
     # ####See if equivalent:   YES INDEED 
@@ -744,6 +761,21 @@ def eigval_finder_asymm(Stab, Ixx, Izz, Ixz, m, b, CL, V0=45, CYbdot=0, Cnbdot=0
     # t, y = cl.forced_response(H_closed, t, np.ones(1000))
     # #plt.plot(t,y)
     # #plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
