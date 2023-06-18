@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import control.matlab as ml
+import control as cl
 
 def CZ_adot(CLah,Sh,S,Vh_V2,depsda,lh,c):
 
@@ -593,28 +594,30 @@ def eigval_finder_sym(Stab, Iyy, m, c,V0=45,CXq=0,CXde=0,CZde=0, Cmde=-2.617):  
     Bs[3]=Bs[3]*gain_phugoid_damper
     
     sys=ml.ss(As, Bs, Cs, Ds)
+    #Note that the poles of the open loop system after adding gain is still
+    #the same as before
+    
     feedback=np.array([1,0,0,0])
-    
-    
     sys_damped=ml.feedback(sys,feedback)
     A_matrix=sys_damped.A    
     print('Eigenvalues of the symmetric motion after adding phugoid damper', np.linalg.eigvals(A_matrix))
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    tstart=0
+    tend=100
+    t = np.linspace(tstart,tend,1000)
+    u=np.zeros(1000)
+           
+    t, y = cl.forced_response(sys_damped, t, u,[1,0,0,0])
+    t1, y1 = cl.forced_response(sys, t, u,[1,0,0,0])
+    
+    
+    plt.plot(t,y[0], label='Aircraft response w. phugoid damper')
+    plt.plot(t1,y1[0], label='Aircraft response w/o phugoid damper')
+    plt.xlabel('time (s)')
+    plt.ylabel('aircraft velocity deviation from equilibrium (m/s)')    
+    plt.legend()    
+    plt.show()
+    
 
 
 
@@ -699,11 +702,14 @@ def eigval_finder_asymm(Stab, Ixx, Izz, Ixz, m, b, CL, V0=45, CYbdot=0, Cnbdot=0
     Says=ml.ss(Aa, Ba, Ca, Da)
     Hset = ml.tf(Says)
     Hol = ml.tf(Hset.num[3][1], Hset.den[3][1])
-    ml.sisotool(-Hol)
+    #ml.sisotool(-Hol)
     gain_yaw_damper=-1.5
     
     ####Determine new system
     Ba[3,1]=Ba[3,1]*gain_yaw_damper
+    Ba[2,1]=Ba[2,1]*gain_yaw_damper
+    Ba[2,1]=Ba[1,1]*gain_yaw_damper
+    Ba[0,1]=Ba[0,1]*gain_yaw_damper
     
     Says=ml.ss(Aa, Ba, Ca, Da)
     feedback=np.array([[0,0,0,0],[0,0,0,1]])
@@ -714,10 +720,30 @@ def eigval_finder_asymm(Stab, Ixx, Izz, Ixz, m, b, CL, V0=45, CYbdot=0, Cnbdot=0
     
     print('Asymmetric motion eigenvalues after yaw damper', np.linalg.eigvals(A_matrix))
 
+    tstart=0
+    tend=100
+    t = np.linspace(tstart,tend,1000)
+    u=np.array([np.zeros(1000),np.zeros(1000)])
+    
+       
+    t, y = cl.forced_response(Says_damped, t, u, [0,0,0,0.523])
+    t1, y1 = cl.forced_response(Says, t, u, [0,0,0,0.523])
+    plt.plot(t,y[3],label='Aircraft response w. yaw damper')
+    plt.plot(t1,y1[3], label='Aircraft response w/o yaw damper')
+    plt.xlabel('time (s)')
+    plt.ylabel('aircraft sideslip angle deviation from equilibrium (rad)')    
+    plt.legend()    
+    plt.show()
+    plt.show()
+    
 
-
-
-
+    # ####See if equivalent:   YES INDEED 
+    # s=ml.tf([1,0],[1])
+    # print(s)
+    # H_closed=ml.feedback(Hol*(-0.5*s+gain_yaw_damper),1)
+    # t, y = cl.forced_response(H_closed, t, np.ones(1000))
+    # #plt.plot(t,y)
+    # #plt.show()
 
 
 
