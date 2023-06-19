@@ -36,8 +36,8 @@ class Wingbox():
         #Material
         self.poisson = material.poisson
         self.density = material.rho
-        # self.E = material.E
-        self.E = 58100e6
+        self.E = material.E
+        # self.E = 58100e6
         self.pb = material.pb
         self.beta = material.beta
         self.g = material.g
@@ -51,7 +51,7 @@ class Wingbox():
         self.thickness_to_chord = wing.thickness_to_chord
         self.hover_bool = HOVER
         self.shear_strength = material.shear_strength
-        self.safety_factor = 1.1
+        self.safety_factor = 1.5
 
         #Wing
         self.taper = wing.taper
@@ -72,17 +72,16 @@ class Wingbox():
         #Torsion shaft
 
         #STRINGERS
-        self.n_str = 14
+        self.n_str = 12
         self.str_array_root = np.linspace(0.15*self.chord_root,0.75*self.chord_root,self.n_str+2)
 
-        self.y_mesh = 10
 
         #GEOMETRY
         self.width = 0.6*self.chord_root
         self.str_pitch = 0.6*self.chord_root/(self.n_str+1) #THE PROGRAM ASSUMES THERE ARE TWO STRINGERS AT EACH END AS WELL
 
         #OPT related
-        self.y = np.linspace(0, self.span/2, 1000)
+        self.y = np.linspace(0, self.span/2, 10)
 
 
     #---------------Geometry functions-----------------
@@ -656,9 +655,9 @@ def GetWingWeight(wing: Wing, engine: Engine, material: Material, aero: Aero):
                                 xu=xupper,
                                 )
 
-    method = GA(pop_size=100, eliminate_duplicates=True)
+    method = GA(pop_size=50, eliminate_duplicates=True)
 
-    resGA = minimizeGA(problem, method, termination=('n_gen', 100   ), seed=1,
+    resGA = minimizeGA(problem, method, termination=('n_gen', 50   ), seed=1,
                     save_history=True, verbose=True)
     print('GA optimum variables', resGA.X)
     print('GA optimum weight', resGA.F)
@@ -689,7 +688,6 @@ def GetWingWeight(wing: Wing, engine: Engine, material: Material, aero: Aero):
     resMin = minimize(wingbox_vf.total_weight, resGA.X, method='SLSQP',
                 constraints=constraints, bounds=bounds, jac='3-point',
                 options=options)
-    print(resGA.X)
     wing.spar_thickness, wing.stringer_height, wing.stringer_width, wing.stringer_thickness, wing.wingskin_thickness = resGA.X
     if np.isclose(wingbox_vf.total_weight(resGA.X), wingbox_hf.total_weight(resGA.X)):
         print(f"Weights are the same, dumping new weight: {(wingbox_vf.total_weight(resGA.X)-2*wingbox_hf.engine_weight)*2}[kg]")
@@ -699,31 +697,6 @@ def GetWingWeight(wing: Wing, engine: Engine, material: Material, aero: Aero):
     X = resGA.X
 
     x_final = X
-
-    # print(f"----VERTICAL FLIGHT------")
-    # print(f"Buckling constr = {wingbox_vf.buckling_constr(x_final)}")
-    # print(f"Von Mises = {wingbox_vf.von_Mises(x_final)}")
-    # print(f"Stringer buckl = {wingbox_vf.str_buckling_constr(x_final)}")
-    # print(f"Ultimate tensile stress = {wingbox_vf.str_buckling_constr(x_final)}")
-    # print(f"Flange buckling = {wingbox_vf.flange_buckling_constr(x_final)}")
-    # print(f"Web buckling = {wingbox_vf.web_buckling_constr(x_final)}")
-    # print(f"Global buckling = {wingbox_vf.global_buckling_constr(x_final)}")
-    # print()
-    # print(f"----HORIZONTAL FLIGHT------")
-    # print(f"Buckling constr = {wingbox_hf.buckling_constr(x_final)}")
-    # print(f"Von Mises = {wingbox_hf.von_Mises(x_final)}")
-    # print(f"Stringer buckl = {wingbox_hf.str_buckling_constr(x_final)}")
-    # print(f"Ultimate tensile stress = {wingbox_hf.str_buckling_constr(x_final)}")
-    # print(f"Flange buckling = {wingbox_hf.flange_buckling_constr(x_final)}")
-    # print(f"Web buckling = {wingbox_hf.web_buckling_constr(x_final)}")
-    # print(f"Global buckling = {wingbox_hf.global_buckling_constr(x_final)}")
-    # print()
-    # print(f"------STRESSES------")
-    # print(f"VF:Max shear stress = {wingbox_vf.shear_z_from_tip(x_final)[1]/1e6}")
-    # print(f"VF:Max compression/tension = {wingbox_vf.bending_stress_x_from_tip(x_final)/1e6}")
-    # print(f"HF:Max shear stress = {wingbox_hf.shear_z_from_tip(x_final)[1]/1e6}")
-    # print(f"HF:Max compression/tension = {wingbox_hf.bending_stress_x_from_tip(x_final)/1e6}")
-
             
     return wing
 
@@ -757,10 +730,10 @@ if __name__ == "__main__":
     # for n_str in n_str_lst:
     GetWingWeight(wing,engine,material,aero)
     #     # print("Number of stringers = ",n_str)
-    # import winsound
-    # frequency = 1500  # Set Frequency To 2500 Hertz
-    # duration = 1000  # Set Duration To 1000 ms == 1 second
-    # winsound.Beep(frequency, duration)
+    import winsound
+    frequency = 1500  # Set Frequency To 2500 Hertz
+    duration = 1000  # Set Duration To 1000 ms == 1 second
+    winsound.Beep(frequency, duration)
 
     debug = False
     if debug:
@@ -853,9 +826,6 @@ if __name__ == "__main__":
 #         print("Shear flow  at root = ",wingbox_vf.shearflow_max_from_tip(x_final)[0]/1e3,"[kN/m]")
 #         plt.savefig("output/structures/flight_forces.jpg")
 
-        # Hide x labels and tick labels for top plots and y ticks for right plots.
-        # for ax in axs.flat:
-        #     ax.label_outer()
         plt.show()
         print("-------HORIZONTAL FLIGHT-----")
         print(f"Local skin buckling =  {wingbox_hf.buckling_constr(x_final)[0]}")
@@ -867,18 +837,3 @@ if __name__ == "__main__":
         print(f"Von Mises = {wingbox_vf.von_Mises(x_final)[0]}")
         print(f"Stringer buckling = {wingbox_vf.str_buckling_constr(x_final)[0]}")
         print(f"Global skin buckling = {wingbox_vf.global_buckling_constr(x_final)[0]}")
-            
-
-
-#---- 2 stringers------
-# [0.00500027 0.02780185 0.02014171 0.00168046 0.00655678]
-# Weights are the same, dumping new weight: 355.9390667051378[kg]
-#---- 4 stringers------
-# [0.0050013  0.02358173 0.02000236 0.0010007  0.00453751]
-# Weights are the same, dumping new weight: 282.45321505657483[kg]
-#---- 6 stringers------
-# [0.00500002 0.02000043 0.02000024 0.001      0.0035552 ]
-# Weights are the same, dumping new weight: 250.18264725742273[kg]
-#---- 8 stringers------
-# [0.005      0.0213515  0.02087442 0.00104125 0.00292832]
-# Weights are the same, dumping new weight: 233.2906175273568[kg]
