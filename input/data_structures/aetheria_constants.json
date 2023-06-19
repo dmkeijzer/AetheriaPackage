@@ -6,7 +6,7 @@
     "wing_weight_actual": 173.7,
     "fuselage_weight": 287.90074531759944,
     "lg_weight": 102.88316888647724,
-    "vtail_weight": -151.38767138740369,
+    "vtail_weight": 84.31675982363197,
     "nacelle_weight": 104.36773432517738,
     "powertrain_weight": 486,
     "h2_weight": 473.39222576710756,
@@ -258,12 +258,5 @@
     "prop_radius": 1.0476373636037666,
     "prop_area": 3.4480363107067737,
     "pylon_length": 2.2,
-    "crash_box_area": 0.9816974824165262,
-    "spar_thickness_tail": 0.00500000954731533,
-    "stringer_height_tail": 0.01500523494919439,
-    "stringer_width_tail": 0.015000979065003844,
-    "stringer_thickness_tail": 0.002000171384114936,
-    "wingskin_thickness_tail": 0.0013568628296313488,
-    "thickness_to_chord_tail": 0.12,
-    "x_levtail": 10.788132680310522
+    "crash_box_area": 0.9816974824165262
 }

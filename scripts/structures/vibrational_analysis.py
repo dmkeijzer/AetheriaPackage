@@ -67,11 +67,12 @@ for label , loc in  enumerate(wing_section_loc):
     idx = np.where(WingboxClass.y < y)[0][-1]
     prop = BeamProp()
     A = WingboxClass.chord(y)**2*0.6**0.12
-    E = E_composite
+    E = MaterialClass.E
+    rho_composite = MaterialClass.rho
     prop.A = A 
-    prop.E = E_composite
+    prop.E = E
     scf = 5/6.
-    prop.G = scf*E_composite/2/(1+0.3)
+    prop.G = scf*E/2/(1+0.3)
     Izz =  (WingboxClass.I_xx(X)[idx] + WingboxClass.I_xx(X)[idx + 1])/2
     Iyy = (WingboxClass.I_zz(X)[idx] + WingboxClass.I_zz(X)[idx + 1])/2
     prop.Izz = Izz
@@ -89,9 +90,11 @@ pylon_x = [0.1218, 0.014]
 
 nacelle_prop = BeamProp()
 nacelle_prop.A = PylonClass.get_area(pylon_x)
-nacelle_prop.E = E_composite
+E = MaterialClass.E
+rho_composite = MaterialClass.rho
 I = PylonClass.I_xx(pylon_x)
-nacelle_prop.G = scf*E_composite/2/(1+0.3)
+nacelle_prop.E = E
+nacelle_prop.G = scf*E/2/(1+0.3)
 nacelle_prop.Izz = I
 nacelle_prop.Iyy = I
 nacelle_prop.intrho = rho_composite*PylonClass.get_area(pylon_x)
@@ -290,7 +293,7 @@ omegan = eigvals**0.5
 print(omegan, 'rad/s')
 print(omegan/(2*np.pi), 'hz')
 
-for i in range(6):
+for i in range(num_eigenvalues):
     mode = i
 
     scale = 20
@@ -316,58 +319,6 @@ for i in range(6):
     ax.set_ylabel('Y')
     ax.set_zlabel('Z')
     ax.set_zlim(-2, 2)
-    ax.set_title(f'Mode {mode}')
+    ax.set_title(f'Mode {mode}\nFrequency = {np.round((omegan/(2*np.pi))[i], 1)} [Hz]')
 
     plt.show()
-
-
-
-#     # Create a new figure
-
-#     fig = go.Figure()
-
-#     # Iterate over the sequences and add line segments to the figure
-
-#     for beam in beams:
-
-#         x_coords = [x[nid_pos[beam.n1]], x[nid_pos[beam.n2]]]
-#         y_coords = [y[nid_pos[beam.n1]], y[nid_pos[beam.n2]]]
-#         z_coords = [z[nid_pos[beam.n1]], z[nid_pos[beam.n2]]]
-
-#         fig.add_trace(go.Scatter3d(
-#             x=x_coords,
-#             y=y_coords,
-#             z=z_coords,
-#             mode='lines',
-#             line=dict(color='blue', width=5)
-#         ))
-
-#         x_coords = [(x+dx)[nid_pos[beam.n1]], (x+dx)[nid_pos[beam.n2]]] 
-#         y_coords = [(y+dy)[nid_pos[beam.n1]], (y+dy)[nid_pos[beam.n2]]]
-#         z_coords = [(z+dz)[nid_pos[beam.n1]], (z+dz)[nid_pos[beam.n2]]]
-
-#         fig.add_trace(go.Scatter3d(
-#             x=x_coords,
-#             y=y_coords,
-#             z=z_coords,
-#             mode='lines',
-#             line=dict(color='red', width=5)
-#         ))
-
-
-#     # Set the layout of the figure
-
-#     fig.update_layout(
-
-#     scene=dict(
-#         xaxis=dict(title='X'),
-#         yaxis=dict(title='Y'),
-#         zaxis=dict(title='Z', range=[-2, 2])
-#     ),
-
-#     title=f'Mode {mode}'
-
-#     )
-#     # Display the figure
-
-#     fig.show()

@@ -56,7 +56,7 @@ class PerformanceParameters:
         self.hoverPower = data["power_hover"]
         self.cruisePower = data["power_cruise"]
         self.energyRequired = data["mission_energy"]
-        self.climbPower = data["power_cruise"]
+        self.climbPower = data["power_climb"]
 
         self.rate_of_climb_cruise = constants.roc_cr
         self.rate_of_descent_cruise = constants.rod_cr

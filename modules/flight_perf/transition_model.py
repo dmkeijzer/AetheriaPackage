@@ -16,7 +16,7 @@ import input.data_structures.GeneralConstants as const
 
 
 
-def numerical_simulation(l_x_1, l_x_2, l_x_3, l_y_1, l_y_2, l_y_3, T_max, y_start, mass, g0, S, CL_climb, alpha_climb, CD_climb, Adisk, lod_climb, eff_climb, v_stall):
+def numerical_simulation(l_y_d, l_x_1, l_x_2, l_x_3, l_y_1, l_y_2, l_y_3, T_max, y_start, mass, g0, S, CL_climb, alpha_climb, CD_climb, Adisk, lod_climb, eff_climb, v_stall):
     # print('this is still running')
     # Initialization
     vx = 0
@@ -54,6 +54,7 @@ def numerical_simulation(l_x_1, l_x_2, l_x_3, l_y_1, l_y_2, l_y_3, T_max, y_star
     T1_lst = []
     T2_lst = []
     T3_lst = []
+    maxT = []
     # Preliminary calculations
     running = True
     while running:
@@ -79,10 +80,10 @@ def numerical_simulation(l_x_1, l_x_2, l_x_3, l_y_1, l_y_2, l_y_3, T_max, y_star
         # Thrust and power
         T = (mass * g0 - L * np.cos(alpha_climb) + mass * ay) / np.sin(alpha_T)
         Ttot = T
-        T2 = T_max*0.5
-        T3 = ((Ttot - T2)*np.sin(alpha_T)*l_x_1 - (Ttot- T2)*np.cos(alpha_T)*l_y_1 + T2*np.sin(alpha_T)*l_x_2 - T2*np.cos(alpha_T)*l_y_2) / (np.sin(alpha_T)*(l_x_1+l_x_3) + np.cos(alpha_T)*(l_y_3 - l_y_1))
+        T2 = T*0.5
+        T3 = ((Ttot - T2)*np.sin(alpha_T)*l_x_1 - (Ttot - T2)*np.cos(alpha_T)*l_y_1 + T2*np.sin(alpha_T)*l_x_2 - T2*np.cos(alpha_T)*l_y_2) / (np.sin(alpha_T)*(l_x_1+l_x_3) + np.cos(alpha_T)*(l_y_3 - l_y_1))
         T1 = Ttot - T2 - T3
-        if (T1<0) or (T3<0):
+        if (T1<0) or (T3<0) or V>40:
             print("Thrust is negative!!!")
             print("T1", T1, T3)
         
@@ -107,9 +108,9 @@ def numerical_simulation(l_x_1, l_x_2, l_x_3, l_y_1, l_y_2, l_y_3, T_max, y_star
         x += vx * dt
         y += vy * dt
 
-        if V>v_stall:
-            #print('transition complete')
-            break
+        # if V>v_stall:
+        #     #print('transition complete')
+        #     break
 
         # Energy integrand per time step
         E += Ptot * dt
@@ -118,9 +119,9 @@ def numerical_simulation(l_x_1, l_x_2, l_x_3, l_y_1, l_y_2, l_y_3, T_max, y_star
         acc_g = ax/g0
 
         # Append lists for all parameters
-        T1_lst.append(T1)
-        T2_lst.append(T2)
-        T3_lst.append(T3)
+        T1_lst.append(T1/2)
+        T2_lst.append(T2/2)
+        T3_lst.append(T3/2)
         t_lst.append(t)
         ax_lst.append(ax)
         y_lst.append(y)
@@ -130,46 +131,70 @@ def numerical_simulation(l_x_1, l_x_2, l_x_3, l_y_1, l_y_2, l_y_3, T_max, y_star
         alpha_T_lst.append(alpha_T * 180 / np.pi)
         T_lst.append(T)
         D_lst.append(D)
-        P_lst.append(Ptot)
+        P_lst.append(Ptot/1000)
         acc_lst.append(acc_g)
         L_lst.append(L)
-
+        maxT.append(8731)
         if t > t_end:
             running = False
 
     acc_lst = np.array(acc_lst)
-    '''
+
+
+    # Create figure for maximum thurst
+    
+
+    # Plot data
+    plt.plot(t_lst, T1_lst, label="Inboard propellers")
+    plt.plot(t_lst, T2_lst, label="Outboard propellers")
+    plt.plot(t_lst, T3_lst, label="V_tail propellers")
+    plt.plot(t_lst, maxT, label ='Maximum Thrust')
+    
+
+    plt.xlabel("Time [s]", fontsize = 15)
+    plt.ylabel("Thrust [N]", fontsize = 15)
+    # plt.title("Front Propeller Thrust")
+    plt.grid()
+    plt.legend(fontsize = 15)
+
+
+    plt.tight_layout(pad = 2.0)
+    plt.show()
     # Create a figure and subplots
     # fig, axs = plt.subplots(2, 2, figsize=(10, 8))
 
-    # # Plot data on each subplot
-    # axs[0, 0].plot(t_lst, T1_lst, color='blue')
+    # # # Plot data on each subplot
+    # axs[0, 0].plot(t_lst, P_lst, color='blue')
     # axs[0, 0].set_xlabel('Time [s]')
     # axs[0, 0].set_ylabel('Power [kW]')
+    # axs[0,0].set_title('Power vs Time')
     # axs[0, 0].grid()
 
     # axs[0, 1].plot(x_lst, y_lst, color='red')
-    # #axs[0, 1].set_ylim(0,200)
+    # axs[0, 1].set_ylim(0,150)
     # axs[0, 1].set_xlabel('X-position [m]')
     # axs[0, 1].set_ylabel('Y-position [m]')
+    # axs[0,1].set_title("Y vs X position")
     # axs[0, 1].grid()
 
-    # axs[1, 0].plot(t_lst, T3_lst, color='green')
+    # axs[1, 0].plot(t_lst, L_lst, color='green')
     # axs[1, 0].set_xlabel('Time [s]')
     # axs[1, 0].set_ylabel('Lift [N]')
+    # axs[1, 0].set_title('Lift vs Time')
     # axs[1, 0].grid()
 
-    # axs[1, 1].plot(t_lst, P_lst, color='orange')
+    # axs[1, 1].plot(t_lst, acc_lst, color='orange')
     # axs[1, 1].set_xlabel('Time [s]')
     # axs[1, 1].set_ylabel('Longitudinal acceleration [g]')
+    # axs[1,1].set_title('Acceleration vs Time')
     # axs[1, 1].grid()
-    
+
     # # Adjust spacing between subplots
-    # fig.tight_layout()
+    # fig.tight_layout(pad = 2.0)
     
-    # Display the figure
-    #plt.show()
- '''
+    # # Display the figure
+    # plt.show()
+ 
     return E, y_lst, t_lst, x_lst, V, P_lst
 
 
@@ -186,7 +211,7 @@ def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha
     vy = vx_start*descend_slope
     vy_start = vx_start*descend_slope
     vy_end = -2
-    y_start = 130
+    y_start = 73
     y_end = 15
     t = 0
     x = 0
@@ -248,7 +273,7 @@ def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha
 
         if phase_1 == True:  # phase 1 gliding and turn propellers
             gamma = np.arctan2(vy,vx)
-            ay = (L * np.cos(alpha+gamma) - mass*g0-D*np.sin(gamma))/mass
+            ay = (L * np.cos(alpha+gamma) - mass*g0 - D*np.sin(gamma))/mass
             T = 0
             ax = (-L * np.sin(alpha+gamma) - D*np.cos(gamma)) / mass
             vy_level_out = vy
@@ -310,7 +335,7 @@ def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha
         alpha_T_lst.append(alpha_T * 180 / np.pi)
         T_lst.append(T)
         L_lst.append(L)
-        P_lst.append(Ptot)
+        P_lst.append(Ptot/1000)
         acc_lst.append(acc_g)
         acc_y_lst.append(acc_y)
         V_lst.append(np.sqrt(vx**2+vy**2))
@@ -318,38 +343,42 @@ def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha
         if t > t_end or y < 0:
             running = False
     acc_lst = np.array(acc_lst)
-    ''' 
-    # Create a figure and subplots
-    fig, axs = plt.subplots(2, 2, figsize=(10, 8))
+     
+    # # Create a figure and subplots
+    # fig, axs = plt.subplots(2, 2, figsize=(10, 8))
 
-    # Plot data on each subplot
-    axs[0, 0].plot(t_lst, P_lst, color='blue')
-    axs[0, 0].set_xlabel('Time [s]')
-    axs[0, 0].set_ylabel('Power [kW]')
-    axs[0, 0].grid()
+    # # Plot data on each subplot
+    # axs[0, 0].plot(t_lst, P_lst, color='blue')
+    # axs[0, 0].set_xlabel('Time [s]')
+    # axs[0, 0].set_ylabel('Power [kW]')
+    # axs[0,0].set_title('Power vs Time')
+    # axs[0, 0].grid()
 
-    axs[0, 1].plot(x_lst, y_lst, color='red')
-    axs[0, 1].axis('equal')
-    axs[0, 1].set_xlabel('X-position [m]')
-    axs[0, 1].set_ylabel('Y-position [m]')
-    axs[0, 1].grid()
+    # axs[0, 1].plot(x_lst, y_lst, color='red')
+    # axs[0, 1].set_ylim(0,150)
+    # axs[0, 1].set_xlabel('X-position [m]')
+    # axs[0, 1].set_ylabel('Y-position [m]')
+    # axs[0,1].set_title("Y vs X position")
+    # axs[0, 1].grid()
 
-    axs[1, 0].plot(t_lst, L_lst, color='green')
-    axs[1, 0].set_xlabel('Time [s]')
-    axs[1, 0].set_ylabel('Lift [N]')
-    axs[1, 0].grid()
+    # axs[1, 0].plot(t_lst, L_lst, color='green')
+    # axs[1, 0].set_xlabel('Time [s]')
+    # axs[1, 0].set_ylabel('Lift [N]')
+    # axs[1, 0].set_title('Lift vs Time')
+    # axs[1, 0].grid()
 
-    axs[1, 1].plot(t_lst, acc_lst, color='orange')
-    axs[1, 1].set_xlabel('Time [s]')
-    axs[1, 1].set_ylabel('Longitudinal acceleration [g]')
-    axs[1, 1].grid()
+    # axs[1, 1].plot(t_lst, acc_lst, color='orange')
+    # axs[1, 1].set_xlabel('Time [s]')
+    # axs[1, 1].set_ylabel('Longitudinal acceleration [g]')
+    # axs[1,1].set_title('Acceleration vs Time')
+    # axs[1, 1].grid()
 
-    # Adjust spacing between subplots
-    fig.tight_layout()
+    # # Adjust spacing between subplots
+    # fig.tight_layout(pad =2.0)
 
-    # Display the figure
+    # # Display the figure
     # plt.show()
-   '''
+
     return E, y_lst, t_lst, x_lst, P_lst  # Energy, y, t, x, P
 
 

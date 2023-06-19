@@ -10,9 +10,10 @@ import input.data_structures.GeneralConstants as const
 
 """CALCULATE TAIL LENGTH BASED ON BETA AND ASPECT RATIO"""
 def find_tail_length(h0, b0, Beta, V, l, AR, n):
-    roots = np.roots([np.pi / 3, np.pi * l, 0, -V/n]) # Find positive roots of cubic function of Tank Volume (two tanks)
+    roots = np.roots([-2*np.pi / 3, np.pi * l, 0, -V/n]) # Find positive roots of cubic function of Tank Volume (two tanks)
     positive_roots = [root.real for root in roots if np.isreal(root) and root > 0]
-    r = positive_roots[0] # radius of tank
+    # r = positive_roots[0] # radius of tank
+    r = np.min(roots[roots > 0]) # Select the correct root of the equation
     bc = 2 * n * r # width of crashed fuselage at end of tank
     hc = bc / AR # height of crashed fuselage at end of tank
     A_f = bc ** 2 / (AR * Beta ** 2) # area of fuselage at end of tank
@@ -232,7 +233,7 @@ def get_fuselage_sizing(h2tank, fuelcell, perf_par,fuselage):
     fuselage.height_fuselage_inner = fuselage.height_cabin + crash_box_height
     fuselage.height_fuselage_outer = fuselage.height_fuselage_inner + const.fuselage_margin
 
-    l_tail, upsweep, bc, hc, hf, bf, AR, l_tank = minimum_tail_length(fuselage.height_fuselage_inner, fuselage.width_fuselage_inner, const.beta_crash, h2tank.volume(perf_par.energyRequired/3.6e6) ,np.linspace(1, 5, 40), const.ARe, const.n_tanks)
+    l_tail, upsweep, bc, hc, hf, bf, AR, l_tank = minimum_tail_length(fuselage.height_fuselage_inner, fuselage.width_fuselage_inner, const.beta_crash, h2tank.volume(perf_par.energyRequired/3.6e6) ,np.linspace(1, 7, 40), const.ARe, const.n_tanks)
 
     fuselage.length_tail = l_tail
     fuselage.bc = bc
@@ -243,6 +244,23 @@ def get_fuselage_sizing(h2tank, fuelcell, perf_par,fuselage):
     fuselage.limit_fuselage = fuselage.length_cockpit + fuselage.length_cabin + l_tail + fuelcell.depth + const.fuselage_margin 
 
     return fuselage
+
+
+if __name__ == '__main__':
+    from input.data_structures import *
+
+    TankClass = HydrogenTank()
+    FuelClass = FuelCell()
+    PerfClas = PerformanceParameters()
+    FuseClas = Fuselage()
+
+    TankClass.load()
+    PerfClas.load()
+    FuseClas.load()
+
+    print(get_fuselage_sizing(TankClass, FuelClass, PerfClas, FuseClas).limit_fuselage)
+
+
 
 
     

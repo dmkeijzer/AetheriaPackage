@@ -51,15 +51,15 @@ pdf2 = pdf2/sumpdf2
 
 
 #term for extra visuals
-term = 10
-sum = cl + term * pdf1 * (slipstream+prop_lift) + term * pdf2 * (slipstream+prop_lift)
+term = 30
+sum = cl + term * pdf1 * (slipstream+prop_lift) + 0.5*term * pdf2 * (slipstream+prop_lift)
 
 # print(pdf)
 plt.plot(x, sum, label="CL wing plus propellers")
 plt.plot(x, cl, label="CL wing")
 plt.xlabel("X-position over half-span [m]")
 plt.ylabel("CL [-]")
-plt.ylim([0.,0.80])
+plt.ylim([0.,1.0])
 plt.legend()
 plt.grid()
 plt.show()
