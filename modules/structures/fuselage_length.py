@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import numpy as np
+import os
 import matplotlib.pyplot as plt
 import sys
 import pathlib as pl
@@ -70,6 +71,7 @@ def plot_variable(h0, b0, V, l_tank, n,  parameter, parameter_values, fixed_para
 
     # Plot the colored plot
     fig, ax = plt.subplots()
+    plt.grid()
 
     if parameter == 'ARe':
         c = ax.pcolormesh(l_tank, parameter_values, l_tail.T, cmap='YlOrRd')
@@ -83,6 +85,8 @@ def plot_variable(h0, b0, V, l_tank, n,  parameter, parameter_values, fixed_para
     # Add colorbar
     cbar = plt.colorbar(c, label='Tail Length [m]')
 
+
+    plt.savefig(os.path.join(os.path.expanduser("~"), "Downloads", "sensitivity_tail_" + parameter + "_" + str(fixed_value) +  ".pdf"), bbox_inches= "tight")
     plt.show()
 
 def minimum_tail_length(h0, b0, Beta, V, l_tank, ARe, n, plot= False):
