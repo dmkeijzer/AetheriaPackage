@@ -72,7 +72,7 @@ class Wingbox():
         #Torsion shaft
 
         #STRINGERS
-        self.n_str = 12
+        self.n_str = 14
         self.str_array_root = np.linspace(0.15*self.chord_root,0.75*self.chord_root,self.n_str+2)
 
 
