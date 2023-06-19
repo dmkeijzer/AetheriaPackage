@@ -1,5 +1,12 @@
 import matplotlib.pyplot as plt
-from mission_power_energy import *
+import numpy as np
+import sys
+import pathlib as pl
+import os
+import json
+os.chdir(str(list(pl.Path(__file__).parents)[2]))
+
+from scipts.flight_perf.mission_power_energy import *
 import seaborn as sns
 
 os.chdir(str(list(pl.Path(__file__).parents)[3]))
@@ -7,11 +14,13 @@ os.chdir(str(list(pl.Path(__file__).parents)[3]))
 # Generate a palette of 8 colors using the "hls" palette
 colors = list(sns.color_palette("hls", n_colors=10))
 
-dict_directory = "input"
-dict_names = ["J1_constants.json", "L1_constants.json", "W1_constants.json"]
+dict_directory = "input\data_structures"
+dict_names = ["aetheria_constants convergence"]
 download_dir = os.path.join(os.path.expanduser("~"), "Downloads")
 
 bardata = []
+
+
 # Loop through the JSON files
 for dict_name in dict_names:
     
@@ -19,15 +28,11 @@ for dict_name in dict_names:
     with open(os.path.join(dict_directory, dict_name)) as jsonFile:
         data = json.load(jsonFile)
 
-    mission = [data["takeoff_energy"], data["trans2hor_energy"], data["climb_energy"],  
-               data["cruise_energy"], data["descend_energy"], data["hor_loiter_energy"],  
-               data["trans2ver_energy"], data["ver_loiter_energy"], data["land_energy"]]
-    for i in range(len(mission)):
-        mission[i] = mission[i]/3.6e6
+    mission = [3, 3.7 , 30.5, 123, 5.3, 3.7, 37.1, 4.6]
     bardata.append(mission)
     print(bardata)
 
-labels = ["Take-off", "Transition to horizontal", "Climbing", "Cruise", "Descend", "Loiter horizontal","Transition to vertical", "Loiter vertical", "Landing"]
+labels = ["Take-off", "Transition to horizontal", "Climbing", "Cruise", "Descend", "Loiter horizontal","Transition to vertical", "Loiter vertical"]
 
 # Width of each bar
 bar_width = 0.2
