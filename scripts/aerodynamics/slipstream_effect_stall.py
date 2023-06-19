@@ -12,6 +12,7 @@ from input.data_structures.ISA_tool import ISA
 from input.data_structures.wing import Wing
 from input.data_structures.aero import Aero
 from input.data_structures.fuselage import Fuselage
+from input.data_structures.engine import Engine
 
 
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
@@ -20,6 +21,8 @@ os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
 AeroClass = Aero()
 WingClass = Wing()
+EngineClass = Engine()
+EngineClass.load()
 WingClass.load()
 AeroClass.load()
 
@@ -30,8 +33,8 @@ t_cr = atm.temperature()
 rho_stall = atm.density()
 mhu = atm.viscosity_dyn()
 # print(rho_stall)
-diameter_propellers = 2*np.sqrt(const.diskarea/(np.pi*6))
-D = diameter_propellers
+
+D = EngineClass.prop_radius*2
 
 i_cs_var = 0.0549661449027131 # calculated from lift at cruise
 
@@ -45,12 +48,12 @@ drag_stall = 0.5*rho_stall*WingClass.surface*const.v_stall*const.v_stall*AeroCla
 C_T_var = C_T(T=drag_stall, rho=rho_stall, V_0=const.v_stall, S_W=WingClass.surface)
 
 #change in V
-V_delta_var = V_delta(C_T=C_T_var, S_W=WingClass.surface, n_e=3, D=diameter_propellers, V_0=const.v_stall)
+V_delta_var = V_delta(C_T=C_T_var, S_W=WingClass.surface, n_e=3, D=D, V_0=const.v_stall)
 
 # effective Diameter
-D_star_var = D_star(D=diameter_propellers, V_0=const.v_stall, V_delta=V_delta_var)
+D_star_var = D_star(D=D, V_0=const.v_stall, V_delta=V_delta_var)
 
-A_eff_var = A_s_eff(b_W=WingClass.span, S_W=WingClass.surface, n_e=3, D=diameter_propellers, V_0=const.v_stall, V_delta=V_delta_var)[0]
+A_eff_var = A_s_eff(b_W=WingClass.span, S_W=WingClass.surface, n_e=3, D=D, V_0=const.v_stall, V_delta=V_delta_var)[0]
 
 # DATCOM
 CL_eff_alpha_var = CL_effective_alpha(mach=AeroClass.mach_stall, A_s_eff= A_eff_var, sweep_half=-WingClass.sweep_LE)
@@ -81,7 +84,7 @@ print("CL percentage increase:", 100*(CL_total_cruise-CL_old)/CL_old)
 
 downwash_angle_wing = np.sin(sin_epsilon)
 downwash_angle_prop = np.sin(sin_epsilon_s)
-average_downwash_angle = (downwash_angle_prop*diameter_propellers*3 + downwash_angle_wing*(WingClass.span-3*diameter_propellers))/WingClass.span
+average_downwash_angle = (downwash_angle_prop*D*3 + downwash_angle_wing*(WingClass.span-3*D))/WingClass.span
 
 AeroClass.downwash_angle_wing_stall = downwash_angle_wing 
 AeroClass.downwash_angle_prop_stall = downwash_angle_prop 
