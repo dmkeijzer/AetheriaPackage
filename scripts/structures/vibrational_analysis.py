@@ -27,7 +27,7 @@ from input.data_structures.vee_tail import VeeTail
 from input.data_structures.wing import Wing
 from input.data_structures.performanceparameters import PerformanceParameters
 from modules.aero.avl_access import get_lift_distr
-from modules.structures.wingbox_optimizer_extra import Wingbox
+from modules.structures.wingbox_optimizer import Wingbox
 from modules.structures.pylon_design import PylonSizing
 
 
@@ -253,6 +253,10 @@ name_nid = {
 'engine_inboard_lhs': 1013,
 'engine_outboard_rhs': 1006,
 'engine_outboard_lhs': 1012,
+'battery_inboard_rhs': 1003,
+'battery_outboard_rhs': 1004,
+'battery_inboard_lhs': 1009,
+'battery_outboard_lhs': 1010,
 }
 
 masses = {
@@ -261,6 +265,10 @@ masses = {
 'engine_inboard_rhs': EngineClass.mass_pertotalengine,
 'engine_inboard_lhs': EngineClass.mass_pertotalengine,
 'engine_outboard_rhs': EngineClass.mass_pertotalengine,
+'battery_inboard_rhs': 205/4,
+'battery_outboard_rhs': 205/4,
+'battery_inboard_lhs': 205/4,
+'battery_outboard_lhs': 205/4,
 }
 
 for name, mass in masses.items():

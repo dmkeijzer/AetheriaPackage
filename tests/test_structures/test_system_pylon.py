@@ -36,6 +36,7 @@ def test_pylon_design():
     print(Pylon.eigenfreq_constraint(x0))
     print(Pylon.von_mises_constraint(x0))
     print(Pylon.column_buckling_constraint(x0))
+    print(Pylon.I_xx(x0))
     pass
 
 

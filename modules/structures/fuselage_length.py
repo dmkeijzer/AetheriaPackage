@@ -73,15 +73,14 @@ def plot_variable(h0, b0, V, l_tank, n,  parameter, parameter_values, fixed_para
 
     # Plot the colored plot
     fig, ax = plt.subplots()
-    plt.grid()
 
     if parameter == 'ARe':
-        cmap = 'YlOrRd'
-        start_value = 3.5  # Set the desired start value
+        cmap = 'viridis_r'
+        start_value = 3  # Set the desired start value
 
     elif parameter == 'Beta':
         cmap = 'viridis_r'
-        start_value = 4  # Set the desired start value
+        start_value = 2.5  # Set the desired start value
 
     levels = np.arange(start_value, np.nanmax(l_tail) + 0.51, 0.5)  # Set the colorbar range to exactly 0.4
 

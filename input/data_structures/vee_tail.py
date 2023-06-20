@@ -49,7 +49,7 @@ class VeeTail():
     def load(self):
         """ Initializes the class automatically from the JSON file
         """
-        with open(r"input/data_structures/aetheria_constants.json") as jsonFile:
+        with open(r"input/data_structures/aetheria_constants converged.json") as jsonFile:
             data = json.load(jsonFile)
         self.CL_cruise = data["CL_cruise_h"]
         self.Vh_V2 = data["Vh_V2"]
