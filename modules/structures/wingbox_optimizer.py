@@ -568,7 +568,7 @@ class Wingbox():
         Nxy =self.shearflow_max_from_tip(x)
         bend_stress=self.bending_stress_x_from_tip(x)
         tau_shear_arr = Nxy/t_sk
-        vm_lst = self.sigma_yield - np.sqrt(0.5 * (3 * tau_shear_arr ** 2+bend_stress**2))
+        vm_lst =  np.sqrt(0.5 * (3 * tau_shear_arr ** 2+bend_stress**2))*self.safety_factor/self.sigma_yield
         return vm_lst
 
 
