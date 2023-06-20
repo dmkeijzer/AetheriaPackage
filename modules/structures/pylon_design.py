@@ -72,7 +72,7 @@ if __name__ == "__main__":
     print(Pylon.weight_func(x0)*2)
     print(Pylon.eigenfreq_constraint(x0))
     print(Pylon.von_mises_constraint(x0))
-    print(Pylon.column_buckling_fconstraint(x0))
+    print(Pylon.column_buckling_constraint(x0))
     # res = Pylon.optimize_pylon_sizing(x0)
     # print(res.x)
     # print(res.success)

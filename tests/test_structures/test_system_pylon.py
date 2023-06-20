@@ -24,6 +24,7 @@ print(f"toc = {toc/2*1.1}")
 
 L = 2.6
 x0 = (toc/2*1.1,0.014)
+print(f"x0 = {x0}")
 
 
 

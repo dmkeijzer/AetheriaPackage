@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 import numpy as np
+import os
 import matplotlib.pyplot as plt
 import sys
 import pathlib as pl
+from matplotlib.ticker import MultipleLocator
+from matplotlib.colors import BoundaryNorm
 
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 
@@ -70,11 +73,21 @@ def plot_variable(h0, b0, V, l_tank, n,  parameter, parameter_values, fixed_para
 
     # Plot the colored plot
     fig, ax = plt.subplots()
+    plt.grid()
 
     if parameter == 'ARe':
-        c = ax.pcolormesh(l_tank, parameter_values, l_tail.T, cmap='YlOrRd')
+        cmap = 'YlOrRd'
+        start_value = 3.5  # Set the desired start value
+
     elif parameter == 'Beta':
-        c = ax.pcolormesh(l_tank, parameter_values, l_tail.T, cmap='viridis_r')
+        cmap = 'viridis_r'
+        start_value = 4  # Set the desired start value
+
+    levels = np.arange(start_value, np.nanmax(l_tail) + 0.51, 0.5)  # Set the colorbar range to exactly 0.4
+
+    norm = BoundaryNorm(levels, ncolors=plt.cm.get_cmap(cmap).N)
+
+    c = ax.contourf(l_tank, parameter_values, l_tail.T, levels=levels, cmap=cmap, norm=norm)
 
     ax.set_xlabel('Tank Length [m]')
     ax.set_ylabel(parameter)
@@ -82,7 +95,10 @@ def plot_variable(h0, b0, V, l_tank, n,  parameter, parameter_values, fixed_para
 
     # Add colorbar
     cbar = plt.colorbar(c, label='Tail Length [m]')
+    cbar.set_ticks(levels)
+    cbar.set_ticklabels([f'{tick:.1f}' for tick in levels])  # Format tick labels with two decimal places
 
+    plt.savefig(os.path.join(os.path.expanduser("~"), "Downloads", "sensitivity_tail_" + parameter + "_" + str(fixed_value) +  ".pdf"), bbox_inches= "tight")
     plt.show()
 
 def minimum_tail_length(h0, b0, Beta, V, l_tank, ARe, n, plot= False):

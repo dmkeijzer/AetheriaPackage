@@ -730,21 +730,21 @@ if __name__ == "__main__":
     # for n_str in n_str_lst:
 
 
-    GetWingWeight( ,engine,material,aero)
+    # GetWingWeight( wing,engine,material,aero)
     # #     # print("Number of stringers = ",n_str)
     # import winsound
     # frequency = 1500  # Set Frequency To 2500 Hertz
     # duration = 1000  # Set Duration To 1000 ms == 1 second
     # winsound.Beep(frequency, duration)
 
-    debug = True
+    debug  = True
     if debug:
         wingbox_vf = Wingbox(wing, engine, material, aero, performance, HOVER=True)
         wingbox_hf = Wingbox(wing, engine, material, aero, performance, HOVER=False)
 
 
         fig, axs = plt.subplots(3,2)
-        fig.set_figheight(6)
+        fig.set_figheight(7)
         fig.set_figwidth(9)
         y = wingbox_vf.y
         _fontsize=8    
