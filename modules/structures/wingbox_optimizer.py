@@ -839,7 +839,7 @@ if __name__ == "__main__":
         # plt.savefig(os.path.join(os.path.expanduser("~"), "Downloads", "moments_vertical_horizontal.pdf"), bbox_inches= "tight")
         # plt.show()
 
-        plt.plot(self.y,wingbox_vf.I_xx(x))
+        plt.plot(y,wingbox_vf.I_xx(x))
         plt.xlabel("Span location y [m]")
         plt.ylabel("Moment of Inertia in x [m^4]")
         plt.grid()
