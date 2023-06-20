@@ -13,7 +13,7 @@ V = 0.36433
 number_tanks = 2
 
 # resolution of 2D graphs
-resolution = 20
+resolution = 200
 
 # range of length of tanks
 l_tank = np.linspace(1, 6, resolution)
