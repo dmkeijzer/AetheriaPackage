@@ -24,12 +24,22 @@ def power_system_convergences(powersystem: Power, Mission: PerformanceParameters
     Tank = HydrogenTank()
     Tank.load()
     #estimate power system mass
-    nu = np.arange(0,1,0.01)
+    nu = np.arange(0,1.0001,0.01)
     Totalmass, Tankmass, FCmass, Batterymass= PropulsionSystem.mass(echo= np.copy(nu),
                                 Mission= Mission,
                                 Battery=IonBlock,
                                 FuellCell= Pstack,
                                 FuellTank= Tank )
+    
+    font_size = 14
+    plt.title("Aetheria Power System distribution", fontsize = font_size)
+    plt.plot(nu, Totalmass + 80, linewidth = 3)
+    plt.yticks(np.linspace(0,1200,7), fontsize = font_size -2)
+    plt.xticks(np.linspace(0,1,6), fontsize = font_size -2, )
+    plt.xlabel(r"Fuel cell cruise fraction $ \nu $ [-]", fontsize = font_size)
+    plt.ylabel("Power system mass [kg]", fontsize = font_size)
+    plt.grid()
+    plt.show()
 
     index_min_mass = np.where(Totalmass == min(Totalmass))
     NU = nu[index_min_mass][0]
@@ -45,6 +55,7 @@ def power_system_convergences(powersystem: Power, Mission: PerformanceParameters
     powersystem.h2_tank_mass = Tankmass[index_min_mass][0]
     powersystem.nu_FC_cruise_fraction = NU
     Mission.powersystem_mass = powersystemmass
+
 
     return powersystem, Mission
 
@@ -62,4 +73,4 @@ if __name__ == "__main__":
     powersystem, Mission = power_system_convergences(powersystem, Mission)
     
     TotalVolume , powersystem.h2_tank_volume, ignore, powersystem.battery_volume = PropulsionSystem.volume(powersystem.nu_FC_cruise_fraction, IonBlock, Pstack, Tank, powersystem.h2_tank_mass, powersystem.battery_mass )
-    powersystem.dump()
+
