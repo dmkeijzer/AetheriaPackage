@@ -119,9 +119,9 @@ def numerical_simulation(l_x_1, l_x_2, l_x_3, l_y_1, l_y_2, l_y_3, T_max, y_star
         acc_g = ax/g0
 
         # Append lists for all parameters
-        T1_lst.append(T1/2)
-        T2_lst.append(T2/2)
-        T3_lst.append(T3/2)
+        # T1_lst.append(T1/2)
+        # T2_lst.append(T2/2)
+        # T3_lst.append(T3/2)
         t_lst.append(t)
         ax_lst.append(ax)
         y_lst.append(y)
