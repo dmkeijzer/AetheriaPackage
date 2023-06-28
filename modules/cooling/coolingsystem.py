@@ -102,7 +102,7 @@ class CoolingsystemPerformance:
 
         #determine heat expelled by the radiator
         Q_expelled = epsilon * Qmax
-        return Q_expelled
+        return Q_expelled, epsilon
 
 
 
@@ -278,5 +278,8 @@ class RadiatorPerformance:
         eta_surface =  RadiatorPerformance.surface_efficiency(HX,eta_fin)
         ##print(eta_surface)
         R_tot =  RadiatorPerformance.hx_thermal_resistance(HX,h_c_cold, h_c_hot,eta_surface)
+        delta_pressure = HX.N_channel * RadiatorPerformance.pressure_drop(friction=friction_factor_hot, mass_flux= mass_flux_hot, 
+                                                           length= HX.W_HX, hydraulic_diameter=dh_hot,
+                                                           density= coolant.density) 
 
-        return R_tot
+        return R_tot, delta_pressure 

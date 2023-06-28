@@ -103,7 +103,7 @@ with open(const.json_path, 'r') as f:
 prob = om.Problem()
 prob.model.add_subsystem('Integrated_design',VTOLOptimization())
 # Initial values for the optimization TODO: Improve initial values
-prob.model.set_input_defaults('Integrated_design.AR', 7.5)
+prob.model.set_input_defaults('Integrated_design.AR', 8.4)
 prob.model.set_input_defaults('Integrated_design.l_fuselage', 9)
 # prob.model.set_input_defaults('Integrated_design.span', (8.4*data["S"])**0.5 )
 # prob.model.set_input_defaults('Integrated_design.span', data["mtom"] )
@@ -111,7 +111,7 @@ prob.model.set_input_defaults('Integrated_design.l_fuselage', 9)
 # Define constraints TODO: Probably better to define them in a central file, like constants
 prob.model.add_constraint('Integrated_design.MTOM', upper=3175.)
 prob.model.add_constraint('Integrated_design.span', lower= 6, upper= 14.)
-prob.model.add_constraint('Integrated_design.crashworthiness_lim', lower= 0 )
+prob.model.add_constraint('Integrated_design.crashworthiness_lim', lower= 0, upper = 14)
 #prob.model.add_constraint("Integrated_design.AR", upper= 8.5)
 
 
