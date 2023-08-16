@@ -1,6 +1,0 @@
-pandas
-scipy
-matplotlib
-seaborn
-rainflow
-plotly
