@@ -6,8 +6,8 @@ import pathlib as pl
 
 
 
-sys.path.append(str(list(pl.Path(__file__).parents)[1]))
-os.chdir(str(list(pl.Path(__file__).parents)[1]))
+sys.path.append(str(list(pl.Path(__file__).parents)[3]))
+os.chdir(str(list(pl.Path(__file__).parents)[3]))
 
 
 @dataclass
@@ -45,7 +45,7 @@ class Radiator:
 
 
     def load(self):
-        df = pd.read_csv("radiator_values/HX.csv")
+        df = pd.read_csv(r"input/radiator_values/HX.csv")
         self.h_tube = df['h_tube'][0]
         self.t_tube = df['t_tube'][0]
         self.t_channel = df['t_channel'][0]
