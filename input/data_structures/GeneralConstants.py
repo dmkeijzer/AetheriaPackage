@@ -54,7 +54,7 @@ R = 287                 #[J/kg*K]   O
 gamma = 1.4                  #        O
 
 # Structures
-beta_crash = 0.5 # crash diameter coefficient
+beta_crash = 0.4 # crash diameter coefficient
 E_mod = 70e9
 poisson = 0.3
 shear_mod =  26000000000.0

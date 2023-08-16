@@ -838,9 +838,11 @@ if __name__ == "__main__":
         #     ax.label_outer()
         # plt.savefig(os.path.join(os.path.expanduser("~"), "Downloads", "moments_vertical_horizontal.pdf"), bbox_inches= "tight")
         # plt.show()
+        import matplotlib.ticker as ticker
 
-        plt.plot(y,wingbox_vf.I_xx(X))
+        plt.plot(y,wingbox_vf.I_xx(X), lw= 1.5)
         plt.xlabel("Span location y [m]")
+        plt.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
         plt.ylabel(r"Moment of Inertia in x [$m^4$]")
         plt.grid()
         plt.show()

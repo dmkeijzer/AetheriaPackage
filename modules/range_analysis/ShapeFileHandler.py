@@ -3,19 +3,18 @@ import numpy as np
 import pandas as pd
 from geopy.distance import distance
 import os
+import pathlib as pl
 
+os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
 #--------------------------------
 # Required paths and reading in files
 #--------------------------------
-home_dir = os.path.dirname(__file__)
-path_geo_dataset = os.path.join(home_dir, r"input_data/ne_10m_populated_places_simple.shp")
-path_cities_dataset = os.path.join(home_dir,r"input_data/cities_by_gmp.xlsx")
-path_cities_gdp_coord = os.path.join(home_dir, r"input_data/plotting_df.csv")
-df_cities_shp = gpd.read_file(path_geo_dataset)
-cities_df = pd.read_excel(path_cities_dataset)
-city_coord_gdp = pd.read_csv(path_cities_gdp_coord)
-city_coord_gdp_arr = pd.read_csv(path_cities_gdp_coord).to_numpy()
+df_cities_shp = gpd.read_file(r'input/RangeAnalysisData/ne_10m_populated_places_simple.shp')
+cities_df = pd.read_excel(r'input/RangeAnalysisData/cities_by_gmp.xlsx')
+city_coord_gdp = pd.read_csv(r'input/RangeAnalysisData/plotting_df.csv')
+city_coord_gdp_arr = pd.read_csv(r'input/RangeAnalysisData/plotting_df.csv').to_numpy()
+
 #----------------------------------------------------------------------------------------------
 # The code hereunder checks which cities are available in the shapefile from our required
 # list and their index in the shapefile to be able to retrieve them.

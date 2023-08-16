@@ -47,3 +47,9 @@ class HydrogenTank:
         :return: Approx cost of the battery [US$]
         """
         return energy * self.cost
+
+
+if __name__ == "__main__":
+    test = HydrogenTank()
+    test.load()
+    print(test.volume(786963069.9958103/3.6e6))

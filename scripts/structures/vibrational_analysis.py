@@ -106,19 +106,19 @@ nacelle_prop.J = 2*I
 
 # V tail properties
 
-TailClass =  wbv.Wingbox(TailClass, EngineClass, MaterialClass, AeroClass, PerfClass, False)
+wingbox_tail_Class =  wbv.Wingbox(TailClass, EngineClass, MaterialClass, AeroClass, PerfClass, False)
 X = [5e-3, 15e-3, 15e-3, 2e-3, 1.3e-3]
 
 vtail_prop = BeamProp()
-A = TailClass.chord(0.1)**2*0.6**0.12
+A = wingbox_tail_Class.chord(0.1)**2*0.6**0.12
 E = MaterialClass.E
 rho_composite = MaterialClass.rho
 vtail_prop.A = A 
 vtail_prop.E = E
 scf = 5/6.
 vtail_prop.G = scf*E/2/(1+0.3)
-Izz =  (TailClass.I_xx(X)[idx] + TailClass.I_xx(X)[idx + 1])/2
-Iyy = (TailClass.I_zz(X)[idx] + TailClass.I_zz(X)[idx + 1])/2
+Izz =  (wingbox_tail_Class.I_xx(X)[idx] + wingbox_tail_Class.I_xx(X)[idx + 1])/2
+Iyy = (wingbox_tail_Class.I_zz(X)[idx] + wingbox_tail_Class.I_zz(X)[idx + 1])/2
 vtail_prop.Izz = Izz
 vtail_prop.Iyy = Iyy
 vtail_prop.intrho = rho_composite*A
@@ -128,7 +128,7 @@ vtail_prop.J = Izz + Iyy
 
 
 nodes = { #nid: [x, y, z]
-    1000 : [WingClass.x_lewing + TailClass.length_wing2vtail , 0.0, 0.],
+    1000 : [WingClass.x_lewing + TailClass.length_wing2vtail , 0. , 0.],
     1001: [WingClass.x_lewing + TailClass.length_wing2vtail, TailClass.span/2*np.cos(TailClass.dihedral),TailClass.span/2*np.sin(TailClass.dihedral)],
     1002 : [WingClass.x_lewing, 0. , 0.],
     1003 : [WingClass.x_lewing, WingClass.span/8, 0.],

@@ -40,3 +40,5 @@ class HydrogenTankSizing:
         """
         return energy * self.cost
 
+
+

@@ -5,17 +5,20 @@ import matplotlib.pyplot as plt
 import matplotlib
 import scipy.stats as stat
 import os
+import sys
+import pathlib as pl
 
-import ShapeFileHandler as sfh
+sys.path.append(str(list(pl.Path(__file__).parents)[2]))
+os.chdir(str(list(pl.Path(__file__).parents)[2]))
+
+import modules.range_analysis.ShapeFileHandler as sfh
 from math import ceil
 
 #----------------------------
 # Get the required data
 #--------------------------------
-path_range_data = os.path.join(os.path.dirname(__file__), "input_data/trip_2.0.csv")
-gdp_data_path =  os.path.join(os.path.dirname(__file__), "input_data/plotting_df.csv")
 
-df_trips = pd.read_csv(path_range_data).to_numpy() # array - example row ['The Hague-Bremen' 326.5480004995904 'The-Bre-dir' 99.0] 
+df_trips = pd.read_csv(r"input/RangeAnalysisData/trip_2.0.csv").to_numpy() # array - example row ['The Hague-Bremen' 326.5480004995904 'The-Bre-dir' 99.0] 
 
 
 class Bin():
