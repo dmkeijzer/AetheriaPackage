@@ -7,7 +7,7 @@ sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
 from input.data_structures import *
-from input.data_structures import GeneralConstants as const
+from input import GeneralConstants as const
 import scripts.Propellersizing.BEM2023 as BEM
 from input.data_structures.ISA_tool import ISA
 import time

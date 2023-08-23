@@ -14,7 +14,7 @@ from modules.avlwrapper import Geometry, Surface, Section, NacaAirfoil, Control,
 
 from input.data_structures.wing import Wing
 from input.data_structures.aero import Aero
-import input.data_structures.GeneralConstants as const
+import input.GeneralConstants as const
 
 def get_lift_distr(wing, aero, plot= False, test= False):
 

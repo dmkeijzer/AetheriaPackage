@@ -7,7 +7,7 @@ import pathlib as pl
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
-from input.data_structures.GeneralConstants import *
+from input.GeneralConstants import *
 
 @dataclass
 class Wing():

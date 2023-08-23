@@ -9,7 +9,7 @@ import numpy as np
 from input.data_structures.wing import Wing
 from input.data_structures.aero import Aero
 from input.data_structures.engine import Engine
-import input.data_structures.GeneralConstants  as const
+import input.GeneralConstants  as const
 from  modules.aero.prop_wing_interaction  import *
 from input.data_structures.ISA_tool import ISA
 

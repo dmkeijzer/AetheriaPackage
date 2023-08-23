@@ -11,7 +11,7 @@ from modules.avlwrapper import Geometry, Surface, Section, NacaAirfoil, Control,
     Parameter
 from input.data_structures.wing import Wing
 from input.data_structures.aero import Aero
-import input.data_structures.GeneralConstants as const
+import input.GeneralConstants as const
 
 
 

@@ -25,10 +25,6 @@ class PerformanceParameters:
     climbPower : float = None
     
     #performance
-    rate_of_climb_cruise: float = None
-    rate_of_descent_cruise : float = None
-    rate_of_climb_hover: float = None
-    cruise_velocity : float = None
     v_stall: float = None
     v_approach: float = None
     MTOM: float = None

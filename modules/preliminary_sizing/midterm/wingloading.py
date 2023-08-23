@@ -11,7 +11,7 @@ import os
 sys.path.append(str(list(pl.Path(__file__).parents)[3]))
 os.chdir(str(list(pl.Path(__file__).parents)[3]))
 
-import input.data_structures.GeneralConstants as const
+import input.GeneralConstants as const
 
 
 def plot_wing_power_loading_graphs(dict_directory,dict_name,i):

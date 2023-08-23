@@ -8,7 +8,7 @@ import pickle
 sys.path.append(str(list(pl.Path(__file__).parents)[1]))
 
 from  modules.structures.stress_forms import *
-import input.data_structures.GeneralConstants as const
+import input.GeneralConstants as const
 from input.data_structures.material import Material
 from input.data_structures.wing import Wing
 from input.data_structures.engine import Engine

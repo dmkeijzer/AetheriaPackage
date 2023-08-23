@@ -10,7 +10,7 @@ import matplotlib.cm as cm
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 
 import modules.structures.fuselage_length as fl
-import input.data_structures.GeneralConstants as const
+import input.GeneralConstants as const
 
 # inputs
 

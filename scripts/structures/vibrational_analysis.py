@@ -19,7 +19,7 @@ import time
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
-from input.data_structures.GeneralConstants import *
+from input.GeneralConstants import *
 from input.data_structures.aero import Aero
 from input.data_structures.engine import Engine
 from input.data_structures.material import Material

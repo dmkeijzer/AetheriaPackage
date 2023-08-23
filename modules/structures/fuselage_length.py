@@ -9,7 +9,7 @@ from matplotlib.colors import BoundaryNorm
 
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 
-import input.data_structures.GeneralConstants as const
+import input.GeneralConstants as const
 
 """CALCULATE TAIL LENGTH BASED ON BETA AND ASPECT RATIO"""
 def find_tail_length(h0, b0, Beta, V, l, AR, n):

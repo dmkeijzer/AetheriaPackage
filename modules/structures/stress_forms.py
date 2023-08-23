@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import pathlib as pl
 import sys
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
-from input.data_structures.GeneralConstants import *
+from input.GeneralConstants import *
 
 """NORMAL STRESS"""
 def bending_stress(moment_x,moment_z,i_xx,i_zz,i_xz,width,height):

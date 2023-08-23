@@ -12,7 +12,7 @@ sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
 from modules.convergence.integration import run_integration
-import input.data_structures.GeneralConstants as const
+import input.GeneralConstants as const
 from input.data_structures import PerformanceParameters
 
 class VTOLOptimization(om.ExplicitComponent):

@@ -8,7 +8,7 @@ sys.path.append(str(list(pl.Path(__file__).parents)[3]))
 os.chdir(str(list(pl.Path(__file__).parents)[3]))
 
 # Import from modules and input folder
-import input.data_structures.GeneralConstants  as const
+import input.GeneralConstants  as const
 from modules.aero.clean_class2drag import *
 from modules.aero.midterm_datcom_methods import *
 from input.data_structures import *
@@ -35,7 +35,7 @@ os.chdir(str(list(pl.Path(__file__).parents)[2]))
 # rho_cr = atm.density()
 # mhu = atm.viscosity_dyn()
 
-def final_drag_estimation(WingClass, FuselageClass, VTailClass, AeroClass, HortailClass):
+def integrated_drag_estimation(WingClass, FuselageClass, VTailClass, AeroClass, HortailClass):
     mac = WingClass.chord_mac
 
     # General flight variables

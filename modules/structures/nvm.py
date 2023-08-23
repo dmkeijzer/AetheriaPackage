@@ -8,7 +8,7 @@ import json
 
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 
-from input.data_structures.GeneralConstants import *
+from input.GeneralConstants import *
 
 dy = 0.001
 

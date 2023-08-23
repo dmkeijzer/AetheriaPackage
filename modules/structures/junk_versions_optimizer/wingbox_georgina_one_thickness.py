@@ -12,11 +12,11 @@ import openmdao.api as om
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
-import input.data_structures.GeneralConstants as const
+import input.GeneralConstants as const
 from input.data_structures.engine import Engine
 from input.data_structures.material import Material
 from input.data_structures.wing import Wing
-from input.data_structures.GeneralConstants import *
+from input.GeneralConstants import *
 from modules.aero.avl_access import get_lift_distr
 
 

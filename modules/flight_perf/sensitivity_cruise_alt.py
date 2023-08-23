@@ -11,7 +11,7 @@ os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
 from modules.flight_perf.EnergyPower import *
 from modules.flight_perf.transition_model import *
-import input.data_structures.GeneralConstants as const
+import input.GeneralConstants as const
 from  ISA_tool import ISA
 from input.data_structures import *
 WingClass = Wing()

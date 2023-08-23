@@ -11,13 +11,13 @@ os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
 from input.data_structures import *
 from modules.powersizing import PropulsionSystem
-from input.data_structures import GeneralConstants
+from input import GeneralConstants
 from modules.stab_ctrl.vtail_sizing_optimal import size_vtail_opt
-from modules.stab_ctrl.wing_loc_horzstab_sizing import wing_location_horizontalstab_size
+from modules.stab_ctrl.wing_loc_horzstab_sizing import wing_location_horizontalstab_size # Well this should have probably been used
 from modules.planform.planformsizing import wing_planform
 from modules.preliminary_sizing.wing_power_loading_functions import get_wing_power_loading
 from modules.structures.Flight_Envelope import get_gust_manoeuvr_loadings
-from modules.aero.drag_estimation_function import final_drag_estimation
+from modules.aero.clean_class2drag import integrated_drag_estimation
 from modules.aero.slipstream_cruise_function import slipstream_cruise
 from modules.aero.slipstream_stall_function import slipstream_stall
 from modules.flight_perf.performance  import get_energy_power_perf
@@ -26,14 +26,14 @@ from modules.structures.ClassIIWeightEstimation import get_weight_vtol
 from modules.structures.wingbox_optimizer import GetWingWeight
 #from modules.propellor.propellor_sizing import propcalc
 from scripts.structures.vtail_span import span_vtail
-import input.data_structures.GeneralConstants as const
+import input.GeneralConstants as const
 from scripts.power.finalPowersizing import power_system_convergences
 
 
 
 
 
-def run_integration(label):
+def run_integration(label, counter_tuple):
     #----------------------------- Initialize classes --------------------------------
     IonBlock = Battery(Efficiency= 0.9)
     Pstack = FuelCell()
@@ -74,7 +74,7 @@ def run_integration(label):
 
 
     #-------------------- Aerodynamic sizing--------------------
-    wing, fuselage, vtail, aero, horizontal_tail =  final_drag_estimation(wing, fuselage, vtail, aero, horizontal_tail)
+    wing, fuselage, vtail, aero, horizontal_tail =  integrated_drag_estimation(wing, fuselage, vtail, aero, horizontal_tail)
     aero = slipstream_cruise(wing, aero, mission) # TODO the effect of of cl on the angle of attack
 
     #-------------------- Flight Performance --------------------
@@ -166,14 +166,13 @@ def run_integration(label):
     
 
     #--------------------------------- Log all variables from current iterations ----------------------------------
-    save_path = r"output\final_convergence_history"
     # Load data from JSON file
     save_path = r"output\final_convergence_history"
     with open(const.json_path) as jsonFile:
         data = json.load(jsonFile)
 
     if os.path.exists(os.path.join(save_path, "aetheria" + "_" + label + "_hist.csv")):
-        pd.DataFrame(np.array(list(data.values()), dtype= object).reshape(1, len(data))).to_csv(os.path.join(save_path, "aetheria" + "_" + label + "_hist.csv") , mode="a", header=False, index= False)
+        pd.DataFrame(np.array(list(data.values()), dtype= object).reshape(1, -1)).to_csv(os.path.join(save_path, "aetheria" + "_" + label + "_hist.csv") , mode="a", header=False, index= False)
     else: 
         pd.DataFrame([data]).to_csv(os.path.join(save_path, "aetheria" + "_" + label + "_hist.csv"), columns= list(data.keys()), index=False)
             # Read the output from the subprocess

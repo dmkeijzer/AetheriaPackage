@@ -7,7 +7,7 @@ import json
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 # sys.path.append(os.path.join(list(pl.Path(__file__).parents)[2], "modules","powersizing"))
 
-import input.data_structures.GeneralConstants as const
+import input.GeneralConstants as const
 from scipy.optimize import minimize
 from input.data_structures.engine import Engine
 

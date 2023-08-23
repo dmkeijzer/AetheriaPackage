@@ -6,7 +6,7 @@ import os
 import numpy as np
 
 # Import from modules and input folder
-import input.data_structures.GeneralConstants as const
+import input.GeneralConstants as const
 from  modules.aero.clean_class2drag import *
 from input.data_structures.ISA_tool import ISA
 

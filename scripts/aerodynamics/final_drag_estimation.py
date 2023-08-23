@@ -8,7 +8,7 @@ sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
 # Import from modules and input folder
-import input.data_structures.GeneralConstants  as const
+import input.GeneralConstants  as const
 from modules.aero.clean_class2drag import *
 from input.data_structures import *
 from input.data_structures.ISA_tool import ISA

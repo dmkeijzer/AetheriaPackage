@@ -46,7 +46,7 @@ class Fuselage():
         with open(r"input/data_structures/aetheria_constants.json") as jsonFile:
             data = json.load(jsonFile)
         self.length_fuselage = data["l_fuse"]
-        self.limit_fuselage = data["l_fuse"]
+        self.limit_fuselage = data["limit_fuse"]
         self.diameter_fuselage = data["d_fuselage"]
         self.upsweep = data["upsweep"]
         self.h_wing = data["h_wings"]
