@@ -14,13 +14,9 @@ import sys
 import pathlib as pl
 import os
 
-#sys.path.append(str(list(pl.Path(__file__).parents)[1]))
+sys.path.append(str(list(pl.Path(__file__).parents)[1]))
 
-from  ISA_tool import ISA
-
-# General paths
-
-json_path = r"input/data_structures/aetheria_constants.json"
+from  modules.misc_tools.ISA_tool import ISA 
 
 
 # constants of physics

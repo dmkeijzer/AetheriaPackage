@@ -20,10 +20,22 @@ def config():
 def wing(config):
     return Wing.load(config["test_settings"]["dataset"])
 
-def test_fixtures(config, wing):
-    pass
-    print(type(config))
-    print(config["test_settings"])
-    print(type(wing))
-    print(wing.aspect_ratio)
+@pytest.fixture
+def aircraft(config):
+    return AircraftParameters.load(config["test_settings"]["dataset"])
+
+
+@pytest.fixture
+def aero(config):
+    return Aero.load(config["test_settings"]["dataset"])
+
+@pytest.fixture
+def engine(config):
+    return Engine.load(config["test_settings"]["dataset"])
+
+def test_fixtures( wing, aircraft, aero, engine):
+    print(wing)
+    print(aircraft)
+    print(aero)
+    print(engine)
 

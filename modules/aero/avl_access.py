@@ -12,8 +12,6 @@ os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
 from modules.avlwrapper import Geometry, Surface, Section, NacaAirfoil, Control, Point, Spacing, Session, Case, Parameter
 
-from input.data_structures.wing import Wing
-from input.data_structures.aero import Aero
 import input.GeneralConstants as const
 
 def get_lift_distr(wing, aero, plot= False, test= False):

@@ -12,9 +12,7 @@ from fuselage import Fuselage
 from aero import Aero
 from fluid import Fluid
 from engine import Engine
-from material import Material
 from radiator import Radiator
 from stability import Stab
 from vee_tail import VeeTail
 from power import Power
-from material import Material

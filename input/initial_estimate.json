@@ -5,7 +5,8 @@
             "quarterchord_sweep" :12
       },
       "Veetail" : {
-            "surface" :12
+            "surface" :12,
+            "quarterchord_sweep" :12
       },
       "Fuselage" : {
             "length_fuselage" :12,
@@ -20,7 +21,7 @@
             "MTOM": 2482.586143708877,
             "prop_eff":0.9,
             "v_stall" :12,
-            "G":5,
+            "glide_slope":5,
             "turn_loadfactor":0.9,
             "Stots" :12,
             "v_max" :12
@@ -30,7 +31,24 @@
             "cL_max" :12,
             "cL_alpha" :12,
             "e" :12
+      },
+      "Engine": {
+            "x_rotor_loc": [
+                  3.1248466424192243,
+                  3.1248466424192243,
+                  5.8358679674218426,
+                  5.8358679674218426,
+                  6.8,
+                  6.8
+            ],
+            "y_rotor_loc": [
+                  2.3,
+                  -2.3,
+                  4.697732064997583,
+                  -4.697732064997583,
+                  2.3,
+                  -2.3
+            ],
+            "pylon_length": 2.2
       }
-
-
 }

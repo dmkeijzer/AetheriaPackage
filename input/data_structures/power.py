@@ -19,6 +19,8 @@ class Power:
     battery_volume: float = None
     fuelcell_volume : float = None
     h2_tank_volume : float = None
+    powersystem_mass: float = None
+
 
     def load(self):
             """ Initializes the class automatically from the JSON file

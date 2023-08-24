@@ -8,7 +8,6 @@ import os
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 
 
-@dataclass
 class AircraftParameters(BaseModel):
     MTOM: float 
     Stots: float # Total area of wing reference area

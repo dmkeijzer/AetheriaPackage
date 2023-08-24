@@ -35,32 +35,21 @@ from scripts.power.finalPowersizing import power_system_convergences
 
 def run_integration(label, counter_tuple):
     #----------------------------- Initialize classes --------------------------------
-    IonBlock = Battery(Efficiency= 0.9)
-    Pstack = FuelCell()
-    Tank = HydrogenTank(energyDensity=1.8, volumeDensity=0.6, cost= 16)
-    mission = AircraftParameters()
-    wing  =  Wing()
-    engine = Engine()
-    aero = Aero()
-    fuselage = Fuselage()
-    vtail = VeeTail()
-    stability = Stab()
-    material = Material()
-    power = Power()
+    if counter_tuple == (1,1):
+        IonBlock = Battery(Efficiency= 0.9)
+        Pstack = FuelCell()
+        Tank = HydrogenTank(energyDensity=1.8, volumeDensity=0.6, cost= 16)
+        mission = AircraftParameters.load(r"input/initial_estimate.json")
+        wing  =  Wing.load(r"input/initial_estimate.json")
+        engine = Engine.load(r"input/initial_estimate.json")
+        aero = Aero.load(r"input/initial_estimate.json")
+        fuselage = Fuselage.load(r"input/initial_estimate.json")
+        vtail = VeeTail.load(r"input/initial_estimate.json")
+        stability = Stab.load(r"input/initial_estimate.json")
+        power = Power.load(r"input/initial_estimate.json")
+    else:
     #----------------------------------------------------------------------------------
 
-    #------------------------ Load cases for first time----------------------------------------
-    mission.load()
-    wing.load()  
-    engine.load() 
-    aero.load() 
-    horizontal_tail.load() 
-    fuselage.load() 
-    vtail.load() 
-    stability.load() 
-    material.load()
-    power.load()
-    #----------------------------------------------------------------------
 
     # Preliminary Sizing
     mission, wing,  engine, aero = get_wing_power_loading(mission, wing, engine, aero)
@@ -75,7 +64,7 @@ def run_integration(label, counter_tuple):
     # mission, engine = propcalc( clcd= aero.ld_cruise, mission=mission, engine= engine, h_cruise= GeneralConstants.h_cruise)
 
     #-------------------- Aerodynamic sizing--------------------
-    wing, fuselage, vtail, aero, horizontal_tail =  integrated_drag_estimation(wing, fuselage, vtail, aero, horizontal_tail) #TODO go through this functions and find inital estime
+    wing, fuselage, vtail, aero, horizontal_tail =  integrated_drag_estimation(wing, fuselage, vtail, aero) #TODO go through this functions and find inital estime
     aero = slipstream_cruise(wing, engine, aero, mission) # TODO the effect of of cl on the angle of attack
 
     #-------------------- Flight Performance --------------------
