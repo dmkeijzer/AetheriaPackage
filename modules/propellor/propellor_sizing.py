@@ -13,7 +13,7 @@ from input.data_structures.ISA_tool import ISA
 import time
 
 
-def propcalc( clcd, mission: PerformanceParameters, engine: Engine, h_cruise: float):
+def propcalc( clcd, mission: AircraftParameters, engine: Engine, h_cruise: float):
     
     
     diskarea = mission.MTOM / 120 / 6
@@ -35,8 +35,8 @@ def propcalc( clcd, mission: PerformanceParameters, engine: Engine, h_cruise: fl
         #size for the cruise recruirements
         blade_cruise = BEM.BEM(B, prop_radius, rpm_cruise, xi_0, rho_cruise, dyn_vis, mission.cruise_velocity, N_stations=25, a=soundspeed, RN_spacing=100000, T=T_cr_per_engine)
         zeta, design, V_e, coefs, solidity = blade_cruise.optimise_blade(0)
-        power_tot_cruise = (design[7] / 2 * rho_cruise * mission.cruise_velocity ** 3 * np.pi * prop_radius ** 2) * 6
-        blade_cruise = BEM.BEM(B, prop_radius, rpm_cruise, xi_0, rho_cruise, dyn_vis, mission.cruise_velocity, N_stations=25, a=soundspeed,
+        power_tot_cruise = (design[7] / 2 * rho_cruise *const.v_cr ** 3 * np.pi * prop_radius ** 2) * 6
+        blade_cruise = BEM.BEM(B, prop_radius, rpm_cruise, xi_0, rho_cruise, dyn_vis,const.v_cr, N_stations=25, a=soundspeed,
                             RN_spacing=100000, T=T_cr_per_engine * T_factor)
         zeta, design, V_e, coefs, solidity = blade_cruise.optimise_blade(0)
 
@@ -98,7 +98,7 @@ def propcalc( clcd, mission: PerformanceParameters, engine: Engine, h_cruise: fl
 
 if __name__ == "__main__":
 
-    mission = PerformanceParameters()
+    mission = AircraftParameters()
     mission.load()
 
     engine = Engine()

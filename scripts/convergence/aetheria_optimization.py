@@ -13,7 +13,7 @@ os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
 from modules.convergence.integration import run_integration
 import input.GeneralConstants as const
-from input.data_structures import PerformanceParameters
+from input.data_structures import AircraftParameters
 
 class VTOLOptimization(om.ExplicitComponent):
     def __init__(self, **kwargs):

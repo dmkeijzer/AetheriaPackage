@@ -16,7 +16,7 @@ from  ISA_tool import ISA
 from input.data_structures import *
 WingClass = Wing()
 AeroClass = Aero()
-PerformanceClass = PerformanceParameters()
+PerformanceClass = AircraftParameters()
 
 WingClass.load()
 AeroClass.load()

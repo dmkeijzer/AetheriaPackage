@@ -9,13 +9,13 @@ sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
 from input.data_structures import Battery, FuelCell, HydrogenTank, Power
-from input.data_structures.performanceparameters import PerformanceParameters
+from input.data_structures.aircraft_parameters import AircraftParameters
 from modules.powersizing.powersystem import PropulsionSystem
 
 
 
 
-def power_system_convergences(powersystem: Power, Mission: PerformanceParameters):
+def power_system_convergences(powersystem: Power, Mission: AircraftParameters):
     """
         does the computations for the final optimization/ convergences loop
     """
@@ -62,7 +62,7 @@ def power_system_convergences(powersystem: Power, Mission: PerformanceParameters
 if __name__ == "__main__":
     #loading data
     powersystem = Power()
-    Mission = PerformanceParameters()
+    Mission = AircraftParameters()
     Mission.load()
 
     IonBlock = Battery(Efficiency= 0.9)

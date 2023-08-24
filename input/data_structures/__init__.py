@@ -7,10 +7,9 @@ from wing import Wing
 from battery import Battery
 from fuellCell import FuelCell
 from hydrogenTank import HydrogenTank
-from performanceparameters import PerformanceParameters
+from aircraft_parameters import AircraftParameters
 from fuselage import Fuselage
 from aero import Aero
-from hor_tail import HorTail
 from fluid import Fluid
 from engine import Engine
 from material import Material

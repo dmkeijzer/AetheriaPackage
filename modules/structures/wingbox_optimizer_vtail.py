@@ -23,7 +23,7 @@ from input.data_structures.aero import Aero
 from input.data_structures.engine import Engine
 from input.data_structures.material import Material
 from input.data_structures.wing import Wing
-from input.data_structures.performanceparameters import PerformanceParameters
+from input.data_structures.aircraft_parameters import AircraftParameters
 from input.data_structures.vee_tail import VeeTail
 from modules.aero.avl_access import get_lift_distr
 
@@ -730,7 +730,7 @@ if __name__ == "__main__":
     engine = Engine()
     material = Material()
     aero = Aero()
-    performance = PerformanceParameters()
+    performance = AircraftParameters()
 
     wing.load()
     engine.load()

@@ -1,0 +1,36 @@
+{
+      "Wing" : {
+            "aspect_ratio" :12,
+            "taper" :12,
+            "quarterchord_sweep" :12
+      },
+      "Veetail" : {
+            "surface" :12
+      },
+      "Fuselage" : {
+            "length_fuselage" :12,
+            "diameter_fuselage" :12,
+            "length_cockpit" :12,
+            "length_cabin" :12,
+            "length_tail" :12,
+            "upsweep" :12,
+            "width_fuselage_outer" :12
+      },
+      "AircraftParameters" : {
+            "MTOM": 2482.586143708877,
+            "prop_eff":0.9,
+            "v_stall" :12,
+            "G":5,
+            "turn_loadfactor":0.9,
+            "Stots" :12,
+            "v_max" :12
+      },
+      "Aero": {
+            "cd0_cruise" :12,
+            "cL_max" :12,
+            "cL_alpha" :12,
+            "e" :12
+      }
+
+
+}

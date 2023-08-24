@@ -10,11 +10,11 @@ os.chdir(str(list(pl.Path(__file__).parents)[2]))
 from modules.structures.fuselage_length import get_fuselage_sizing
 from input.data_structures.fuselage import Fuselage
 from input.data_structures.fuellCell import FuelCell
-from input.data_structures.performanceparameters import PerformanceParameters
+from input.data_structures.aircraft_parameters import AircraftParameters
 from input.data_structures.hydrogenTank import HydrogenTank
 
 FuseClass = Fuselage()
-PerfClass = PerformanceParameters()
+PerfClass = AircraftParameters()
 pstack = FuelCell()
 TankClass = HydrogenTank()
 

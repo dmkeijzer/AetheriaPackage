@@ -5,7 +5,7 @@ import numpy as np
 
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 
-from input.data_structures import Battery, PerformanceParameters, FuelCell, HydrogenTank
+from input.data_structures import Battery, AircraftParameters, FuelCell, HydrogenTank
 from modules.powersizing.powersystem import energy_cruise_mass, power_cruise_mass,hover_mass,hover_energy_mass, PropulsionSystem
 
 def set_up(): 
@@ -13,7 +13,7 @@ def set_up():
     IonBlock = Battery(Efficiency= 0.9)
     Pstack = FuelCell()
     Tank = HydrogenTank()
-    Mission = PerformanceParameters()
+    Mission = AircraftParameters()
     Tank.load()
     Mission.load()
     return Mission, IonBlock, Tank, Pstack

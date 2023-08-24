@@ -10,7 +10,6 @@ os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
 @dataclass
 class VeeTail():
-    CL_cruise: float = None
     Vh_V2: float = None
     length_wing2vtail: float = None
     rudder_max: float = None

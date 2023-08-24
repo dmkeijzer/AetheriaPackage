@@ -14,14 +14,14 @@ from input.data_structures.wing import Wing
 from input.data_structures.engine import Engine
 from input.data_structures.material import Material
 from input.data_structures.aero import Aero
-from input.data_structures.performanceparameters import PerformanceParameters
+from input.data_structures.aircraft_parameters import AircraftParameters
 
 #------------- SETUP ----------------------------------------------------------
 WingClass =  Wing()
 EngineClass = Engine()
 MatClass = Material()
 AeroClass = Aero()
-PerfClass = PerformanceParameters()
+PerfClass = AircraftParameters()
 
 EngineClass.load()
 

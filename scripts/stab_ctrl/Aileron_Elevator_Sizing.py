@@ -12,7 +12,7 @@ from input.data_structures import *
 
 HorTailClass = HorTail()
 AeroClass = Aero()
-PerformanceClass = PerformanceParameters()
+PerformanceClass = AircraftParameters()
 
 
 HorTailClass.load()

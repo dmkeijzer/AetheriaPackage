@@ -12,7 +12,7 @@ sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 
 
 from input.data_structures import Battery, FuelCell , HydrogenTank
-from input.data_structures import PerformanceParameters
+from input.data_structures import AircraftParameters
 
 
 def energy_cruise_mass(EnergyRequired: float , echo: float , Tank: HydrogenTank, Battery: Battery, FuellCell: FuelCell) -> list[float]:
@@ -76,7 +76,7 @@ def hover_energy_mass(PowerRequired: float ,MaxPowerFC: float, Battery: Battery,
 
 class PropulsionSystem:
 
-    def mass(echo: float , Mission: PerformanceParameters , Battery: Battery, FuellCell: FuelCell, FuellTank: HydrogenTank, hovertime: float = 60, extra_power_during_hover_kW: float = 20 ) -> list[float]: #,MaxPowerFC:float,PowerDensityFC: float , PowerDensityBattery: float, EnergyDensityTank: float  ) -> list[float]:
+    def mass(echo: float , Mission: AircraftParameters , Battery: Battery, FuellCell: FuelCell, FuellTank: HydrogenTank, hovertime: float = 60, extra_power_during_hover_kW: float = 20 ) -> list[float]: #,MaxPowerFC:float,PowerDensityFC: float , PowerDensityBattery: float, EnergyDensityTank: float  ) -> list[float]:
         """Calculate total mass of the propulsion system
         input: 
             -echo [-]: The percentage of power deliverd by the fuel cell, if over 1 than the fuell cell charges the  battery

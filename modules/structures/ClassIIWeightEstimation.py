@@ -246,7 +246,7 @@ class Miscallenous(Component):
 
 
         
-def get_weight_vtol(perf_par: PerformanceParameters, fuselage: Fuselage, wing: Wing,  engine: Engine, vtail: VeeTail, test= False):
+def get_weight_vtol(perf_par: AircraftParameters, fuselage: Fuselage, wing: Wing,  engine: Engine, vtail: VeeTail, test= False):
     """ This function is used for the final design, it reuses some of the codes created during
     the midterm. It computes the final weight of the vtol using the data structures created in the
     final design phase

@@ -17,7 +17,7 @@ from input.data_structures.ISA_tool import ISA
 
 
 
-def slipstream_cruise(WingClass, AeroClass, mission):
+def slipstream_cruise(WingClass,EngineClass, AeroClass, mission):
         with open(r"input/data_structures/aetheria_constants.json") as jsonFile:
                 data = json.load(jsonFile)
         atm = ISA(const.h_cruise)
@@ -25,9 +25,8 @@ def slipstream_cruise(WingClass, AeroClass, mission):
         rho_cr = atm.density()
         mhu = atm.viscosity_dyn()
         # print(rho_cr)
-        diskarea = mission.MTOM / 120 
-        diameter_propellers = 2*np.sqrt(diskarea / np.pi )
-        D = diameter_propellers
+        EngineClass.total_disk_area = mission.MTOM / const.diskloading
+        diameter_propellers = 2*np.sqrt(EngineClass.total_disk_area/ np.pi )
 
         # Angles
         i_cs_var = 0.0733 # calculated from lift at cruise
@@ -78,5 +77,5 @@ def slipstream_cruise(WingClass, AeroClass, mission):
         AeroClass.downwash_angle_prop = downwash_angle_prop
         AeroClass.cL_plus_slipstream = CL_total_cruise
         #     print(CL_wing_section, CL_s_section, CL_old, prop_lift_var)
-        return AeroClass
+        return WingClass, EngineClass, AeroClass, mission
 

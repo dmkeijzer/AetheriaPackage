@@ -25,7 +25,7 @@ from input.data_structures.engine import Engine
 from input.data_structures.material import Material
 from input.data_structures.vee_tail import VeeTail
 from input.data_structures.wing import Wing
-from input.data_structures.performanceparameters import PerformanceParameters
+from input.data_structures.aircraft_parameters import AircraftParameters
 from modules.aero.avl_access import get_lift_distr
 from modules.structures.wingbox_optimizer import Wingbox
 import modules.structures.wingbox_optimizer_vtail as wbv
@@ -37,7 +37,7 @@ EngineClass = Engine()
 MaterialClass = Material()
 AeroClass = Aero()
 TailClass = VeeTail()
-PerfClass = PerformanceParameters()
+PerfClass = AircraftParameters()
 
 WingClass.load()
 EngineClass.load()

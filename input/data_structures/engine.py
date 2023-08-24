@@ -19,7 +19,6 @@ class Engine():
     :param mass_pernacelle: Mass of each nacelle [kg]
     :param mass_pertotalengine: Mass of each engines, this consists of a nacelle and a powertrain [kg]
     """
-    no_engines: int = None
     totalmass: float  = None
     mass_perpowertrain: float = None
     mass_pernacelle: float = None

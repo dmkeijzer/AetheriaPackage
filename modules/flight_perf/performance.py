@@ -50,6 +50,7 @@ def get_energy_power_perf(WingClass, EngineClass, AeroClass, PerformanceClass):
     transition_simulation = numerical_simulation(l_x_1=3.7057, l_x_2=1.70572142*0.75, l_x_3=4.5, l_y_1=0.5, l_y_2=0.5, l_y_3=0.789+0.5, T_max=10500, y_start=30.5, mass=PerformanceClass.MTOM, g0=const.g0, S=data['S'], CL_climb=data['cl_climb_clean'],
                                 alpha_climb=data['alpha_climb_clean'], CD_climb=data["cdi_climb_clean"] + data["cd0"],
                                 Adisk=EngineClass.total_disk_area, lod_climb=data['ld_climb'], eff_climb=data['prop_eff'], v_stall=data['v_stall'])
+
     E_trans_ver2hor = transition_simulation[0]
     transition_power_max = np.max(transition_simulation[0])
     final_trans_distance = transition_simulation[3][-1]
@@ -105,28 +106,26 @@ def get_energy_power_perf(WingClass, EngineClass, AeroClass, PerformanceClass):
     E_total = E_to + E_trans_ver2hor + E_climb + E_cr + E_desc + E_loit_hor + E_loit_vert + E_trans_hor2ver 
 
     #---------------------------- Writing to JSON and printing result  ----------------------------
-    data["mission_energy"] = E_total
-    data["power_hover"] = transition_power_max
+    PerformanceClass.mission_energy = E_total
+    PerformanceClass.hoverPower = transition_power_max
     # print('Pto',P_takeoff)
-    data["power_climb"] = climb_power_var
+    PerformanceClass.climbPower = climb_power_var
     #data["power_cruise"] = P_cr 
 
 
-    data["takeoff_energy"] = E_to
-    data["trans2hor_energy"] = E_trans_ver2hor
-    data["climb_energy"] = E_climb
-    data["cruise_energy"] = E_cr
-    data["descend_energy"] = E_desc
-    data["hor_loiter_energy"] = E_loit_hor
-    data["trans2ver_energy"] = E_trans_hor2ver
-    data["ver_loiter_energy"] = E_loit_vert
+    PerformanceClass.takeoff_energy = E_to
+    PerformanceClass.trans2hor_energy = E_trans_ver2hor
+    PerformanceClass.climb_energy = E_climb
+    PerformanceClass.cruise_energy = E_cr
+    PerformanceClass.descend_energy = E_desc
+    PerformanceClass.hor_loiter_energy = E_loit_hor
+    PerformanceClass.trans2ver_energy = E_trans_hor2ver
+    PerformanceClass.ver_loiter_energy = E_loit_vert
 
     PerformanceClass.energyRequired = E_total
     PerformanceClass.cruisePower = P_cr
     PerformanceClass.hoverPower = transition_power_max
     PerformanceClass.climbPower = climb_power_var
-    with open(const.json_path, "w") as jsonFile:
-        json.dump(data, jsonFile, indent= 6)
 
     return WingClass, EngineClass, AeroClass, PerformanceClass
 

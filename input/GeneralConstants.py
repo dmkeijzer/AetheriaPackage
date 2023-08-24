@@ -137,6 +137,11 @@ ud = 7.62               # [m/s]     0   Gust at Vd from EASA
 # contingencies
 oem_cont = 1.1
 
+# Engine and properllors
+diskloading = 120
+n_engines = 6
+
+
 #material properties
 E_alu = 73e9
 nu_alu = 0.33

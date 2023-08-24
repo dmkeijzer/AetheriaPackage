@@ -810,7 +810,7 @@ if __name__ == "__main__":
     from input.data_structures import *
 
     Aero = Aero()
-    Perf = PerformanceParameters()
+    Perf = AircraftParameters()
     GeneralConst = GeneralConstants
     Wing = Wing()
     VTail = VeeTail()

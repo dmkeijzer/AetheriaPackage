@@ -268,7 +268,7 @@ if __name__ == '__main__':
 
     TankClass = HydrogenTank()
     FuelClass = FuelCell()
-    PerfClas = PerformanceParameters()
+    PerfClas = AircraftParameters()
     FuseClas = Fuselage()
 
     TankClass.load()

@@ -24,7 +24,7 @@ from modules.flight_perf.performance  import get_energy_power_perf
 from modules.structures.fuselage_length import get_fuselage_sizing
 from modules.structures.ClassIIWeightEstimation import get_weight_vtol
 from modules.structures.wingbox_optimizer import GetWingWeight
-#from modules.propellor.propellor_sizing import propcalc
+# from modules.propellor.propellor_sizing import propcalc
 from scripts.structures.vtail_span import span_vtail
 import input.GeneralConstants as const
 from scripts.power.finalPowersizing import power_system_convergences
@@ -38,11 +38,10 @@ def run_integration(label, counter_tuple):
     IonBlock = Battery(Efficiency= 0.9)
     Pstack = FuelCell()
     Tank = HydrogenTank(energyDensity=1.8, volumeDensity=0.6, cost= 16)
-    mission = PerformanceParameters()
+    mission = AircraftParameters()
     wing  =  Wing()
     engine = Engine()
     aero = Aero()
-    horizontal_tail = HorTail()
     fuselage = Fuselage()
     vtail = VeeTail()
     stability = Stab()
@@ -72,18 +71,18 @@ def run_integration(label, counter_tuple):
     wing = wing_planform(wing, mission.MTOM, mission.wing_loading_cruise)
 
 
+    #-------------------- propulsion ----------------------------
+    # mission, engine = propcalc( clcd= aero.ld_cruise, mission=mission, engine= engine, h_cruise= GeneralConstants.h_cruise)
 
     #-------------------- Aerodynamic sizing--------------------
-    wing, fuselage, vtail, aero, horizontal_tail =  integrated_drag_estimation(wing, fuselage, vtail, aero, horizontal_tail)
-    aero = slipstream_cruise(wing, aero, mission) # TODO the effect of of cl on the angle of attack
+    wing, fuselage, vtail, aero, horizontal_tail =  integrated_drag_estimation(wing, fuselage, vtail, aero, horizontal_tail) #TODO go through this functions and find inital estime
+    aero = slipstream_cruise(wing, engine, aero, mission) # TODO the effect of of cl on the angle of attack
 
     #-------------------- Flight Performance --------------------
     wing, engine, aero, mission = get_energy_power_perf(wing, engine, aero, mission)
 
 
 
-    #-------------------- propulsion ----------------------------
-    #mission, engine = propcalc( clcd= aero.ld_cruise, mission=mission, engine= engine, h_cruise= GeneralConstants.h_cruise)
 
 
     #-------------------- power system sizing--------------------
