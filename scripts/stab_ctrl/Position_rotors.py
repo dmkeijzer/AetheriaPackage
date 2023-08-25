@@ -36,7 +36,7 @@ if __name__ == "__main__":
     sys.path.append(str(list(pl.Path(__file__).parents)[2]))
     os.chdir(str(list(pl.Path(__file__).parents)[2]))
     from input.data_structures import *
-    from scripts.stab_ctrl.potato_plot import J1loading
+    from modules.stab_ctrl.potato_plot import J1loading
 
     with open("input/data_structures/aetheria_constants.json") as f_in:
         data = json.load(f_in)

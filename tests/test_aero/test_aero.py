@@ -24,8 +24,8 @@ def test_get_lift_distr(wing, aero):
     assert results["Cruise"]["Totals"]["Alpha"] > 0.3  # Assert that angle of attach has a reasonable value
     assert (np.diff(np.vectorize(lift_func)(span_points)) < 0).all() # Assert that the lift only decreases towards the tip
 
-def test_get_tail_lift_distr(wing, aero):
-    lift_func, results = get_tail_lift_distr(wing, Tail, aero, plot=False, test=True)
+def test_get_tail_lift_distr(wing, veetail, aero):
+    lift_func, results = get_tail_lift_distr(wing, veetail, aero, plot=False, test=True)
     span_points = np.linspace(0, wing.span/2, 300)
 
 
@@ -104,4 +104,6 @@ def test_prop_wing_interaction(values_slipstream):
     assert np.isclose(prop_l_thrust, 0.0019203)
 
 def test_integrated_drag(wing, fuselage, veetail,aero):
-    pass
+    wing_res, fuse_res, veetail_res, aero_res = integrated_drag_estimation(wing, fuselage, veetail, aero)
+    assert aero_res.cd0_cruise
+

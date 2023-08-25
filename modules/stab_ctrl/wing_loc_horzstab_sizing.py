@@ -9,71 +9,9 @@ sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
 import matplotlib.pyplot as plt
 # from input.data_structures import *
-from scripts.stab_ctrl.potato_plot import J1loading
+from modules.stab_ctrl.potato_plot import J1loading
+import input.GeneralConstants as const
 
-
-
-# WingClass = Wing()
-# FuseClass = Fuselage()
-# HorTailClass = HorTail()
-#
-#
-# WingClass.load()
-# FuseClass.load()
-# HorTailClass.load()
-#
-#
-#
-# depsda = HorTailClass.downwash
-# MAC = WingClass.chord_mac
-# Vh_V_2 = 0.95 #From SEAD, V-tail somewhat similar to fin-mounted stabiliser
-# S = WingClass.surface
-# b_f = FuseClass.width_fuselage
-# h_f = FuseClass.height_fuselage
-# b = WingClass.span
-# Lambdac4 = WingClass.quarterchord_sweep
-# taper = WingClass.taper
-# A_h = HorTailClass.aspect_ratio
-# eta = 0.95
-# Mach = WingClass.mach_cruise
-# Lambdah2 = 0 #Assumed
-# CLaw = WingClass.cL_alpha
-# c_root = WingClass.chord_root
-# l_f = FuseClass.length_fuselage
-# CL0_approach = WingClass.cL_alpha0_approach
-# Cm_ac_wing = WingClass.cm
-# CLAh_approach= WingClass.cL_approach #Assumes fuselage contribution negligible
-# x_lemac_x_rootc = WingClass.X_lemac
-# SM = 0.05 #Stability margin, standard
-
-# CLaAh = CLaw*(1+2.15*b_f/b)*(S-b_f*c_root)/S + np.pi * b_f ** 2 / (2 * S)
-#
-# x_ac_stab_nacelles_bar = 0 # Missing nacelles data/counteracting effect for our design
-# x_ac_stab_wing_bar = 0.24 # From graph from Torenbeek
-# x_ac_stab_fus1_bar = -(1.8 * b_f * h_f * l_fn)/(CLaAh * S * MAC)
-# x_ac_stab_fus2_bar = (0.273 * b_f * S * (b-b_f) * np.tan(Lambdac4))/((1+taper)*MAC**2*(b+2.15 * b_f))
-#
-# x_ac_stab_bar = x_ac_stab_wing_bar + x_ac_stab_fus1_bar + x_ac_stab_fus2_bar + x_ac_stab_nacelles_bar
-#
-# beta = np.sqrt(1-Mach**2)
-#
-# CLah = 2 * np.pi * A_h/(2+np.sqrt(4+(A_h*beta/eta)**2)*(1+(np.tan(Lambdah2))**2/beta**2))
-#
-# m_stab = 1 / ((CLah / CLaAh)*(1-depsda)*(l_h/MAC)*Vh_V_2)
-# q_stab = (x_ac_stab_bar - SM)/((CLah / CLaAh)*(1-depsda)*(l_h/MAC)*Vh_V_2)
-# #ShS_stab = m_stab * x_aft_stab_bar + q_stab
-#
-#
-#
-# CLh_approach = -0.35 * A_h ** (1/3)
-# Cm_ac_flaps = None
-# Cm_ac_fuselage = -1.8 * (1 - 2.5*b_f /l_f) * np.pi * b_f * h_f * l_f * CL0 / (4*S*MAC * CLaAh) #CLaAh for ctrl is different than for stab if cruise in compressible flow
-# Cm_ac_nacelles = 0 #Assumed/missing data on nacelles
-# Cm_ac = Cm_ac_wing + Cm_ac_flaps + Cm_ac_fuselage + Cm_ac_nacelles
-#
-# m_ctrl = 1 / ((CLh_approach/CLAh_approach)* (l_h/MAC)*Vh_V_2)
-# q_ctrl = ((Cm_ac/CLAh_approach) - x_ac_stab_bar) / ((CLh_approach/CLAh_approach)* (l_h/MAC)*Vh_V_2) #x_ac_bar for ctrl is different than for stab if cruise in compressible flow
-# #ShS_ctrl = m_ctrl * x_front_ctrl_bar + q_ctrl
 
 def stabcg(ShS, x_ac, CLah, CLaAh, depsda, lh, c, VhV2, SM):
     x_cg = x_ac + (CLah/CLaAh)*(1-depsda)*ShS*(lh/c)*VhV2 - SM
@@ -142,7 +80,7 @@ def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, Aerocl
     Cm_ac_wing = Aeroclass.cm_ac
     CLAh_approach = Aeroclass.cL_max * 0.9 # Assumes fuselage contribution negligible
     x_lemac_x_rootc = WingClass.x_lemac
-    SM = 0.05  # Stability margin, standard
+    SM = const.stab_margin  # Stability margin, standard
 
     if CLh_approach == None:
         CLh_approach = CLh_approach_estimate(A_h)

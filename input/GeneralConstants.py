@@ -68,6 +68,9 @@ n_tanks = 2 # The amount of tanks
 
 s_p, s_y, e_0, e_d, v0, s0 = 0.5*10**6, 1.2*10**6, 0.038, 0.9, 9.1, 0.5
 
+# stability 
+stab_margin = 0.05
+
 
 
 

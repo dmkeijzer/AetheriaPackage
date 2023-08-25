@@ -9,7 +9,7 @@ sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
 import matplotlib.pyplot as plt
 # from input.data_structures import *
-from scripts.stab_ctrl.potato_plot import J1loading
+from modules.stab_ctrl.potato_plot import J1loading
 
 
 

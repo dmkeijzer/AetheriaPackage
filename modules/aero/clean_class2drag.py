@@ -340,7 +340,7 @@ def Oswald_eff_tandem(b1, b2, h):
 def integrated_drag_estimation(WingClass, FuselageClass, VTailClass, AeroClass):
 
     # General flight variables
-    re_var = Reynolds(const.rho_cr, const.v_cr, WingClass.mac, const.mhu, const.k)
+    re_var = Reynolds(const.rho_cr, const.v_cr, WingClass.chord_mac, const.mhu, const.k)
     M_var = Mach_cruise(const.v_cr, const.gamma, const.R, const.t_cr)
     AeroClass.e = Oswald_eff(WingClass.aspectratio)
 

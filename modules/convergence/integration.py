@@ -33,7 +33,7 @@ from scripts.power.finalPowersizing import power_system_convergences
 
 
 
-def run_integration(label, counter_tuple):
+def run_integration(label, file_path, counter_tuple=(0,0)):
     #----------------------------- Initialize classes --------------------------------
     if counter_tuple == (1,1):
         IonBlock = Battery(Efficiency= 0.9)
@@ -48,6 +48,17 @@ def run_integration(label, counter_tuple):
         stability = Stab.load(r"input/initial_estimate.json")
         power = Power.load(r"input/initial_estimate.json")
     else:
+        IonBlock = Battery(Efficiency= 0.9)
+        Pstack = FuelCell()
+        Tank = HydrogenTank(energyDensity=1.8, volumeDensity=0.6, cost= 16)
+        mission = AircraftParameters.load(file_path)
+        wing  =  Wing.load(file_path)
+        engine = Engine.load(file_path)
+        aero = Aero.load(file_path)
+        fuselage = Fuselage.load(file_path)
+        vtail = VeeTail.load(file_path)
+        stability = Stab.load(file_path)
+        power = Power.load(file_path)
     #----------------------------------------------------------------------------------
 
 
