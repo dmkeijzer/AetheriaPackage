@@ -8,7 +8,7 @@ import numpy as np
 # Import from modules and input folder
 import input.GeneralConstants as const
 from  modules.aero.prop_wing_interaction  import *
-from input.data_structures.ISA_tool import ISA
+from modules.misc_tools.ISA_tool import ISA
 from input.data_structures.aero import *
 from input.data_structures.wing import *
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))

@@ -10,25 +10,17 @@ sys.path.append(str(list(pl.Path(__file__).parents)[0]))
 
 
 class Engine(BaseModel):
-    """
-    This class is to estimate the parameters of a Fuel Cell.
-
-    :param no_engines: Number of engines [-]
-    :param totalmass: Total mass of all the engines combined, so each nacelle and powertrain [kg]
-    :param mass_perpowertrain: Mass of each powertrain [kg]
-    :param mass_pernacelle: Mass of each nacelle [kg]
-    :param mass_pertotalengine: Mass of each engines, this consists of a nacelle and a powertrain [kg]
-    """
+    label : str = "Engine"
     x_rotor_loc: list 
     y_rotor_loc: list 
     pylon_length: float 
+    total_disk_area: float   
 
     totalmass: float | None   = None
     mass_perpowertrain: float | None  = None
     mass_pernacelle: float | None  = None
     mass_pertotalengine: float | None  = None
     #nacelle_width: float = None
-    total_disk_area: float | None  = None
     thrust_coefficient: float | None  = None
     thrust_per_engine: float | None  = None
     hub_radius: float | None  = None

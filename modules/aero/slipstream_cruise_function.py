@@ -9,7 +9,7 @@ os.chdir(str(list(pl.Path(__file__).parents)[2]))
 # Import from modules and input folder
 import input.GeneralConstants  as const
 from  modules.aero.prop_wing_interaction  import *
-from input.data_structures.ISA_tool import ISA
+from modules.misc_tools.ISA_tool import ISA
 
 
 # import CL_cruise from json files
@@ -18,8 +18,8 @@ from input.data_structures.ISA_tool import ISA
 
 
 def slipstream_cruise(WingClass,EngineClass, AeroClass, mission):
-        with open(r"input/data_structures/aetheria_constants.json") as jsonFile:
-                data = json.load(jsonFile)
+        # with open(r"input/data_structures/aetheria_constants.json") as jsonFile:
+        #         data = json.load(jsonFile)
         atm = ISA(const.h_cruise)
         t_cr = atm.temperature()
         rho_cr = atm.density()
@@ -51,11 +51,11 @@ def slipstream_cruise(WingClass,EngineClass, AeroClass, mission):
         CL_eff_alpha_var = CL_effective_alpha(mach=AeroClass.mach_cruise, A_s_eff= A_eff_var, sweep_half=-WingClass.sweep_LE)
 
         # angles
-        angles = alpha_s(CL_wing=AeroClass.cL_cruise, CL_alpha_s_eff=CL_eff_alpha_var, i_cs = i_cs_var, angle_of_attack= angle_of_attack_prop, alpha_0=data['alpha_zero_L'], V_0=const.v_cr, V_delta=V_delta_var, delta_alpha_zero_f=0)
+        angles = alpha_s(CL_wing=AeroClass.cL_cruise, CL_alpha_s_eff=CL_eff_alpha_var, i_cs = i_cs_var, angle_of_attack= angle_of_attack_prop, alpha_0=const.alpha_zero_l, V_0=const.v_cr, V_delta=V_delta_var, delta_alpha_zero_f=0)
         alpha_s_var = angles[0]
 
-        sin_epsilon = sin_epsilon_angles(CL_alpha_s_eff=CL_eff_alpha_var, alpha_s=alpha_s_var, A_s_eff=A_eff_var, CL_wing=AeroClass.cL_cruise, A_w=data["A"])[0]
-        sin_epsilon_s = sin_epsilon_angles(CL_alpha_s_eff=CL_eff_alpha_var, alpha_s=alpha_s_var, A_s_eff=A_eff_var, CL_wing=AeroClass.cL_cruise, A_w=data["A"])[1]
+        sin_epsilon = sin_epsilon_angles(CL_alpha_s_eff=CL_eff_alpha_var, alpha_s=alpha_s_var, A_s_eff=A_eff_var, CL_wing=AeroClass.cL_cruise, A_w=WingClass.aspect_ratio)[0]
+        sin_epsilon_s = sin_epsilon_angles(CL_alpha_s_eff=CL_eff_alpha_var, alpha_s=alpha_s_var, A_s_eff=A_eff_var, CL_wing=AeroClass.cL_cruise, A_w=WingClass.aspect_ratio)[1]
 
         CL_slipstream_final = CL_ws(S_W=WingClass.surface, b_W=WingClass.span, n_e=3, D_star=D_star_var, sin_epsilon=sin_epsilon, V_0=const.v_cr, V_delta=V_delta_var, sin_epsilon_s=sin_epsilon_s, CL_wing=AeroClass.cL_cruise)[0]
         CL_old = AeroClass.cL_cruise

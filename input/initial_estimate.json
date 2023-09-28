@@ -1,38 +1,59 @@
 {
       "Wing" : {
-            "aspect_ratio" :12,
-            "taper" :12,
-            "quarterchord_sweep" :12
+            "aspect_ratio" :8,
+            "wing_weight": 168.99698877288353,
+            "taper" :0.5,
+            "quarterchord_sweep" :0.01
       },
       "Veetail" : {
-            "surface" :12,
-            "quarterchord_sweep" :12
+            "surface" :3,
+            "quarterchord_sweep" :0.03,
+            "length_wing2vtail" : 4,
+            "vtail_weight": 84.31675982363197,
+            "aspect_ratio": 6,
+            "virtual_hor_surface": 3 
       },
       "Fuselage" : {
-            "length_fuselage" :12,
-            "diameter_fuselage" :12,
-            "length_cockpit" :12,
-            "length_cabin" :12,
-            "length_tail" :12,
-            "upsweep" :12,
-            "width_fuselage_outer" :12
+            "length_fuselage" :10,
+            "diameter_fuselage" :2,
+            "length_cockpit" :2.103,
+            "length_cabin" :2.7,
+            "length_tail" :2,
+            "upsweep" :0.3,
+            "fuselage_weight" :200,
+            "volume_fuselage" :8,
+            "width_fuselage_outer" :2.2
       },
       "AircraftParameters" : {
             "MTOM": 2482.586143708877,
+            "OEM": 1972.586143708877,
+            "hoverPower": 1972.586143708877,
             "prop_eff":0.9,
-            "v_stall" :12,
+            "v_stall" :45,
             "glide_slope":5,
             "turn_loadfactor":0.9,
             "Stots" :12,
-            "v_max" :12
+            "v_max" :90,
+            "lg_mass":60,
+            "misc_mass":35
       },
       "Aero": {
-            "cd0_cruise" :12,
-            "cL_max" :12,
-            "cL_alpha" :12,
-            "e" :12
+            "cd0_cruise" :0.0231,
+            "cL_max_flaps60":2.1,
+            "cL_max" :1.7,
+            "cL_alpha" :0.52,
+            "cm_ac": -0.054,
+            "e" :0.85
+      },
+      "Power": {
+            "h2_tank_length" : 1.5,
+            "battery_mass" :200,
+            "cooling_mass" :50,
+            "h2_tank_mass" :75
       },
       "Engine": {
+            "total_disk_area": 40,
+            "totalmass": 400,
             "x_rotor_loc": [
                   3.1248466424192243,
                   3.1248466424192243,

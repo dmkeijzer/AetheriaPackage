@@ -342,11 +342,11 @@ def integrated_drag_estimation(WingClass, FuselageClass, VTailClass, AeroClass):
     # General flight variables
     re_var = Reynolds(const.rho_cr, const.v_cr, WingClass.chord_mac, const.mhu, const.k)
     M_var = Mach_cruise(const.v_cr, const.gamma, const.R, const.t_cr)
-    AeroClass.e = Oswald_eff(WingClass.aspectratio)
+    AeroClass.e = Oswald_eff(WingClass.aspect_ratio)
 
 
     # Writing to Aeroclass
-    AeroClass.deps_da = deps_da(AeroClass.cL_alpha, WingClass.aspectratio)
+    AeroClass.deps_da = deps_da(AeroClass.cL_alpha, WingClass.aspect_ratio)
 
     # Form factors
     FF_fus_var = FF_fus(FuselageClass.length_fuselage, FuselageClass.diameter_fuselage)
@@ -371,7 +371,7 @@ def integrated_drag_estimation(WingClass, FuselageClass, VTailClass, AeroClass):
     CD_fus_var = CD_fus(C_fe_fus_var, FF_fus_var, S_wet_fus_var)
     CD_wing_var = CD_wing(C_fe_wing_var, FF_wing_var, S_wet_wing_var, WingClass.surface)
     CD_tail_var = CD_tail(C_fe_tail_var, FF_tail_var, S_wet_tail_var)
-    AeroClass.cd0_cruise = CD0(WingClass.surface, VTailClass.surface, FuselageClass.length_fuselage*FuselageClass.width_fuselage_outer, CD_fus_var, CD_wing_var, CD_upsweep_var, CD_base_var, CD_tail_var, CD_flaps=0)
+    AeroClass.cd0_cruise = CD0(WingClass.surface, VTailClass.surface, FuselageClass.length_fuselage*FuselageClass.width_fuselage_outer, CD_fus_var, CD_wing_var,AeroClass.cd_upsweep, AeroClass.cd_base, CD_tail_var, CD_flaps=0)
 
     # Lift times S
     # cL_tail_times_Sh = VTailClass.cL_cruise * HortailClass.surface #TODO Idk if this is correct or even necessary
@@ -381,7 +381,7 @@ def integrated_drag_estimation(WingClass, FuselageClass, VTailClass, AeroClass):
 
 
     # Summation and L/D calculation
-    CDi_var = CDi(AeroClass.cL_cruise, WingClass.aspectratio, AeroClass.e)
+    CDi_var = CDi(AeroClass.cL_cruise, WingClass.aspect_ratio, AeroClass.e)
     AeroClass.cd_cruise = CD(AeroClass.cd0_cruise, CDi_var)
     AeroClass.ld_cruise = lift_over_drag(AeroClass.cL_cruise,AeroClass.cd_cruise)
 
@@ -390,7 +390,7 @@ def integrated_drag_estimation(WingClass, FuselageClass, VTailClass, AeroClass):
 
     # ------------------------ DRAG DURING STALL -------------- 
     # General flight variables
-    re_var = Reynolds(const.rho_sl, const.v_stall, WingClass.mac, const.mhu, const.k)
+    re_var = Reynolds(const.rho_sl, const.v_stall, WingClass.chord_mac, const.mhu, const.k)
     M_var = Mach_cruise(const.v_stall, const.gamma, const.R, const.t_stall)
 
 
@@ -423,12 +423,12 @@ def integrated_drag_estimation(WingClass, FuselageClass, VTailClass, AeroClass):
     AeroClass.cd0_stall = CD0(WingClass.surface, VTailClass.surface, FuselageClass.length_fuselage*FuselageClass.width_fuselage_outer, CD_fus_var, CD_wing_var, CD_upsweep_var, CD_base_var, CD_tail_var, CD_flaps_var)
 
     # Total cl
-    total_cL_stall = AeroClass.cL_plus_slipstream_stall
+    # total_cL_stall = AeroClass.cL_plus_slipstream_stall
 
     # Summation and L/D calculation
-    CDi_var = CDi(AeroClass.cL_max_flaps60, WingClass.aspectratio, AeroClass.e)
+    CDi_var = CDi(AeroClass.cL_max_flaps60, WingClass.aspect_ratio, AeroClass.e)
     AeroClass.cd_stall = CD(AeroClass.cd0_stall, CDi_var)
-    AeroClass.ld_stall = lift_over_drag(total_cL_stall, AeroClass.cd_stall)
+    AeroClass.ld_stall = lift_over_drag(AeroClass.cL_max_flaps60, AeroClass.cd_stall)
 
     return WingClass, FuselageClass, VTailClass, AeroClass
 

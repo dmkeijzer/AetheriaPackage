@@ -3,6 +3,7 @@ import numpy as np
 import sys
 import pathlib as pl
 import os
+import pdb
 from matplotlib import pyplot as plt
 
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
@@ -22,7 +23,6 @@ def power_system_convergences(powersystem: Power, Mission: AircraftParameters):
     IonBlock = Battery(Efficiency= 0.9)
     Pstack = FuelCell()
     Tank = HydrogenTank()
-    Tank.load()
     #estimate power system mass
     nu = np.arange(0,1.0001,0.01)
     Totalmass, Tankmass, FCmass, Batterymass= PropulsionSystem.mass(echo= np.copy(nu),
@@ -39,12 +39,12 @@ def power_system_convergences(powersystem: Power, Mission: AircraftParameters):
     plt.xlabel(r"Fuel cell cruise fraction $ \nu $ [-]", fontsize = font_size)
     plt.ylabel("Power system mass [kg]", fontsize = font_size)
     plt.grid()
-    plt.show()
+    # plt.show()
 
-    index_min_mass = np.where(Totalmass == min(Totalmass))
-    NU = nu[index_min_mass][0]
-    powersystemmass = Totalmass[index_min_mass][0] + 15 + 35 #kg mass radiator (15 kg) and mass air (35) subsystem. calculated outside this outside loop and will not change signficant 
-    Batterymass = Batterymass[index_min_mass][0]
+    index_min_mass = np.argmin(Totalmass)
+    NU = nu[index_min_mass]
+    powersystemmass = Totalmass[index_min_mass] + 15 + 35 #kg mass radiator (15 kg) and mass air (35) subsystem. calculated outside this outside loop and will not change signficant 
+    Batterymass = Batterymass[index_min_mass]
 
 
     powersystem.battery_energy = Batterymass * IonBlock.EnergyDensity * 3.6e6
@@ -52,7 +52,7 @@ def power_system_convergences(powersystem: Power, Mission: AircraftParameters):
     powersystem.battery_mass = Batterymass
     powersystem.fuelcell_mass = Pstack.mass
     powersystem.fuelcell_volume = Pstack.volume
-    powersystem.h2_tank_mass = Tankmass[index_min_mass][0]
+    powersystem.h2_tank_mass = Tankmass[index_min_mass]
     powersystem.nu_FC_cruise_fraction = NU
     Mission.powersystem_mass = powersystemmass
 

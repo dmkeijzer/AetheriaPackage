@@ -3,9 +3,13 @@ import numpy as np
 import sys
 import os
 import pathlib as pl
+from warnings import warn
+
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
+
 from modules.stab_ctrl.wing_loc_horzstab_sizing import CLahcalc
+import input.GeneralConstants as const
 
 #Cn_beta (according roskam 2) = 0.0571   1/rad  #ch11, page 25 --> Jan Roskam Part II, equation 11.9
 #Since there is no one engine inoperative condition, we size the Cn_dr to be able to maintain a non-yawing flight at a high beta:
@@ -24,15 +28,21 @@ from modules.stab_ctrl.wing_loc_horzstab_sizing import CLahcalc
 ###Lower taper results more surface area but the minimum is limited by structural integrity.
 
 def get_K(taper_h, AR_h):
-    taper_vee=taper_h    #####important, due to CL_alpha_t_h=CL_alpha_N
-    AR_vee=AR_h          #####important, due to CL_alpha_t_h=CL_alpha_N
     taper_points = np.array([0.25, 0.5, 1])
     aspect_ratio_points = np.array([3, 10])
     data = np.array([[0.61, 0.64, 0.68], [0.74, 0.77, 0.8]])
     interp_func = RegularGridInterpolator((aspect_ratio_points, taper_points), data)
-    AR_interp, taper_interp = np.meshgrid(AR_vee, taper_vee, indexing='ij')
-    points_interp = np.stack((AR_interp, taper_interp), axis=-1)
-    K = interp_func(points_interp)
+
+    if not aspect_ratio_points[0] < AR_h < aspect_ratio_points[-1]:
+        if AR_h < aspect_ratio_points[0]:
+            warn(f"Aspect ratio {AR_h} was out of range, defaulting to {aspect_ratio_points[0]}")
+            AR_h = aspect_ratio_points[0]
+
+        if AR_h > aspect_ratio_points[-1]:
+            warn(f"Aspect ratio {AR_h} was out of range, defaulting to {aspect_ratio_points[-1]}")
+            AR_h = aspect_ratio_points[-1]
+
+    K = interp_func([AR_h, taper_h])[0]
     return float(K)
 
 def get_c_control_surface_to_c_vee_ratio(tau):
@@ -55,56 +65,49 @@ def get_tail_dihedral_and_area(Lambdah2,S_hor,Fuselage_volume,S,b,l_v,AR_h,taper
 
 #YOU ONLY NEED THIS LAST FUNCTION. THE OTHERS ABOVE ARE SUBFUNCTIONS FOR THE NEXT FUNCTION.
 
-def get_control_surface_to_tail_chord_ratio(Wing, Fuse, HorTail,Aero,  CL_h,l_v, Cn_beta_req=0.0571,beta_h=1,eta_h=0.95,total_deflection=20*np.pi/180,design_cross_wind_speed=9,step=0.1*np.pi/180,axial_induction_factor=0.005):
-    V_stall = Aero.v_stall
-    Lambdah2 = HorTail.sweep_halfchord_h
-    b = Wing.span
-    Fuselage_volume = Fuse.volume_fuselage
-    S_hor = HorTail.surface
-    downwash_angle_landing = HorTail.downwash_angle
-    aoa_landing = Aero.alpha_approach
+def get_control_surface_to_tail_chord_ratio(wing, fuselage, vtail, aero,  CL_h, l_v, Cn_beta_req=0.0571,beta_h=1,eta_h=0.95,total_deflection=20*np.pi/180,design_cross_wind_speed=9,step=0.1*np.pi/180,axial_induction_factor=0.005):
     Vh_V2 = 0.95*(1+axial_induction_factor)**2 #assumed
-    S = Wing.surface
-    c = Wing.chord_mac
-    taper_h = HorTail.taper_h
-    AR_h = HorTail.aspect_ratio
 
     tau_from_rudder=0     ##Just to initialize loop
     tau_from_elevator=1   ##Just to initialize loop
     elevator_min=-1*np.pi/180
     rudder_max=total_deflection+elevator_min
-    v_angle, S_vee= get_tail_dihedral_and_area(Lambdah2,S_hor,Fuselage_volume,S,b,l_v,AR_h,taper_h)
-    K = get_K(taper_h,AR_h)
-    CL_alpha_N = CLahcalc(AR_h, beta_h, eta_h, Lambdah2)
+    v_angle, S_vee= get_tail_dihedral_and_area(const.sweep_half_chord_tail,vtail.virtual_hor_surface ,fuselage.volume_fuselage,wing.surface,wing.span,l_v,vtail.aspect_ratio ,const.taper_hor)
+    K = get_K(const.taper_hor,vtail.aspect_ratio)
+    CL_alpha_N = CLahcalc(vtail.aspect_ratio, beta_h, eta_h, const.sweep_half_chord_tail)
     while (tau_from_elevator>tau_from_rudder and rudder_max>1*np.pi/180):
                 
-        Cn_dr_req=-Cn_beta_req*np.arctan(design_cross_wind_speed/V_stall)/(rudder_max)
-        #print('rudder', rudder_max,Cn_beta_req,design_cross_wind_speed, V_stall)
-        CL_tail_de_req=(CL_h-CL_alpha_N*(aoa_landing-downwash_angle_landing))/elevator_min
-        #print('Cn_dr_req', Cn_dr_req)
-    ###CL_h and CL_a_h comes from the horizontal tail designed.   --> Since we use no angle here, in the next line 
-        Cm_de_req_tail=-CL_tail_de_req*(Vh_V2)*(S_hor*l_v/(S*c)) ####Get this from CL_de_required, I made this formula --> S_hor or S_vee should be used here
+        Cn_dr_req=-Cn_beta_req*np.arctan(design_cross_wind_speed/const.v_stall)/(rudder_max)
+        CL_tail_de_req=(CL_h-CL_alpha_N*(aero.alpha_approach - aero.downwash_angle_stall))/elevator_min
+        Cm_de_req_tail=-CL_tail_de_req*(Vh_V2)*(vtail.virtual_hor_surface*l_v/(wing.surface*wing.chord_mac)) ####Get this from CL_de_required, I made this formula --> S_hor or S_vee should be used here
                 
-        tau_from_rudder=-Cn_dr_req/(K*CL_alpha_N*np.sin(v_angle)*S_vee/S*l_v/b*Vh_V2)
-        tau_from_elevator=-Cm_de_req_tail/(CL_alpha_N*np.cos(v_angle)*S_vee/S*l_v/c*Vh_V2)
-        #print('tau', tau_from_rudder)
+        tau_from_rudder=-Cn_dr_req/(K*CL_alpha_N*np.sin(v_angle)*S_vee/wing.surface*l_v/wing.span*Vh_V2)
+        tau_from_elevator=-Cm_de_req_tail/(CL_alpha_N*np.cos(v_angle)*S_vee/wing.surface*l_v/wing.chord_mac*Vh_V2)
+
         elevator_min=elevator_min-step
         rudder_max=rudder_max-step        
-        #print(tau_from_rudder,tau_from_elevator)
 
     tau=max([tau_from_rudder,tau_from_elevator])
     ###Recalculate Cm_de or Cn_dr as one of them will now be bigger due to choosing tau as the maximum of the two.
-    Cm_de=-Vh_V2*tau*l_v/c*CL_alpha_N*S_vee/S*np.cos(v_angle)
-    Cn_dr=-Vh_V2*tau*l_v/b*K*CL_alpha_N*S_vee/S*np.sin(v_angle)
+    Cm_de=-Vh_V2*tau*l_v/wing.chord_mac*CL_alpha_N*S_vee/wing.surface*np.cos(v_angle)
+    Cn_dr=-Vh_V2*tau*l_v/wing.span*K*CL_alpha_N*S_vee/wing.surface*np.sin(v_angle)
         
     if tau>0.55:
-        c_control_surface_to_c_vee_ratio="Not possible. Lower CLh in the horizontal tail sizing program"
+        c_control_surface_to_c_vee_ratio="Not possible. Lower CLh than in the horizontal tail sizing program"
     else:
         c_control_surface_to_c_vee_ratio=get_c_control_surface_to_c_vee_ratio(tau)
-    return [np.degrees(rudder_max),np.degrees(elevator_min), tau, Cm_de, Cn_dr, v_angle, S_vee, c_control_surface_to_c_vee_ratio]
+
+    dict_output ={
+        "max_rudder_angle":  np.degrees(rudder_max),
+        "min_elevator_angle":  np.degrees(elevator_min),
+        "tau": tau,
+        "cm_de": Cm_de,
+        "cn_dr": Cn_dr,
+        "dihedral": v_angle,
+        "S_vee": S_vee,
+        "control_surface_ratio": c_control_surface_to_c_vee_ratio,
+    }
+    return dict_output
 
 
-if __name__ == "__main__":
-    rudder, elevator, tau, Cm_de, Cn_dr, v_angle, S_vee, c_control_surface_to_c_vee_ratio = get_control_surface_to_tail_chord_ratio(V_stall=44,Lambdah2=0,b=10,Fuselage_volume=10,S_hor=1.8897,downwash_angle_landing=0.14,aoa_landing=0.2,CL_h=-0.5,CL_a_h=5,V_tail_to_V_ratio=0.9,l_v=5,S=12,c=1.5,taper_h=1, AR_h=6)
-    print(v_angle, S_vee, tau,c_control_surface_to_c_vee_ratio, Cm_de, Cn_dr, v_angle, S_vee, c_control_surface_to_c_vee_ratio)
  

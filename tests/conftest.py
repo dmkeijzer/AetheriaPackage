@@ -21,6 +21,10 @@ def wing(config):
     return Wing.load(config["test_settings"]["dataset"])
 
 @pytest.fixture
+def power(config):
+    return Power.load(config["test_settings"]["dataset"])
+
+@pytest.fixture
 def veetail(config):
     return VeeTail.load(config["test_settings"]["dataset"])
 
@@ -39,3 +43,7 @@ def aero(config):
 @pytest.fixture
 def engine(config):
     return Engine.load(config["test_settings"]["dataset"])
+
+@pytest.fixture
+def stability(config):
+    return Stab.load(config["test_settings"]["dataset"])

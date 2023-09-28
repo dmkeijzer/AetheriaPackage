@@ -57,7 +57,7 @@ def downwash(k, CLa, A):
     CLa: wing CL-alpha [rad^-1]
     A: wing aspect ratio [-]
     """
-    depsda = k * CLa / (np.pi * A)
+    depsda = k * CLa / (np.pi*A)
     return depsda
 
 

@@ -10,37 +10,27 @@ sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
 class VeeTail(BaseModel):
+    label : str = "Vtail"
     surface: float 
     quarterchord_sweep: float 
     Vh_V2: float | None  = None
     length_wing2vtail: float | None  = None
+    virtual_hor_surface: float | None  = None
+    virtual_ver_surface: float | None  = None
     rudder_max: float | None  = None
     elevator_min: float | None  = None
     dihedral: float | None  = None
-    taper: float | None  = 1
+    taper: float | None  = 0.5
     c_control_surface_to_c_vee_ratio: float | None  = None
+    cL_h_cruise: float | None  = None
     ruddervator_efficiency: float | None  = None
     span: float | None  = None
     vtail_weight: float | None  = None
     thickness_to_chord: float | None  = None
-
-
-    @property
-    def aspectratio(self):
-        return self.span**2/self.surface
-    
-    @property
-    def chord_root(self):
-        return  2 *self.surface / ((1 + self.taper) * self.span)
-
-    @property
-    def chord_tip(self):
-        return self.chord_root * self.taper
-
-    @property
-    def chord_mac(self):
-        return  (2 / 3) * self.chord_root  * ((1 + self.taper + self.taper ** 2) / (1 + self.taper))
-
+    aspect_ratio: float | None = None
+    chord_root: float | None = None
+    chord_tip: float | None = None
+    chord_mac: float | None = None
 
     @classmethod
     def load(cls, file_path:FilePath):

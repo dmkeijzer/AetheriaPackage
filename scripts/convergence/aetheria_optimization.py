@@ -15,15 +15,28 @@ from modules.convergence.integration import run_integration
 import input.GeneralConstants as const
 from input.data_structures import AircraftParameters
 
+
 class VTOLOptimization(om.ExplicitComponent):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        #initialization
         self.label = ("_".join(time.asctime().split(" ")[1:-1])).replace(":",".")[:-3]
-        self.counter = 0
+        self.dir_path = os.path.join("output", "run_optimizaton_" + self.label)
+        os.mkdir(self.dir_path)
+        self.json_path = os.path.join(self.dir_path, "design_state_" + self.label + ".json")
+        self.outerloop_counter = 1
+        self.init_estimate_path = r"input/initial_estimate.json"
+
+        # Read initial estimate
+        with open(self.init_estimate_path, 'r') as f:
+            init = json.load(f)
+
+        with open(self.json_path, 'w') as f:
+            json.dump(init, f, indent=6)
 
     def setup(self):
-
-        # Design variables
+    
+        # Design variables 
         self.add_input('AR')
         self.add_input('l_fuselage')
         # self.add_input('span')
@@ -42,28 +55,28 @@ class VTOLOptimization(om.ExplicitComponent):
 
     def compute(self, inputs, outputs):
 
-        with open(const.json_path, 'r') as f:
+        with open(self.json_path, 'r') as f:
             data = json.load(f)
 
-        data["A"] = inputs["AR"][0]
-        data["l_fuse"] = inputs["l_fuselage"][0]
+        data["Wing"]["A"] = inputs["AR"][0]
+        data["Fuselage"]["l_fuse"] = inputs["l_fuselage"][0]
         # data["b"] = inputs["span"][0]
 
-        MTOM_one = data["mtom"]
+        MTOM_one = data["AircraftParameters"]["MTOM"]
 
-        with open(const.json_path, 'w') as f:
+        with open(self.json_path, 'w') as f:
             json.dump(data, f, indent=6)
 
-        print(f"===============================\nOuter loop iteration = {self.counter}\n===============================")
+        print(f"===============================\nOuter loop iteration = {self.outerloop_counter}\n===============================")
         print(f"MTOM: {MTOM_one}")
-        for i in range(10):
+        for i in range(1,11):
             print(f'\nInner loop Iteration = {i}') 
-            run_integration(self.label) # run integration files which can be looped
+            run_integration(self.init_estimate_path  ,(self.outerloop_counter, i), self) # run integration files which can be looped
 
             # load data so that convergences can be checked
-            with open(const.json_path, 'r') as f:
+            with open(self.json_path, 'r') as f:
                 data = json.load(f)
-            MTOM_two = data["mtom"]
+            MTOM_two = data["AircraftParameters"]["MTOM"]
 
             #log data so that convergences can be monitored live
             print(f"MTOM: {MTOM_two} kg")
@@ -77,14 +90,14 @@ class VTOLOptimization(om.ExplicitComponent):
 
             
 
-        with open(const.json_path, 'r') as f:
+        with open(self.json_path, 'r') as f:
             data = json.load(f)
 
-        outputs['energy'] = data["mission_energy"]
-        outputs['span'] = data["b"]
-        outputs['MTOM'] = data["mtom"]
-        outputs['crashworthiness_lim'] = data["l_fuse"] - data["limit_fuse"]
-        self.counter += 1
+        outputs['energy'] = data["AircraftParameters"]["mission_energy"]
+        outputs['span'] = data["Wing"]["span"]
+        outputs['MTOM'] = data["AircraftParameters"]["MTOM"]
+        outputs['crashworthiness_lim'] = data["Fuselage"]["length_fuselage"] - data["Fuselage"]["limit_fuselage"]
+        self.outerloop_counter += 1
 
 
         # Give updates on the design
@@ -94,11 +107,6 @@ class VTOLOptimization(om.ExplicitComponent):
         print(f"lengte fuselage = {inputs['l_fuselage'][0]}")
         print(f"Crashworhiness limit = {outputs['crashworthiness_lim'][0]}")
         print(f"Mission Energy= {outputs['energy'][0]/3.6e6} [KwH]")
-
-
-# Set up the problem
-with open(const.json_path, 'r') as f:
-        data = json.load(f)
 
 prob = om.Problem()
 prob.model.add_subsystem('Integrated_design',VTOLOptimization())

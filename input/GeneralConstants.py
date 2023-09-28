@@ -12,7 +12,7 @@ An ~ means it's defined but maybe not needed and a ? means it's a guess.
 import numpy as np
 import sys
 import pathlib as pl
-import os
+from warnings import warn
 
 sys.path.append(str(list(pl.Path(__file__).parents)[1]))
 
@@ -21,10 +21,13 @@ from  modules.misc_tools.ISA_tool import ISA
 
 # constants of physics
 g0 = 9.80665            #[m/s^2]    O
+time_step = 0.015
+transition_height_baseline = 50
 
 #performance
 v_cr = 300/3.6
 v_stall = 40
+v_stall_flaps20 = 42
 roc_cr = 5
 rod_cr = 3 # Rate of descend 
 roc_hvr = 2
@@ -37,6 +40,7 @@ ax_target_climb = 0.5*g0   # PLACEHOLDER
 ay_target_climb = 0.2*g0 # PLACEHOLDER
 ax_target_descend = 0.5 * g0 # PLACEHOLDER
 ay_target_descend = 0.2 * g0 # PLACEHOLDER
+prop_eff =0.9
 
 #atmospheric constants
 atm = ISA(h_cruise)
@@ -48,6 +52,9 @@ t_stall = atm.temperature()
 a_cr = atm.soundspeed()     #Speed of sound at cruise O
 R = 287                 #[J/kg*K]   O
 gamma = 1.4                  #        O
+
+# Performance (continued)
+mach_cruise = v_cr/a_cr
 
 # Structures
 beta_crash = 0.4 # crash diameter coefficient
@@ -65,11 +72,18 @@ fuselage_margin = 0.2
 eigenfrequency_lim_pylon = 20
 ARe = 2.75 # Aspect ration end of tail cone
 n_tanks = 2 # The amount of tanks
+cg_fuselage = 0.45
 
 s_p, s_y, e_0, e_d, v0, s0 = 0.5*10**6, 1.2*10**6, 0.038, 0.9, 9.1, 0.5
 
-# stability 
+# stability  and control
 stab_margin = 0.05
+x_ac_stab_nacelles_bar = 0  # Missing nacelles data/counteracting effect for our design
+x_ac_stab_wing_bar = 0.24  # From graph from Torenbeek
+warn("Missing nacelles data/counteracting effect for our design")
+#cm_ac  constants
+Cm_ac_flaps = -0.1825#From delta CL0
+Cm_ac_nacelles = 0  # Assumed/missing data on nacelles
 
 
 
@@ -98,14 +112,42 @@ frac_lam_fus = 0.05
 frac_lam_wing = 0.1
 k = 0.634 * 10**(-5)  # Surface smoothness parameter
 
+warn("The variables hereunder should be looked at, they were computed for one specific version but should be recomputeds")
+alpha_zero_l = -0.0352
+alpha_zero_L_flaps20 = -0.193
+delta_alpha_zero_L_flaps20 = -0.1027196
+delta_alpha_zero_L_flaps60 = -0.1332698
+cl_descent_trans_flaps20 = 1.83
+alpha_descent_trans_flaps20 = 0.2219
+cdi_descent_trans_flaps20 = 0.091 
+cdi_climb_clean = 0.013 
+cl_climb_clean = 0.592
+alpha_climb_clean = 0.0873
+ld_climb = 220.449
+cL0_approach = 0.798
+alpha_approach = 0.2
+downwash_angle = 0.09530224102729465
+downwash_angle_wing = 0.05271264331632115
+downwash_angle_prop = 0.0786014329433922
+downwash_angle_stall = 0.22197201625968602
+downwash_angle_wing_stall = 0.1517455318010746
+downwash_angle_prop_stall = 0.4004370786386418
+
 #airfoil V-tail
 toc_tail = 0.12  # NACA 0012
 xcm_tail = 0.2903
+axial_induction_factor1 = 0.2 #FIXME No clue why there are two different ones
+axial_induction_factor2 = 0.005
+Vh_V_2 = 0.95  # From SEAD, V-tail somewhat similar to fin-mounted stabiliser
+eta_a_f = 0.95 # Constant used in computing the derivate of the horizontal tail lift coefficient wrt to alpha
+sweep_half_chord_tail= 0  # Assumed
+taper_hor = 1
 
 # Time constants for midterm
 t_takeoff = 15.3
 t_loiter = 20*60
 t_landing = 15
+max_rotation = 5
 
 #fuelcell input
 VolumeDensityFuellCell = 3.25 #kW /l
@@ -139,6 +181,8 @@ oem_cont = 1.1
 # Engine and properllors
 diskloading = 120
 n_engines = 6
+
+
 
 
 #material properties

@@ -9,7 +9,7 @@ sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
 import matplotlib.pyplot as plt
 # from input.data_structures import *
-from modules.stab_ctrl.potato_plot import J1loading
+from modules.stab_ctrl.loading_diagram import loading_diagram
 
 
 
@@ -149,7 +149,7 @@ def wing_location_horizontalstab_size(WingClass, FuseClass, HorTailClass, plot=F
         x_ac_stab_wing_bar = 0.24  # From graph from Torenbeek
         l_h = l_f * (1-wing_loc)
         l_fn = wing_loc * l_f - x_ac_stab_wing_bar * MAC - x_lemac_x_rootc
-        cglims = J1loading(wing_loc * l_f, l_f)[0]
+        cglims = loading_diagram(wing_loc * l_f, l_f)[0]
         frontcgexc = (cglims["frontcg"] - wing_loc * l_f + x_ac_stab_wing_bar * MAC)/ MAC
         rearcgexc = (cglims["rearcg"] - wing_loc * l_f + x_ac_stab_wing_bar * MAC)/ MAC
 

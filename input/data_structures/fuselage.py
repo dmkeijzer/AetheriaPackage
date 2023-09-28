@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 import json
 import sys
 import pathlib as pl
@@ -11,25 +10,25 @@ os.chdir(str(list(pl.Path(__file__).parents)[2]))
 import input.GeneralConstants as const
 
 class Fuselage(BaseModel):
+    label : str = "Fuselage"
     length_fuselage: float 
     length_cabin: float = 2.7 # Length of the cabin
     height_cabin: float = 1.6 # Length of the cabin
     height_fuselage_outer: float  = 1.6 + const.fuselage_margin
-    length_cockpit: float 
+    height_fuselage_inner: float  = 1.88
+    width_fuselage_inner: float = 1.88 + const.fuselage_margin 
+    width_fuselage_outer: float | None = None
+    length_cockpit: float = 2.103
     length_tail: float 
     diameter_fuselage: float 
     upsweep: float 
     limit_fuselage: float | None = None # Length of the fuseglage
     h_wing: float | None = None # Height of the wing
-    width_fuselage_inner: float | None = None
-    width_fuselage_outer: float | None = None
-    height_fuselage_inner: float | None = None
     volume_fuselage: float | None = None
     crash_box_area: float | None = None
     fuselage_weight: float | None = None
 
-    # Crash diameter stuff
-
+    # Crash diameter related
     bc: float = None # width crash area
     hc: float = None # height crash area
     bf: float = None # width crash area

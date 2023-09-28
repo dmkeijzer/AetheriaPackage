@@ -7,8 +7,11 @@ import os
 
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 
+import input.GeneralConstants as const
+
 
 class AircraftParameters(BaseModel):
+    label: str = "Aircraft"
     MTOM: float 
     Stots: float # Total area of wing reference area
     prop_eff: float  # Propulsive efficiency
@@ -17,6 +20,7 @@ class AircraftParameters(BaseModel):
 
     #energy 
     mission_energy: float | None = None
+    mission_time: float | None = None
     takeoff_energy: float | None = None
     climb_energy: float | None = None
     cruise_energy: float | None = None
@@ -30,22 +34,29 @@ class AircraftParameters(BaseModel):
     cruisePower : float = None
     hoverPower : float = None
     climbPower : float = None
+    max_thrust: float = None
+    TW_max: float = None
     
     #performance
-    v_stall: float = None
-    v_approach: float = None
-    OEM: float = None
-    wing_loading_cruise: float = None
-    turn_loadfactor: float = None # Turning load factor
-    v_max: float = None
-    max_thrust_per_engine: float = None
+    v_stall: float = const.v_stall
+    v_approach: float | None = None
+    OEM: float | None = None
+    wing_loading_cruise: float | None = None
+    turn_loadfactor: float | None = None # Turning load factor
+    v_max: float | None = None
+    max_thrust_per_engine: float | None = None
 
     # Load factors
     n_max: float = None
     n_ult : float = None
 
-    #CG
-    cg : float | None = None
+    #CG and weight
+    oem_cg : float | None = None
+    oem_mass : float | None = None
+    total_aircraft_mass: float | None = None
+    powersystem_mass: float | None = None
+    misc_mass: float | None = None
+    lg_mass: float | None = None
 
     @classmethod
     def load(cls, file_path:FilePath):

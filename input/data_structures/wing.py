@@ -1,7 +1,7 @@
 from pydantic import BaseModel, FilePath
 import json
 import sys
-import os
+import os 
 import pathlib as pl
 
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
@@ -10,6 +10,7 @@ os.chdir(str(list(pl.Path(__file__).parents)[2]))
 from input.GeneralConstants import *
 
 class Wing(BaseModel):
+    label : str = "Wing"
     aspect_ratio: float 
     quarterchord_sweep: float 
     taper: float 

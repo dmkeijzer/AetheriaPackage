@@ -27,7 +27,6 @@ def numerical_simulation(l_x_1, l_x_2, l_x_3, l_y_1, l_y_2, l_y_3, T_max, y_star
     x = 0
     y = y_start
     gamma_climb = np.arctan2(0.125, 1)
-    theta_climb = gamma_climb + alpha_climb
     alpha_T = np.pi/2 
     dt = 0.01
     E = 0
@@ -274,7 +273,7 @@ def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha
             phase_2 = False
         elif level_out == True:
             phase_1 = False
-            phase_2 = False
+            phase_2 = True
         else:
             phase_1 = False
             phase_2 = True

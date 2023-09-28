@@ -21,7 +21,6 @@ os.chdir(str(list(pl.Path(__file__).parents)[2]))
 from input.GeneralConstants import *
 from input.data_structures.aero import Aero
 from input.data_structures.engine import Engine
-from input.data_structures.material import Material
 from input.data_structures.wing import Wing
 from input.data_structures.aircraft_parameters import AircraftParameters
 from modules.aero.avl_access import get_lift_distr
@@ -603,7 +602,7 @@ class Wingbox():
 
 
 
-def GetWingWeight(wing: Wing, engine: Engine, material: Material, aero: Aero):
+def GetWingWeight(wing: Wing, engine: Engine, material, aero):
     wingbox_vf = Wingbox(wing, engine, material, aero, performance, HOVER=True)
     wingbox_hf = Wingbox(wing, engine, material, aero, performance, HOVER=False)
     # NOTE Engine positions in the json are updated in the dump function so first it's dumped and then it's loaded again.

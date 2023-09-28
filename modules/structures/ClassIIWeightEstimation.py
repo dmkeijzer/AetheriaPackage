@@ -266,17 +266,17 @@ def get_weight_vtol(perf_par: AircraftParameters, fuselage: Fuselage, wing: Wing
 
 
     # Wing mass 
-    wing.wing_weight = WingWeight(perf_par.MTOM, wing.surface, perf_par.n_ult, wing.aspectratio).mass #This is automatically updated in the wing box calculations if they work
+    wing.wing_weight = WingWeight(perf_par.MTOM, wing.surface, perf_par.n_ult, wing.aspect_ratio).mass #This is automatically updated in the wing box calculations if they work
 
     # Vtail mass
     # Wing equation is used instead of horizontal tail because of the heay load of the engine which is attached
-    vtail.vtail_weight = WingWeight(perf_par.MTOM, vtail.surface, perf_par.n_ult, vtail.aspectratio).mass
+    vtail.vtail_weight = WingWeight(perf_par.MTOM, vtail.surface, perf_par.n_ult, vtail.aspect_ratio).mass
 
     #fuselage mass
     fuselage.fuselage_weight = FuselageWeight("J1", perf_par.MTOM, fuselage.length_fuselage, perf_par.n_ult, fuselage.width_fuselage_outer, fuselage.height_fuselage_outer, const.v_cr).mass
 
     #landing gear mass
-    lg_weight = LandingGear(perf_par.MTOM).mass
+    perf_par.lg_mass = LandingGear(perf_par.MTOM).mass
 
     # Nacelle and engine mass
 
@@ -284,32 +284,18 @@ def get_weight_vtol(perf_par: AircraftParameters, fuselage: Fuselage, wing: Wing
     nacelle_mass = NacelleWeight(perf_par.hoverPower).mass
 
     engine.totalmass = nacelle_mass + total_engine_mass
-    engine.mass_perpowertrain = (engine.totalmass)/engine.no_engines
-    engine.mass_pernacelle = nacelle_mass/engine.no_engines
-    engine.mass_pertotalengine = total_engine_mass/engine.no_engines
+    engine.mass_perpowertrain = (engine.totalmass)/const.n_engines
+    engine.mass_pernacelle = nacelle_mass/const.n_engines
+    engine.mass_pertotalengine = total_engine_mass/const.n_engines
 
     # Misc mass
-    misc_mass = Miscallenous(perf_par.MTOM, perf_par.OEM, const.npax + 1).mass
+    perf_par.misc_mass = Miscallenous(perf_par.MTOM, perf_par.OEM, const.npax + 1).mass
 
-    perf_par.OEM = np.sum([ perf_par.powersystem_mass ,   wing.wing_weight, vtail.vtail_weight, fuselage.fuselage_weight, nacelle_mass, total_engine_mass,  lg_weight, misc_mass])
+    perf_par.OEM = np.sum([ perf_par.powersystem_mass ,   wing.wing_weight, vtail.vtail_weight, fuselage.fuselage_weight, nacelle_mass, total_engine_mass, perf_par.lg_mass, perf_par.misc_mass])
     perf_par.MTOM =  perf_par.OEM + const.m_pl
 
     # Update weight not part of a data structure
 
-    with open(const.json_path, "r") as f:
-        data = json.load(f)
-    
-
-    data["misc_weight"] = misc_mass
-    data["lg_weight"] = lg_weight
-    data["nacelle_weight"] = nacelle_mass
-    data["powertrain_weight"] =  total_engine_mass
-
-    if not test:
-        with open(const.json_path, "w") as f:
-            json.dump(data, f, indent= 6)
-    else:
-        return perf_par, wing, vtail, fuselage, engine, data
-
     return perf_par, wing, vtail, fuselage, engine
+
 
