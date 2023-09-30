@@ -361,6 +361,7 @@ class MissionClass:
         return E_tot, t_tot, max(P_m_to, P_m_la), max(T_m_to, T_m_la), t_cruise + self.t_loiter, Energy
 
 def get_energy_power_perf(WingClass, EngineClass, AeroClass, PerformanceClass):
+    raise DeprecationWarning(f"This function should not be called, has unstable behaviour!")
     """ Computes relevant performance metrics from the mission
 
     :param WingClass: _description_

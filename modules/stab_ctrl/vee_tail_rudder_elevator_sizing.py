@@ -35,11 +35,11 @@ def get_K(taper_h, AR_h):
 
     if not aspect_ratio_points[0] < AR_h < aspect_ratio_points[-1]:
         if AR_h < aspect_ratio_points[0]:
-            warn(f"Aspect ratio {AR_h} was out of range, defaulting to {aspect_ratio_points[0]}")
+            warn(f"Aspect ratio {AR_h} was out of range, defaulting to {aspect_ratio_points[0]}", category=RuntimeWarning)
             AR_h = aspect_ratio_points[0]
 
         if AR_h > aspect_ratio_points[-1]:
-            warn(f"Aspect ratio {AR_h} was out of range, defaulting to {aspect_ratio_points[-1]}")
+            warn(f"Aspect ratio {AR_h} was out of range, defaulting to {aspect_ratio_points[-1]}", category= RuntimeWarning)
             AR_h = aspect_ratio_points[-1]
 
     K = interp_func([AR_h, taper_h])[0]

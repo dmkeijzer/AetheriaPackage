@@ -73,15 +73,16 @@ def wing_location_horizontalstab_size(WingClass, FuseClass, Aeroclass, VtailClas
         "cg_front_lst": [],
         "cg_rear_lst": [],
         "Shs_min_lst": [],
+        "cg_dict_marg_lst": [],
     }
 
     for wing_loc in np.linspace(0.3, 0.65, np.size(np.arange(-1,2,stepsize))):
         l_h = FuseClass.length_fuselage * (1-wing_loc)
         l_fn = wing_loc * FuseClass.length_fuselage - const.x_ac_stab_wing_bar * WingClass.chord_mac - WingClass.x_lemac
         depsda = downwash(downwash_k(l_fn, WingClass.span), Aeroclass.cL_alpha, WingClass.aspect_ratio) # TODO compute downwash from functions
-        cglims = loading_diagram(wing_loc * FuseClass.length_fuselage, FuseClass.length_fuselage, FuseClass, WingClass, VtailClass, AircraftClass, PowerClass, EngineClass )[1]
-        StabClass.cg_front = (cglims["frontcg"] - wing_loc * FuseClass.length_fuselage + const.x_ac_stab_wing_bar * WingClass.chord_mac)/ WingClass.chord_mac
-        StabClass.cg_rear = (cglims["rearcg"] - wing_loc * FuseClass.length_fuselage + const.x_ac_stab_wing_bar * WingClass.chord_mac)/ WingClass.chord_mac
+        cg_dict, cg_dict_margin = loading_diagram(wing_loc * FuseClass.length_fuselage, FuseClass.length_fuselage, FuseClass, WingClass, VtailClass, AircraftClass, PowerClass, EngineClass )
+        cg_front_bar = (cg_dict_margin["frontcg"] - wing_loc * FuseClass.length_fuselage + const.x_ac_stab_wing_bar * WingClass.chord_mac)/ WingClass.chord_mac
+        cg_rear_bar = (cg_dict_margin["rearcg"] - wing_loc * FuseClass.length_fuselage + const.x_ac_stab_wing_bar * WingClass.chord_mac)/ WingClass.chord_mac
         CLaAh = CLaAhcalc(Aeroclass.cL_alpha, FuseClass.width_fuselage_outer, WingClass.span, WingClass.surface, WingClass.chord_root)
 
         # Computing aerodynamic centre
@@ -105,15 +106,16 @@ def wing_location_horizontalstab_size(WingClass, FuseClass, Aeroclass, VtailClas
         ShS_ctrl = m_ctrl * cg_bar + q_ctrl
 
         # retrieving minimum tail sizing
-        idx_ctrl = cg_bar == min(cg_bar, key=lambda x:abs(x - StabClass.cg_front))
-        idx_stab = cg_bar == min(cg_bar, key=lambda x:abs(x - StabClass.cg_rear))
+        idx_ctrl = cg_bar == min(cg_bar, key=lambda x:abs(x - cg_front_bar))
+        idx_stab = cg_bar == min(cg_bar, key=lambda x:abs(x - cg_rear_bar))
         ShSmin = max(ShS_ctrl[idx_ctrl], ShS_stab[idx_stab])[0]
 
         # Storing results
         dict_log["wing_loc_lst"].append(wing_loc)
-        dict_log["cg_front_lst"].append(StabClass.cg_front)
-        dict_log["cg_rear_lst"].append(StabClass.cg_rear)
+        dict_log["cg_front_lst"].append(cg_front_bar)
+        dict_log["cg_rear_lst"].append(cg_rear_bar)
         dict_log["Shs_min_lst"].append(ShSmin)
+        dict_log["cg_dict_marg_lst"].append(cg_dict_margin)
 
 
     # Selecting optimum design
@@ -122,6 +124,7 @@ def wing_location_horizontalstab_size(WingClass, FuseClass, Aeroclass, VtailClas
     design_wing_loc = dict_log["wing_loc_lst"][design_idx]
     design_cg_front_bar = dict_log["cg_front_lst"][design_idx]
     design_cg_rear_bar = dict_log["cg_rear_lst"][design_idx]
+    design_cg_dict_margin = dict_log["cg_dict_marg_lst"][design_idx]
 
     if plot:
         plt.plot(dict_log["wing_loc_lst"], dict_log["Shs_min_lst"])
@@ -130,6 +133,6 @@ def wing_location_horizontalstab_size(WingClass, FuseClass, Aeroclass, VtailClas
     WingClass.x_lewing = design_wing_loc*FuseClass.length_fuselage - 0.24 * WingClass.chord_mac - WingClass.x_lemac
     VtailClass.virtual_hor_surface = design_shs*WingClass.surface
 
-    return design_shs, design_wing_loc, design_cg_front_bar, design_cg_rear_bar
+    return design_shs, design_wing_loc, design_cg_front_bar, design_cg_rear_bar, design_cg_dict_margin
 
 

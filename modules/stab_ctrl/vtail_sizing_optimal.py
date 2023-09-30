@@ -41,7 +41,7 @@ def size_vtail_opt(WingClass, FuseClass, VTailClass, StabClass, Aeroclass, Aircr
         VTailClass.aspect_ratio = A_h
         CLh = CLh_initguess
         while True:
-            shs, wing_loc, cg_front_bar, cg_aft_bar = wing_location_horizontalstab_size(WingClass, FuseClass,Aeroclass, VTailClass, AircraftClass, PowerClass, EngineClass, StabClass,  A_h, CLh_approach=CLh, stepsize= stepsize)
+            shs, wing_loc, cg_front_bar, cg_aft_bar, cg_dict_margin = wing_location_horizontalstab_size(WingClass, FuseClass,Aeroclass, VTailClass, AircraftClass, PowerClass, EngineClass, StabClass,  A_h, CLh_approach=CLh, stepsize= stepsize)
             l_v = FuseClass.length_fuselage * (1 - wing_loc)
             Vh_V2 = 0.95*(1 + const.axial_induction_factor1)**2
             control_surface_data = get_control_surface_to_tail_chord_ratio(WingClass, FuseClass,VTailClass, Aeroclass, CLh, l_v, Cn_beta_req=0.0571, beta_h=1, eta_h=0.95, total_deflection=20 * np.pi / 180, design_cross_wind_speed=5.14, step=0.1 * np.pi / 180)
@@ -55,7 +55,7 @@ def size_vtail_opt(WingClass, FuseClass, VTailClass, StabClass, Aeroclass, Aircr
             dict_log["span_vee_lst"].append(np.sqrt(A_h * control_surface_data["S_vee"]))
             dict_log["trim_drag_lst"].append(CLvee_cr_N ** 2 * control_surface_data["S_vee"]/A_h)
             dict_log["aspect_ratio_lst"].append(A_h)
-            dict_log["wing_pos_lst"].append((shs, wing_loc, cg_front_bar, cg_aft_bar))
+            dict_log["wing_pos_lst"].append((shs, wing_loc, cg_front_bar, cg_aft_bar, cg_dict_margin))
             dict_log["ctrl_surf_lst"].append(control_surface_data)
             dict_log["cl_vee_cr_lst"].append(CLvee_cr_N)
 
@@ -67,13 +67,21 @@ def size_vtail_opt(WingClass, FuseClass, VTailClass, StabClass, Aeroclass, Aircr
     CLh = dict_log["clh_lst"][design_idx]
     b_vee = dict_log["span_vee_lst"][design_idx]
     Ah = dict_log["aspect_ratio_lst"][design_idx]
-    Shs, wing_loc, cg_front_bar, cg_aft_bar= dict_log["wing_pos_lst"][design_idx]
+    Shs, wing_loc, cg_front_bar, cg_aft_bar, cg_dict= dict_log["wing_pos_lst"][design_idx]
     ctrl_surf_data = dict_log["ctrl_surf_lst"][design_idx]
     cl_vee_cr = dict_log["cl_vee_cr_lst"][design_idx]
 
     l_v = FuseClass.length_fuselage * (1 - wing_loc)
     Vh_V2 = 0.95*(1+const.axial_induction_factor2)**2
 
+    AircraftClass.oem_cg = cg_dict["oem_cg"]
+    AircraftClass.cg_front = cg_dict["frontcg"]
+    AircraftClass.cg_rear = cg_dict["rearcg"]
+    AircraftClass.cg_front_bar = cg_front_bar
+    AircraftClass.cg_rear_bar =  cg_aft_bar
+    StabClass.cg_front_bar = cg_front_bar
+    StabClass.cg_rear_bar =  cg_aft_bar
+    
     VTailClass.cL_h_cruise = cl_vee_cr 
     VTailClass.length_wing2vtail = l_v
     VTailClass.rudder_max = np.radians(ctrl_surf_data["max_rudder_angle"])

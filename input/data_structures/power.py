@@ -30,8 +30,7 @@ class Power(BaseModel):
         try:
             return cls(**data["Power"])
         except:
-            warn(f"{cls} was loaded with empty data, please check if you want this")
-            return cls()
+            raise Exception(f"There was an error when loading in {cls}")
         
     def dump(self, file_path: FilePath):
         with open(file_path) as jsonFile:

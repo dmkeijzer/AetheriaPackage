@@ -31,7 +31,10 @@ class Engine(BaseModel):
     def load(cls, file_path:FilePath):
         with open(file_path) as jsonFile:
             data = json.load(jsonFile)
-        return cls(**data["Engine"])
+        try:
+            return cls(**data["Engine"])
+        except:
+            raise Exception(f"There was an error when loading in {cls}")
 
     def dump(self, file_path: FilePath):
         with open(file_path) as jsonFile:

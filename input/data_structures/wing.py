@@ -10,10 +10,10 @@ os.chdir(str(list(pl.Path(__file__).parents)[2]))
 from input.GeneralConstants import *
 
 class Wing(BaseModel):
-    label : str = "Wing"
     aspect_ratio: float 
     quarterchord_sweep: float 
     taper: float 
+    label : str = "Wing"
     surface: float | None = None
     span: float | None = None
     chord_root: float | None = None
@@ -22,17 +22,18 @@ class Wing(BaseModel):
     y_mac: float| None = None
     sweep_LE: float| None = None
     x_lemac: float | None= None
-    effective_aspectratio: float| None = None
-    effective_span: float| None = None
     x_lewing: float| None = None
-    thickness_to_chord: float| None = None
+    thickness_to_chord: float = 0.12
     wing_weight: float| None = None
 
     @classmethod
     def load(cls, file_path:FilePath):
         with open(file_path) as jsonFile:
             data = json.load(jsonFile)
-        return cls(**data["Wing"])
+        try:
+            return cls(**data["Wing"])
+        except:
+            raise Exception(f"There was an error when loading in {cls}")
         
     def dump(self, file_path: FilePath):
         with open(file_path) as jsonFile:

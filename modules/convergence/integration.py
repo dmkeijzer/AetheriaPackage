@@ -14,7 +14,7 @@ from modules.powersizing import PropulsionSystem
 from input import GeneralConstants
 from modules.stab_ctrl.vtail_sizing_optimal import size_vtail_opt
 from modules.stab_ctrl.wing_loc_horzstab_sizing import wing_location_horizontalstab_size # Well this should have probably been used
-from modules.planform.planformsizing import wing_planform
+from modules.planform.planformsizing import wing_planform, vtail_planform
 from modules.preliminary_sizing.wing_power_loading_functions import get_wing_power_loading
 from modules.structures.Flight_Envelope import get_gust_manoeuvr_loadings
 from modules.aero.clean_class2drag import integrated_drag_estimation
@@ -28,7 +28,7 @@ from scripts.structures.vtail_span import span_vtail
 import input.GeneralConstants as const
 from scripts.power.finalPowersizing import power_system_convergences
 
-def run_integration(file_path, counter_tuple=(0,0), optimizer_pointer= None):
+def run_integration(file_path, counter_tuple=(0,0), json_path= None, dir_path = None ):
     """ Runs an entire integraton loop
 
     :param label: Label required for writing to files
@@ -59,14 +59,14 @@ def run_integration(file_path, counter_tuple=(0,0), optimizer_pointer= None):
         IonBlock = Battery(Efficiency= 0.9)
         Pstack = FuelCell()
         Tank = HydrogenTank(energyDensity=1.8, volumeDensity=0.6, cost= 16)
-        mission = AircraftParameters.load(optimizer_pointer.json_path)
-        wing  =  Wing.load(optimizer_pointer.json_path)
-        engine = Engine.load(optimizer_pointer.json_path)
-        aero = Aero.load(optimizer_pointer.json_path)
-        fuselage = Fuselage.load(optimizer_pointer.json_path)
-        vtail = VeeTail.load(optimizer_pointer.json_path)
-        stability = Stab.load(optimizer_pointer.json_path)
-        power = Power.load(optimizer_pointer.json_path)
+        mission = AircraftParameters.load(json_path)
+        wing  =  Wing.load(json_path)
+        engine = Engine.load(json_path)
+        aero = Aero.load(json_path)
+        fuselage = Fuselage.load(json_path)
+        vtail = VeeTail.load(json_path)
+        stability = Stab.load(json_path)
+        power = Power.load(json_path)
     #----------------------------------------------------------------------------------
 
     # Preliminary Sizing
@@ -84,8 +84,8 @@ def run_integration(file_path, counter_tuple=(0,0), optimizer_pointer= None):
     # aero = slipstream_cruise(wing, engine, aero, mission) # FIXME the effect of of cl on the angle of attack
 
     #-------------------- Flight Performance --------------------
-    get_energy_power_perf(wing, engine, aero, mission)
-    # get_performance_updated(aero, mission, wing, enigine, power)
+    # get_energy_power_perf(wing, engine, aero, mission)
+    get_performance_updated(aero, mission, wing,engine, power)
 
     #-------------------- power system sizing--------------------
     power_system_convergences(power, mission) #
@@ -106,27 +106,28 @@ def run_integration(file_path, counter_tuple=(0,0), optimizer_pointer= None):
                                                                     ) 
     #------------- Structures------------------
     # Fuselage sizing
+    vtail_planform(vtail)
     get_fuselage_sizing(Tank,Pstack, mission, fuselage)
 
     #------------- weight_estimation------------------
     get_weight_vtol(mission, fuselage, wing, engine, vtail)
 
     #---------------------- dumping update parameters to json file ------------------
-    mission.dump(optimizer_pointer.json_path)
-    wing.dump(optimizer_pointer.json_path)
-    engine.dump(optimizer_pointer.json_path)
-    aero.dump(optimizer_pointer.json_path)
-    fuselage.dump(optimizer_pointer.json_path)
-    vtail.dump(optimizer_pointer.json_path)
-    fuselage.dump(optimizer_pointer.json_path)
-    stability.dump(optimizer_pointer.json_path)
-    power.dump(optimizer_pointer.json_path)
+    mission.dump(json_path)
+    wing.dump(json_path)
+    engine.dump(json_path)
+    aero.dump(json_path)
+    fuselage.dump(json_path)
+    vtail.dump(json_path)
+    fuselage.dump(json_path)
+    stability.dump(json_path)
+    power.dump(json_path)
 
 
     #--------------------------------- Log all variables from current iterations ----------------------------------
 
     for data_struct in [mission, wing, engine, aero, fuselage, vtail, stability, power]:
-        save_path = os.path.join(optimizer_pointer.dir_path, "aetheria" + "_" + data_struct.label + "_hist.csv")
+        save_path = os.path.join(dir_path, "aetheria" + "_" + data_struct.label + "_hist.csv")
         data = data_struct.model_dump()
         
         if os.path.exists(save_path):
@@ -136,8 +137,31 @@ def run_integration(file_path, counter_tuple=(0,0), optimizer_pointer= None):
                 # Read the output from the subprocess
 
 
+def multi_run(file_path, outer_loop_counter, json_path, dir_path ):
+        print(f"===============================\nOuter loop iteration = {outer_loop_counter}\n===============================")
 
-if __name__ == "__main__":
-    
-    run_integration()
+        with open(json_path, 'r') as f:
+            data = json.load(f)
+            MTOM_one = data["AircraftParameters"]["MTOM"]
+
+        print(f"MTOM: {MTOM_one}")
+        for i in range(1,11):
+            print(f'\nInner loop Iteration = {i}') 
+            run_integration(file_path  ,(outer_loop_counter, i),json_path, dir_path) # run integration files which can be looped
+
+            # load data so that convergences can be checked
+            with open(json_path, 'r') as f:
+                data = json.load(f)
+            MTOM_two = data["AircraftParameters"]["MTOM"]
+
+            #log data so that convergences can be monitored live
+            print(f"MTOM: {MTOM_two} kg")
+
+            #break out of the convergences loop if the mtom convergences below 0.5%
+            epsilon = abs(MTOM_two - MTOM_one) / MTOM_one
+            if epsilon < 0.005: #NOTE 
+                print(f" Inner loop has converged -> epsilon is: {epsilon * 100}%")
+                break
+            MTOM_one = MTOM_two
+
 

@@ -26,16 +26,12 @@ class AircraftParameters(BaseModel):
     cruise_energy: float | None = None
     descend_energy: float | None = None
     hor_loiter_energy: float | None = None
-    trans2hor_energy: float | None = None
-    trans2ver_energy: float | None = None
-    ver_loiter_energy: float | None = None
 
     #power
-    cruisePower : float = None
-    hoverPower : float = None
-    climbPower : float = None
-    max_thrust: float = None
-    TW_max: float = None
+    cruisePower : float | None = None
+    hoverPower : float | None = None
+    max_thrust: float | None = None
+    TW_max: float | None = None
     
     #performance
     v_stall: float = const.v_stall
@@ -47,13 +43,16 @@ class AircraftParameters(BaseModel):
     max_thrust_per_engine: float | None = None
 
     # Load factors
-    n_max: float = None
-    n_ult : float = None
+    n_max: float | None = None
+    n_ult : float | None = None
 
     #CG and weight
     oem_cg : float | None = None
+    cg_front : float | None = None
+    cg_rear : float | None = None
+    cg_front_bar : float | None = None
+    cg_rear_bar : float | None = None
     oem_mass : float | None = None
-    total_aircraft_mass: float | None = None
     powersystem_mass: float | None = None
     misc_mass: float | None = None
     lg_mass: float | None = None
@@ -62,7 +61,10 @@ class AircraftParameters(BaseModel):
     def load(cls, file_path:FilePath):
         with open(file_path) as jsonFile:
             data = json.load(jsonFile)
-        return cls(**data["AircraftParameters"])
+        try:
+            return cls(**data["AircraftParameters"])
+        except:
+            raise Exception(f"There was an error when loading in {cls}")
 
 
     def dump(self, file_path: FilePath):

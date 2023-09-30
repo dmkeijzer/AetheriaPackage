@@ -40,14 +40,17 @@ class Stab(BaseModel):
     mub: float | None = None
     sym_eigvals: float | None = None
     asym_eigvals: float | None = None
-    cg_front: float | None = None
-    cg_rear: float | None = None
+    cg_front_bar: float | None = None
+    cg_rear_bar: float | None = None
 
     @classmethod
     def load(cls, file_path:FilePath):
         with open(file_path) as jsonFile:
             data = json.load(jsonFile)
-        return cls(**data["Wing"])
+        try:
+            return cls(**data["Stability"])
+        except:
+            raise Exception(f"There was an error when loading in {cls}")
         
     def dump(self, file_path: FilePath):
         with open(file_path) as jsonFile:

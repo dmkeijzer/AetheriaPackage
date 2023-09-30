@@ -12,6 +12,9 @@ import input.GeneralConstants as const
 class Fuselage(BaseModel):
     label : str = "Fuselage"
     length_fuselage: float 
+    length_tail: float 
+    diameter_fuselage: float 
+    upsweep: float 
     length_cabin: float = 2.7 # Length of the cabin
     height_cabin: float = 1.6 # Length of the cabin
     height_fuselage_outer: float  = 1.6 + const.fuselage_margin
@@ -19,20 +22,16 @@ class Fuselage(BaseModel):
     width_fuselage_inner: float = 1.88 + const.fuselage_margin 
     width_fuselage_outer: float | None = None
     length_cockpit: float = 2.103
-    length_tail: float 
-    diameter_fuselage: float 
-    upsweep: float 
     limit_fuselage: float | None = None # Length of the fuseglage
-    h_wing: float | None = None # Height of the wing
     volume_fuselage: float | None = None
     crash_box_area: float | None = None
     fuselage_weight: float | None = None
 
     # Crash diameter related
-    bc: float = None # width crash area
-    hc: float = None # height crash area
-    bf: float = None # width crash area
-    hf: float = None # height crash area
+    bc: float | None = None # width crash area
+    hc: float | None = None # height crash area
+    bf: float | None = None # width crash area
+    hf: float | None = None # height crash area
 
     @property
     def max_perimeter(self):
@@ -44,7 +43,10 @@ class Fuselage(BaseModel):
     def load(cls, file_path:FilePath):
         with open(file_path) as jsonFile:
             data = json.load(jsonFile)
-        return cls(**data["Fuselage"])
+        try:
+            return cls(**data["Fuselage"])
+        except:
+            raise Exception(f"There was an error when loading in {cls}")
 
     def dump(self, file_path: FilePath):
         with open(file_path) as jsonFile:

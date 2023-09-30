@@ -259,27 +259,6 @@ def get_fuselage_sizing(h2tank, fuelcell, perf_par,fuselage):
     fuselage.bf = bf
     fuselage.hf = hf
     fuselage.limit_fuselage = fuselage.length_cockpit + fuselage.length_cabin + l_tail + fuelcell.depth + const.fuselage_margin 
+    fuselage.length_fuselage = fuselage.length_cockpit + fuselage.length_cabin + l_tail + fuelcell.depth + const.fuselage_margin 
 
     return fuselage
-
-
-if __name__ == '__main__':
-    from input.data_structures import *
-
-    TankClass = HydrogenTank()
-    FuelClass = FuelCell()
-    PerfClas = AircraftParameters()
-    FuseClas = Fuselage()
-
-    TankClass.load()
-    PerfClas.load()
-    FuseClas.load()
-
-    print(get_fuselage_sizing(TankClass, FuelClass, PerfClas, FuseClas).limit_fuselage)
-
-
-
-
-    
-
-

@@ -28,8 +28,8 @@ def loading_diagram(wing_loc, lf, fuselage, wing, vtail, aircraft, power, engine
     }
 
 
-    aircraft.oem_mass = np.sum(x[0] for x in dict_mass_loc.values())
-    aircraft.oem_cg = np.sum([x[0]*x[1] for x in dict_mass_loc.values()])/aircraft.oem_mass
+    oem_mass = np.sum(x[0] for x in dict_mass_loc.values())
+    oem_cg = np.sum([x[0]*x[1] for x in dict_mass_loc.values()])/oem_mass
 
     # Initalize lists anc create set up
     loading_array = np.array([[5.056, 125],  # payload
@@ -40,22 +40,32 @@ def loading_diagram(wing_loc, lf, fuselage, wing, vtail, aircraft, power, engine
                     [4.476, 77]]) # passengers row 2
 
     #------------------ front to back -----------------------------------------
-    mass_array = [aircraft.oem_mass]
-    mass_pos_array = [aircraft.oem_cg]
+    mass_array = [oem_mass]
+    mass_pos_array = [oem_cg]
 
     for i in loading_array:
         mass_array.append(mass_array[-1] + i[1])
         mass_pos_array.append((mass_array[-1]*mass_pos_array[-1] + i[0]*i[1])/(mass_array[-1] + i[0]))
 
     #----------------------- back to front -----------------------------------
-    mass_array2 = [aircraft.oem_mass]
-    mass_pos_array2 = [aircraft.oem_cg]
+    mass_array2 = [oem_mass]
+    mass_pos_array2 = [oem_cg]
 
     for j in reversed(loading_array[[1,2,3,4,5,0]]):
         mass_array2.append(mass_array2[-1] + j[1])
         mass_pos_array2.append((mass_array2[-1]*mass_pos_array2[-1] + j[0]*j[1])/(mass_array2[-1] + j[0]))
 
     #------------------------------------ log results --------------------------------------------
-    res = {"frontcg": min(mass_pos_array), "rearcg": max(mass_pos_array2)}
-    res_margin = {"frontcg": min(mass_pos_array)-0.1*(max(mass_pos_array2)-min(mass_pos_array)), "rearcg": max(mass_pos_array2)+0.1*(max(mass_pos_array2)-min(mass_pos_array))}
+    res = {
+        "frontcg": min(mass_pos_array), 
+        "rearcg": max(mass_pos_array2),
+        "oem_cg": oem_cg
+        }
+        
+    res_margin = {
+        "frontcg": min(mass_pos_array)-0.1*(max(mass_pos_array2)-min(mass_pos_array)),
+        "rearcg": max(mass_pos_array2)+0.1*(max(mass_pos_array2)-min(mass_pos_array)),
+        "oem_cg": oem_cg
+                 }
+
     return res, res_margin

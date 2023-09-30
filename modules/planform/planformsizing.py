@@ -15,6 +15,15 @@ def wing_planform(wing, MTOM: float, WS_cruise: float):
     wing.x_lemac = wing.y_mac * wing.sweep_LE
     return wing
 
+def vtail_planform(vtail):
+
+    vtail.span  = np.sqrt( vtail.aspect_ratio * vtail.surface)
+    vtail.chord_root = 2 * vtail.surface / ((1 + vtail.taper) * vtail.span)
+    vtail.chord_tip = vtail.taper * vtail.chord_root
+    vtail.chord_mac = (2 / 3) * vtail.chord_root  * ((1 + vtail.taper + vtail.taper ** 2) / (1 + vtail.taper))
+
+    return vtail
+
 def winglet_correction(wing, winglet_correction: float):
     wing.effective_aspect_ratio = wing.aspect_ratio * winglet_correction
     wing.effective_span = wing.span*np.sqrt(wing.effective_aspectratio/wing.aspect_ratio)
