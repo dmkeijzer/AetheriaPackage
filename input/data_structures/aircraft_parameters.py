@@ -52,6 +52,7 @@ class AircraftParameters(BaseModel):
     cg_rear : float | None = None
     cg_front_bar : float | None = None
     cg_rear_bar : float | None = None
+    wing_loc: float | None = None
     oem_mass : float | None = None
     powersystem_mass: float | None = None
     misc_mass: float | None = None

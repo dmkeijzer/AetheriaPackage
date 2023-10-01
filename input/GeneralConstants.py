@@ -21,7 +21,7 @@ from  modules.misc_tools.ISA_tool import ISA
 
 # constants of physics
 g0 = 9.80665            #[m/s^2]    O
-time_step = 0.015
+time_step = 0.02
 transition_height_baseline = 50
 
 #performance

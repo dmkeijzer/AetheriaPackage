@@ -75,6 +75,7 @@ def size_vtail_opt(WingClass, FuseClass, VTailClass, StabClass, Aeroclass, Aircr
     Vh_V2 = 0.95*(1+const.axial_induction_factor2)**2
 
     AircraftClass.oem_cg = cg_dict["oem_cg"]
+    AircraftClass.wing_loc = wing_loc
     AircraftClass.cg_front = cg_dict["frontcg"]
     AircraftClass.cg_rear = cg_dict["rearcg"]
     AircraftClass.cg_front_bar = cg_front_bar

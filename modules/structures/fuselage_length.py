@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import numpy as np
+from warnings import warn
 import os
 import matplotlib.pyplot as plt
 import sys
@@ -249,6 +250,7 @@ def get_fuselage_sizing(h2tank, fuelcell, perf_par,fuselage):
     fuselage.height_fuselage_outer = fuselage.height_fuselage_inner + const.fuselage_margin
 
     # l_tail, upsweep, bc, hc, hf, bf, AR, l_tank = minimum_tail_length(fuselage.height_fuselage_inner, fuselage.width_fuselage_inner, const.beta_crash, h2tank.volume(perf_par.energyRequired/3.6e6) ,np.linspace(1, 7, 40), const.ARe, const.n_tanks)
+    warn("The volume is probably not correct anymore since we need more energy")
     l_tail, upsweep, bc, hc, hf, bf, AR, l_tank = minimum_tail_length(fuselage.height_fuselage_inner, fuselage.width_fuselage_inner, const.beta_crash, 0.533 ,np.linspace(1, 7, 40), const.ARe, const.n_tanks)
     radius = find_tail_length(fuselage.height_fuselage_inner, fuselage.width_fuselage_inner, const.beta_crash, 0.533, l_tank, AR,2)
 

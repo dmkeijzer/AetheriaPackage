@@ -84,7 +84,6 @@ def run_integration(file_path, counter_tuple=(0,0), json_path= None, dir_path = 
     # aero = slipstream_cruise(wing, engine, aero, mission) # FIXME the effect of of cl on the angle of attack
 
     #-------------------- Flight Performance --------------------
-    # get_energy_power_perf(wing, engine, aero, mission)
     get_performance_updated(aero, mission, wing,engine, power)
 
     #-------------------- power system sizing--------------------
