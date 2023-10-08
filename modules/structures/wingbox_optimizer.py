@@ -744,10 +744,11 @@ if __name__ == "__main__":
 
 
         # fig, axs = plt.subplots(3,2)
+        fig = plt.figure(figsize=(9,7))
         # fig.set_figheight(7)
         # fig.set_figwidth(9)
         y = wingbox_vf.y
-        # _fontsize=8    
+        _fontsize=30    
         
 # #----- plot horizontal flight -------
 #         print("-----HORIZONTAL FLIGHT--------")
@@ -839,9 +840,19 @@ if __name__ == "__main__":
         # plt.savefig(os.path.join(os.path.expanduser("~"), "Downloads", "moments_vertical_horizontal.pdf"), bbox_inches= "tight")
         # plt.show()
 
-        plt.plot(y,wingbox_vf.I_xx(X))
-        plt.xlabel("Span location y [m]")
-        plt.ylabel(r"Moment of Inertia in x [$m^4$]")
+        
+        import matplotlib.ticker as ticker
+        _fontsize = 25
+        _linewidth= 5
+        plt.plot(y,wingbox_hf.torque_from_tip(x_final)/1e3,linewidth=_linewidth,label = 'Vertical flight')
+        # plt.plot(y,wingbox_hf.bending_stress_x_from_tip(x_final)/1e6,label="Horizontal flight",linewidth=_linewidth)
+        # plt.plot(y,wingbox_vf.bending_stress_x_from_tip(x_final)/1e6, label = "Vertical flight",linestyle='dashed',linewidth=_linewidth)
+        plt.xlabel("Span location y [m]",fontsize=_fontsize)
+        plt.ylabel(r"Torque [$kNm$]",fontsize=_fontsize)
+        plt.xticks(fontsize=_fontsize)
+        plt.yticks(fontsize=_fontsize)
+        plt.gca().yaxis.set_major_formatter(ticker.ScalarFormatter(useMathText=True))
+        plt.legend(fontsize=_fontsize)
         plt.grid()
         plt.show()
 
