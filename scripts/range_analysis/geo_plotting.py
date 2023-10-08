@@ -1,5 +1,3 @@
-from range_analysis import iso_cities
-import ShapeFileHandler as fc
 import numpy as np
 import geopandas as gpd
 import matplotlib.pyplot as plt
@@ -11,7 +9,14 @@ from random import sample
 import matplotlib.patches as mpatches
 import pandas as pd
 import os
+import sys
+import pathlib as pl
 
+sys.path.append(str(list(pl.Path(__file__).parents)[2]))
+os.chdir(str(list(pl.Path(__file__).parents)[2]))
+
+from modules.range_analysis.range_analysis import iso_cities
+import modules.range_analysis.ShapeFileHandler as fc
 
 #=========================================================================
 # Get the required data to plot with
@@ -20,7 +25,7 @@ import os
 world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
 europe = world[world.continent == 'Europe']
 europe = europe.to_crs(epsg=3395) # make the plot of Europe a conformal projection
-plt_data_og = pd.read_csv(os.path.join(os.path.dirname(__file__), "input_data/plotting_df.csv"))
+plt_data_og = pd.read_csv(r"input\RangeAnalysisData\plotting_df.csv")
 plt_data = plt_data_og.to_numpy()[plt_data_og.to_numpy()[:,4] >= 159.2]
 
 
@@ -75,7 +80,7 @@ def iso_cities_altered(lim):
     return iso
          
 
-lim = 400
+lim = 300
 a = 0.2
 iso = iso_cities_altered(lim)
 
@@ -88,7 +93,6 @@ iso = iso_cities_altered(lim)
 # the function .tissot from cartopy is used for the circles
 #---------------------------------------------------------------------------------
 
-col_count = 0
 
 for idx, row in enumerate(np.delete(plt_data_og.to_numpy(), 0 , 1)):
    if row[0] in iso:
@@ -96,19 +100,17 @@ for idx, row in enumerate(np.delete(plt_data_og.to_numpy(), 0 , 1)):
       col = [0,0,0, a]
       edgecol = [0,0,0, 0.9]
    else:
-      col = list(sns.color_palette("tab10", 13 )[col_count])
+      col = list(sns.color_palette("tab10", 50  )[idx])
       edgecol = list(col)
       col.append(a)
       edgecol.append(0.8)
    
-   if row[3] >= 159.2:
-      ax1.tissot(rad_km=lim, lons= row[2], lats=row[1], n_samples=36 , facecolor= col,   zorder=10,  edgecolor= edgecol, lw= 1.5)
+   # ax1.tissot(rad_km=lim, lons= row[2], lats=row[1], n_samples=36 , facecolor= col,   zorder=10,  edgecolor= edgecol, lw= 1.5)
 
-      #Create dot for the city itself
-      edgecol[-1] = 1
-      ax1.tissot(rad_km=20, lons= row[2], lats=row[1], n_samples=36 , facecolor= edgecol,   zorder=10)
-      ax1.text(row[2] , row[1] - 1, row[0], fontsize=8, color='black',horizontalalignment='right', transform=ccrs.PlateCarree())
-      col_count += 1
+   #Create dot for the city itself
+   edgecol[-1] = 1
+   ax1.tissot(rad_km=40, lons= row[2], lats=row[1], n_samples=36 , facecolor= edgecol,   zorder=10)
+   ax1.text(row[2] , row[1] - 1, row[0], fontsize=8, color='black',horizontalalignment='right', transform=ccrs.PlateCarree())
    # if row[3] >= 84.9 and row[3] < 159.2:
    #    ax2.tissot(rad_km=lim, lons= row[2], lats=row[1], n_samples=36 , ec= "black",  zorder=10, alpha= a, color= col)
    # if row[3] >= 58.8 and row[3] < 84.9:

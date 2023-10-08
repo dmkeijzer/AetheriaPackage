@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 
-from input.data_structures.GeneralConstants import *
+from input.GeneralConstants import *
 
 
 

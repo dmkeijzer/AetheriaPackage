@@ -5,15 +5,16 @@ import numpy as np
 
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 
-from input.data_structures import Battery, PerformanceParameters, FuelCell, HydrogenTank
+from input.data_structures import Battery, AircraftParameters, FuelCell, HydrogenTank
 from modules.powersizing.powersystem import energy_cruise_mass, power_cruise_mass,hover_mass,hover_energy_mass, PropulsionSystem
+from scripts.power.finalPowersizing import power_system_convergences
 
 def set_up(): 
     
     IonBlock = Battery(Efficiency= 0.9)
     Pstack = FuelCell()
     Tank = HydrogenTank()
-    Mission = PerformanceParameters()
+    Mission = AircraftParameters()
     Tank.load()
     Mission.load()
     return Mission, IonBlock, Tank, Pstack
@@ -101,16 +102,9 @@ def test_PropulsionSystem_mass_meet_power_requirements():
     assert(all(Totalpower >= Mission.climbPower/1e3 - 1e-10))
 
 
+def test_power_system_convergence(power, aircraft):
+    mission, power = power_system_convergences(power, aircraft)
+    print(mission.powersystem_mass)
 
 
 
-
-""" 
-test_energy_cruise_mass_conservation_energy()
-test_power_cruise_mass_conservation_power()
-test_hover_mass_conservation_power()
-test_hover_energy_conservation_energy()
-
-test_PropulsionSystem_mass_conservation_energy()
-
-test_PropulsionSystem_mass_meet_power_requirements()"""

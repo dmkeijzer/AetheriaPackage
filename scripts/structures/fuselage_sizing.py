@@ -10,12 +10,12 @@ import matplotlib.cm as cm
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 
 import modules.structures.fuselage_length as fl
-import input.data_structures.GeneralConstants as const
+import input.GeneralConstants as const
 
 # inputs
 
-m = 2500
-V = 0.5
+m = 2482
+V = 0.533
 
 #def fuselage_calculations(aircraftmass: float, h2tankVolume: float):
 
@@ -24,9 +24,9 @@ b0 = 1.6
 Beta = 0.5
 ARe = 2.75
 n = 2
-l_tank = np.linspace(1, 5, 40)
+l_tank = np.linspace(1, 7, 40)
 l_fuelcell = 0.16
-l_cockpit = 2
+l_cockpit = 2.1
 l_cabin = 2.7
 l_fcs = 2 * l_fuelcell
 

@@ -18,12 +18,11 @@ from pymoo.optimize import minimize as minimizeGA
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
-from input.data_structures.GeneralConstants import *
+from input.GeneralConstants import *
 from input.data_structures.aero import Aero
 from input.data_structures.engine import Engine
-from input.data_structures.material import Material
 from input.data_structures.wing import Wing
-from input.data_structures.performanceparameters import PerformanceParameters
+from input.data_structures.aircraft_parameters import AircraftParameters
 from modules.aero.avl_access import get_lift_distr
 
 #------------ASSUMPTION----------
@@ -603,7 +602,7 @@ class Wingbox():
 
 
 
-def GetWingWeight(wing: Wing, engine: Engine, material: Material, aero: Aero):
+def GetWingWeight(wing: Wing, engine: Engine, material, aero):
     wingbox_vf = Wingbox(wing, engine, material, aero, performance, HOVER=True)
     wingbox_hf = Wingbox(wing, engine, material, aero, performance, HOVER=False)
     # NOTE Engine positions in the json are updated in the dump function so first it's dumped and then it's loaded again.
@@ -705,7 +704,7 @@ if __name__ == "__main__":
     engine = Engine()
     material = Material()
     aero = Aero()
-    performance = PerformanceParameters()
+    performance = AircraftParameters()
 
     wing.load()
     engine.load()
@@ -839,6 +838,7 @@ if __name__ == "__main__":
         #     ax.label_outer()
         # plt.savefig(os.path.join(os.path.expanduser("~"), "Downloads", "moments_vertical_horizontal.pdf"), bbox_inches= "tight")
         # plt.show()
+        import matplotlib.ticker as ticker
 
         
         import matplotlib.ticker as ticker

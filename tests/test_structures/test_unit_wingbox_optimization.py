@@ -5,21 +5,28 @@ import sys
 import pathlib as pl
 import numpy as np
 
-sys.path.append(str(list(pl.Path(__file__).parents)[1]))
-os.chdir(str(list(pl.Path(__file__).parents)[1]))
+sys.path.append(str(list(pl.Path(__file__).parents)[2]))
+os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
 
-import modules.structures.wingbox_georgina as  wb
+import modules.structures.wingbox_optimizer as  wb
 from input.data_structures.wing import Wing
 from input.data_structures.engine import Engine
 from input.data_structures.material import Material
 from input.data_structures.aero import Aero
+from input.data_structures.aircraft_parameters import AircraftParameters
 
 #------------- SETUP ----------------------------------------------------------
 WingClass =  Wing()
 EngineClass = Engine()
 MatClass = Material()
 AeroClass = Aero()
+PerfClass = AircraftParameters()
+
+EngineClass.load()
+
+
+PerfClass.n_ult = 1
 
 WingClass.taper = 0.45
 WingClass.span = 7
@@ -59,7 +66,7 @@ t = 2e-3
 tmax =  t
 tmin =  t
 
-WingboxClass = wb.Wingbox(WingClass, EngineClass, MatClass, AeroClass)
+WingboxClass = wb.Wingbox(WingClass, EngineClass, MatClass, AeroClass, PerfClass, False)
 WingboxClass.n_max = 2.5
 WingboxClass.engine_weight = 41.8
 WingboxClass.max_rib_pitch = L 

@@ -7,7 +7,7 @@ import numpy as np
 sys.path.append(str(list(pl.Path(__file__).parents)[1]))
 os.chdir(str(list(pl.Path(__file__).parents)[1]))
 
-from modules.stab_ctrl.wing_loc_horzstab_sizing import stabcg, ctrlcg, CLaAhcalc, x_ac_fus_1calc, x_ac_fus_2calc, betacalc, CLahcalc, stab_formula_coefs, CLh_approach_estimate, cmac_fuselage_contr, ctrl_formula_coefs
+from modules.stab_ctrl.wing_loc_horzstab_sizing import stabcg, ctrlcg, CLaAhcalc, x_ac_fus_1calc, x_ac_fus_2calc, betacalc, CLahcalc, stab_formula_coefs, CLh_approach_estimate, cmac_fuselage_contr, ctrl_formula_coefs, wing_location_horizontalstab_size
 
 @pytest.fixture
 def example_values():
@@ -24,7 +24,8 @@ def example_values():
         "cmac_fus": {"b_f": 0.9, "l_f": 7, "h_f":1.1, "CL0_approach":0.6, "S":12, "MAC":1.2, "CLaAh":3.7},
         "ctrlformula": {"CLh_approach": -0.5, "CLAh_approach": 1.9, "l_h":3, "MAC":1.2, "Vh_V_2": 0.95, "Cm_ac":-0.4, "x_ac_stab_bar": 0.24},
     }
-def test_wing_loc_horzstab_sizing(example_values):
+
+def test_wing_loc_functions(example_values):
     stabcgtest = stabcg(**example_values["stabcg"])
     ctrlcgtest = ctrlcg(**example_values["ctrlcg"])
     CLaAh = CLaAhcalc(**example_values["CLaAh"])
@@ -50,3 +51,9 @@ def test_wing_loc_horzstab_sizing(example_values):
     assert np.isclose(cmac_fus, -0.0748648959)
     assert np.isclose(ctrlm, -1.6)
     assert np.isclose(ctrlq, 0.720842105)
+
+
+def test_wing_location_hor_sizing(wing, fuselage, aero, veetail, aircraft, power , engine, stability):
+    wing_location_horizontalstab_size(wing, fuselage, aero, veetail, aircraft, power, engine, stability, 6)
+
+

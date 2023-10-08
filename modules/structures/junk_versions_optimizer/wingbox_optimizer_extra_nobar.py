@@ -18,12 +18,12 @@ from pymoo.optimize import minimize as minimizeGA
 sys.path.append(str(list(pl.Path(__file__).parents)[3]))
 os.chdir(str(list(pl.Path(__file__).parents)[3]))
 
-from input.data_structures.GeneralConstants import *
+from input.GeneralConstants import *
 from input.data_structures.aero import Aero
 from input.data_structures.engine import Engine
 from input.data_structures.material import Material
 from input.data_structures.wing import Wing
-from input.data_structures.performanceparameters import PerformanceParameters
+from input.data_structures.aircraft_parameters import AircraftParameters
 from modules.aero.avl_access import get_lift_distr
 
 #------------ASSUMPTION----------
@@ -686,7 +686,7 @@ if __name__ == "__main__":
     engine = Engine()
     material = Material()
     aero = Aero()
-    performance = PerformanceParameters()
+    performance = AircraftParameters()
 
     wing.load()
     engine.load()

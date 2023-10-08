@@ -4,7 +4,7 @@ import BEM2023 as BEM
 import Blade_potting2023 as BP
 import code2021.Final_optimization.Aero_tools as at
 import code2021.PropandPower.engine_sizing_positioning as esp
-from input.data_structures.performanceparameters import PerformanceParameters
+from input.data_structures.aircraft_parameters import AircraftParameters
 
 
 # Constants from optimisation

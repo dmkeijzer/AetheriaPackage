@@ -36,7 +36,7 @@ if __name__ == "__main__":
     sys.path.append(str(list(pl.Path(__file__).parents)[2]))
     os.chdir(str(list(pl.Path(__file__).parents)[2]))
     from input.data_structures import *
-    from scripts.stab_ctrl.potato_plot import J1loading
+    from modules.stab_ctrl.loading_diagram import loading_diagram
 
     with open("input/data_structures/aetheria_constants.json") as f_in:
         data = json.load(f_in)
@@ -61,4 +61,4 @@ if __name__ == "__main__":
     print(x_pos_outboard(Wing))
     print(x_pos_tail(Fuse, VTail))
     print()
-    print(J1loading(Wing.x_lewing + Wing.x_lemac + 0.24*Wing.chord_mac, Fuse.length_fuselage, data))
+    print(loading_diagram(Wing.x_lewing + Wing.x_lemac + 0.24*Wing.chord_mac, Fuse.length_fuselage, data))

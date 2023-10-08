@@ -10,7 +10,7 @@ import json
 # import modules
 sys.path.append(str(list(pl.Path(__file__).parents)[3]))
 from modules.structures.nvm import wing_root_cruise, wing_root_hover
-from input.data_structures.GeneralConstants import *
+from input.GeneralConstants import *
 
 # define directory of json files
 dict_directory = str(list(pl.Path(__file__).parents)[3])+"\\input"          #determine file path

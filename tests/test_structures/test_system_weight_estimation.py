@@ -9,7 +9,7 @@ os.chdir(str(list(pl.Path(__file__).parents)[2]))
 from  input.data_structures import *
 from modules.structures.ClassIIWeightEstimation import get_weight_vtol
 
-PerfClass = PerformanceParameters()
+PerfClass = AircraftParameters()
 WingClass = Wing()
 EngClass = Engine()
 VtailClass  = VeeTail()

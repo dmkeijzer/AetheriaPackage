@@ -12,17 +12,21 @@ from input.data_structures.wing import Wing
 from input.data_structures.engine import Engine
 from input.data_structures.material import Material
 from input.data_structures.aero import Aero
+from input.data_structures.aircraft_parameters import AircraftParameters
 
 WingClass = Wing()
 EngineClass = Engine()
 MaterialClass = Material()
+PerfClass = AircraftParameters()
 AeroClass = Aero()
+
 WingClass.load()
 EngineClass.load()
 MaterialClass.load()
 AeroClass.load()
+PerfClass.load()
 
-wb = Wingbox(WingClass, EngineClass, MaterialClass, AeroClass, True)
+wb = Wingbox(WingClass, EngineClass, MaterialClass, AeroClass, PerfClass, True)
 
 @pytest.fixture
 def example_values_geometry():

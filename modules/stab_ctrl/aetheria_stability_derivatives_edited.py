@@ -57,7 +57,7 @@ def downwash(k, CLa, A):
     CLa: wing CL-alpha [rad^-1]
     A: wing aspect ratio [-]
     """
-    depsda = k * CLa / (np.pi * A)
+    depsda = k * CLa / (np.pi*A)
     return depsda
 
 
@@ -810,7 +810,7 @@ if __name__ == "__main__":
     from input.data_structures import *
 
     Aero = Aero()
-    Perf = PerformanceParameters()
+    Perf = AircraftParameters()
     GeneralConst = GeneralConstants
     Wing = Wing()
     VTail = VeeTail()

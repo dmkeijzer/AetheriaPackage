@@ -9,7 +9,7 @@ import numpy as np
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
-import input.data_structures.GeneralConstants as const
+import input.GeneralConstants as const
 
 def powerloading_climbrate(eff, ROC, WS,rho,CD0,e,A):
     k = 1/(e*A*np.pi)
@@ -61,15 +61,15 @@ def get_wing_power_loading(perf_par, wing, engine, aero, cont_factor=1.1):
 
 
     #CALCULATE ALL THE VALUES FOR THE GRAPHS
-    TW_range = powerloading_thrustloading(WS_range,const.rho_sl,perf_par.rate_of_climb_hover, perf_par.Stots)  
+    TW_range = powerloading_thrustloading(WS_range,const.rho_sl,const.roc_hvr, perf_par.Stots)  
     #if data["name"] == "J1":   
     #    TW_range = TW_range*1.3     #Added 30% extra thrust to maintain stability
-    CLIMBRATE = cont_factor*powerloading_climbrate(perf_par.prop_eff,perf_par.rate_of_climb_cruise, WS_range,const.rho_cr,aero.cd0_cruise ,aero.e,wing.aspectratio)
-    TURN_VCRUISE = cont_factor*powerloading_turningloadfactor(const.rho_cr, perf_par.cruise_velocity ,WS_range, perf_par.prop_eff ,wing.aspectratio,aero.e, perf_par.turn_loadfactor,aero.cd0_cruise)
-    TURN_VMAX = cont_factor*powerloading_turningloadfactor(const.rho_cr,perf_par.v_max, WS_range, perf_par.prop_eff ,wing.aspectratio ,aero.e ,perf_par.turn_loadfactor,aero.cd0_cruise)
+    CLIMBRATE = cont_factor*powerloading_climbrate(perf_par.prop_eff,const.roc_cr, WS_range,const.rho_cr,aero.cd0_cruise ,aero.e,wing.aspect_ratio)
+    TURN_VCRUISE = cont_factor*powerloading_turningloadfactor(const.rho_cr,const.v_cr,WS_range, perf_par.prop_eff ,wing.aspect_ratio,aero.e, perf_par.turn_loadfactor,aero.cd0_cruise)
+    TURN_VMAX = cont_factor*powerloading_turningloadfactor(const.rho_cr,perf_par.v_max, WS_range, perf_par.prop_eff ,wing.aspect_ratio ,aero.e ,perf_par.turn_loadfactor,aero.cd0_cruise)
     VERTICALFLIGHT = cont_factor*powerloading_verticalflight(perf_par.MTOM ,TW_range, engine.total_disk_area ,const.rho_sl,perf_par.prop_eff ,False)
     STALLSPEED = wingloading_stall(aero.cL_max ,perf_par.v_stall, const.rho_sl)
-    CLIMBGRADIENT = cont_factor*powerloading_climbgradient(aero.e ,wing.aspectratio ,aero.cd0_cruise,WS_range,const.rho_sl,perf_par.prop_eff ,perf_par.G)
+    CLIMBGRADIENT = cont_factor*powerloading_climbgradient(aero.e ,wing.aspect_ratio ,aero.cd0_cruise,WS_range,const.rho_sl,perf_par.prop_eff ,const.climb_gradient)
 
     #DETERMINE LOWEST
     lowest_area_y_novf = []
@@ -82,7 +82,7 @@ def get_wing_power_loading(perf_par, wing, engine, aero, cont_factor=1.1):
     #DETERMINE LIMITING FACTORS
     margin = 0.95
     perf_par.wing_loading_cruise = STALLSPEED*margin
-    TW_max = powerloading_thrustloading(perf_par.wing_loading_cruise,const.rho_sl,perf_par.rate_of_climb_hover ,perf_par.Stots)
+    perf_par.TW_max = powerloading_thrustloading(perf_par.wing_loading_cruise,const.rho_sl,const.roc_hvr, perf_par.Stots)
     WP_cruise = lowest_area_y_novf[-1]*margin
     WP_hover = lowest_area_y[-1]*margin
     aero.cL_cruise = 2/(const.rho_cr*const.v_cr**2)*perf_par.wing_loading_cruise

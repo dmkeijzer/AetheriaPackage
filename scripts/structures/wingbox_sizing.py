@@ -8,7 +8,7 @@ import pickle
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 
 import  modules.structures.wingbox_georgina as wb
-import input.data_structures.GeneralConstants as const
+import input.GeneralConstants as const
 from input.data_structures.material import Material
 from input.data_structures.wing import Wing
 from input.data_structures.engine import Engine

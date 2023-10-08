@@ -16,7 +16,7 @@ from modules.avlwrapper import Geometry, Surface, Section, NacaAirfoil, Control,
 from input.data_structures.wing import Wing
 from input.data_structures.aero import Aero
 from input.data_structures.engine import Engine
-import input.data_structures.GeneralConstants as const
+import input.GeneralConstants as const
 from slipstream_effect_cruise import *
 from modules.aero.avl_access import *
 

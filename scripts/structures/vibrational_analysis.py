@@ -19,15 +19,16 @@ import time
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
-from input.data_structures.GeneralConstants import *
+from input.GeneralConstants import *
 from input.data_structures.aero import Aero
 from input.data_structures.engine import Engine
 from input.data_structures.material import Material
 from input.data_structures.vee_tail import VeeTail
 from input.data_structures.wing import Wing
-from input.data_structures.performanceparameters import PerformanceParameters
+from input.data_structures.aircraft_parameters import AircraftParameters
 from modules.aero.avl_access import get_lift_distr
 from modules.structures.wingbox_optimizer import Wingbox
+import modules.structures.wingbox_optimizer_vtail as wbv
 from modules.structures.pylon_design import PylonSizing
 
 
@@ -36,7 +37,7 @@ EngineClass = Engine()
 MaterialClass = Material()
 AeroClass = Aero()
 TailClass = VeeTail()
-PerfClass = PerformanceParameters()
+PerfClass = AircraftParameters()
 
 WingClass.load()
 EngineClass.load()
@@ -103,9 +104,31 @@ nacelle_prop.intrhoz2 = rho_composite*I
 nacelle_prop.J = 2*I
 
 
+# V tail properties
+
+wingbox_tail_Class =  wbv.Wingbox(TailClass, EngineClass, MaterialClass, AeroClass, PerfClass, False)
+X = [5e-3, 15e-3, 15e-3, 2e-3, 1.3e-3]
+
+vtail_prop = BeamProp()
+A = wingbox_tail_Class.chord(0.1)**2*0.6**0.12
+E = MaterialClass.E
+rho_composite = MaterialClass.rho
+vtail_prop.A = A 
+vtail_prop.E = E
+scf = 5/6.
+vtail_prop.G = scf*E/2/(1+0.3)
+Izz =  (wingbox_tail_Class.I_xx(X)[idx] + wingbox_tail_Class.I_xx(X)[idx + 1])/2
+Iyy = (wingbox_tail_Class.I_zz(X)[idx] + wingbox_tail_Class.I_zz(X)[idx + 1])/2
+vtail_prop.Izz = Izz
+vtail_prop.Iyy = Iyy
+vtail_prop.intrho = rho_composite*A
+vtail_prop.intrhoy2 = rho_composite*Izz
+vtail_prop.intrhoz2 = rho_composite*Iyy
+vtail_prop.J = Izz + Iyy
+
 
 nodes = { #nid: [x, y, z]
-    1000 : [WingClass.x_lewing + TailClass.length_wing2vtail , 0.0, 0.],
+    1000 : [WingClass.x_lewing + TailClass.length_wing2vtail , 0. , 0.],
     1001: [WingClass.x_lewing + TailClass.length_wing2vtail, TailClass.span/2*np.cos(TailClass.dihedral),TailClass.span/2*np.sin(TailClass.dihedral)],
     1002 : [WingClass.x_lewing, 0. , 0.],
     1003 : [WingClass.x_lewing, WingClass.span/8, 0.],
@@ -122,14 +145,14 @@ nodes = { #nid: [x, y, z]
     1014 : [0., 0.,  0.],
 }
 elements = { #eid: [prop, node 1, node 2]
-    1: [prop, 1000, 1001],
+    1: [vtail_prop, 1000, 1001],
     2: [prop, 1000, 1002],
     3: [dict_properties["0"], 1002, 1003],
     4: [dict_properties["1"], 1003, 1004],
     5: [dict_properties["2"], 1004, 1005],
     6: [dict_properties["3"], 1005, 1006],
     7: [nacelle_prop, 1004, 1007],
-    8: [prop, 1000, 1008], # Element lhs vtail
+    8: [vtail_prop, 1000, 1008], # Element lhs vtail
     9: [dict_properties["0"], 1002, 1009],
     10: [dict_properties["1"], 1009, 1010],
     11: [dict_properties["2"], 1010, 1011],

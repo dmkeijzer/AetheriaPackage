@@ -12,7 +12,7 @@ from input.data_structures import *
 
 WingClass = Wing()
 AeroClass = Aero()
-PerformanceClass = PerformanceParameters()
+PerformanceClass = AircraftParameters()
 
 
 ##WingClass.load()

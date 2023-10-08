@@ -10,7 +10,7 @@ os.chdir(str(list(pl.Path(__file__).parents)[1]))
 from  input.data_structures import *
 from modules.preliminary_sizing.wing_power_loading_functions import get_wing_power_loading
 
-PerfClass = PerformanceParameters()
+PerfClass = AircraftParameters()
 WingClass = Wing()
 EngClass = Engine()
 AeroClass = Aero()

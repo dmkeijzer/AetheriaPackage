@@ -4,7 +4,6 @@
 @author: Wessel Albers
 """
 from dataclasses import dataclass
-import GeneralConstants as constants
 import sys 
 import pathlib as pl
 
@@ -20,10 +19,9 @@ class HydrogenTank:
     :param VolumeDensity [kWh/l]
     :param cost [US$/kWh] (not loaded)
     """
-    energyDensity: float = None
-    volumeDensity: float = None
-    cost: float = None
-    
+    energyDensity: float = 1.8
+    volumeDensity: float = 0.6
+    cost: float =  16
     def load(self):
         self.energyDensity = 1.8  # 1.8 kWh/kg
         self.volumeDensity = 0.6  #0.6 kWg/l
@@ -47,3 +45,9 @@ class HydrogenTank:
         :return: Approx cost of the battery [US$]
         """
         return energy * self.cost
+
+
+if __name__ == "__main__":
+    test = HydrogenTank()
+    test.load()
+    print(test.volume(786963069.9958103/3.6e6))
