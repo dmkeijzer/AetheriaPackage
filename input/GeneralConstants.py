@@ -22,16 +22,20 @@ from  modules.misc_tools.ISA_tool import ISA
 # constants of physics
 g0 = 9.80665            #[m/s^2]    O
 time_step = 0.02
-transition_height_baseline = 50
+transition_height = 100
 
 #performance
 v_cr = 300/3.6
+v_climb = 0.8*v_cr
+cl_alpha = 5.011088876214181
 v_stall = 40
 v_stall_flaps20 = 42
+
 roc_cr = 5
 rod_cr = 3 # Rate of descend 
 roc_hvr = 2
 climb_gradient = 0.065
+climb_angle = np.arctan(0.065)
 descent_slope = 0.04
 h_cruise = 2400         #[m]        O
 mission_dist = 400e3  # m
@@ -57,7 +61,7 @@ gamma = 1.4                  #        O
 mach_cruise = v_cr/a_cr
 
 # Structures
-beta_crash = 0.4 # crash diameter coefficient
+beta_crash = 0.6 # crash diameter coefficient
 E_mod = 70e9
 poisson = 0.3
 shear_mod =  26000000000.0
@@ -136,8 +140,7 @@ downwash_angle_prop_stall = 0.4004370786386418
 #airfoil V-tail
 toc_tail = 0.12  # NACA 0012
 xcm_tail = 0.2903
-axial_induction_factor1 = 0.2 #FIXME No clue why there are two different ones
-axial_induction_factor2 = 0.005
+axial_induction_factor = 0.2
 Vh_V_2 = 0.95  # From SEAD, V-tail somewhat similar to fin-mounted stabiliser
 eta_a_f = 0.95 # Constant used in computing the derivate of the horizontal tail lift coefficient wrt to alpha
 sweep_half_chord_tail= 0  # Assumed

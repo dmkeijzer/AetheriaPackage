@@ -12,6 +12,21 @@ sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 
 import input.GeneralConstants as const
 
+
+def compute_tank_radius(V, n, l_tank):
+    """_summary_
+
+    :param V: volume of tank
+    :param n: number of tanks
+    :param l_tank:  length of tank
+    :return: returns radius of tank
+    """    
+
+    roots = np.roots([-2*np.pi / 3, np.pi * l_tank, 0, -V/n]) # Find positive roots of cubic function of Tank Volume (two tanks)
+    positive_roots = [root.real for root in roots if np.isreal(root) and root > 0]
+    # r = positive_roots[0] # radius of tank
+    r = np.min(roots[roots > 0]) # Select the correct root of the equation
+    return r
 """CALCULATE TAIL LENGTH BASED ON BETA AND ASPECT RATIO"""
 def find_tail_length(h0, b0, Beta, V, l, AR, n):
     roots = np.roots([-2*np.pi / 3, np.pi * l, 0, -V/n]) # Find positive roots of cubic function of Tank Volume (two tanks)
@@ -249,12 +264,15 @@ def get_fuselage_sizing(h2tank, fuelcell, perf_par,fuselage):
     fuselage.height_fuselage_inner = fuselage.height_cabin + crash_box_height
     fuselage.height_fuselage_outer = fuselage.height_fuselage_inner + const.fuselage_margin
 
+    fuselage.volume_powersys = h2tank.volume(perf_par.mission_energy)
     # l_tail, upsweep, bc, hc, hf, bf, AR, l_tank = minimum_tail_length(fuselage.height_fuselage_inner, fuselage.width_fuselage_inner, const.beta_crash, h2tank.volume(perf_par.energyRequired/3.6e6) ,np.linspace(1, 7, 40), const.ARe, const.n_tanks)
-    warn("The volume is probably not correct anymore since we need more energy")
-    l_tail, upsweep, bc, hc, hf, bf, AR, l_tank = minimum_tail_length(fuselage.height_fuselage_inner, fuselage.width_fuselage_inner, const.beta_crash, 0.533 ,np.linspace(1, 7, 40), const.ARe, const.n_tanks)
-    radius = find_tail_length(fuselage.height_fuselage_inner, fuselage.width_fuselage_inner, const.beta_crash, 0.533, l_tank, AR,2)
+    l_tail, upsweep, bc, hc, hf, bf, AR, l_tank = minimum_tail_length(fuselage.height_fuselage_inner, fuselage.width_fuselage_inner, const.beta_crash, fuselage.volume_powersys ,np.linspace(1, 7, 40), const.ARe, const.n_tanks)
+    radius = compute_tank_radius(fuselage.volume_powersys, 2, l_tank)
 
     fuselage.length_tail = l_tail
+    fuselage.length_tank = l_tank
+    fuselage.tank_radius = radius
+    fuselage.upsweep = upsweep 
     fuselage.bc = bc
     fuselage.crash_box_area =  crash_box_area
     fuselage.hc = hc

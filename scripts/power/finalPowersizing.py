@@ -9,7 +9,7 @@ from matplotlib import pyplot as plt
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
-from input.data_structures import Battery, FuelCell, HydrogenTank, Power
+from input.data_structures import *
 from input.data_structures.aircraft_parameters import AircraftParameters
 from modules.powersizing.powersystem import PropulsionSystem
 
@@ -24,7 +24,7 @@ def power_system_convergences(powersystem: Power, Mission: AircraftParameters):
     Pstack = FuelCell()
     Tank = HydrogenTank()
     #estimate power system mass
-    nu = np.linspace(0,0.8,1000)
+    nu = np.linspace(0,1,1000)
     Totalmass, Tankmass, FCmass, Batterymass= PropulsionSystem.mass(echo= np.copy(nu),
                                 Mission= Mission,
                                 Battery=IonBlock,

@@ -36,6 +36,8 @@ class Aero(BaseModel):
     cm_alpha: float | None  = None
     alpha_zero_L: float | None  = None
     ld_cruise: float | None  = None
+    ld_max: float | None  = None
+    cl_ld_max: float | None  = None
     downwash_angle: float   = const.downwash_angle
     downwash_angle_wing: float = const.downwash_angle_wing
     downwash_angle_prop: float  = const.downwash_angle_prop

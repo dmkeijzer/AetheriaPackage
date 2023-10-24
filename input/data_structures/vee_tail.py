@@ -21,7 +21,8 @@ class VeeTail(BaseModel):
     dihedral: float | None  = None
     taper: float | None  = 1
     c_control_surface_to_c_vee_ratio: float | None  = None
-    cL_h_cruise: float | None  = None
+    cL_cruise: float | None  = None
+    max_clh: float | None  = None
     ruddervator_efficiency: float | None  = None
     span: float | None  = None
     vtail_weight: float | None  = None

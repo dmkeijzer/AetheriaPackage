@@ -16,13 +16,14 @@ from modules.flight_perf.transition_model import *
 import input.GeneralConstants as const
 from modules.misc_tools.ISA_tool  import ISA
 from input.data_structures import *
+from scipy.constants import g
 
 class MissionClass:
     """
     This class simulates the take-off and landing af a tilt-wing eVTOL. Hover, transition and horizontal flight are
     all considered together, no distinction is made between the phases up to and after cruise.
     """
-    def __init__(self, aero, aircraft, wing ,engine, power):
+    def __init__(self, aero, aircraft, wing ,engine, power, plot=False):
 
         """
         :param mass:            [kg]    Aircraft mass
@@ -52,6 +53,7 @@ class MissionClass:
         self.CL_max = aero.cL_max
         self.A_disk =  engine.total_disk_area
         self.P_max =  aircraft.hoverPower
+        self.plot = plot
 
         # Design variables
         self.ax_target_climb = 0.5 * const.g0  # These are actually maximal values
@@ -113,6 +115,20 @@ class MissionClass:
 
         return CL, CD
 
+    def get_cd(self, CL):
+        """
+        Calculates the lift and drag coefficients of the aircraft for a given angle of attack.
+
+        :param angle_of_attack: angle of attack experienced by the wing [rad]
+        :return: CL and CD
+        """
+
+
+
+        CD =  self.aero.cd0_cruise +  CL**2*(1/(np.pi*self.wing.aspect_ratio*self.aero.e))
+
+        return  CD
+
     def thrust_to_power(self, T, V, rho):
         """
         This function calculates the available power associated with a certain thrust level. Note that this power
@@ -139,11 +155,11 @@ class MissionClass:
         vy_tgt = np.maximum(np.minimum(-0.5 * (y - y_tgt), max_vy), -max_vy)
 
         # Slow down when approaching 15 m while going too fast in horizontal direction
-        if const.transition_height_baseline + (np.abs(vy) / self.ay_target_descend) > y > y_tgt and abs(vx) > 0.25:
+        if const.transition_height + (np.abs(vy) / self.ay_target_descend) > y > y_tgt and abs(vx) > 0.25:
             vy_tgt = 0
 
         # Keep horizontal velocity zero when flying low
-        if y < const.transition_height_baseline - 80:
+        if y < const.transition_height - 30:
             vx_tgt_1 = 0
         else:
             vx_tgt_1 = vx_tgt
@@ -236,7 +252,8 @@ class MissionClass:
             #T = (self.m*ax_tgt + D*np.cos(gamma) + L*np.sin(gamma))/np.cos(th)
 
             # Apply maximum and minimum bounds on thrust, based on maximum power, and on rate of change of thrust
-            T = float(np.minimum(np.maximum(np.minimum(np.maximum(T, T_min), T_max), 0), self.max_thrust(rho,V*np.cos(alpha))))
+            warn("Currently maximum thrust is not being checked for")
+            # T = float(np.minimum(np.maximum(np.minimum(np.maximum(T, T_min), T_max), 0), self.max_thrust(rho,V*np.cos(alpha))))
 
             # Perform numerical integration
             vx += float(ax) * dt
@@ -278,6 +295,7 @@ class MissionClass:
         rho_arr = np.array(rho_lst)
         V_arr = np.sqrt(vx_arr ** 2 + vy_arr ** 2)
 
+
         # ======= Get Required outputs =======
 
         # Get the available power
@@ -285,6 +303,40 @@ class MissionClass:
 
         # TODO: IMPLEMENT
         P_tot   = P_r #+ self.P_systems + self.P_peak
+
+        if self.plot:
+            plt.cla()
+
+            fig, axs = plt.subplots(2,2, sharex= False)
+            fig.set_size_inches(9,9)
+
+            axs[0,0].plot(x_arr, y_arr)
+            axs[0,0].set_xlabel("X position")
+            axs[0,0].set_ylabel("Y position")
+            axs[0,0].grid()
+
+            axs[0,1].plot(t_arr, vx_arr, label= "Vx")
+            axs[0,1].plot(t_arr, vy_arr, label= "Vy")
+            axs[0,1].set_xlabel("time [s]")
+            axs[0,1].set_ylabel("Velocities ")
+            axs[0,1].legend()
+            axs[0,1].grid()
+
+            axs[1,0].plot(t_arr, P_tot/1000, label= "Power")
+            axs[1,0].set_xlabel("time [s]")
+            axs[1,0].set_ylabel("Power [kW]")
+            axs[1,0].legend()
+            axs[1,0].grid()
+
+            axs[1,1].plot(t_arr, ax_arr, label= "ax")
+            axs[1,1].plot(t_arr, ay_arr, label= "ay")
+            axs[1,1].set_xlabel("time [s]")
+            axs[1,1].set_ylabel("Acceleration [m*s^-2]")
+            axs[1,1].legend()
+            axs[1,1].grid()
+
+            fig.tight_layout()
+            plt.savefig(os.path.join(os.path.expanduser("~"),"Downloads", f"performance_{y_start}_{y_tgt}_plot.pdf"), bbox_inches="tight")
 
         distance = x_lst[-1]
         energy = np.sum(P_tot * dt)
@@ -317,16 +369,38 @@ class MissionClass:
 
         #P_cruise, D_cruise = self.power_cruise_config(self.h_cruise, self.v_cruise, self.m)
 
-        # print('wrong if statement')
-        # Get the energy and distance needed to reach cruise
-        d_climb, E_climb, t_climb, P_m_to, T_m_to = self.numerical_simulation(vx_start=0.001, y_start=0,
-                                                                                th_start=np.pi / 2, y_tgt=self.h_cruise,
-                                                                                vx_tgt=self.v_cruise)
+        #-----------------------Common phases----------------------------------------------
+        wing_loading = self.aircraft.MTOM/self.wing.surface*g
 
-        # Get the energy and distance needed to descend
-        d_desc, E_desc, t_desc, P_m_la, T_m_la = self.numerical_simulation(vx_start=self.v_cruise,
-                                                                            y_start=self.h_cruise,
-                                                                            th_start = np.radians(5), y_tgt=0, vx_tgt=0)
+        #-----------------------Hover phases----------------------------------------------
+        t_hover = 30/const.roc_hvr
+        thrust_hvr = self.aircraft.MTOM*g*1.2
+        power_hvr = self.thrust_to_power(thrust_hvr, 0, const.rho_sl)[1]
+        E_hover= 2*t_hover*self.thrust_to_power(self.aircraft.MTOM*g*1.2, 0, const.rho_sl)[1]
+
+        #--------------- Climb phase ----------------------------------------------------
+        q_inf_climb = 0.5*const.rho_sl*(const.v_climb)**2
+        cl_climb =  wing_loading * np.cos(const.climb_angle)/q_inf_climb
+        cd_climb = self.get_cd(cl_climb)
+        Lift_climb = cl_climb*q_inf_climb*self.wing.surface
+        Drag_climb = cd_climb*q_inf_climb*self.wing.surface
+
+        t_climb = self.h_cruise/const.roc_cr
+        T_m_to = self.aircraft.MTOM*g*np.sin(const.climb_angle) +  Drag_climb
+        P_m_to = self.thrust_to_power(T_m_to, const.v_climb, const.rho_sl)[1]
+        E_climb = P_m_to*t_climb
+        d_climb = t_climb*const.v_climb*np.cos(const.climb_angle)
+
+        #--------------- descent phase ----------------------------------------------------
+
+        # cl_descent, cd_descent = self.aero_coefficients(alpha_descent)
+        v_descent =  np.sqrt((2*np.cos(self.aircraft.glide_slope))/(const.rho_cr*self.aero.cl_ld_max)*wing_loading)
+
+        q_inf_desc = 0.5*const.rho_sl*(v_descent)**2
+
+        t_desc = self.h_cruise/(v_descent*np.sin(self.aircraft.glide_slope))
+        E_desc = 0
+        d_desc = t_climb*v_descent*np.cos(self.aircraft.glide_slope)
 
         # Distance spent in cruise
         d_cruise = self.mission_dist  - d_desc - d_climb
@@ -348,17 +422,17 @@ class MissionClass:
         # Loiter energy
         E_loiter = P_loiter * self.t_loiter
         # Get the total energy consumption
-        E_tot = E_cruise + E_climb + E_desc + E_loiter
+        E_tot = E_cruise + E_climb + E_desc + E_loiter + E_hover
 
         # Mission time
         t_tot = t_climb + t_desc + t_cruise + self.t_loiter
 
         # Pie chart
      #    labels = ['Take-off', 'Cruise', 'Landing', 'Loiter']
-        Energy = [E_climb, E_cruise, E_desc, E_loiter]
-        Time = [t_climb, t_cruise, t_desc, self.t_loiter]
+        Energy = [E_climb, E_cruise, E_desc, E_loiter, E_hover]
+        Time = [t_climb, t_cruise, t_desc, self.t_loiter, t_hover*2]
 
-        return E_tot, t_tot, max(P_m_to, P_m_la), max(T_m_to, T_m_la), t_cruise + self.t_loiter, Energy
+        return E_tot, t_tot, power_hvr, thrust_hvr, t_cruise + self.t_loiter, Energy
 
 def get_energy_power_perf(WingClass, EngineClass, AeroClass, PerformanceClass):
     raise DeprecationWarning(f"This function should not be called, has unstable behaviour!")
@@ -474,9 +548,9 @@ def get_energy_power_perf(WingClass, EngineClass, AeroClass, PerformanceClass):
 
     return WingClass, EngineClass, AeroClass, PerformanceClass
 
-def get_performance_updated(aero, aircraft, wing, engine, power):
+def get_performance_updated(aero, aircraft, wing, engine, power, plot= False):
 
-     mission = MissionClass(aero, aircraft, wing, engine, power)
+     mission = MissionClass(aero, aircraft, wing, engine, power, plot)
      aircraft.mission_energy, aircraft.mission_time, aircraft.hoverPower, aircraft.max_thrust, Ellipsis, energy_distribution = mission.total_energy()
-     aircraft.climb_energy, aircraft.cruise_energy,aircraft.descend_energy, aircraft.hor_loiter_energy = energy_distribution
+     aircraft.climb_energy, aircraft.cruise_energy,aircraft.descend_energy, aircraft.hor_loiter_energy, aircraft.hover_energy  = energy_distribution
 

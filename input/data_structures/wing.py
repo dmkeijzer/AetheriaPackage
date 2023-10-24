@@ -13,6 +13,8 @@ class Wing(BaseModel):
     aspect_ratio: float 
     quarterchord_sweep: float 
     taper: float 
+    washout: float 
+    """"IN RADIANS PLEASE"""
     label : str = "Wing"
     surface: float | None = None
     span: float | None = None

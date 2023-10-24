@@ -21,10 +21,10 @@ class AircraftParameters(BaseModel):
     #energy 
     mission_energy: float | None = None
     mission_time: float | None = None
-    takeoff_energy: float | None = None
     climb_energy: float | None = None
     cruise_energy: float | None = None
     descend_energy: float | None = None
+    hover_energy: float | None = None
     hor_loiter_energy: float | None = None
 
     #power

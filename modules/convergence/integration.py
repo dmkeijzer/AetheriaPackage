@@ -27,6 +27,7 @@ from modules.structures.wingbox_optimizer import GetWingWeight
 from scripts.structures.vtail_span import span_vtail
 import input.GeneralConstants as const
 from scripts.power.finalPowersizing import power_system_convergences
+from modules.aero.planform_performance import get_aero_planform
 
 def run_integration(file_path, counter_tuple=(0,0), json_path= None, dir_path = None ):
     """ Runs an entire integraton loop
@@ -46,7 +47,7 @@ def run_integration(file_path, counter_tuple=(0,0), json_path= None, dir_path = 
     if counter_tuple == (1,1):
         IonBlock = Battery(Efficiency= 0.9)
         Pstack = FuelCell()
-        Tank = HydrogenTank(energyDensity=1.8, volumeDensity=0.6, cost= 16)
+        Tank = HydrogenTank()
         mission = AircraftParameters.load(file_path)
         wing  =  Wing.load(file_path)
         engine = Engine.load(file_path)
@@ -58,7 +59,7 @@ def run_integration(file_path, counter_tuple=(0,0), json_path= None, dir_path = 
     else:
         IonBlock = Battery(Efficiency= 0.9)
         Pstack = FuelCell()
-        Tank = HydrogenTank(energyDensity=1.8, volumeDensity=0.6, cost= 16)
+        Tank = HydrogenTank()
         mission = AircraftParameters.load(json_path)
         wing  =  Wing.load(json_path)
         engine = Engine.load(json_path)
@@ -79,9 +80,15 @@ def run_integration(file_path, counter_tuple=(0,0), json_path= None, dir_path = 
     #-------------------- propulsion ----------------------------
     # mission, engine = propcalc( clcd= aero.ld_cruise, mission=mission, engine= engine, h_cruise= GeneralConstants.h_cruise)
 
+    alpha_arr,cL_lst, induced_drag_lst =  get_aero_planform(aero, wing, 20)
     #-------------------- Aerodynamic sizing--------------------
     integrated_drag_estimation(wing, fuselage, vtail, aero) #
     # aero = slipstream_cruise(wing, engine, aero, mission) # FIXME the effect of of cl on the angle of attack
+    lift_over_drag_arr = cL_lst/(induced_drag_lst + aero.cd0_cruise)
+    aero.ld_max = np.max(lift_over_drag_arr)
+    aero.cl_ld_max = cL_lst[np.argmax(lift_over_drag_arr)]
+    mission.glide_slope = alpha_arr[np.argmax(lift_over_drag_arr)]
+
 
     #-------------------- Flight Performance --------------------
     get_performance_updated(aero, mission, wing,engine, power)
@@ -91,7 +98,7 @@ def run_integration(file_path, counter_tuple=(0,0), json_path= None, dir_path = 
 
 
     #-------------------- stability and control--------------------
-    vtail.span = span_vtail(1,fuselage.diameter_fuselage,30*np.pi/180)
+    min_span = span_vtail(1,fuselage.diameter_fuselage,30*np.pi/180)
     size_vtail_opt(WingClass=  wing,
                                                                     AircraftClass= mission,
                                                                     PowerClass= power,
@@ -100,7 +107,7 @@ def run_integration(file_path, counter_tuple=(0,0), json_path= None, dir_path = 
                                                                     FuseClass= fuselage,
                                                                     VTailClass= vtail, 
                                                                     StabClass=stability,
-                                                                    b_ref= vtail.span, #!!!!!!!!! please update value when we get it
+                                                                    b_ref= min_span, #!!!!!!!!! please update value when we get it
                                                                     stepsize = 5e-2,
                                                                     ) 
     #------------- Structures------------------

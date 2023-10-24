@@ -3,6 +3,7 @@
             "aspect_ratio" :8,
             "wing_weight": 168.99698877288353,
             "taper" :0.5,
+            "washout" : 0.05235987755982988,
             "quarterchord_sweep" :0.01
       },
       "Veetail" : {

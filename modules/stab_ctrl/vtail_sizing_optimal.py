@@ -43,7 +43,7 @@ def size_vtail_opt(WingClass, FuseClass, VTailClass, StabClass, Aeroclass, Aircr
         while True:
             shs, wing_loc, cg_front_bar, cg_aft_bar, cg_dict_margin = wing_location_horizontalstab_size(WingClass, FuseClass,Aeroclass, VTailClass, AircraftClass, PowerClass, EngineClass, StabClass,  A_h, CLh_approach=CLh, stepsize= stepsize)
             l_v = FuseClass.length_fuselage * (1 - wing_loc)
-            Vh_V2 = 0.95*(1 + const.axial_induction_factor1)**2
+            Vh_V2 = 0.95*(1 + const.axial_induction_factor)**2
             control_surface_data = get_control_surface_to_tail_chord_ratio(WingClass, FuseClass,VTailClass, Aeroclass, CLh, l_v, Cn_beta_req=0.0571, beta_h=1, eta_h=0.95, total_deflection=20 * np.pi / 180, design_cross_wind_speed=5.14, step=0.1 * np.pi / 180)
             CLvee_cr_N = (Aeroclass.cm_ac + Aeroclass.cL_cruise * (abs(cg_aft_bar - cg_front_bar))) / (Vh_V2 * control_surface_data["S_vee"]/WingClass.surface *np.cos(control_surface_data["dihedral"]) * l_v / WingClass.chord_mac)
     
@@ -72,7 +72,7 @@ def size_vtail_opt(WingClass, FuseClass, VTailClass, StabClass, Aeroclass, Aircr
     cl_vee_cr = dict_log["cl_vee_cr_lst"][design_idx]
 
     l_v = FuseClass.length_fuselage * (1 - wing_loc)
-    Vh_V2 = 0.95*(1+const.axial_induction_factor2)**2
+    Vh_V2 = 0.95*(1+const.axial_induction_factor)**2
 
     AircraftClass.oem_cg = cg_dict["oem_cg"]
     AircraftClass.wing_loc = wing_loc
@@ -83,7 +83,8 @@ def size_vtail_opt(WingClass, FuseClass, VTailClass, StabClass, Aeroclass, Aircr
     StabClass.cg_front_bar = cg_front_bar
     StabClass.cg_rear_bar =  cg_aft_bar
     
-    VTailClass.cL_h_cruise = cl_vee_cr 
+    VTailClass.cL_cruise = cl_vee_cr 
+    VTailClass.max_clh = CLh 
     VTailClass.length_wing2vtail = l_v
     VTailClass.rudder_max = np.radians(ctrl_surf_data["max_rudder_angle"])
     VTailClass.elevator_min = np.radians(ctrl_surf_data["min_elevator_angle"])
