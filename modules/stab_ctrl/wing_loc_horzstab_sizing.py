@@ -9,8 +9,8 @@ import pdb
 
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
+
 import matplotlib.pyplot as plt
-# from input.data_structures import *
 from modules.stab_ctrl.loading_diagram import loading_diagram
 import input.GeneralConstants as const
 from modules.stab_ctrl.aetheria_stability_derivatives_edited import downwash, downwash_k
@@ -74,6 +74,8 @@ def wing_location_horizontalstab_size(WingClass, FuseClass, Aeroclass, VtailClas
         "cg_rear_lst": [],
         "Shs_min_lst": [],
         "cg_dict_marg_lst": [],
+        "stab_lst": [],
+        "ctrl_lst": [],
     }
 
     for wing_loc in np.linspace(0.3, 0.65, np.size(np.arange(-1,2,stepsize))):
@@ -99,7 +101,7 @@ def wing_location_horizontalstab_size(WingClass, FuseClass, Aeroclass, VtailClas
         CLah = CLahcalc(A_h, beta, const.eta_a_f, const.sweep_half_chord_tail)
 
         # Creating actually scissor plot
-        cg_bar  = np.arange(-1,2,stepsize)
+        cg_bar  = np.linspace(-1,2,2000)
         m_ctrl, q_ctrl = ctrl_formula_coefs(CLh_approach, CLAh_approach, l_h, WingClass.chord_mac, const.Vh_V_2, Cm_ac, x_ac_stab_bar) # x_ac_bar for ctrl is different than for stab if cruise in compressible flow
         m_stab, q_stab = stab_formula_coefs(CLah, CLaAh, depsda, l_h, WingClass.chord_mac, const.Vh_V_2, x_ac_stab_bar, const.stab_margin)
         ShS_stab = m_stab * cg_bar - q_stab
@@ -110,12 +112,28 @@ def wing_location_horizontalstab_size(WingClass, FuseClass, Aeroclass, VtailClas
         idx_stab = cg_bar == min(cg_bar, key=lambda x:abs(x - cg_rear_bar))
         ShSmin = max(ShS_ctrl[idx_ctrl], ShS_stab[idx_stab])[0]
 
+
+        if False:
+
+            plt.plot(cg_bar, ShS_stab, label= "stability")
+            plt.plot(cg_bar, ShS_ctrl, label= "Control")
+            plt.hlines(ShSmin, cg_front_bar, cg_rear_bar)
+            plt.annotate(f"{wing_loc=}", (1,0))
+            plt.annotate(f"{cg_front_bar=}", (1,-.1))
+            plt.annotate(f"{cg_rear_bar=}", (1,-.17))
+            plt.annotate(f"{ShSmin=}", (1,-.24))
+            plt.legend()
+            plt.grid()
+            plt.show()
+
         # Storing results
         dict_log["wing_loc_lst"].append(wing_loc)
         dict_log["cg_front_lst"].append(cg_front_bar)
         dict_log["cg_rear_lst"].append(cg_rear_bar)
         dict_log["Shs_min_lst"].append(ShSmin)
         dict_log["cg_dict_marg_lst"].append(cg_dict_margin)
+        dict_log["stab_lst"].append(ShS_stab)
+        dict_log["ctrl_lst"].append(ShS_ctrl)
 
 
     # Selecting optimum design
@@ -125,9 +143,27 @@ def wing_location_horizontalstab_size(WingClass, FuseClass, Aeroclass, VtailClas
     design_cg_front_bar = dict_log["cg_front_lst"][design_idx]
     design_cg_rear_bar = dict_log["cg_rear_lst"][design_idx]
     design_cg_dict_margin = dict_log["cg_dict_marg_lst"][design_idx]
+    design_stab_lst = dict_log["stab_lst"][design_idx]
+    design_ctrl_lst = dict_log["ctrl_lst"][design_idx]
 
     if plot:
-        plt.plot(dict_log["wing_loc_lst"], dict_log["Shs_min_lst"])
+        fig, axs = plt.subplots(2,1)
+
+        axs[0].plot(cg_bar, design_stab_lst, label= "stability")
+        axs[0].plot(cg_bar, design_ctrl_lst, label= "Control")
+        axs[0].hlines(design_shs, design_cg_front_bar, design_cg_rear_bar)
+        axs[0].annotate(f"{design_wing_loc=}", (1,0))
+        axs[0].annotate(f"{design_cg_front_bar=}", (1,-.3))
+        axs[0].annotate(f"{design_cg_rear_bar=}", (1,-.6))
+        axs[0].annotate(f"{design_shs=}", (1,-.9))
+        axs[0].legend()
+        axs[0].grid()
+
+
+        axs[1].plot(dict_log["wing_loc_lst"], dict_log["Shs_min_lst"])
+        axs[1].set_xlabel("Wing Location")
+        axs[1].set_ylabel("Shs")
+        axs[1].grid()
         plt.show()
 
     WingClass.x_lewing = design_wing_loc*FuseClass.length_fuselage - 0.24 * WingClass.chord_mac - WingClass.x_lemac

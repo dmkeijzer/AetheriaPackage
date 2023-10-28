@@ -22,7 +22,7 @@ import input.GeneralConstants as const
 # HorTailClass.load()
 # FuseClass.load()
 
-def size_vtail_opt(WingClass, FuseClass, VTailClass, StabClass, Aeroclass, AircraftClass, PowerClass, EngineClass, b_ref, stepsize=1e-2,  CLh_initguess = -0.1, CLh_step = 0.01, plot = False):
+def size_vtail_opt(WingClass, FuseClass, VTailClass, StabClass, Aeroclass, AircraftClass, PowerClass, EngineClass, b_ref, stepsize=1e-2,  CLh_initguess = -0.6, CLh_step = 0.02, plot = False):
     CLh = CLh_initguess
 
     dict_log = {
@@ -32,14 +32,16 @@ def size_vtail_opt(WingClass, FuseClass, VTailClass, StabClass, Aeroclass, Aircr
         "trim_drag_lst": [],
         "aspect_ratio_lst": [],
         "wing_pos_lst": [],
+        "shs_lst": [],
         "ctrl_surf_lst": [],
         "cl_vee_cr_lst": []
     }
 
 
-    for A_h in np.arange(2, 8, 0.2):
+    for A_h in np.arange(5, 8, 0.5):
         VTailClass.aspect_ratio = A_h
         CLh = CLh_initguess
+        counter = 0
         while True:
             shs, wing_loc, cg_front_bar, cg_aft_bar, cg_dict_margin = wing_location_horizontalstab_size(WingClass, FuseClass,Aeroclass, VTailClass, AircraftClass, PowerClass, EngineClass, StabClass,  A_h, CLh_approach=CLh, stepsize= stepsize)
             l_v = FuseClass.length_fuselage * (1 - wing_loc)
@@ -56,20 +58,61 @@ def size_vtail_opt(WingClass, FuseClass, VTailClass, StabClass, Aeroclass, Aircr
             dict_log["trim_drag_lst"].append(CLvee_cr_N ** 2 * control_surface_data["S_vee"]/A_h)
             dict_log["aspect_ratio_lst"].append(A_h)
             dict_log["wing_pos_lst"].append((shs, wing_loc, cg_front_bar, cg_aft_bar, cg_dict_margin))
+            dict_log["shs_lst"].append(shs)
             dict_log["ctrl_surf_lst"].append(control_surface_data)
             dict_log["cl_vee_cr_lst"].append(CLvee_cr_N)
 
             #Move to next step
             CLh = CLh - CLh_step
+
+            if counter > 10:
+                break
+            counter += 1
+
+    if plot:
+        # Create two subplots side by side
+        fig = plt.figure(figsize=(12, 5))
+
+        # First subplot on the left
+        ax1 = fig.add_subplot(121, projection='3d')
+        ax1.plot(dict_log["clh_lst"], dict_log["aspect_ratio_lst"],dict_log["S_vee_lst"], color='b')
+        ax1.set_title('Tail size')
+        ax1.set_xlabel("Clh")
+        ax1.set_ylabel("Aspect ratio")
+        ax1.set_zlabel("S_vee")
+
+        # Second subplot on the right
+        ax2 = fig.add_subplot(122, projection='3d')
+        ax2.plot(dict_log["clh_lst"], dict_log["aspect_ratio_lst"],dict_log["trim_drag_lst"], color='r')
+        ax2.set_title('Trim drag')
+        ax2.set_xlabel("Clh")
+        ax2.set_ylabel("Aspect ratio")
+        ax2.set_zlabel("Trim drag")
+
+        # Adjust the layout to prevent overlap
+        plt.tight_layout()
+
+        # Show the plots
+        plt.show()
         
-    design_idx = np.argmin(np.array(dict_log["trim_drag_lst"])[dict_log["span_vee_lst"] > b_ref])
+    filter = (dict_log["span_vee_lst"] > b_ref) * (dict_log["shs_lst"] < 1.1*np.min(dict_log["shs_lst"]))
+    design_idx = np.argmin(np.array(dict_log["trim_drag_lst"])[filter])
 
     CLh = dict_log["clh_lst"][design_idx]
     b_vee = dict_log["span_vee_lst"][design_idx]
     Ah = dict_log["aspect_ratio_lst"][design_idx]
     Shs, wing_loc, cg_front_bar, cg_aft_bar, cg_dict= dict_log["wing_pos_lst"][design_idx]
+    shs_min = np.min(dict_log["shs_lst"])
     ctrl_surf_data = dict_log["ctrl_surf_lst"][design_idx]
     cl_vee_cr = dict_log["cl_vee_cr_lst"][design_idx]
+
+    if plot:
+        print(f"|{CLh=:^55}|")
+        print(f"|{b_vee=:^55}|")
+        print(f"|{Ah=:^55}|")
+        print(f"|{Shs=:^55}|")
+        print(f"|{shs_min=:^55}|")
+        print(f"|{wing_loc=:^55}|")
 
     l_v = FuseClass.length_fuselage * (1 - wing_loc)
     Vh_V2 = 0.95*(1+const.axial_induction_factor)**2

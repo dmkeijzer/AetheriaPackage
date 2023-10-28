@@ -17,9 +17,9 @@ def loading_diagram(wing_loc, lf, fuselage, wing, vtail, aircraft, power, engine
     dict_mass_loc = { 
         "wing": (wing.wing_weight, wing_loc),
         "vtail": (vtail.vtail_weight, wing_loc + vtail.length_wing2vtail),
-        "engine": (engine.totalmass, np.mean(engine.x_rotor_loc)),
+        "engine": (engine.totalmass, (4*(wing_loc - 2) + 2*(wing_loc + vtail.length_wing2vtail))/(6)),
         "fuel_cell": (FuelCell.mass, fuselage.length_cockpit + fuselage.length_cabin + FuelCell.depth/2),
-        "battery": (power.battery_mass, wing_loc), # Battery was placed in the wing
+        "battery": (power.battery_mass, 1), # Battery was placed in the wing
         "cooling": (power.cooling_mass, fuselage.length_cockpit +  fuselage.length_cabin + power.h2_tank_length ), # Battery was placed in the wing
         "tank": (power.h2_tank_mass, fuselage.length_cockpit +  fuselage.length_cabin + power.h2_tank_length/2 ), # Battery was placed in the wing
         "landing_gear": (aircraft.lg_mass,  lf*const.cg_fuselage ), # For now, assume it coincides with the cg of the fuselage
