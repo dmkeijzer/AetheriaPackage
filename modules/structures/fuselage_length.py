@@ -128,6 +128,14 @@ def minimum_tail_length(h0, b0, Beta, V, l_tank, ARe, n, plot= False):
         if l_t < l_tank[i] or l_t > 8 or AR < 0 or bf < 0 or hf < 0 or hc < 0 or bc < 0 or hc<bc/n or bf>b0 or hf>h0:
             indices_to_remove.append(i)
 
+    if plot:
+        plt.plot(l_tank, l_tail, label= "tail length")
+        plt.xlabel("Tank length")
+        plt.ylabel("Tail length")
+        plt.grid()
+        plt.legend()
+        plt.show()
+
     # Remove values from l_tail based on indices to remove
     l_tail = [l for i, l in enumerate(l_tail) if i not in indices_to_remove]
 
@@ -258,15 +266,17 @@ def crash_box_height_convergerence(plateau_stress, yield_stress, e_0, e_d, v0, s
 
 
 
-def get_fuselage_sizing(h2tank, fuelcell, perf_par,fuselage):
+def get_fuselage_sizing(h2tank, fuelcell, perf_par,fuselage, validate= False):
 
     crash_box_height, crash_box_area = crash_box_height_convergerence(const.s_p, const.s_y, const.e_0, const.e_d, const.v0, const.s0, perf_par.MTOM)
     fuselage.height_fuselage_inner = fuselage.height_cabin + crash_box_height
     fuselage.height_fuselage_outer = fuselage.height_fuselage_inner + const.fuselage_margin
 
     fuselage.volume_powersys = h2tank.volume(perf_par.mission_energy)
+    if validate:
+        print(f"|{fuselage.volume_powersys=:^20.4e}|")
     # l_tail, upsweep, bc, hc, hf, bf, AR, l_tank = minimum_tail_length(fuselage.height_fuselage_inner, fuselage.width_fuselage_inner, const.beta_crash, h2tank.volume(perf_par.energyRequired/3.6e6) ,np.linspace(1, 7, 40), const.ARe, const.n_tanks)
-    l_tail, upsweep, bc, hc, hf, bf, AR, l_tank = minimum_tail_length(fuselage.height_fuselage_inner, fuselage.width_fuselage_inner, const.beta_crash, fuselage.volume_powersys ,np.linspace(1, 7, 40), const.ARe, const.n_tanks)
+    l_tail, upsweep, bc, hc, hf, bf, AR, l_tank = minimum_tail_length(fuselage.height_fuselage_inner, fuselage.width_fuselage_inner, const.beta_crash, fuselage.volume_powersys ,np.linspace(1, 9, 100), const.ARe, const.n_tanks, plot= validate)
     radius = compute_tank_radius(fuselage.volume_powersys, 2, l_tank)
 
     fuselage.length_tail = l_tail

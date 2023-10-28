@@ -22,6 +22,7 @@ class HydrogenTank(BaseModel):
     label: str = "Tank"
     energyDensity: float = 1.8
     volumeDensity: float = 0.6*3.6e6*1000 # J/m^3
+    volumeDensity_h2: float = 4e6*1000 # J/m^3
     cost: float =  16
     fuel_cell_eff: float =  0.55
 
@@ -36,7 +37,7 @@ class HydrogenTank(BaseModel):
         """
         :return: Volume of the tank [m^3]
         """
-        return energy / self.volumeDensity / self.fuel_cell_eff 
+        return energy / self.volumeDensity_h2 / self.fuel_cell_eff 
 
     def price(self,energy) -> float:
         """

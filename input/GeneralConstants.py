@@ -61,7 +61,7 @@ gamma = 1.4                  #        O
 mach_cruise = v_cr/a_cr
 
 # Structures
-beta_crash = 0.6 # crash diameter coefficient
+beta_crash = 0.5 # crash diameter coefficient
 E_mod = 70e9
 poisson = 0.3
 shear_mod =  26000000000.0
@@ -74,7 +74,7 @@ rho_material = 2710
 g= 5
 fuselage_margin = 0.2 
 eigenfrequency_lim_pylon = 20
-ARe = 2.75 # Aspect ration end of tail cone
+ARe = 2.8 # Aspect ration end of tail cone
 n_tanks = 2 # The amount of tanks
 cg_fuselage = 0.45
 

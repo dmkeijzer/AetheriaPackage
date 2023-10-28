@@ -38,7 +38,7 @@ def size_vtail_opt(WingClass, FuseClass, VTailClass, StabClass, Aeroclass, Aircr
     }
 
 
-    for A_h in np.arange(5, 8, 0.5):
+    for A_h in np.arange(5, 9, 0.5):
         VTailClass.aspect_ratio = A_h
         CLh = CLh_initguess
         counter = 0
@@ -95,7 +95,7 @@ def size_vtail_opt(WingClass, FuseClass, VTailClass, StabClass, Aeroclass, Aircr
         # Show the plots
         plt.show()
         
-    filter = (dict_log["span_vee_lst"] > b_ref) * (dict_log["shs_lst"] < 1.1*np.min(dict_log["shs_lst"]))
+    filter = (dict_log["span_vee_lst"] > b_ref) * (dict_log["shs_lst"] < 1.04*np.min(dict_log["shs_lst"]))
     design_idx = np.argmin(np.array(dict_log["trim_drag_lst"])[filter])
 
     CLh = dict_log["clh_lst"][design_idx]
