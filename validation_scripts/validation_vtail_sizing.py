@@ -13,7 +13,7 @@ from modules.stab_ctrl.vtail_sizing_optimal import size_vtail_opt
 from scripts.structures.vtail_span import span_vtail
 
 
-path = r"C:\Users\damie\OneDrive\Desktop\Damien\DSE\AetheriaPackage\output\run_optimizaton_Oct_28_13.51"
+path = r"C:\Users\damie\OneDrive\Desktop\Damien\DSE\AetheriaPackage\output\run_optimizaton_Oct_30_22.32\design_state_Oct_30_22.32.json"
 
 fuselage = data.Fuselage.load(path)
 aircraft = data.AircraftParameters.load(path)

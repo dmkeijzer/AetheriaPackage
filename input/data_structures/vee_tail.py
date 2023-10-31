@@ -14,6 +14,7 @@ class VeeTail(BaseModel):
     surface: float 
     quarterchord_sweep: float 
     length_wing2vtail: float | None  = None
+    shs: float | None  = None
     virtual_hor_surface: float | None  = None
     virtual_ver_surface: float | None  = None
     rudder_max: float | None  = None

@@ -2,13 +2,13 @@
       "Wing" : {
             "aspect_ratio" :8,
             "wing_weight": 168.99698877288353,
-            "taper" :0.5,
-            "washout" : 0.05235987755982988,
-            "quarterchord_sweep" :0.01
+            "taper" :0.45,
+            "washout" :0,
+            "quarterchord_sweep" :0.0
       },
       "Veetail" : {
             "surface" :3,
-            "quarterchord_sweep" :0.03,
+            "quarterchord_sweep" :0.0,
             "length_wing2vtail" : 4,
             "vtail_weight": 84.31675982363197,
             "aspect_ratio": 6,

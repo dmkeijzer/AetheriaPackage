@@ -95,7 +95,7 @@ def size_vtail_opt(WingClass, FuseClass, VTailClass, StabClass, Aeroclass, Aircr
         # Show the plots
         plt.show()
         
-    filter = (dict_log["span_vee_lst"] > b_ref) * (dict_log["shs_lst"] < 1.04*np.min(dict_log["shs_lst"]))
+    filter = (dict_log["span_vee_lst"] > b_ref) * (dict_log["shs_lst"] < 1.02*np.min(dict_log["shs_lst"]))
     design_idx = np.argmin(np.array(dict_log["trim_drag_lst"])[filter])
 
     CLh = dict_log["clh_lst"][design_idx]
@@ -132,7 +132,8 @@ def size_vtail_opt(WingClass, FuseClass, VTailClass, StabClass, Aeroclass, Aircr
     VTailClass.rudder_max = np.radians(ctrl_surf_data["max_rudder_angle"])
     VTailClass.elevator_min = np.radians(ctrl_surf_data["min_elevator_angle"])
     VTailClass.dihedral = ctrl_surf_data["dihedral"]
-    VTailClass.surface = ctrl_surf_data["S_vee"]
+    VTailClass.surface = Shs*WingClass.surface
+    VTailClass.shs= Shs
     VTailClass.c_control_surface_to_c_vee_ratio = ctrl_surf_data["control_surface_ratio"]
     VTailClass.ruddervator_efficiency = ctrl_surf_data["tau"]
     VTailClass.span = b_vee
