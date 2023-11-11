@@ -1,0 +1,192 @@
+'''
+---------- EXPLANATION ----------
+In these constants the unit is included and the definitiveness
+(if that's a word) of the variable.
+So an O means that this value can be taken as true, 
+so for example the atmospheric constants won't change 
+and the cruise speed has already been defined by requirements. 
+An ~ means it's defined but maybe not needed and a ? means it's a guess.
+
+
+'''
+import numpy as np
+from warnings import warn
+from AetheriaPackage.ISA_tool import ISA
+
+
+# constants of physics
+g0 = 9.80665            #[m/s^2]    O
+time_step = 0.02
+transition_height = 100
+
+#performance
+v_cr = 300/3.6
+v_climb = 0.8*v_cr
+cl_alpha = 5.011088876214181
+v_stall = 40
+v_stall_flaps20 = 42
+
+roc_cr = 5
+rod_cr = 3 # Rate of descend 
+roc_hvr = 2
+climb_gradient = 0.065
+climb_angle = np.arctan(0.065)
+descent_slope = 0.04
+h_cruise = 2400         #[m]        O
+mission_dist = 400e3  # m
+npax = 4                # Amount of passengers O
+ax_target_climb = 0.5*g0   # PLACEHOLDER
+ay_target_climb = 0.2*g0 # PLACEHOLDER
+ax_target_descend = 0.5 * g0 # PLACEHOLDER
+ay_target_descend = 0.2 * g0 # PLACEHOLDER
+prop_eff =0.9
+
+#atmospheric constants
+atm = ISA(h_cruise)
+rho_cr = atm.density()    #[kg/m^3]   O
+p_cr = atm.pressure()           # pressure at cr O
+t_cr = atm.temperature()      # Temperature at cr O
+atm_stall = ISA(0)
+t_stall = atm.temperature()
+a_cr = atm.soundspeed()     #Speed of sound at cruise O
+R = 287                 #[J/kg*K]   O
+gamma = 1.4                  #        O
+
+# Performance (continued)
+mach_cruise = v_cr/a_cr
+
+# Structures
+beta_crash = 0.5 # crash diameter coefficient
+E_mod = 70e9
+poisson = 0.3
+shear_mod =  26000000000.0
+beta_wingbox = 1.42
+sigma_yield = 430000000.0
+ultimate_tensile_stress = 640000000.0
+m_crip = 0.85
+pb = 2.5
+rho_material = 2710
+g= 5
+fuselage_margin = 0.2 
+eigenfrequency_lim_pylon = 20
+ARe = 2.8 # Aspect ration end of tail cone
+n_tanks = 2 # The amount of tanks
+cg_fuselage = 0.45
+
+s_p, s_y, e_0, e_d, v0, s0 = 0.5*10**6, 1.2*10**6, 0.038, 0.9, 9.1, 0.5
+
+# stability  and control
+stab_margin = 0.05
+x_ac_stab_nacelles_bar = 0  # Missing nacelles data/counteracting effect for our design
+x_ac_stab_wing_bar = 0.24  # From graph from Torenbeek
+warn("Missing nacelles data/counteracting effect for our design")
+#cm_ac  constants
+Cm_ac_flaps = -0.1825#From delta CL0
+Cm_ac_nacelles = 0  # Assumed/missing data on nacelles
+
+
+
+
+
+# Sea leavel atmospheric constants
+rho_sl = atm.rho_SL            #[kg/m^3]   O
+p_sl = atm.p_SL
+T_sl = atm.T_SL
+mhu_sl = atm.mu_SL
+a_sl = atm.a_SL
+mhu = atm.viscosity_dyn()           #[kg/m^3]   O   the dynamic viscosity
+
+
+# Power
+p_density = 7e3     # w totalEnergy/kg    ? # averaged from:  A review: high power density motors for electric vehicles
+
+#standard masses
+m_pl =  510  # kg
+
+#airfoil
+toc = 0.12 #NACA2412
+xcm = 0.2973 # NACA2412
+A_base = 0 #Assumed 0 base area
+frac_lam_fus = 0.05
+frac_lam_wing = 0.1
+k = 0.634 * 10**(-5)  # Surface smoothness parameter
+
+warn("The variables hereunder should be looked at, they were computed for one specific version but should be recomputeds")
+alpha_zero_l = -0.0352
+alpha_zero_L_flaps20 = -0.193
+delta_alpha_zero_L_flaps20 = -0.1027196
+delta_alpha_zero_L_flaps60 = -0.1332698
+cl_descent_trans_flaps20 = 1.83
+alpha_descent_trans_flaps20 = 0.2219
+cdi_descent_trans_flaps20 = 0.091 
+cdi_climb_clean = 0.013 
+cl_climb_clean = 0.592
+alpha_climb_clean = 0.0873
+ld_climb = 220.449
+cL0_approach = 0.798
+alpha_approach = 0.2
+downwash_angle = 0.09530224102729465
+downwash_angle_wing = 0.05271264331632115
+downwash_angle_prop = 0.0786014329433922
+downwash_angle_stall = 0.22197201625968602
+downwash_angle_wing_stall = 0.1517455318010746
+downwash_angle_prop_stall = 0.4004370786386418
+
+#airfoil V-tail
+toc_tail = 0.12  # NACA 0012
+xcm_tail = 0.2903
+axial_induction_factor = 0.2
+Vh_V_2 = 0.95  # From SEAD, V-tail somewhat similar to fin-mounted stabiliser
+eta_a_f = 0.95 # Constant used in computing the derivate of the horizontal tail lift coefficient wrt to alpha
+sweep_half_chord_tail= 0  # Assumed
+taper_hor = 1
+
+# Time constants for midterm
+t_takeoff = 15.3
+t_loiter = 20*60
+t_landing = 15
+max_rotation = 5
+
+#fuelcell input
+VolumeDensityFuellCell = 3.25 #kW /l
+PowerDensityFuellCell = 3.0 #kW/kg
+effiencyFuellCell = 0.55
+
+#Tank input
+VolumeDensityTank = 0.5 #kg/l
+EnergyDensityTank = 1.85 # kWh/kg
+
+#battery input 
+DOD = 0.8
+dischargeEfficiency = 0.95
+ChargingEfficiency = 0.7
+EnergyDensityBattery = 0.3
+PowerDensityBattery = 2
+VolumeDensityBattery = 0.45
+
+
+# Requirements
+n_min_req = -1              # [-]       O   Min load factor
+n_max_req = 2.5             # [-]       O   Max load factor
+n_ult_req = 1.5*n_max_req       # [-]       O   Ultimate load factor
+ub = 20.12              # [m/s]     0   Gust at Vb from EASA
+uc = 15.24              # [m/s]     0   Gust at Vc from EASA
+ud = 7.62               # [m/s]     0   Gust at Vd from EASA
+
+# contingencies
+oem_cont = 1.1
+
+# Engine and properllors
+diskloading = 120
+n_engines = 6
+
+
+
+
+#material properties
+E_alu = 73e9
+nu_alu = 0.33
+
+E_composite = 100e9
+sigma_compostie = 2000e6
+rho_composite = 2000

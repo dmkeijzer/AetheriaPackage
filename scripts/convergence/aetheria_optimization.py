@@ -1,19 +1,10 @@
 import openmdao.api as om
 import time
 import json
-import sys
-import os
-import pathlib as pl
-import numpy as np
 import json
-# Path handling
+from AetheriaPackage.integration import run_integration, multi_run
+import os
 
-sys.path.append(str(list(pl.Path(__file__).parents)[2]))
-os.chdir(str(list(pl.Path(__file__).parents)[2]))
-
-from modules.convergence.integration import run_integration, multi_run
-import input.GeneralConstants as const
-from input.data_structures import AircraftParameters
 
 
 class VTOLOptimization(om.ExplicitComponent):
