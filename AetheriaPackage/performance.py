@@ -498,24 +498,25 @@ class MissionClass:
         t_hover = 30/const.roc_hvr
         thrust_hvr = self.aircraft.MTOM*g*1.2
         power_hvr = self.thrust_to_power(thrust_hvr, 0, const.rho_sl)[1]
-        E_hover= 2*t_hover*self.thrust_to_power(self.aircraft.MTOM*g*1.2, 0, const.rho_sl)[1]
+        E_hover= 2*t_hover*self.thrust_to_power(self.aircraft.MTOM*g*1.2, 0, const.rho_sl)[1]*1.2
 
         #--------------- Climb phase ----------------------------------------------------
-        q_inf_climb = 0.5*const.rho_sl*(const.v_climb)**2
-        cl_climb =  wing_loading * np.cos(const.climb_angle)/q_inf_climb
+        v_climb = np.sqrt(wing_loading*2/const.rho_sl*1/self.aero.cL_endurance)
+        self.aircraft.v_climb = v_climb 
+        q_inf_climb = 0.5*const.rho_sl*(v_climb)**2
+        cl_climb =  self.aero.cL_endurance
         cd_climb = self.get_cd(cl_climb)
         Lift_climb = cl_climb*q_inf_climb*self.wing.surface
         Drag_climb = cd_climb*q_inf_climb*self.wing.surface
 
         t_climb = self.h_cruise/const.roc_cr
         T_m_to = self.aircraft.MTOM*g*np.sin(const.climb_angle) +  Drag_climb
-        P_m_to = self.thrust_to_power(T_m_to, const.v_climb, const.rho_sl)[1]
+        P_m_to = self.thrust_to_power(T_m_to, v_climb, const.rho_sl)[1]
         E_climb = P_m_to*t_climb
-        d_climb = t_climb*const.v_climb*np.cos(const.climb_angle)
+        d_climb = t_climb*v_climb*np.cos(const.climb_angle)
 
         #--------------- descent phase ----------------------------------------------------
 
-        # cl_descent, cd_descent = self.aero_coefficients(alpha_descent)
         v_descent =  np.sqrt((2*np.cos(self.aircraft.glide_slope))/(const.rho_cr*self.aero.cl_ld_max)*wing_loading)
 
         q_inf_desc = 0.5*const.rho_sl*(v_descent)**2
@@ -535,7 +536,7 @@ class MissionClass:
         self.aircraft.cruisePower = P_cruise
 
         # Loiter power
-        V_loit = np.sqrt(2*self.aircraft.MTOM*const.g0/(const.rho_sl*self.wing.surface*self.aero.cl_climb_clean))
+        V_loit = np.sqrt(2*self.aircraft.MTOM*const.g0/(const.rho_sl*self.wing.surface*self.aero.cL_endurance))
         P_loiter, _ = self.power_cruise_config(altitude=self.h_cruise, speed=V_loit, mass=self.m)  # + self.P_systems
 
         # Cruise energy
@@ -556,120 +557,6 @@ class MissionClass:
 
         return E_tot, t_tot, power_hvr, thrust_hvr, t_cruise + self.t_loiter, Energy
 
-def get_energy_power_perf(WingClass, EngineClass, AeroClass, PerformanceClass):
-    raise DeprecationWarning(f"This function should not be called, has unstable behaviour!")
-    """ Computes relevant performance metrics from the mission
-
-    :param WingClass: _description_
-    :type WingClass: _type_
-    :param EngineClass: _description_
-    :type EngineClass: _type_
-    :param AeroClass: _description_
-    :type AeroClass: _type_
-    :param PerformanceClass: _description_
-    :type PerformanceClass: _type_
-    :return: _description_
-    :rtype: _type_
-    """    
-
-
-    
-    atm = ISA(const.h_cruise)
-    rho_cr = atm.density()
-
-    #==========================Energy calculation ================================= 
-    warn("All functions using flap setting and different flight configuration should be called using a function. Theya are currently \
-         Not being updated. Thus a lot of these constats are completely not applicable")
-
-
-
-    #----------------------- Take-off-----------------------
-    P_takeoff = powertakeoff(PerformanceClass.MTOM, const.g0, const.roc_hvr, EngineClass.total_disk_area, const.rho_sl)
-
-    E_to = P_takeoff * const.t_takeoff
-    #-----------------------Transition to climb-----------------------
-    transition_simulation = numerical_simulation(l_x_1=3.7057, l_x_2=1.70572142*0.75, l_x_3=4.5, l_y_1=0.5, l_y_2=0.5, l_y_3=0.789+0.5, T_max=10500, y_start=30.5, mass=PerformanceClass.MTOM, g0=const.g0, S=WingClass.surface, CL_climb=AeroClass.cl_climb_clean,
-                                alpha_climb=AeroClass.alpha_climb_clean, CD_climb=AeroClass.cdi_climb_clean + AeroClass.cd0_cruise,
-                                Adisk=EngineClass.total_disk_area, lod_climb=AeroClass.ld_climb, eff_climb=const.prop_eff , v_stall=const.v_stall)
-
-    E_trans_ver2hor = transition_simulation[0]
-    transition_power_max = np.max(transition_simulation[0])
-    final_trans_distance = transition_simulation[3][-1]
-    final_trans_altitude = transition_simulation[1][-1]
-    t_trans_climb = transition_simulation[2][-1]
-
-    #----------------------- Horizontal Climb --------------------------------------------------------------------
-    average_h_climb = (const.h_cruise  - final_trans_altitude)/2
-    rho_climb = ISA(average_h_climb).density()
-    v_climb = const.roc_cr/np.sin(const.climb_gradient)
-    v_aft= v_exhaust(PerformanceClass.MTOM, const.g0, rho_climb, EngineClass.total_disk_area, v_climb)
-    PerformanceClass.prop_eff = propeff(v_aft, v_climb)
-    climb_power_var = powerclimb(PerformanceClass.MTOM, const.g0, WingClass.surface, rho_climb, AeroClass.ld_climb, PerformanceClass.prop_eff, const.roc_cr)
-    t_climb = (const.h_cruise  - final_trans_altitude) / const.roc_cr
-    E_climb = climb_power_var * t_climb
-
-    #----------------------- Transition (from horizontal to vertical)-----------------------
-    warn("Transition horizontal to vertical broken gives insane high values don' know what todo with it")
-    transition_simulation_landing = numerical_simulation_landing(vx_start=const.v_stall_flaps20, descend_slope= const.descent_slope, mass=PerformanceClass.MTOM, g0=const.g0,
-                                S=WingClass.surface , CL=const.cl_descent_trans_flaps20, alpha=const.alpha_descent_trans_flaps20,
-                                CD=const.cdi_descent_trans_flaps20 + AeroClass.cd0_cruise, Adisk=EngineClass.total_disk_area)
-    E_trans_hor2ver = transition_simulation_landing[0]
-    transition_power_max_landing = np.max(transition_simulation_landing[4])
-    final_trans_distance_landing = transition_simulation_landing[3][-1]
-    final_trans_altitude_landing = transition_simulation_landing[1][-1]  
-    t_trans_landing = transition_simulation_landing[2][-1]
-
-
-    # ----------------------- Horizontal Descent-----------------------
-    P_desc = powerdescend(PerformanceClass.MTOM, const.g0, WingClass.surface, rho_climb, AeroClass.ld_climb, PerformanceClass.prop_eff, const.rod_cr)
-    t_desc = (const.h_cruise - final_trans_altitude_landing)/const.rod_cr # Equal descend as ascend
-    E_desc = P_desc* t_desc
-    d_desc = (const.h_cruise - final_trans_altitude_landing)/const.descent_slope
-    v_descend = const.rod_cr/const.descent_slope
-
-    #-----------------------------Cruise-----------------------
-    P_cr = powercruise(PerformanceClass.MTOM, const.g0, const.v_cr, AeroClass.ld_cruise, PerformanceClass.prop_eff)
-    d_climb = final_trans_distance + (const.h_cruise  - final_trans_altitude)/np.tan(const.climb_gradient) #check if G is correct
-    d_cruise = const.mission_dist - d_desc - d_climb - final_trans_distance - final_trans_distance_landing
-    t_cr = (const.mission_dist - d_desc - d_climb - final_trans_distance - final_trans_distance_landing)/const.v_cr
-    E_cr = P_cr * t_cr # used the new cruise power 
-
-    #----------------------- Loiter cruise-----------------------
-    P_loit_cr = powerloiter(PerformanceClass.MTOM, const.g0, WingClass.surface, const.rho_cr, AeroClass.ld_climb,PerformanceClass.prop_eff)
-    E_loit_hor = P_loit_cr * const.t_loiter
-
-    #----------------------- Loiter vertically-----------------------
-    P_loit_land = hoverstuffopen(PerformanceClass.MTOM*const.g0, const.rho_sl,EngineClass.total_disk_area, PerformanceClass.TW_max)[1]
-    E_loit_vert = P_loit_land * 30 # 30 sec for hovering vertically
-    # print('t', 30)
-
-
-    #---------------------------- TOTAL ENERGY CONSUMPTION ----------------------------
-    E_total = E_to + E_trans_ver2hor + E_climb + E_cr + E_desc + E_loit_hor + E_loit_vert + E_trans_hor2ver 
-
-    #---------------------------- Writing to JSON and printing result  ----------------------------
-    PerformanceClass.mission_energy = E_total
-    PerformanceClass.hoverPower = transition_power_max
-    # print('Pto',P_takeoff)
-    PerformanceClass.climbPower = climb_power_var
-
-
-    PerformanceClass.takeoff_energy = E_to
-    PerformanceClass.trans2hor_energy = E_trans_ver2hor
-    PerformanceClass.climb_energy = E_climb
-    PerformanceClass.cruise_energy = E_cr
-    PerformanceClass.descend_energy = E_desc
-    PerformanceClass.hor_loiter_energy = E_loit_hor
-    PerformanceClass.trans2ver_energy = E_trans_hor2ver
-    PerformanceClass.ver_loiter_energy = E_loit_vert
-
-    PerformanceClass.mission_energy = E_total
-    PerformanceClass.cruisePower = P_cr
-    PerformanceClass.hoverPower = transition_power_max
-    PerformanceClass.climbPower = climb_power_var
-
-    return WingClass, EngineClass, AeroClass, PerformanceClass
-
 def get_performance_updated(aero, aircraft, wing, engine, power, plot= False):
 
      mission = MissionClass(aero, aircraft, wing, engine, power, plot)
@@ -678,6 +565,7 @@ def get_performance_updated(aero, aircraft, wing, engine, power, plot= False):
 
 
 def numerical_simulation(l_x_1, l_x_2, l_x_3, l_y_1, l_y_2, l_y_3, T_max, y_start, mass, g0, S, CL_climb, alpha_climb, CD_climb, Adisk, lod_climb, eff_climb, v_stall):
+    raise DeprecationWarning(f"This function should not be called, has unstable behaviour!")
     # print('this is still running')
     # Initialization
     vx = 0
@@ -866,13 +754,8 @@ def numerical_simulation(l_x_1, l_x_2, l_x_3, l_y_1, l_y_2, l_y_3, T_max, y_star
     return E, y_lst, t_lst, x_lst, V, P_lst
 
 
-#print((numerical_simulation(y_start=30.5, mass=2158.35754, g0=const.g0, S=11.975442, CL_climb=0.592,
-#                                  alpha_climb=0.0873, CD_climb=0.0238580,
-#                                   Adisk=17.986312, lod_climb=220.449, eff_climb=0.9,
- #                                  v_stall=45)[6]))
-
-
 def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha, CD, Adisk):
+    raise DeprecationWarning(f"This function should not be called, has unstable behaviour!")
     # print('this is still running')
     # Initialization
     vx = vx_start
@@ -1050,3 +933,108 @@ def numerical_simulation_landing(vx_start, descend_slope, mass, g0, S, CL, alpha
 
     return E, y_lst, t_lst, x_lst, P_lst  # Energy, y, t, x, P
 
+
+def get_energy_power_perf(WingClass, EngineClass, AeroClass, PerformanceClass):
+    raise DeprecationWarning(f"This function should not be called, has unstable behaviour!")
+    """ Computes relevant performance metrics from the mission
+
+    :param WingClass: _description_
+    :type WingClass: _type_
+    :param EngineClass: _description_
+    :type EngineClass: _type_
+    :param AeroClass: _description_
+    :type AeroClass: _type_
+    :param PerformanceClass: _description_
+    :type PerformanceClass: _type_
+    :return: _description_
+    :rtype: _type_
+    """    
+
+
+    atm = ISA(const.h_cruise)
+    rho_cr = atm.density()
+
+    #==========================Energy calculation ================================= 
+    warn("All functions using flap setting and different flight configuration should be called using a function. Theya are currently \
+         Not being updated. Thus a lot of these constats are completely not applicable")
+
+
+    #----------------------- Take-off-----------------------
+    P_takeoff = powertakeoff(PerformanceClass.MTOM, const.g0, const.roc_hvr, EngineClass.total_disk_area, const.rho_sl)
+
+    E_to = P_takeoff * const.t_takeoff
+    #-----------------------Transition to climb-----------------------
+    transition_simulation = numerical_simulation(l_x_1=3.7057, l_x_2=1.70572142*0.75, l_x_3=4.5, l_y_1=0.5, l_y_2=0.5, l_y_3=0.789+0.5, T_max=10500, y_start=30.5, mass=PerformanceClass.MTOM, g0=const.g0, S=WingClass.surface, CL_climb=AeroClass.cl_climb_clean,
+                                alpha_climb=AeroClass.alpha_climb_clean, CD_climb=AeroClass.cdi_climb_clean + AeroClass.cd0_cruise,
+                                Adisk=EngineClass.total_disk_area, lod_climb=AeroClass.ld_climb, eff_climb=const.prop_eff , v_stall=const.v_stall)
+
+    E_trans_ver2hor = transition_simulation[0]
+    transition_power_max = np.max(transition_simulation[0])
+    final_trans_distance = transition_simulation[3][-1]
+    final_trans_altitude = transition_simulation[1][-1]
+    t_trans_climb = transition_simulation[2][-1]
+
+    #----------------------- Horizontal Climb --------------------------------------------------------------------
+    average_h_climb = (const.h_cruise  - final_trans_altitude)/2
+    rho_climb = ISA(average_h_climb).density()
+    v_climb = const.roc_cr/np.sin(const.climb_gradient)
+    v_aft= v_exhaust(PerformanceClass.MTOM, const.g0, rho_climb, EngineClass.total_disk_area, v_climb)
+    PerformanceClass.prop_eff = propeff(v_aft, v_climb)
+    climb_power_var = powerclimb(PerformanceClass.MTOM, const.g0, WingClass.surface, rho_climb, AeroClass.ld_climb, PerformanceClass.prop_eff, const.roc_cr)
+    t_climb = (const.h_cruise  - final_trans_altitude) / const.roc_cr
+    E_climb = climb_power_var * t_climb
+
+    #----------------------- Transition (from horizontal to vertical)-----------------------
+    warn("Transition horizontal to vertical broken gives insane high values don' know what todo with it")
+    transition_simulation_landing = numerical_simulation_landing(vx_start=const.v_stall_flaps20, descend_slope= const.descent_slope, mass=PerformanceClass.MTOM, g0=const.g0,
+                                S=WingClass.surface , CL=const.cl_descent_trans_flaps20, alpha=const.alpha_descent_trans_flaps20,
+                                CD=const.cdi_descent_trans_flaps20 + AeroClass.cd0_cruise, Adisk=EngineClass.total_disk_area)
+    E_trans_hor2ver = transition_simulation_landing[0]
+    transition_power_max_landing = np.max(transition_simulation_landing[4])
+    final_trans_distance_landing = transition_simulation_landing[3][-1]
+    final_trans_altitude_landing = transition_simulation_landing[1][-1]  
+    t_trans_landing = transition_simulation_landing[2][-1]
+
+    # ----------------------- Horizontal Descent-----------------------
+    P_desc = powerdescend(PerformanceClass.MTOM, const.g0, WingClass.surface, rho_climb, AeroClass.ld_climb, PerformanceClass.prop_eff, const.rod_cr)
+    t_desc = (const.h_cruise - final_trans_altitude_landing)/const.rod_cr # Equal descend as ascend
+    E_desc = P_desc* t_desc
+    d_desc = (const.h_cruise - final_trans_altitude_landing)/const.descent_slope
+    v_descend = const.rod_cr/const.descent_slope
+    #-----------------------------Cruise-----------------------
+    P_cr = powercruise(PerformanceClass.MTOM, const.g0, const.v_cr, AeroClass.ld_cruise, PerformanceClass.prop_eff)
+    d_climb = final_trans_distance + (const.h_cruise  - final_trans_altitude)/np.tan(const.climb_gradient) #check if G is correct
+    d_cruise = const.mission_dist - d_desc - d_climb - final_trans_distance - final_trans_distance_landing
+    t_cr = (const.mission_dist - d_desc - d_climb - final_trans_distance - final_trans_distance_landing)/const.v_cr
+    E_cr = P_cr * t_cr # used the new cruise power 
+    #----------------------- Loiter cruise-----------------------
+    P_loit_cr = powerloiter(PerformanceClass.MTOM, const.g0, WingClass.surface, const.rho_cr, AeroClass.ld_climb,PerformanceClass.prop_eff)
+    E_loit_hor = P_loit_cr * const.t_loiter
+    #----------------------- Loiter vertically-----------------------
+    P_loit_land = hoverstuffopen(PerformanceClass.MTOM*const.g0, const.rho_sl,EngineClass.total_disk_area, PerformanceClass.TW_max)[1]
+    E_loit_vert = P_loit_land * 30 # 30 sec for hovering vertically
+    #---------------------------- TOTAL ENERGY CONSUMPTION ----------------------------
+    E_total = E_to + E_trans_ver2hor + E_climb + E_cr + E_desc + E_loit_hor + E_loit_vert + E_trans_hor2ver 
+
+    #---------------------------- Writing to JSON and printing result  ----------------------------
+    PerformanceClass.mission_energy = E_total
+    PerformanceClass.hoverPower = transition_power_max
+    # print('Pto',P_takeoff)
+    PerformanceClass.climbPower = climb_power_var
+
+
+    PerformanceClass.takeoff_energy = E_to
+    PerformanceClass.trans2hor_energy = E_trans_ver2hor
+    PerformanceClass.climb_energy = E_climb
+    PerformanceClass.cruise_energy = E_cr
+    PerformanceClass.descend_energy = E_desc
+    PerformanceClass.hor_loiter_energy = E_loit_hor
+    PerformanceClass.trans2ver_energy = E_trans_hor2ver
+    PerformanceClass.ver_loiter_energy = E_loit_vert
+
+    PerformanceClass.mission_energy = E_total
+    PerformanceClass.cruisePower = P_cr
+    PerformanceClass.hoverPower = transition_power_max
+    PerformanceClass.climbPower = climb_power_var
+
+    return WingClass, EngineClass, AeroClass, PerformanceClass

@@ -1,0 +1,2 @@
+[run]
+omit = modules/avlwrapper modules/structures/nvm.py

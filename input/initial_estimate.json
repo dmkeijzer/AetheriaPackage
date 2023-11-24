@@ -40,7 +40,6 @@
       },
       "Aero": {
             "cd0_cruise" :0.0231,
-            "cL_max_flaps60":2.1,
             "cL_max" :1.7,
             "cL_alpha" :0.52,
             "cm_ac": -0.054,
@@ -74,6 +73,9 @@
             "pylon_length": 2.2
       },
       "Stability": {
-
+            "h2_tank_length" : 1.5,
+            "battery_mass" :200,
+            "cooling_mass" :50,
+            "h2_tank_mass" :75
       }
 }

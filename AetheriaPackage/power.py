@@ -2,6 +2,7 @@
 import os
 import sys
 import pathlib as pl
+from math import ceil
 import numpy as np
 from AetheriaPackage.data_structs import *
 
@@ -432,7 +433,7 @@ def power_cruise_mass(PowerRequired: float, echo: float,  FuellCell:FuelCell, Ba
             -Batterymass[kg]: Battery mass
     """
     
-    FCmass = FuellCell.mass
+    FCmass = ceil(PowerRequired/FuelCell.maxpower)*FuellCell.mass
     Batterymass = PowerRequired * (1-echo) / Battery.PowerDensity / Battery.End_of_life
     
     for i in range(len(Batterymass)):

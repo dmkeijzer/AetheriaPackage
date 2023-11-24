@@ -5,37 +5,8 @@ import json
 import pathlib as pl
 import pandas as pd
 
-sys.path.append(str(list(pl.Path(__file__).parents)[2]))
-os.chdir(str(list(pl.Path(__file__).parents)[2]))
-import matplotlib.pyplot as plt
-from input.data_structures import *
-
-WingClass = Wing()
-AeroClass = Aero()
-PerformanceClass = AircraftParameters()
 
 
-##WingClass.load()
-##AeroClass.load()
-##PerformanceClass.load()
-##
-##b = WingClass.span
-##taper = WingClass.taper
-##S= WingClass.surface
-##Cd0= WingClass.cd0
-##c_r=WingClass.chord_root
-##CLa=WingClass.cL_alpha
-##V=PerformanceClass.cruise_velocity
-##Cla=AeroClass.cl_alpha
-##
-#####HARDCODED VALUES:
-##step=0.01
-##roll_rate=60*np.pi/(180*1.3)
-##aileron_max=20*np.pi/180
-##ca_c_ratio=0.25
-
-##########Aileron Sizing###########
-####The outer side of the aileron starts at the tip to impart maximum roll moment with minimum surface.
 
 def size_aileron(S,b,V,Cla,Cd0,c_r,taper,CLa,ca_c_ratio=0.25,step=0.01,aileron_max=20*np.pi/180,roll_rate=60*np.pi/(180*1.3)):  ##Aileron_max is the maximum allowable deflection
     y_outer=b/2

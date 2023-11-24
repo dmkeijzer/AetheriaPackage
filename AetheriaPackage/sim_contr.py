@@ -1,5 +1,8 @@
 import numpy as np
 from scipy.interpolate import RegularGridInterpolator,interp1d
+import numpy as np
+import scipy.linalg as lg
+import itertools
 from warnings import warn
 from AetheriaPackage.data_structs import *
 import AetheriaPackage.GeneralConstants as const
@@ -35,7 +38,7 @@ def loading_diagram(wing_loc, lf, fuselage, wing, vtail, aircraft, power, engine
         "vtail": (vtail.vtail_weight, wing_loc + vtail.length_wing2vtail),
         "engine": (engine.totalmass, (4*(wing_loc - 2) + 2*(wing_loc + vtail.length_wing2vtail))/(6)),
         "fuel_cell": (FuelCell.mass, fuselage.length_cockpit + fuselage.length_cabin + FuelCell.depth/2),
-        "battery": (power.battery_mass, 1), # Battery was placed in the wing
+        "battery": (power.battery_mass, wing_loc), # Battery was placed in the wing
         "cooling": (power.cooling_mass, fuselage.length_cockpit +  fuselage.length_cabin + power.h2_tank_length ), # Battery was placed in the wing
         "tank": (power.h2_tank_mass, fuselage.length_cockpit +  fuselage.length_cabin + power.h2_tank_length/2 ), # Battery was placed in the wing
         "landing_gear": (aircraft.lg_mass,  lf*const.cg_fuselage ), # For now, assume it coincides with the cg of the fuselage
@@ -1352,3 +1355,243 @@ def span_vtail(r, w, g):
     else:
         s = r/np.sin(g)
     return s
+
+
+def acai(Bf, fcmin, fcmax, Tg):
+    """ Computes the Available Control Authority Index, based on MATLAB original code
+
+    :param Bf: Control effectiveness matrix [-]
+    :type Bf: numpy array (as many rows as states - usually 4: vertical thrust, pitch, roll, yaw - and as many columns
+            as rotors)
+    :param fcmin: Minimum available thrust per rotor [N]
+    :type fcmin: numpy array (shape = (n_rotors,1))
+    :param fcmax: Maximum available thrust per rotor [N]
+    :type fcmax: numpy array (shape = (n_rotors,1))
+    :param Tg: External forces acting on body [N]
+    :type Tg: numpy array (shape = (n_states,1))
+    :return: Available Control Authority Index
+    :rtype: float
+    """
+    sz = np.shape(Bf)
+    n = sz[0]
+    m = sz[1]
+    M = np.arange(m)
+    S1 = np.array(list(itertools.combinations(M, n-1)))
+    sm = np.shape(S1)[0]
+    fc = (fcmin + fcmax)/2
+    Fc = Bf @ fc
+    choose = S1[0,:]
+    B_1j = Bf[:,choose]
+    z_jk = (fcmax-fcmin)/2
+    z_jk = np.delete(z_jk, choose, 0)
+    kesai = lg.null_space(B_1j.T)
+    kesai = kesai[:,0]
+    B_2j = np.copy(Bf)
+    B_2j = np.delete(B_2j, choose, 1)
+    E = kesai.T @ B_2j
+    dmin = np.zeros((sm,1))
+    dmax = np.abs(E) @ z_jk
+    temp = dmax - np.abs(kesai.T@(Fc - Tg))
+    dmin[0,0] = temp
+    for j in np.arange(1, sm):
+        choose = S1[j,:]
+        B_1j = Bf[:,choose]
+        z_jk = (fcmax - fcmin) / 2
+        z_jk = np.delete(z_jk, choose, 0)
+        kesai = lg.null_space(B_1j.T)
+        kesai = kesai[:, 0]
+        B_2j = np.copy(Bf)
+        B_2j = np.delete(B_2j, choose, 1)
+        E = kesai.T @ B_2j
+        dmax = np.abs(E) @ z_jk
+        temp = dmax - np.abs(kesai.T@(Fc - Tg))
+        dmin[j,0] = temp
+    if np.min(dmin)>=0:
+        degree = np.min(dmin)
+    else:
+        degree = -np.min(np.abs(dmin))
+    return degree
+
+def create_rotor_loc(wingspan, prop_radius, Vtailspan, Vtail_dihedral, x_lewing, root_chord, tip_chord, LE_sweep, l_fus, Vtail_chord):
+    """ Creates the rotor_loc array (ONLY VALID FOR AETHERIA CONCEPT)
+
+        :param wingspan: Wing span [m]
+        :type wingspan: float
+        :param prop_radius: Radius of propellers [m]
+        :type prop_radius: float
+        :param Vtailspan: V-tail-long span (not projected) [m]
+        :type Vtailspan: float
+        :param Vtail_dihedral: Dihedral angle of V-tail (upwards positive) [rad]
+        :type Vtail_dihedral: float
+        :param x_lewing: x-location of root chord's leading edge (distance from nose) [m]
+        :type x_lewing: float
+        :param root_chord: Main wing's root chord length [m]
+        :type root_chord: float
+        :param tip_chord: Main wing's tip chord length [m]
+        :type tip_chord: float
+        :param LE_sweep: Measured sweep angle at main wing's leading edge [rad]
+        :type LE_sweep: float
+        :param l_fus: Fuselage length [m]
+        :type l_fus: float
+        :param Vtail_chord: Chord length of V-tail [m]
+        :type Vtail_chord: float
+        :return: rotor-locations array (first row: x-locations, second row: y-locations, third row: rotation direction)
+        :rtype: numpy array
+        """
+    WOy = wingspan / 2 #y-loc Wing-Outer propeller (wingtip)
+    WIy = WOy - 2*prop_radius -0.1 #y-loc Wing-Inner propeller (wingtip - propeller diameter - prop-prop clearance)
+    Ty = Vtailspan * np.cos(Vtail_dihedral) / 2 #y-loc Tail propeller (tail wingtip)
+    WOx = x_lewing + 0.25 * root_chord - 0.05 * tip_chord #x-loc Wing-Outer propeller (20% tip chord)
+    WIx = x_lewing + WIy * np.sin(LE_sweep) #x-loc Wing-Inner propeller (LE point at WIy)
+    Tx = l_fus + 0.25*Vtail_chord #x-loc Tail propeller (50% tip chord Vtail)
+    rotor_loc = np.array([[WIx, WIx, WOx, WOx, Tx, Tx],
+                          [WIy, -WIy, WOy, -WOy, Ty, -Ty],
+                          [-1,1,-1,1,1,-1]])
+    return rotor_loc
+
+
+def cg_range_calc(convergence_dir, x_cg_try, x_cg_lim, rotor_loc , rotor_eta, rotor_ku, max_T_per_rotor, Tg):
+    """ Finds by convergence the most limiting cg location (vertical flight mode) in a certain convergence direction
+        using ACAI to determine controllability given a certain cg location
+
+        :param convergence_dir: -1 to converge to front cg limit, 1 to converge to aft cg limit
+        :type convergence_dir: int
+        :param x_cg_try: Initial guess of limiting CG location. To converge to front CG location, the guess should be
+                         placed more aft, to converge to aft CG location, the guess should be placed more forward [m]
+        :type x_cg_try: float
+        :param x_cg_lim: Limit after which we do not look for limiting cg locations anymore (to be read as horizontal
+                         flight mode cg limit) [m]
+        :type x_cg_lim: float
+        :param rotor_loc: Array containing x and y locations for rotors + rotation directions (as 1 or -1) [m, m, -]
+        :type rotor_loc: numpy array of shape (3, n_rotors)
+        :param rotor_eta: 1-D array containing efficiency of each rotor (1=nominal operation) [-]
+        :type rotor_eta: numpy array of shape (n_rotors)
+        :param rotor_ku: 1-D array containing Torque/Thrust ratios for each rotor [m]
+        :type rotor_ku: numpy array of shape (n_rotors)
+        :param max_T_per_rotor: Maximum thrust that 1 rotor can provide [N]
+        :type max_T_per_rotor: float
+        :param Tg: External forces acting on body [N]
+        :type Tg: numpy array of shape (n_states,1)
+        :return: limiting CG location for vertical flight mode in one convergence direction
+        :rtype: float
+        """
+    step_size = 0.01
+    alist = []
+    cond = False
+    broken = False
+    while convergence_dir*x_cg_try <= convergence_dir*x_cg_lim:
+        alist.append(x_cg_try)
+        rotor_d = np.array([])
+        rotor_angle = np.array([])
+        rotor_loc[0,:] = rotor_loc[0,:] - x_cg_try
+        for i in range(np.shape(rotor_loc)[1]):
+            rotor_d = np.append(rotor_d, np.linalg.norm(rotor_loc[:2,i]))
+            rotor_angle = np.append(rotor_angle, np.arctan2(rotor_loc[1,i], rotor_loc[0,i]))
+        bt = np.copy(rotor_eta)
+        bl = -rotor_d * np.sin(rotor_angle) * rotor_eta
+        bm = rotor_d * np.cos(rotor_angle) * rotor_eta
+        bn = rotor_loc[2,:] * rotor_ku * rotor_eta
+        Bf = np.array([bt, bl, bm, bn])
+        fcmin = np.zeros((np.shape(rotor_loc)[1], 1))
+        fcmax = max_T_per_rotor * np.ones((np.shape(rotor_loc)[1], 1))
+        delta = 1e-10
+        ACAI = acai(Bf, fcmin, fcmax, Tg)
+        if -delta<ACAI<delta:
+            ACAI = 0
+        if ACAI > 0:
+            cond = True
+        if ACAI <= 0 and cond:
+            broken = True
+            break
+        x_cg_try = x_cg_try + convergence_dir*step_size
+    if not cond:
+        return convergence_dir * np.inf
+    elif broken:
+        return alist[-2]
+    else:
+        return alist[-1]
+
+def pylon_calc(Wing, Veetail, Fuselage, Stability, AircraftParameters, rotor_loc, pylon_step = 0.1, Tfac_step = 0.05):
+    """ Returns a matrix with the Tfac that corresponds to a certain pylon length to ensure vertical flight
+        controllability, where Tfac is the factor corresponding to the required maximum thrust per rotor, divided
+        by the nominal thrust per rotor (m*g/n_rotors)
+
+        :param Wing: Wing class 
+        :type Wing: Wing class (must contain attributes: surface, x_lewing, x_lemac, chord_mac)
+        :param Veetail: Veetail class
+        :type Veetail: Veetail class (must contain attributes: surface, dihedral, span, length_wing2vtail)
+        :param Fuselage: Fuselage class
+        :type Fuselage: Fuselage class (must contain attributes: length_fuselage, length_tail, bf)
+        :param Stability: Stability class
+        :type Stability: Stability class (must contain attributes: cg_front_bar, cg_rear_bar)
+        :param AircraftParameters: AircraftParameters class
+        :type AircraftParameters: AircraftParameters class (must contain attributes: MTOM)
+        :param rotor_loc: Array containing x and y locations for rotors + rotation directions (as 1 or -1) [m, m, -]
+        :type rotor_loc: numpy array of shape (3, n_rotors)
+        :param pylon_step: Step to loop pylon length [m]
+        :type pylon_step: float
+        :param Tfac_step: Step to loop Tfac [-]
+        :type Tfac_step: float
+        :return: Array containing corresponding values of Tfac for different pylon lengths
+        :rtype: numpy array of shape(undefined, 2)
+        """
+    
+    wing_surface = Wing.surface
+    vtail_surface = Veetail.surface
+    vtail_dihedral = Veetail.dihedral
+    l_fus = Fuselage.length_fuselage
+    length_tail = Fuselage.length_tail
+    width_fus = Fuselage.bf
+    l_v = Veetail.length_wing2vtail
+    b_vee = Veetail.span
+    cg_front_lim = Wing.x_lewing + Wing.x_lemac + Wing.chord_mac * Stability.cg_front_bar
+    cg_rear_lim = Wing.x_lewing + Wing.x_lemac + Wing.chord_mac * Stability.cg_rear_bar
+    ma = AircraftParameters.MTOM
+    Sproj = wing_surface + vtail_surface * np.cos(vtail_dihedral) + (l_fus - 0.5*length_tail) * width_fus
+    g0 = 9.80665
+    rho0 = 1.225
+
+    Tg = np.array([[ma * g0 + rho0 * 11.1**2 * Sproj],#Assumes CD = 2.0
+                   [0.5 * rho0 * (31/3.6)**2 * vtail_surface * np.sin(vtail_dihedral) * b_vee * np.sin(vtail_dihedral)/2],
+                   [0],
+                   [0.5 * rho0 * (31/3.6)**2 * vtail_surface * np.sin(vtail_dihedral) * l_v]])
+    r_ku = 0.1 * np.ones(np.shape(rotor_loc)[1])
+    r_eta = np.ones(np.shape(rotor_loc)[1])
+    loopforpylonsize = True
+    log = np.zeros((0,2))
+    pylonsize = 0
+
+    while loopforpylonsize:
+        loopfortfac = True
+        Tfac = 1
+        while loopfortfac:
+            x_cg_fw = np.array([])
+            x_cg_r = np.array([])
+            loopforbrokenengine = True
+            engineidx = 0
+            maxT = Tfac * ma * g0 / np.shape(rotor_loc)[1]
+            while loopforbrokenengine:
+                x_cg_fw= np.append(x_cg_fw, cg_range_calc(-1, cg_rear_lim, cg_front_lim, rotor_loc, r_eta, r_ku, maxT, Tg))
+                x_cg_r= np.append(x_cg_r, cg_range_calc(1, cg_front_lim, cg_rear_lim, rotor_loc, r_eta, r_ku, maxT, Tg))
+                r_eta = np.ones(np.shape(rotor_loc)[1])
+                r_eta[engineidx] = 0.5 #Assumes 2 engines / prop
+                if engineidx > np.shape(rotor_loc)[1]:
+                    loopforbrokenengine = False
+                engineidx +=1
+            if -10 < np.max(x_cg_fw) <= cg_front_lim and 100 > np.min(x_cg_r) >= cg_rear_lim:
+                loopfortfac = False
+            elif Tfac > 6 :
+                loopfortfac = False
+                Tfac = np.inf
+            else:
+                Tfac += Tfac_step
+        log = np.vstack((log, [Tfac, pylonsize]))
+        pylonsize += pylon_step
+        rotor_loc[0,:2] = rotor_loc[0,:2] - pylon_step
+        
+        if pylonsize > 4:
+            loopforpylonsize = False
+    return log
+
+
+

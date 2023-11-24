@@ -9,13 +9,13 @@ import pandas as pd
 
 from AetheriaPackage.data_structs import *
 import AetheriaPackage.GeneralConstants as const
-from AetheriaPackage.sim_contr import size_vtail_opt, wing_location_horizontalstab_size, span_vtail
-from AetheriaPackage.aerodynamics import wing_planform, vtail_planform, integrated_drag_estimation, get_aero_planform
-from AetheriaPackage.performance import get_wing_power_loading, get_energy_power_perf,get_performance_updated
+from AetheriaPackage.sim_contr import size_vtail_opt, span_vtail
+from AetheriaPackage.aerodynamics import wing_planform, vtail_planform, component_drag_estimation, get_aero_planform
+from AetheriaPackage.performance import get_wing_power_loading,get_performance_updated
 from AetheriaPackage.structures import get_gust_manoeuvr_loadings, get_weight_vtol, get_fuselage_sizing
 from AetheriaPackage.power import power_system_convergences
 
-def run_integration(file_path, counter_tuple=(0,0), json_path= None, dir_path = None ):
+def run_integration(file_path, counter_tuple=(1,1), json_path= None, dir_path = None ):
     """ Runs an entire integraton loop
 
     :param label: Label required for writing to files
@@ -66,14 +66,17 @@ def run_integration(file_path, counter_tuple=(0,0), json_path= None, dir_path = 
     #-------------------- propulsion ----------------------------
     # mission, engine = propcalc( clcd= aero.ld_cruise, mission=mission, engine= engine, h_cruise= GeneralConstants.h_cruise)
 
-    alpha_arr,cL_lst, induced_drag_lst =  get_aero_planform(aero, wing, 20)
     #-------------------- Aerodynamic sizing--------------------
-    integrated_drag_estimation(wing, fuselage, vtail, aero) #
+    alpha_arr,cL_lst, induced_drag_lst =  get_aero_planform(aero, wing, 20)
+    component_drag_estimation(wing, fuselage, vtail, aero) #
     # aero = slipstream_cruise(wing, engine, aero, mission) # FIXME the effect of of cl on the angle of attack
     lift_over_drag_arr = cL_lst/(induced_drag_lst + aero.cd0_cruise)
     aero.ld_max = np.max(lift_over_drag_arr)
     aero.cl_ld_max = cL_lst[np.argmax(lift_over_drag_arr)]
     mission.glide_slope = alpha_arr[np.argmax(lift_over_drag_arr)]
+    CL_CD_endurance_opt = (cL_lst**(3/2))/(induced_drag_lst + aero.cd0_cruise)
+    idx = np.argmax(CL_CD_endurance_opt)
+    aero.cL_endurance = cL_lst[idx]
 
 
     #-------------------- Flight Performance --------------------
@@ -105,28 +108,32 @@ def run_integration(file_path, counter_tuple=(0,0), json_path= None, dir_path = 
     get_weight_vtol(mission, fuselage, wing, engine, vtail)
 
     #---------------------- dumping update parameters to json file ------------------
-    mission.dump(json_path)
-    wing.dump(json_path)
-    engine.dump(json_path)
-    aero.dump(json_path)
-    fuselage.dump(json_path)
-    vtail.dump(json_path)
-    fuselage.dump(json_path)
-    stability.dump(json_path)
-    power.dump(json_path)
+    if dir_path is not None:
+        mission.dump(json_path)
+        wing.dump(json_path)
+        engine.dump(json_path)
+        aero.dump(json_path)
+        fuselage.dump(json_path)
+        vtail.dump(json_path)
+        fuselage.dump(json_path)
+        stability.dump(json_path)
+        power.dump(json_path)
 
 
     #--------------------------------- Log all variables from current iterations ----------------------------------
 
-    for data_struct in [mission, wing, engine, aero, fuselage, vtail, stability, power]:
-        save_path = os.path.join(dir_path, "aetheria" + "_" + data_struct.label + "_hist.csv")
-        data = data_struct.model_dump()
-        
-        if os.path.exists(save_path):
-            pd.DataFrame(np.array(list(data.values()), dtype=object).reshape(1, -1)).to_csv(save_path, mode="a", header=False, index= False)
-        else: 
-            pd.DataFrame([data]).to_csv(save_path, columns= list(data.keys()), index=False)
-                # Read the output from the subprocess
+    if dir_path is not None:
+        for data_struct in [mission, wing, engine, aero, fuselage, vtail, stability, power]:
+            save_path = os.path.join(dir_path, "aetheria" + "_" + data_struct.label + "_hist.csv")
+            data = data_struct.model_dump()
+            
+            if os.path.exists(save_path):
+                pd.DataFrame(np.array(list(data.values()), dtype=object).reshape(1, -1)).to_csv(save_path, mode="a", header=False, index= False)
+            else: 
+                pd.DataFrame([data]).to_csv(save_path, columns= list(data.keys()), index=False)
+                    # Read the output from the subprocess
+    else:
+        return mission, wing, engine, aero, fuselage, stability, power
 
 
 def multi_run(file_path, outer_loop_counter, json_path, dir_path ):

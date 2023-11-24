@@ -21,7 +21,6 @@ transition_height = 100
 
 #performance
 v_cr = 300/3.6
-v_climb = 0.8*v_cr
 cl_alpha = 5.011088876214181
 v_stall = 40
 v_stall_flaps20 = 42
@@ -84,10 +83,6 @@ warn("Missing nacelles data/counteracting effect for our design")
 Cm_ac_flaps = -0.1825#From delta CL0
 Cm_ac_nacelles = 0  # Assumed/missing data on nacelles
 
-
-
-
-
 # Sea leavel atmospheric constants
 rho_sl = atm.rho_SL            #[kg/m^3]   O
 p_sl = atm.p_SL
@@ -95,7 +90,6 @@ T_sl = atm.T_SL
 mhu_sl = atm.mu_SL
 a_sl = atm.a_SL
 mhu = atm.viscosity_dyn()           #[kg/m^3]   O   the dynamic viscosity
-
 
 # Power
 p_density = 7e3     # w totalEnergy/kg    ? # averaged from:  A review: high power density motors for electric vehicles
@@ -111,26 +105,6 @@ frac_lam_fus = 0.05
 frac_lam_wing = 0.1
 k = 0.634 * 10**(-5)  # Surface smoothness parameter
 
-warn("The variables hereunder should be looked at, they were computed for one specific version but should be recomputeds")
-alpha_zero_l = -0.0352
-alpha_zero_L_flaps20 = -0.193
-delta_alpha_zero_L_flaps20 = -0.1027196
-delta_alpha_zero_L_flaps60 = -0.1332698
-cl_descent_trans_flaps20 = 1.83
-alpha_descent_trans_flaps20 = 0.2219
-cdi_descent_trans_flaps20 = 0.091 
-cdi_climb_clean = 0.013 
-cl_climb_clean = 0.592
-alpha_climb_clean = 0.0873
-ld_climb = 220.449
-cL0_approach = 0.798
-alpha_approach = 0.2
-downwash_angle = 0.09530224102729465
-downwash_angle_wing = 0.05271264331632115
-downwash_angle_prop = 0.0786014329433922
-downwash_angle_stall = 0.22197201625968602
-downwash_angle_wing_stall = 0.1517455318010746
-downwash_angle_prop_stall = 0.4004370786386418
 
 #airfoil V-tail
 toc_tail = 0.12  # NACA 0012
@@ -164,7 +138,6 @@ EnergyDensityBattery = 0.3
 PowerDensityBattery = 2
 VolumeDensityBattery = 0.45
 
-
 # Requirements
 n_min_req = -1              # [-]       O   Min load factor
 n_max_req = 2.5             # [-]       O   Max load factor
@@ -179,9 +152,6 @@ oem_cont = 1.1
 # Engine and properllors
 diskloading = 120
 n_engines = 6
-
-
-
 
 #material properties
 E_alu = 73e9
