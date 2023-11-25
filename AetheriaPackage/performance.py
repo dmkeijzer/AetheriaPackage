@@ -197,11 +197,11 @@ class MissionClass:
     def max_thrust(self, rho, V):
 
         def fprime1(T,V,rho): 
-            eff = const.prop_eff
+            eff = self.aircraft.prop_eff
             return (0.4*V + 1.2*(V**2/4 + T/(2*self.A_disk*rho))**0.5 + 0.3*T/(self.A_disk*rho*(V**2/4 + T/(2*self.A_disk*rho))**0.5))/eff
         
         def fprime2(T,V,rho):
-            eff = const.prop_eff
+            eff = self.aircraft.prop_eff
             return (1.2/(V**2 + 2*T/(self.A_disk*rho))**0.5 - 0.6*T/(self.A_disk*rho*(V**2 + 2*T/(self.A_disk*rho))**1.5))/(self.A_disk*eff*rho)
 
 
@@ -265,7 +265,7 @@ class MissionClass:
         P_a = T * V + 1.2 * T * (-V / 2 + np.sqrt(V ** 2 / 4 + T / (2 * rho * self.A_disk)))
 
         # Interpolate between efficiencies
-        eff =  const.prop_eff
+        eff = self.aircraft.prop_eff
 
         P_r = P_a/eff
 
@@ -479,7 +479,7 @@ class MissionClass:
 
         # Drag coefficient
         CD_cruise = self.aero.cd_cruise
-        eff_cruise = const.prop_eff
+        eff_cruise = self.aircraft.prop_eff
 
         D_cruise = CD_cruise*0.5*rho*speed*speed*self.S
         #print('cruise_drag', CD_cruise)

@@ -1,6 +1,6 @@
 {
       "Wing" : {
-            "aspect_ratio" :8,
+            "aspect_ratio" :9.4,
             "wing_weight": 168.99698877288353,
             "taper" :0.45,
             "washout" :0,
@@ -11,11 +11,10 @@
             "quarterchord_sweep" :0.0,
             "length_wing2vtail" : 4,
             "vtail_weight": 84.31675982363197,
-            "aspect_ratio": 6,
-            "virtual_hor_surface": 3 
+            "aspect_ratio": 6
       },
       "Fuselage" : {
-            "length_fuselage" :10,
+            "length_fuselage" :11.3,
             "diameter_fuselage" :2,
             "length_cockpit" :2.103,
             "length_cabin" :2.7,
@@ -26,10 +25,9 @@
             "width_fuselage_outer" :2.2
       },
       "AircraftParameters" : {
-            "MTOM": 2482.586143708877,
-            "OEM": 1972.586143708877,
-            "hoverPower": 1972.586143708877,
-            "prop_eff":0.9,
+            "MTOM": 3000.586143708877,
+            "OEM": 2500.586143708877,
+            "prop_eff":0.81,
             "v_stall" :45,
             "glide_slope":5,
             "turn_loadfactor":0.9,
@@ -39,17 +37,15 @@
             "misc_mass":35
       },
       "Aero": {
-            "cd0_cruise" :0.0231,
-            "cL_max" :1.7,
+            "cd0_cruise" :0.0291,
+            "cL_max" :1.6,
             "cL_alpha" :0.52,
             "cm_ac": -0.054,
             "e" :0.85
       },
       "Power": {
-            "h2_tank_length" : 1.5,
-            "battery_mass" :200,
-            "cooling_mass" :50,
-            "h2_tank_mass" :75
+            "h2_tank_length" : 3,
+            "cooling_mass" :50
       },
       "Engine": {
             "total_disk_area": 40,
@@ -69,13 +65,8 @@
                   -4.697732064997583,
                   2.3,
                   -2.3
-            ],
-            "pylon_length": 2.2
+            ]
       },
       "Stability": {
-            "h2_tank_length" : 1.5,
-            "battery_mass" :200,
-            "cooling_mass" :50,
-            "h2_tank_mass" :75
       }
 }

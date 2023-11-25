@@ -38,7 +38,6 @@ ax_target_climb = 0.5*g0   # PLACEHOLDER
 ay_target_climb = 0.2*g0 # PLACEHOLDER
 ax_target_descend = 0.5 * g0 # PLACEHOLDER
 ay_target_descend = 0.2 * g0 # PLACEHOLDER
-prop_eff =0.9
 
 #atmospheric constants
 atm = ISA(h_cruise)

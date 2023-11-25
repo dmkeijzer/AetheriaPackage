@@ -1,3 +1,6 @@
+import sys
+sys.path.append(r".")
+
 from AetheriaPackage.integration import run_integration
 
 

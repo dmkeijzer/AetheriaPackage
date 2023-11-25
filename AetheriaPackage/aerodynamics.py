@@ -815,7 +815,7 @@ def weissinger_l( wing, alpha_root, m, plot= False):
     plt.show()
 
 
-  return y*wing.span/2., cl, ccl, al_i*180./pi, CL, CDi
+  return y*wing.span/2., cl, ccl, al_i, CL, CDi
 
 
 
@@ -837,7 +837,7 @@ def get_aero_planform( aero, wing, m, plot= False ):
   cL_lst =  list()
   induced_drag_lst = list()
 
-  for alpha in np.arange(0, np.radians(15), np.pi/180):
+  for alpha in np.arange(0, np.radians(15), np.pi/180/2):
     span_points, cl_vector, ccl_vector, local_aoa, cL, CDi = weissinger_l( wing, alpha, m)
     alpha_lst.append(alpha)
     induced_drag_lst.append(CDi)

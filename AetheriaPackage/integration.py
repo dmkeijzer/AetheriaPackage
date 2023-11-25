@@ -2,16 +2,12 @@
 import numpy as np
 import os
 import json
-import sys
-import pathlib as pl
 import pandas as pd
-
-
 from AetheriaPackage.data_structs import *
-import AetheriaPackage.GeneralConstants as const
 from AetheriaPackage.sim_contr import size_vtail_opt, span_vtail
-from AetheriaPackage.aerodynamics import wing_planform, vtail_planform, component_drag_estimation, get_aero_planform
+from AetheriaPackage.aerodynamics import wing_planform, vtail_planform, component_drag_estimation, get_aero_planform, weissinger_l
 from AetheriaPackage.performance import get_wing_power_loading,get_performance_updated
+from AetheriaPackage.propulsion import propcalc
 from AetheriaPackage.structures import get_gust_manoeuvr_loadings, get_weight_vtol, get_fuselage_sizing
 from AetheriaPackage.power import power_system_convergences
 
@@ -63,22 +59,27 @@ def run_integration(file_path, counter_tuple=(1,1), json_path= None, dir_path = 
     #planform sizing
     wing_planform(wing, mission.MTOM, mission.wing_loading_cruise)
 
-    #-------------------- propulsion ----------------------------
-    # mission, engine = propcalc( clcd= aero.ld_cruise, mission=mission, engine= engine, h_cruise= GeneralConstants.h_cruise)
+
 
     #-------------------- Aerodynamic sizing--------------------
     alpha_arr,cL_lst, induced_drag_lst =  get_aero_planform(aero, wing, 20)
     component_drag_estimation(wing, fuselage, vtail, aero) #
     # aero = slipstream_cruise(wing, engine, aero, mission) # FIXME the effect of of cl on the angle of attack
+    
+    # Compute releant parameters for emergency approach
     lift_over_drag_arr = cL_lst/(induced_drag_lst + aero.cd0_cruise)
     aero.ld_max = np.max(lift_over_drag_arr)
     aero.cl_ld_max = cL_lst[np.argmax(lift_over_drag_arr)]
-    mission.glide_slope = alpha_arr[np.argmax(lift_over_drag_arr)]
+    aero.alpha_approach= alpha_arr[np.argmax(lift_over_drag_arr)]
+    aero.cL_alpha0_approach= cL_lst[np.argmax(lift_over_drag_arr)]
+
+    mission.glide_slope = np.arctan(1/aero.ld_max)
     CL_CD_endurance_opt = (cL_lst**(3/2))/(induced_drag_lst + aero.cd0_cruise)
-    idx = np.argmax(CL_CD_endurance_opt)
-    aero.cL_endurance = cL_lst[idx]
+    aero.cL_endurance = cL_lst[np.argmax(CL_CD_endurance_opt)]
+    aero.downwash_angle_stall =  np.average(weissinger_l(wing, aero.alpha_approach, 20)[3])
 
-
+    #-------------------- propulsion ----------------------------
+    propcalc(aero, mission=mission, engine= engine, h_cruise= const.h_cruise)
     #-------------------- Flight Performance --------------------
     get_performance_updated(aero, mission, wing,engine, power)
 

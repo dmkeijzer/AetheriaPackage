@@ -13,8 +13,8 @@ class Aero(BaseModel):
     cL_alpha: float 
     e: float 
     cL_endurance: float | None   = None
-    cL_alpha0_approach: float   = 0.798
-    alpha_approach: float   = 0.2
+    cL_alpha0_approach: float | None  = None
+    alpha_approach: float | None   = None
     cd_cruise: float | None = None
     cd_upsweep: float | None  = None
     cd_base: float | None  = None
@@ -190,15 +190,17 @@ class Engine(BaseModel):
     label : str = "Engine"
     x_rotor_loc: list 
     y_rotor_loc: list 
-    pylon_length: float 
     total_disk_area: float   
+    
 
+    pylon_length: float | None = None 
     totalmass: float | None   = None
     mass_perpowertrain: float | None  = None
     mass_pernacelle: float | None  = None
     mass_pertotalengine: float | None  = None
     #nacelle_width: float = None
     thrust_coefficient: float | None  = None
+    t_factor: float | None  = None
     thrust_per_engine: float | None  = None
     hub_radius: float | None  = None
     prop_radius: float | None  = None
@@ -362,6 +364,7 @@ class HydrogenTank(BaseModel):
 
 class Power(BaseModel):
     label : str = "Power"
+    battery_pos: float 
     battery_mass: float | None = None
     fuelcell_mass: float | None = None
     cooling_mass: float | None = None

@@ -5,19 +5,21 @@ import AetheriaPackage.GeneralConstants as const
 from AetheriaPackage.ISA_tool import ISA
 import scripts.Propellersizing.BEM2023 as BEM
 import scipy.integrate as spint
+import matplotlib.pyplot as plt
+import pdb
 
 
-def propcalc( clcd, mission: AircraftParameters, engine: Engine, h_cruise: float):
+def propcalc(aero, mission: AircraftParameters, engine: Engine, h_cruise: float):
     
     
     diskarea = mission.MTOM / 120 / 6
     prop_radius = np.sqrt(diskarea / np.pi )
     n_prop = 6
-    T_cr_per_engine = (mission.MTOM * const.g0 / clcd)/n_prop
+    T_cr_per_engine = (mission.MTOM * const.g0 /aero.ld_max)/n_prop
     xi_0 = 0.1
     B = 6
     rpm_cruise = 900
-    T_factors = [5,6,7,8,9]
+    T_factors = [8,9,10,11]
     V_h = 2
 
     isa = ISA(h_cruise)
@@ -27,10 +29,10 @@ def propcalc( clcd, mission: AircraftParameters, engine: Engine, h_cruise: float
     rho_cruise = 1.225
     for T_factor in T_factors:
         #size for the cruise recruirements
-        blade_cruise = BEM.BEM(B, prop_radius, rpm_cruise, xi_0, rho_cruise, dyn_vis, mission.cruise_velocity, N_stations=25, a=soundspeed, RN_spacing=100000, T=T_cr_per_engine)
+        blade_cruise = BEM(B, prop_radius, rpm_cruise, xi_0, rho_cruise, dyn_vis, const.v_cr, N_stations=25, a=soundspeed, RN_spacing=100000, T=T_cr_per_engine)
         zeta, design, V_e, coefs, solidity = blade_cruise.optimise_blade(0)
         power_tot_cruise = (design[7] / 2 * rho_cruise *const.v_cr ** 3 * np.pi * prop_radius ** 2) * 6
-        blade_cruise = BEM.BEM(B, prop_radius, rpm_cruise, xi_0, rho_cruise, dyn_vis,const.v_cr, N_stations=25, a=soundspeed,
+        blade_cruise = BEM(B, prop_radius, rpm_cruise, xi_0, rho_cruise, dyn_vis,const.v_cr, N_stations=25, a=soundspeed,
                             RN_spacing=100000, T=T_cr_per_engine * T_factor)
         zeta, design, V_e, coefs, solidity = blade_cruise.optimise_blade(0)
 
@@ -45,7 +47,7 @@ def propcalc( clcd, mission: AircraftParameters, engine: Engine, h_cruise: float
         max_T = 0
         for delta_pitch_max_T in range(75):
             # print(design[1], design[1]-np.deg2rad(delta_pitch_hover))
-            maxT_blade = BEM.OffDesignAnalysisBEM(V_h, B, prop_radius, design[0], design[1] - np.deg2rad(delta_pitch_max_T),
+            maxT_blade = OffDesignAnalysisBEM(V_h, B, prop_radius, design[0], design[1] - np.deg2rad(delta_pitch_max_T),
                                                 design[3],
                                                 coefs[0], coefs[1], rpm_max, rho, dyn_vis, soundspeed, RN)
 
@@ -58,12 +60,12 @@ def propcalc( clcd, mission: AircraftParameters, engine: Engine, h_cruise: float
             if T > max_T:
                 best_combo = [delta_pitch_max_T, T]
                 max_T = T
-            if T > mission.max_thrust_per_engine: #e
+            if T > 2.25*mission.MTOM * const.g0/n_prop: #e
                     break
-        if T > mission.max_thrust_per_engine:
-                    
+        if T > 2.25*mission.MTOM * const.g0/n_prop:
                     break
-    maxT_blade = BEM.OffDesignAnalysisBEM(V_h, B, prop_radius, design[0], design[1] - np.deg2rad(best_combo[0]),
+
+    maxT_blade = OffDesignAnalysisBEM(V_h, B, prop_radius, design[0], design[1] - np.deg2rad(best_combo[0]),
                                           design[3], coefs[0], coefs[1], rpm_max, rho, dyn_vis, soundspeed, RN)
 
     # Outputs: [T, Q, eff], [C_T, C_P], [alphas]
@@ -85,7 +87,7 @@ def propcalc( clcd, mission: AircraftParameters, engine: Engine, h_cruise: float
     mission.cruisePower = power_tot_cruise /prop_eff_cruise / 0.95 #extra 0.95 is for mechanical losses
     #mission.max_thrust_per_engine = max_thrust_per_engine
     mission.prop_eff = prop_eff_cruise
-    mission.t_factor = T_factor
+    engine.t_factor = T_factor
     engine.thrust_coefficient = C_T_cruise
 
     return mission, engine
@@ -1391,4 +1393,170 @@ class Optiblade:
         # Return [blade in cruise], [T, Q, eff] of blade in hover, and thrust factor at which the blade is designed
         # The cost function should maximise both cruise and hover efficiency, so [0][1][5] and [1][2] TODO: check
         return blade, blade_hover, thrust_factor
+
+class PlotBlade:
+    def __init__(self, chords, pitchs, radial_coords, R, xi_0, airfoil_name='wortman.dat', tc_ratio=0.12):
+        """
+        :param chords: Array with chords, from root to tip [m]
+        :param pitchs: Array with pitch angles, from root to tip [rad]
+        :param radial_coords: Radial coordinates per station [m]
+        :param R: Radius of propeller [m]
+        :param xi_0: Hub ratio [-]
+        :param airfoil_name: String with ile name of the airfoil to use, by default NACA4412 [-]
+        :param tc_ratio: Thickness to chord ratio of the airfoil, by default 12% for NACA4412 [-]
+        """
+        self.chords = chords
+        self.pitchs = pitchs
+        self.radial_coords = radial_coords
+        self.R = R
+        self.xi_0 = xi_0
+        self.airfoil_name = airfoil_name
+        self.tc_ratio = tc_ratio
+
+    def load_airfoil(self):
+        file = open('input/Propulsion/'+self.airfoil_name)
+
+        airfoil = file.readlines()
+
+        # Close file
+        file.close()
+
+        # List to save formatted coordinates
+        airfoil_coord = []
+
+        for line in airfoil:
+            # Separate variables inside file
+            a = line.split()
+
+            new_line = []
+            for value in a:
+                new_line.append(float(value))
+
+            # Set c/4 to be the origin
+            new_line[0] -= 0.25
+            airfoil_coord.append(new_line)
+
+        airfoil_coord = np.array(airfoil_coord)
+        airfoil_coord = airfoil_coord.T
+
+        return airfoil_coord
+
+    def plot_blade(self):
+        # Create figures
+        fig, axs = plt.subplots(2, 1)
+        axs[0].axis('equal')
+
+        # Plot side view of the airfoil cross-sections
+        for i in range(len(self.chords)):
+            # Scale the chord length and thickness
+            x_coords = self.load_airfoil()[0] * self.chords[i]
+            y_coords = self.load_airfoil()[1] * self.chords[i]
+
+            # New coordinates after pitch
+            x_coords_n = []
+            y_coords_n = []
+
+            # Apply pitch
+            for j in range(len(x_coords)):
+                # Transform coordinates with angle
+                x_coord_n = np.cos(self.pitchs[i]) * x_coords[j] + np.sin(self.pitchs[i]) * y_coords[j]
+                y_coord_n = -np.sin(self.pitchs[i]) * x_coords[j] + np.cos(self.pitchs[i]) * y_coords[j]
+
+                # Save new coordinates
+                x_coords_n.append(x_coord_n)
+                y_coords_n.append(y_coord_n)
+
+            # Plot the cross section
+
+            axs[0].plot(x_coords_n, y_coords_n)
+        axs[0].hlines(0, -0.2, 0.3, label='Disk plane', colors='k', linewidths=0.75)
+
+        y_mins = []
+        y_maxs = []
+        for i in range(len(self.chords)):
+            chord_len = self.chords[i]
+            # Plot chord at its location, align half chords
+            y_maxs.append(chord_len/4)
+            y_mins.append(-3*chord_len/4)
+
+        # # Interpolate for smooth distribution
+        # y_max_fun = sp_int.CubicSpline(self.radial_coords, y_maxs, extrapolate=True)
+        # y_min_fun = sp_int.CubicSpline(self.radial_coords, y_mins, extrapolate=True)
+
+        # Polinomial regression for smooth distribution
+        coef_y_max_fun = np.polynomial.polynomial.polyfit(self.radial_coords, y_maxs, 5)
+        coef_y_min_fun = np.polynomial.polynomial.polyfit(self.radial_coords, y_mins, 5)
+
+        y_max_fun = np.polynomial.polynomial.Polynomial(coef_y_max_fun)
+        y_min_fun = np.polynomial.polynomial.Polynomial(coef_y_min_fun)
+
+        # Plot
+        axs[1].axis('equal')
+
+        # Plot actual points
+        axs[1].scatter(self.radial_coords, y_maxs)
+        axs[1].scatter(self.radial_coords, y_mins)
+
+        # Plot smooth distribution  TODO: revise
+        radius = np.linspace(self.xi_0*self.R, self.R, 200)
+        axs[1].plot(radius, y_min_fun(radius))
+        axs[1].plot(radius, y_max_fun(radius))
+
+        axs[0].legend()
+        plt.show()
+
+    def plot_3D_blade(self):
+        fig = plt.figure()
+        ax = plt.axes(projection='3d')
+        # ax.set_aspect('equal')
+
+        # Plot airfoil blade in 3D
+        for i in range(len(self.chords)):
+            # Scale the chord length and thickness
+            x_coords = self.load_airfoil()[0] * self.chords[i]
+            y_coords = self.load_airfoil()[1] * self.chords[i]
+
+            # New coordinates after pitch
+            x_coords_n = []
+            y_coords_n = []
+
+            blade_plot = np.empty(3)
+
+            # Apply pitch
+            for j in range(len(x_coords)):
+                # Transform coordinates with angle
+                x_coord_n = np.cos(self.pitchs[i]) * x_coords[j] + np.sin(self.pitchs[i]) * y_coords[j]
+                y_coord_n = -np.sin(self.pitchs[i]) * x_coords[j] + np.cos(self.pitchs[i]) * y_coords[j]
+
+                # Save new coordinates
+                x_coords_n.append(x_coord_n)
+                y_coords_n.append(y_coord_n)
+
+                # Save coordinates of each point
+                point = [x_coord_n, y_coord_n, self.radial_coords[i]]
+                blade_plot = np.vstack((blade_plot, point))
+
+            ax.plot3D(x_coords_n, y_coords_n, self.radial_coords[i], color='k')
+
+        # ax.plot3D(blade_plot[:][0], blade_plot[:][1], blade_plot[:][2], color='k')
+
+
+        # Trick to set 3D axes to equal scale, obtained from:
+        # https://stackoverflow.com/questions/13685386/matplotlib-equal-unit-length-with-equal-aspect-ratio-z-axis-is-not-equal-to
+
+        # Just to get max X, Y, and Z
+        X = np.array([self.chords[0], self.chords[-1]])
+        Y = np.array([self.chords[0]*self.tc_ratio, self.chords[-1]*self.tc_ratio])
+        Z = np.array([0, self.radial_coords[-1]])
+
+        # Create cubic bounding box to simulate equal aspect ratio
+        max_range = np.array([X.max() - X.min(), Y.max() - Y.min(), Z.max() - Z.min()]).max()
+        Xb = 0.5 * max_range * np.mgrid[-1:2:2, -1:2:2, -1:2:2][0].flatten() + 0.5 * (X.max() + X.min())
+        Yb = 0.5 * max_range * np.mgrid[-1:2:2, -1:2:2, -1:2:2][1].flatten() + 0.5 * (Y.max() + Y.min())
+        Zb = 0.5 * max_range * np.mgrid[-1:2:2, -1:2:2, -1:2:2][2].flatten() + 0.5 * (Z.max() + Z.min())
+        # Comment or uncomment following both lines to test the fake bounding box:
+        for xb, yb, zb in zip(Xb, Yb, Zb):
+            ax.plot([xb], [yb], [zb], 'w')
+
+        plt.show()
 

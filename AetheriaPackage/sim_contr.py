@@ -89,7 +89,7 @@ def loading_diagram(wing_loc, lf, fuselage, wing, vtail, aircraft, power, engine
 
     return res, res_margin
 
-def size_vtail_opt(WingClass, FuseClass, VTailClass, StabClass, Aeroclass, AircraftClass, PowerClass, EngineClass, b_ref, stepsize=1e-2,  CLh_initguess = -0.6, CLh_step = 0.02, plot = False):
+def size_vtail_opt(WingClass, FuseClass, VTailClass, StabClass, Aeroclass, AircraftClass, PowerClass, EngineClass, b_ref, stepsize=1e-2,  CLh_initguess = -0.2, CLh_step = 0.02, plot = False):
     """_summary_
 
     :param WingClass: _description_
