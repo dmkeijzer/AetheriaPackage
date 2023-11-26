@@ -21,12 +21,13 @@
             "length_tail" :2,
             "upsweep" :0.3,
             "fuselage_weight" :200,
+            "length_tank" :3,
             "volume_fuselage" :8,
             "width_fuselage_outer" :2.2
       },
       "AircraftParameters" : {
-            "MTOM": 3000.586143708877,
-            "OEM": 2500.586143708877,
+            "MTOM": 2500.586143708877,
+            "OEM": 2000.586143708877,
             "prop_eff":0.81,
             "v_stall" :45,
             "glide_slope":5,
@@ -44,7 +45,7 @@
             "e" :0.85
       },
       "Power": {
-            "h2_tank_length" : 3,
+            "battery_pos" : 0.5,
             "cooling_mass" :50
       },
       "Engine": {

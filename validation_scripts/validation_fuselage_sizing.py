@@ -4,12 +4,12 @@ import pathlib as pl
 
 sys.path.append(str(list(pl.Path(__file__).parents)[1]))
 
-import input.data_structures  as data
-import input.GeneralConstants as const
-from modules.structures.fuselage_length import get_fuselage_sizing, plot_variable
+import AetheriaPackage.data_structs as data
+import AetheriaPackage.GeneralConstants as const
+from AetheriaPackage.structures import get_fuselage_sizing, plot_variable
 
 
-path = r"C:\Users\damie\OneDrive\Desktop\Damien\DSE\AetheriaPackage\output\run_optimizaton_Oct_28_13.51\design_state_Oct_28_13.51.json"
+path = r"output\Final_design_Nov_25_15.48\design_state_Nov_25_15.48.json"
 
 fuselage = data.Fuselage.load(path)
 aircraft = data.AircraftParameters.load(path)

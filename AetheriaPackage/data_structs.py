@@ -273,6 +273,7 @@ class Fuselage(BaseModel):
     length_tail: float 
     diameter_fuselage: float 
     upsweep: float 
+    length_tank: float 
     volume_fuselage: float 
     length_cabin: float = 2.7 # Length of the cabin
     height_cabin: float = 1.6 # Length of the cabin
@@ -281,7 +282,6 @@ class Fuselage(BaseModel):
     width_fuselage_inner: float = 1.88 + const.fuselage_margin 
     width_fuselage_outer: float | None = None
     length_cockpit: float = 2.103
-    length_tank: float | None = None
     tank_radius: float | None = None
     limit_fuselage: float | None = None # Length of the fuseglage
     volume_powersys: float | None = None
@@ -375,7 +375,6 @@ class Power(BaseModel):
     battery_volume: float | None = None
     fuelcell_volume : float | None = None
     h2_tank_volume : float | None = None
-    h2_tank_length : float | None = None
     powersystem_mass: float | None = None
 
     @classmethod

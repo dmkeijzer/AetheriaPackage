@@ -5,11 +5,11 @@ import sys
 import pathlib as pl
 import numpy as np
 
-sys.path.append(str(list(pl.Path(__file__).parents)[1]))
-os.chdir(str(list(pl.Path(__file__).parents)[1]))
+# sys.path.append(str(list(pl.Path(__file__).parents)[1]))
+# os.chdir(str(list(pl.Path(__file__).parents)[1]))
 
 
-from modules.aero.avl_access import get_lift_distr, get_strip_array, get_tail_lift_distr
+from AetheriaPackage.aerodynamics import get_lift_distr, get_strip_array, get_tail_lift_distr
 from modules.aero.clean_class2drag  import Reynolds, Mach_cruise, FF_fus, FF_wing, S_wet_fus, CD_upsweep, CD_base, C_fe_fus, C_fe_wing, CD_fus, CD_wing, CD0, CDi, CD, lift_over_drag,Oswald_eff, Oswald_eff_tandem, integrated_drag_estimation
 from modules.aero.prop_wing_interaction import *
 from modules.misc_tools.ISA_tool import ISA 

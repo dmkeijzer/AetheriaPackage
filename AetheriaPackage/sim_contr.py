@@ -38,9 +38,9 @@ def loading_diagram(wing_loc, lf, fuselage, wing, vtail, aircraft, power, engine
         "vtail": (vtail.vtail_weight, wing_loc + vtail.length_wing2vtail),
         "engine": (engine.totalmass, (4*(wing_loc - 2) + 2*(wing_loc + vtail.length_wing2vtail))/(6)),
         "fuel_cell": (FuelCell.mass, fuselage.length_cockpit + fuselage.length_cabin + FuelCell.depth/2),
-        "battery": (power.battery_mass, wing_loc), # Battery was placed in the wing
-        "cooling": (power.cooling_mass, fuselage.length_cockpit +  fuselage.length_cabin + power.h2_tank_length ), # Battery was placed in the wing
-        "tank": (power.h2_tank_mass, fuselage.length_cockpit +  fuselage.length_cabin + power.h2_tank_length/2 ), # Battery was placed in the wing
+        "battery": (power.battery_mass, power.battery_pos), # Battery was placed in the wing
+        "cooling": (power.cooling_mass, fuselage.length_cockpit +  fuselage.length_cabin + fuselage.length_tank), # Battery was placed in the wing
+        "tank": (power.h2_tank_mass, fuselage.length_cockpit +  fuselage.length_cabin + fuselage.length_tank/2 ), # Battery was placed in the wing
         "landing_gear": (aircraft.lg_mass,  lf*const.cg_fuselage ), # For now, assume it coincides with the cg of the fuselage
         "fuselage": (fuselage.fuselage_weight, lf*const.cg_fuselage),
         "misc": (aircraft.misc_mass, lf*const.cg_fuselage),
@@ -535,7 +535,9 @@ def get_control_surface_to_tail_chord_ratio(wing, fuselage, vtail, aero,  CL_h, 
     Cn_dr=-Vh_V2*tau*l_v/wing.span*K*CL_alpha_N*S_vee/wing.surface*np.sin(v_angle)
         
     if tau>0.55:
-        c_control_surface_to_c_vee_ratio="Not possible. Lower CLh than in the horizontal tail sizing program"
+        tau = 0.54999999
+        warn("Not possible. Lower CLh than in the horizontal tail sizing program")
+        c_control_surface_to_c_vee_ratio=get_c_control_surface_to_c_vee_ratio(tau)
     else:
         c_control_surface_to_c_vee_ratio=get_c_control_surface_to_c_vee_ratio(tau)
 
@@ -1563,7 +1565,8 @@ def pylon_calc(Wing, Veetail, Fuselage, Stability, AircraftParameters, rotor_loc
 
     while loopforpylonsize:
         loopfortfac = True
-        Tfac = 1
+        Tfac = 2
+        print(f"{pylonsize=}")
         while loopfortfac:
             x_cg_fw = np.array([])
             x_cg_r = np.array([])
@@ -1575,7 +1578,7 @@ def pylon_calc(Wing, Veetail, Fuselage, Stability, AircraftParameters, rotor_loc
                 x_cg_r= np.append(x_cg_r, cg_range_calc(1, cg_front_lim, cg_rear_lim, rotor_loc, r_eta, r_ku, maxT, Tg))
                 r_eta = np.ones(np.shape(rotor_loc)[1])
                 r_eta[engineidx] = 0.5 #Assumes 2 engines / prop
-                if engineidx > np.shape(rotor_loc)[1]:
+                if engineidx == np.shape(rotor_loc)[1] - 1:
                     loopforbrokenengine = False
                 engineidx +=1
             if -10 < np.max(x_cg_fw) <= cg_front_lim and 100 > np.min(x_cg_r) >= cg_rear_lim:
@@ -1589,7 +1592,7 @@ def pylon_calc(Wing, Veetail, Fuselage, Stability, AircraftParameters, rotor_loc
         pylonsize += pylon_step
         rotor_loc[0,:2] = rotor_loc[0,:2] - pylon_step
         
-        if pylonsize > 4:
+        if pylonsize > 8:
             loopforpylonsize = False
     return log
 

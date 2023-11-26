@@ -64,7 +64,6 @@ def run_integration(file_path, counter_tuple=(1,1), json_path= None, dir_path = 
     #-------------------- Aerodynamic sizing--------------------
     alpha_arr,cL_lst, induced_drag_lst =  get_aero_planform(aero, wing, 20)
     component_drag_estimation(wing, fuselage, vtail, aero) #
-    # aero = slipstream_cruise(wing, engine, aero, mission) # FIXME the effect of of cl on the angle of attack
     
     # Compute releant parameters for emergency approach
     lift_over_drag_arr = cL_lst/(induced_drag_lst + aero.cd0_cruise)
@@ -98,6 +97,7 @@ def run_integration(file_path, counter_tuple=(1,1), json_path= None, dir_path = 
                                                                     VTailClass= vtail, 
                                                                     StabClass=stability,
                                                                     b_ref= min_span, #!!!!!!!!! please update value when we get it
+                                                                    CLh_initguess=-0.1,
                                                                     stepsize = 5e-2,
                                                                     ) 
     #------------- Structures------------------
