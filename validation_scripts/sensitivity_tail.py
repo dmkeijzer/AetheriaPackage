@@ -4,22 +4,21 @@ import numpy as np
 
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 
-import modules.structures.fuselage_length as fl
+import AetheriaPackage.structures as struct
 
 # inputs
-h0 = 1.81
-b0 = 1.6
-V = 0.533
+h0 = 2
+b0 = 2.2
+V = 1.13
 number_tanks = 2
 
 # resolution of 2D graphs
-resolution = 50
+resolution = 40
 
 # range of length of tanks
 l_tank = np.linspace(1, 6, resolution)
 
-# Plot with ARe as variable (using the 'YlOrRd_r' colormap in reverse order)
-# fl.plot_variable(h0, b0, V, l_tank, number_tanks, 'ARe', np.linspace(1, 3, resolution), 'Beta', 0.5)
 
 # Plot with Beta as variable (using the 'viridis_r' colormap in reverse order)
-fl.plot_variable(h0, b0, V, l_tank, number_tanks,'Beta', np.linspace(0.1, 0.6, 60), 'ARe', 2.25)
+# struct.plot_variable(h0, b0, V, l_tank, number_tanks,'Beta', np.linspace(0.4, 0.8, 60), 'ARe', 2.8)
+struct.plot_variable(h0, b0, V, l_tank, number_tanks,'ARe', np.linspace(2.4, 3.1, 60), 'Beta', 0.5)

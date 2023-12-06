@@ -28,7 +28,7 @@
       "AircraftParameters" : {
             "MTOM": 2500.586143708877,
             "OEM": 2000.586143708877,
-            "prop_eff":0.81,
+            "prop_eff":0.82,
             "v_stall" :45,
             "glide_slope":5,
             "turn_loadfactor":0.9,

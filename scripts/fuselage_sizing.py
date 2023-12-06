@@ -10,4 +10,6 @@ Pstack = FuelCell()
 Tank = HydrogenTank()
 
 struct.get_fuselage_sizing(Tank, Pstack, mission, fuselage)
+V = 
+fl.plot_variable(h0, b0, , l_tank, number_tanks,'Beta', np.linspace(0.1, 0.6, 60), 'ARe', 2.25)
 
