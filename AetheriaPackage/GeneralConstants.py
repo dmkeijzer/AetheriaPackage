@@ -21,9 +21,7 @@ transition_height = 100
 
 #performance
 v_cr = 300/3.6
-cl_alpha = 5.011088876214181
-v_stall = 40
-v_stall_flaps20 = 42
+v_stall = 45
 
 roc_cr = 5
 rod_cr = 3 # Rate of descend 

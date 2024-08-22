@@ -42,7 +42,7 @@ def run_integration(file_path, counter_tuple=(1,1), json_path= None, dir_path = 
         IonBlock = Battery(Efficiency= 0.9)
         Pstack = FuelCell()
         Tank = HydrogenTank()
-        mission = AircraftParameters.load(json_path)
+        mission: AircraftParameters = AircraftParameters.load(json_path)
         wing  =  Wing.load(json_path)
         engine = Engine.load(json_path)
         aero = Aero.load(json_path)
@@ -67,6 +67,7 @@ def run_integration(file_path, counter_tuple=(1,1), json_path= None, dir_path = 
     
     # Compute releant parameters for emergency approach
     lift_over_drag_arr = cL_lst/(induced_drag_lst + aero.cd0_cruise)
+    mission.Stots = wing.surface
     aero.ld_max = np.max(lift_over_drag_arr)
     aero.cl_ld_max = cL_lst[np.argmax(lift_over_drag_arr)]
     aero.alpha_approach= alpha_arr[np.argmax(lift_over_drag_arr)]
