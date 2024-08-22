@@ -7,11 +7,8 @@ import numpy as np
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
-from input.data_structures import Battery, FuelCell
-from input.data_structures.fluid import Fluid
-from modules.cooling.coolingsystem import CoolingsystemPerformance, RadiatorPerformance
-from input.data_structures.radiator import Radiator
-from input.data_structures import Power
+from AetheriaPackage.data_structs import *
+from AetheriaPackage.power import CoolingsystemPerformance, RadiatorPerformance
 
 
 #constants
@@ -34,7 +31,7 @@ air_speed =  35#300/3.6
 # initialising 
 bat = Battery(Efficiency= 0.9)
 fc = FuelCell()
-power = Power()
+power = Power().lo
 power.load()
 
 

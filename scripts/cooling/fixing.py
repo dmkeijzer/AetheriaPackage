@@ -8,10 +8,8 @@ import matplotlib.pyplot as plt
 sys.path.append(str(list(pl.Path(__file__).parents)[2]))
 os.chdir(str(list(pl.Path(__file__).parents)[2]))
 
-from input.data_structures import Battery, FuelCell
-from input.data_structures.fluid import Fluid
-from modules.cooling.coolingsystem import CoolingsystemPerformance, RadiatorPerformance
-from input.data_structures.radiator import Radiator
+from AetheriaPackage.data_structs import *
+from AetheriaPackage.power import CoolingsystemPerformance, RadiatorPerformance
 
 Re = 1e3
 alpha = 0.5
